@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order88-command-terminal-v47",
+  "status": "frozen",
+  "purpose": "Targeted A/B of failed coverage Order 88 after the first reusable generic command-line and terminal-provenance hypothesis.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order88-v46.json",
+  "candidate_parent_config_sha256": "da95150720dc9ef570dc69af3a38e5616b1ed324f9607d09f9f31c589a8c3688",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "2f0f7f5044849a7ad681faae16dfe72766d7e3109e1dd23ffd0f75901b587b40",
+  "change_scope": "Hypothesis 1/3: make generic command.run robust to non-UTF-8 process output, document the installed LibreOffice CLI route for binary Office formats, and add a model-selected terminal=true launch mode whose argv remains positional and whose child inherits a visible TTY. No task identity, fixed filename, answer content, evaluator state, or Runner argument injection is used.",
+  "implementation_evidence": {
+    "before_result_sha256": "5b91f979dc3c80dcf357b26ec5e6049feb068fc88f1bc4164f67a63c379d09e4",
+    "before_audit_sha256": "41a72e26ce2fe8e0d20429618586e56b72fed9c76c7850a1d952d2e5d6d8e022",
+    "before_trajectory_manifest_sha256": "ee593eb637b4aef39d750e7603061fd0fa7e44bf389f1e5663dcca150847c008",
+    "failure_class": "correct_action_wrong_environment_assumptions_and_missing_tty_mode",
+    "hypothesis_index": 1,
+    "hypothesis_limit": 3,
+    "os_command_sha256": "5bd6e12c2d6079450420fe64c956d478d5ba51ba0e42bb7084f0ec3d3abb83f3",
+    "os_actions_sha256": "77ff02470b832bdaef68a3a13e7d2be43afe4e59e5613d260d3637fde52abd4d",
+    "os_schema_sha256": "20f3e7f719f48a79263d6afaeb156cc7e7ccb9f7e49179c39b950441747a2e07",
+    "os_tool_manifest_sha256": "a9e0735243f84118eb32c045dae01805405b9b6673fbd6c2de3be27abe77061a",
+    "multi_apps_generic_schema_sha256": "1a5fb5c3148ea8220b45b6ece8ce80949433df013dca6291f691edda1e47a9f3",
+    "lite_agent_tool_catalog_sha256": "06c450a53c94f092892ad7ab6c30d25ed893749f0fb9f4bd4ca8f97df459cdeb",
+    "counterfactuals": "A different GUI application, path containing spaces, and literal shell metacharacters prove terminal argv remains positional and unparsed; a non-UTF-8 subprocess proves binary output cannot crash the worker; Multi-Apps forwarding and strict manifest equality are covered.",
+    "focused_unit_tests": "252 passed",
+    "full_unit_tests": "1456 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_command_terminal_v47_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 88 after reusable generic hypothesis 1/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order88-v46-run1",
+    "rerun_reason": "The preserved v46 run selected command.run but repeatedly tried to read binary Office files directly or import unavailable pandas/openpyxl, never produced output.csv, and lacked a truthful way to launch LibreOffice with an inherited terminal TTY.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "source_episode_id": "bfdf9d80ee2f9393a222da6c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "6fef6c5629552a3560a765b5d52ea2e1fd8989b92cb3a9e731b602f845505bda",
+      "execution_class": "task_specific",
+      "pool_order": 88
+    }
+  ]
+}

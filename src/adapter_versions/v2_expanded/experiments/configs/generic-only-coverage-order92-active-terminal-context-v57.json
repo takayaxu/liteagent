@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order92-active-terminal-context-v57",
+  "status": "frozen",
+  "purpose": "Final bounded targeted A/B for coverage Order 92 using an Adapter-resolved semantic working-directory source.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order92-semantic-command-context-v56.json",
+  "candidate_parent_config_sha256": "5ae5597ee676c9d856b9a679db2e2f6d1528b7272c26d4297e5cf5ae724489ef",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c019b357412049396c38006dc6e45da5d2f1806cd3828fd992efc4107c782d1b",
+  "change_scope": "Hypothesis 3/3: replace model-copied command cwd strings with the semantic cwd_source=active_terminal|home|explicit contract. For active_terminal, the OS Adapter resolves the observable shell working directory inside the guest. cwd_path is accepted only for explicit. The model still owns cwd_source, provenance, argv, and every other model-facing argument unchanged.",
+  "implementation_evidence": {
+    "before_config_sha256": "5ae5597ee676c9d856b9a679db2e2f6d1528b7272c26d4297e5cf5ae724489ef",
+    "before_result_sha256": "d4f7cc71fdbb169577683d0513114278f52fa23e08cf2b906baa79e1bc1d3190",
+    "before_audit_sha256": "7cd2e5ee60fe4fc8e1b47960bc606328213df69cbee1bf9542b4aa3bc361e576",
+    "before_trajectory_manifest_sha256": "c80369d4862ef6a92b2f21fe66ade496378370a6a873d5135c2b6792fa632138",
+    "failure_class": "model_ignored_observed_terminal_directory_and_copied_root_as_cwd",
+    "hypothesis_index": 3,
+    "hypothesis_limit": 3,
+    "os_tool_manifest_sha256": "e0a9de1ef516dc27b45e006f1629a7b44384ddd5c407b361e73e54c785399d21",
+    "os_schema_sha256": "b3c525de16e44b551dca62b5d745696c6089ed2182e75e3087ce9b85888e0e80",
+    "os_actions_sha256": "4f43984453266c506ba1289622e01e3a8bfc60bf3b87ae2b08ed42065410c6a2",
+    "multi_apps_generic_schema_sha256": "4423e9d38b11969386b03f73d56247541b9854f34a3c3be742f1d92db0befc80",
+    "multi_apps_schema_sha256": "492f5de5e28cf43cf7720788fd79618461b09de20ef12253dfe10a3935196757",
+    "lite_agent_completion_policy_sha256": "1e2c271762763fc15866956ed577331b5d07aa0921ffb9591287b17fb37c6044",
+    "lite_agent_runtime_sha256": "821aae269580eca1e7fa784b01a65ca770c140412c3ea27ed78e5e1d5766fe92",
+    "lite_agent_tool_catalog_sha256": "326095f7183816fec1bbc9da89692642e937d62f1085c9025c763b25ebfdbf6b",
+    "openapa_tool_catalog_sha256": "f6e01c87ff8a475b377125f98195955a9bbcd614d59f147b88af30ded4ad9ce3",
+    "lite_agent_runner_sha256": "b81ea162e6f73c2fa720902e77ab54ccb31c8397f1cd95297743150b6fc441af",
+    "lite_agent_supervisor_sha256": "bed048eb65925aebe2cc5f83bca77878a92738186f5613476047716971d4a5ce",
+    "counterfactuals": "Two structurally different temporary terminal directories are resolved inside OSActions from identical cwd_source=active_terminal model calls. Explicit cwd_path is required to be absolute and is rejected for home or active_terminal. Multi-Apps forwards active_terminal/provenance=none and explicit/provenance=shell_history calls unchanged. Both provenance values remain model-owned.",
+    "focused_unit_tests": "555 passed",
+    "full_unit_tests": "1512 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_active_terminal_context_v57_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 92 after materially different final generic hypothesis 3/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order92-semantic-command-context-v56-run1",
+    "rerun_reason": "The preserved valid v56 run proved Qwen selected shell_history but repeatedly chose cwd=/ despite the system message reporting /home/user/Desktop. A semantic source removes path transcription while remaining reusable across arbitrary terminal working directories and commands.",
+    "on_failure": "Preserve the result, mark Order 92 task_blocked, and advance immediately to Order 93 without a fourth task-specific attempt.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_episode_id": "6a989c6dcfe9db0ca1cb348a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a3ab6ed27a3924f8988db5c5956b8186842e7e15db3f2b3d1d8585c6093eede6",
+      "execution_class": "task_specific",
+      "pool_order": 92
+    }
+  ]
+}

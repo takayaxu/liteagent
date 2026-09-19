@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order22-v216-column-reorder-completion",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 22. Recognize explicit column reordering as a reusable strict completion semantic and expose truthful blank-edge preservation evidence after the model-selected action. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order19-v215-scaled-separator-enum.json",
+  "parent_config_sha256": "5017578e249756a727cf455f3c1270bf8eeeec142a18ccdc72bf51f3bf7fce17",
+  "change_scope": "A focused Calc column-reorder module parses only an explicit ordered header list, requires the public table.reorder_columns action, compares completion evidence with the model-selected header arguments, and projects the Adapter's actual table range plus preserved blank-edge status into compact context. After a successful reorder, strict orchestration permits only persistence, read-only confirmation, and completion. No tool schema values, coordinates, action arguments, task identity, expected state, golden artifact, or Runner argument are injected or rewritten.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order22-schema-isolation-v15-run1/results.json",
+    "historical_clean_pass_results_sha256": "fd61d0ff0661945d3196d9182a4fea15693d21195f7dadfd39a15738a115cc2e",
+    "historical_clean_pass_audit": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order22-schema-isolation-v15-run1/worker-01-audit.json",
+    "historical_clean_pass_audit_sha256": "0e37acd031aa98e8f1cc1d1bbd648449c8ad29ab4cb9d8f4e873b3d93b446779",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order19-v215-scaled-separator-enum-run1/results.json",
+    "preceding_ab_results_sha256": "47bbf8410c3a3835809bb3b410937ee59b1592e84160189196e3493b306b30c6",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order19-v215-scaled-separator-enum-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "b03482970720e0eb5b0f5be5f236c0301c2056046f57bf356350323a75c12b9c",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "column_reorder_semantics_sha256": "cbbefd1ac47673ddff3ef6d11d094a80834202ace4079c85095b9933f14c6475",
+    "calc_semantics_sha256": "d2051838a85c5d903f281ff67aa86d0ef21a20450af2ada35ab019fca2269ef5",
+    "instruction_semantics_sha256": "6556b3c5ce1052ab7f609a0774b491798caf41f90865d1769a09cc9d82d3e010",
+    "semantic_requirements_sha256": "284d9e513cce401610007f7d96671fd961105811395151cff08250a6c8d53cff",
+    "adapter_results_sha256": "be8b2f99b66e4a05a51758fc23f87d42270aa091afce160fb0f3dc97ea75395b",
+    "tool_catalog_sha256": "ccaec3d83f6d469a7ce50d2d8f430ef0242afc681a56f3a61d567f4bcbbc38b0",
+    "calc_schema_sha256": "a775c2a390b0eb62b455c049abbdbde01b711c7f1760ae5a1eaab2224bdc4881",
+    "calc_tool_manifest_sha256": "3a77133a8b792071fbb3baf6c8c78d95f833d6fdb085870b359e4920eae93722",
+    "calc_uno_worker_sha256": "432701bd2d96c3c9896d640bd6401a00a36f3a303ef7ed1a2c89f0e1253fcf21",
+    "strict_contracts_sha256": "88494c3dd56687b3f7a7b0596986d6a384f8e49271bc50e0caef0c00d249841f",
+    "focused_tests": "85 passed, including different header values and orders, negated and descriptive counterexamples, result context, and strict save/readback/done phase restriction",
+    "unit_tests": "2410 passed",
+    "ruff": "active Calc, LiteAgent, scripts, unit, and integration sources passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_column_reorder_completion_v216_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T18:30:28Z",
+  "tasks": [
+    {
+      "order": 22,
+      "pool_order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order116-code-output-routing-v120",
+  "status": "frozen",
+  "purpose": "Order 116 hypothesis-2 A/B: infer bounded source execution when an instruction asks to complete code and persist its output, and prioritize the existing command runner when the model explicitly searches for code execution.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order116-casefold-path-v119.json",
+  "candidate_parent_config_sha256": "061690b8e249163c3ce3664da3a397a9556d0ca27c1b857e16e9ed7e3473704b",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "cd5e8098d69325a704e05cf0a544186691a78fad692c8250439df977c0767f1b",
+  "change_scope": "Preserve v119 exact-first path recovery and all Adapter command contracts. Extend only generic tool routing: a source-mutation instruction that also requests a saved execution result exposes command.capture_output and command.run in the initial Top-K, and an explicit command query ranks command.run ahead of unrelated file tools. The model still chooses every action and supplies every argument unchanged. No command is executed automatically, and no task identity, dataset order, original task filename, answer value, golden content, evaluator state, Runner rerouting, or argument rewriting participates in this behavior.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_code_output_routing_v120_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. Try at most one final materially different generic hypothesis with one targeted A/B. If hypothesis 3 also fails, mark Order 116 task_blocked and immediately advance to Order 117.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3",
+    "hypothesis_class": "implicit_source_execution_intent_and_command_search_priority",
+    "parent_attempt_result": "experiments/generic-only-coverage-order116-casefold-path-v119-run1/results.json",
+    "parent_attempt_result_sha256": "b49c90fda82a555effc042c61e6215555af31380fc46e2e5a7e1ea1cb294a37c",
+    "parent_attempt_audit_sha256": "e75ca7ba75fd63331638b9caeac424bab38a4f1065a8df975a400792afcb654b",
+    "parent_attempt_trajectory_sha256": "f413bf75b91e54f518da635f89aa58f1adfdf45757051e462ae351da3bec3057",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "Hypothesis 1 successfully returned the exact case-corrected document path and Qwen explicitly retried it. Qwen then read and modified the source but guessed the requested text output instead of executing the program. When it later explicitly searched for Python execution, the recovery-state Top-3 contained only file read/write/edit actions while command.run ranked fourth and remained unavailable. The no-progress guard stopped the loop at 26 steps after 203.750 Agent seconds; the original evaluator returned 0.0.",
+    "production_file_sha256": {
+      "multi_apps_adapter/path_recovery.py": "3a06d90befb14c2476dbb5c10e34c2be8ccb9878b2acb0f7a5615a8915f2ccf6",
+      "integrations/lite_agent/tool_catalog.py": "6fa41746e60f139db841163099210b80b138f21d5a50ac19149d625f7dfa4a69"
+    },
+    "candidate_bundle_sha256": "9037058f5abe82e12849cecb1a9aad2d316358556b47dd926af2630a9bcc7e26",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for multi_apps_adapter/path_recovery.py followed by integrations/lite_agent/tool_catalog.py.",
+    "focused_tests": "10 command-routing, source-completion, and catalog-search tests passed. The complete unit suite reported 1791 passed. Ruff lint and formatting, compileall, project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the frozen OSWorld commit/evaluator-tree check passed.",
+    "counterfactual": "A structurally unrelated forecasting task uses a different source basename, function name, and log basename. The test proves that completing source and persisting its output exposes both existing command actions, that capture_output precedes command.run in the initial Top-K, and that an explicit Python-run search returns command.run first even with a recovery-state limit of three. An unrelated PDF-to-spreadsheet test continues to exclude command.run. The catalog test source SHA-256 is bd58f41ec96bbe774f345a5b7792f4a1aa3bff0525ef36b86f780ed6fb841010. No task ID, dataset order, original task basename, expected output content, golden artifact, or evaluator value appears in production code or the counterfactual.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "second and only targeted generic A/B for hypothesis 2 on Order 116",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 116,
+      "source_order": 233,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_episode_id": "2f84972964e369dae0c0b6a6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c9062c19c27b3143fa874e975e48e5f06e15e8ea711cdbf2702b3aa4921a7a99",
+      "execution_class": "golden",
+      "pool_order": 116
+    }
+  ]
+}

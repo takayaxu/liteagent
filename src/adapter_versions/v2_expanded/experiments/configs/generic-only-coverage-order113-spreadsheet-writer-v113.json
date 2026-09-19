@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order113-spreadsheet-writer-v113",
+  "status": "frozen",
+  "purpose": "Order 113 hypothesis-3 A/B: test a parameterized Calc-range-to-Writer-table operation selected and fully parameterized by the model.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order113-inspect-context-v112.json",
+  "candidate_parent_config_sha256": "fe5783ec55191bd3e6231b772aa9907d76511596a099b6220a8c4c9d05556dba",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b58d94733cd4d8aaa457f6ed3023961b5f6ac741ee8cdc3985370b7b7d9d08c6",
+  "change_scope": "Preserve v112 and add document.create_from_spreadsheet as a generic Writer action plus a transparent Multi-Apps facade. The model supplies source_path, sheet, range, output_path, and all options. The Adapter copies displayed text and common formatting, trims only trailing blank rows and columns by default, saves DOCX, reopens it, and verifies one table with exact dimensions and cell text.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_spreadsheet_writer_v113_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "This is the third and final generic hypothesis for Order 113. Preserve and audit the result. If reward is zero, mark task_blocked and immediately advance to the next ledger entry without a fourth hypothesis.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_3_of_3",
+    "hypothesis_class": "missing_generic_cross_application_capability",
+    "parent_ab_result": "experiments/generic-only-coverage-order113-inspect-context-v112-run1/workers/worker-01/results.json",
+    "parent_ab_result_sha256": "0e2dd6487bc7c5a3dec2fba3ea830460b997f0634c501c2f4c346fdbe43163c9",
+    "parent_ab_audit_sha256": "cf4e6c4e086878c09d4cd8eb333850047db59e7d6421c07309e0060360f360dd",
+    "parent_ab_reward": 0.0,
+    "parent_ab_diagnosis": "The v112 context fix worked: the model reused the exact observed workbook URL, active sheet, and A1 range and successfully read the cells. It then repeatedly requested a generic document.create_from_spreadsheet operation that did not exist.",
+    "model_facing_action": "document.create_from_spreadsheet",
+    "model_facing_arguments": [
+      "source_path",
+      "sheet",
+      "range",
+      "output_path",
+      "preserve_format",
+      "trim_trailing_blank",
+      "overwrite"
+    ],
+    "model_argument_policy": "Every argument is copied unchanged from the captured structured model call through the Multi-Apps facade. Runtime code has no task identity, instruction parser, filename, sheet, range, answer, golden, or evaluator access.",
+    "candidate_bundle_sha256": "57a000e7f4a9d72d5aaf2f26724758b798c03fda5ccfd5cc7bd7f74b310ff459",
+    "focused_tests": "505 related tests passed, including a structurally different fake-UNO create-save-reopen verification path; Ruff passed. One unrelated pre-existing code-task action-ordering assertion remains outside this change.",
+    "counterfactual": "Tests use different file URLs, output directories, sheet names, non-A1 origins, ranges, dimensions, values, whitespace geometry, formatting options, and overwrite behavior. No Order 113 constants are present.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "third and final targeted generic A/B for the first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 113,
+      "source_order": 229,
+      "domain": "multi_apps",
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "source_episode_id": "cb5cbc015a30d74d0aa920f5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f975ca424a5dca67ca33f75dfad806a15c120c1ffb1583869d6cb026ccd1a865",
+      "execution_class": "golden",
+      "pool_order": 113
+    }
+  ]
+}

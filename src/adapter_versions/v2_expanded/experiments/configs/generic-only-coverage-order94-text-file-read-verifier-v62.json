@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order94-text-file-read-verifier-v62",
+  "status": "frozen",
+  "purpose": "Integration-repair rerun of coverage Order 94 hypothesis 1 after the first attempt exposed a false-negative file.read_text worker verifier.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order94-text-file-facades-v61.json",
+  "candidate_parent_config_sha256": "6bdf1581a090c96d73ac7b807fdced39a625a465c9e4a121571f063c6a307a35",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b7d7cd06008d1d917884e02add76c77a8e386a6db3ff00f10fb53ecf3b6cc4ff",
+  "change_scope": "Integration repair within hypothesis 1/3: file.read_text now receives a deterministic text_snapshot default verifier that checks the current UTF-8 file against the returned complete or truncated snapshot. The model-visible tool contract, ranking, parameters, prompt, Runner, model, and evaluator are unchanged. No task identity, expected output, source-specific literal, workflow, or completion decision is embedded; this repair does not consume hypothesis 2.",
+  "implementation_evidence": {
+    "interrupted_config_sha256": "6bdf1581a090c96d73ac7b807fdced39a625a465c9e4a121571f063c6a307a35",
+    "interrupted_result_sha256": "d1a582c760daa1533a45e2b7f2bb1f048f15cf972248936aa6c816b7840d326a",
+    "interrupted_worker_result_sha256": "5afc7dd7576f5b83a31c06d89bc70d132b92d6f31a6d721ebaa63a39ff2707c7",
+    "interrupted_status": "interrupted_after_22_steps_with_partial_evidence_preserved",
+    "integration_failure": "The model selected file.read_text on steps 1 through 3 and the action returned the correct source, but vscode_adapter.worker supplied zero default verification specs. verify_specs([]) correctly failed closed, so each HTTP response was VERIFICATION_FAILED and the model later looped on command.run.",
+    "hypothesis_index": 1,
+    "hypothesis_limit": 3,
+    "vscode_worker_sha256": "04d50b6ca092c4335d876e19b4e4ad14800dd9bda5e3100628df0922033ebb95",
+    "vscode_verifier_sha256": "2fc636be0a2c4fe57b3c8d9d1c7ce610629462c32519d88366eb0ab33fa6b819",
+    "vscode_worker_test_sha256": "aba05b544e98091c094155b28640df42bd54c8c215a6b9d5822c32a35c6ae0a1",
+    "vscode_service_test_sha256": "6e60d76aa23e8a98fcb63a7d1933dc4e9bb2b48ab2dbedc60358d60c2076e9bd",
+    "vscode_acceptance_script_sha256": "87b014baa7b252d3561691ee3cecebb8bec4f1e59080c665d703c1e0bbd3d105",
+    "counterfactuals": "A different temporary Python file passes complete HTTP-to-worker read verification, a ten-character text file passes a four-character truncated snapshot check, and a mismatched file state fails verification. These tests contain no benchmark source, output, instruction, or identifier.",
+    "vscode_acceptance": "49 passed including real HTTP plus subprocess worker; Ruff passed; historical 19/19 deterministic VS Code regression evidence remained valid",
+    "full_unit_tests": "1531 passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_multi_apps_text_file_read_verifier_v62_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single integration-repair rerun of the interrupted hypothesis-1 A/B for coverage Order 94",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order94-text-file-facades-v61-run1",
+    "rerun_reason": "The v61 attempt was stopped at step 22 after its first three correct file.read_text selections all returned false VERIFICATION_FAILED responses because the worker had no read-only default verifier. The saved trace proves this was an Adapter integration defect, not a repeated model outcome. This v62 run changes only that verifier and is the sole valid targeted A/B for hypothesis 1.",
+    "on_failure": "Preserve this result and classify the first failure after successful source read. Consider at most materially different hypotheses 2 and 3; do not repeat v62 unchanged. After three generic hypotheses fail, mark Order 94 task_blocked and advance immediately.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_episode_id": "0035a61317f6aca92dbe0138",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f150db7c95f1cc5f1003febdb398849c1482bda566e646d2ae6b5df3f9528900",
+      "execution_class": "golden",
+      "pool_order": 94
+    }
+  ]
+}

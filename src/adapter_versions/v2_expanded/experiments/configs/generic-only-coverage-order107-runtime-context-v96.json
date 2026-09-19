@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order107-runtime-context-v96",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 107 hypothesis 2 after preserving and auditing the v95 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order107-document-context-v95.json",
+  "candidate_parent_config_sha256": "835419e25923898e0eb4c7ae2aa2f385d77d918c5ec421e6c16968f3f0e3e9e6",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "839a738403afaee78b9927c8d7b33aaad786733ed855690651f3129e18385601",
+  "change_scope": "Carry forward v95 bounded fair batch-document context and fix its generic Runtime integration: context_summary honors an Adapter-declared bounded context budget, shares at most 65000 JSON characters across recent large context hints, prioritizes the latest hint, and retains the existing 5000-character limit for ordinary undeclared hints.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "bounded_model_context_budget_propagation",
+    "parent_result_sha256": "b1691f1676f18972140810179ce40d02c6c31cbd25aaba0fa9acb5080f42c354",
+    "parent_audit_sha256": "b44032634d994e54746c6a70f98eaf614764c8c15cbfcf0678662069dc39133a",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_9_steps",
+    "parent_diagnosis": "v95 generated a truthful 57528-character context hint containing all 41553 extracted PDF characters, but Runtime.context_summary independently compacted every context_hint to 5000 preview characters. The captured second LLM request contained only a 6503-character execution-state message and the beginning of the first PDF. Qwen repeated extraction until the eight-event no-progress window stopped it after 164.663 Agent seconds. Evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "A generic two-document-history test uses different paths and 39000-character bodies. It proves the latest declared bounded hint remains complete while the older hint is compacted under one shared 65000-character budget. A separate unrelated ordinary hint proves undeclared results retain the 5000-character default cap.",
+    "real_trace_reconstruction": "The first v95 event rebuilt through the candidate Runtime yields a 57528-character model-visible hint with matched_count=9, visible_text_chars=41553, all_text_visible=true, and wrapper_truncated=false.",
+    "model_choice_contract": "The Runtime uses only a bounded size declaration already present in the executed Adapter response. It does not inspect instruction text, task identity, filenames for routing, evaluator state, golden data, or answer values; it neither selects an action nor changes model arguments.",
+    "instruction_top_k": "unchanged public action selection and Top-K; no action or schema was added",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "adapter_results_sha256": "43f9ef641b5320748ab127a8d4dc23e2112dc016d52bf4b9718600533b867503",
+    "runtime_sha256": "a15f68458c8c4f0b12ed17960c193bdb7f9250e05822b6f1d15e783ce279a115",
+    "adapter_results_tests_sha256": "20894d5dd803e2ce6dbb0d42fbdd87664a5435a9fa046c10b338b3c05c1627e6",
+    "runtime_tests_sha256": "91ef624723b75452b861e4db14770a940e19b046d1b3754dfa39be6296ecff44",
+    "focused_tests": "281 passed",
+    "full_unit_tests": "1670 passed",
+    "ruff": "all active integrations, scripts, and unit tests passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes; unrelated untracked .conda environment retained",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_runtime_document_context_v96_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. At most one additional materially different generic hypothesis remains before marking Order 107 task_blocked and advancing.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 107,
+      "source_order": 216,
+      "domain": "multi_apps",
+      "task_id": "881deb30-9549-4583-a841-8270c65f2a17",
+      "source_episode_id": "87afb008f66bfca02da78b23",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "193fa196fdece1f2ee7c4ec3cd2c9d5a6e584b0d3409ae05438e57cf85e6067e",
+      "execution_class": "golden",
+      "pool_order": 107
+    }
+  ]
+}

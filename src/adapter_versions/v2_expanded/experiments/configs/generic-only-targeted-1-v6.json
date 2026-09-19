@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-targeted-1-v6",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM validation of the only v5 evaluator failure after making malformed or truncated completion calls fail closed.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v5.json",
+  "change_scope": "Validate propose_done with the same published JSON schema used by the tool catalog and reject an explicit non-tool_calls finish reason. No task IDs, command constants, golden routes, evaluator access, answer constants, or task substitutions.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v5.json",
+    "selection_fields_used": [
+      "order",
+      "pool_order",
+      "source_order",
+      "domain",
+      "task_id"
+    ],
+    "historical_execution_class_or_outcome_used": true,
+    "selection_reason": "Preserved v5 order 8 is the only evaluator failure. Its fourth model response ended with finish_reason=length and propose_done {}, but the v5 runtime did not enforce the published completion schema. This diagnostic set is not a score denominator."
+  },
+  "parent_evidence": {
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v5.json",
+    "config_sha256": "a18cb9793df2240c22bc14145b119a53dee5e37e106a8900680184537e4efcf4",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v5-run1/results.json",
+    "results_sha256": "0f47eb72c919fd0371b94578f55850922983162b56899113c287a71bad4b6e68",
+    "audit": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v5-audit.json",
+    "audit_sha256": "a15bdf82e68629bb0f62a9662e93b25bf6538724be49379b20e3adffca3222da",
+    "required_valid": true
+  },
+  "implementation_evidence": {
+    "completion_policy_sha256": "87e954189ce5d681dfc79c3ee7ea46e1364363794a947f754b99f696553b8b6a",
+    "tool_catalog_sha256": "775e14ee09ab7d354e5e93c51c72b08f5244f361a1c0f028d7e8d6269c947a18",
+    "runtime_sha256": "ff4448e1a666e1e5e31368d775c88e7e9efe58dd2581c91dbe2cc4a1f315f827",
+    "unit_tests": "1176 passed",
+    "ruff": "passed",
+    "project_layout": "passed"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_targeted_v6_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "initial_concurrency": 1,
+    "repeat_concurrency_max": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v5_only_evaluator_failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "score_denominator": false,
+    "parent_orders": [
+      8
+    ],
+    "domain_counts": {
+      "multi_apps": 1
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "parent_order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    }
+  ]
+}

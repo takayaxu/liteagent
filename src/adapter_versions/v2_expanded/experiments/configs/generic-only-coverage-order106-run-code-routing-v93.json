@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order106-run-code-routing-v93",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 106 hypothesis 2 after preserving and auditing the v92 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order106-path-suffix-ranking-v92.json",
+  "candidate_parent_config_sha256": "a8866cd35a352453ea65d1f7085d4e4cbeafde37e28ad185d95dae4ebcd39ff6",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "94f7260902ac5b69db435f3c43a6d99601023eed9d0640f19691afdfd59b9baa",
+  "change_scope": "One generic Router change: explicit 'run/execute ... code' phrasing now qualifies as command-execution intent for the already public command.run action, matching existing script/program/test/python phrasing. No action schema, command argument, task stage, or execution behavior changed.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_run_code_command_intent_routing",
+    "parent_result_sha256": "a5cd1be1a5f19b32e8a1d893382725b6c6db41c6e4dc31cfe0ae334cefeac54c",
+    "parent_audit_sha256": "de7bef5e78a6c2ec41da10c0d2b972721456fee833beb1cc2dffdaa786ad6523",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_16_steps",
+    "parent_diagnosis": "v92 path suffix ranking worked: Qwen selected the preferred Desktop/tetris/main.py candidate, read all four project files, and executed a verified edit. It never selected command.run despite the instruction explicitly asking to run the code, so it received no traceback, incorrectly changed Block initialization/rotation semantics, then emitted missing-content writes until the no-progress window stopped it after 212.886 Agent seconds. Evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "A report-formatter debugging instruction says to run the code and fix a crash. The test proves existing command.run enters the seven-action surface with read and literal-edit actions, while PDF semantic instructions still exclude it and the existing Python-script completion order remains stable.",
+    "model_choice_contract": "The Router only exposes the existing typed command.run schema when the instruction explicitly asks to run or execute code. It does not create argv, select a working directory, execute a command, inspect a task ID, parse an answer, or alter any model-selected argument.",
+    "instruction_top_k": "existing command.run is now eligible for explicit run-code intent; all schemas and Top-K size remain unchanged",
+    "exact_search_top_k": "unchanged",
+    "tool_catalog_sha256": "b4f3d98193c3a760c7042bd9d184fb3b4dcced6e86c005b99cf9a87efc567e29",
+    "tool_catalog_tests_sha256": "16cf4bd09201ba6923eb015d97db9714dbed83474f381ce36e8e7730f5c7919f",
+    "path_recovery_sha256": "63cc871d01f0d7b8baa0f5c726562cb3f81e5411daa0a73155fd0ec2d0ce72d7",
+    "focused_tests": "115 passed",
+    "full_unit_tests": "1665 passed",
+    "ruff": "all active source, scripts, and tests passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_run_code_routing_v93_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. Only one additional materially different generic hypothesis remains before marking Order 106 task_blocked and advancing.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 106,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "source_episode_id": "6713526f8ed37221d60ebd82",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3e24d356caf5f1fade549e59bf9e48e82e59bc4115204f3c4011037d22340336",
+      "execution_class": "task_specific",
+      "pool_order": 106
+    }
+  ]
+}

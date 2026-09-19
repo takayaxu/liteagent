@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order95-pdf-text-batch-v66",
+  "status": "frozen",
+  "purpose": "Order 95 hypothesis 1/3: test whether a reusable, bounded PDF text-reading action lets the model inspect the four input papers before independently creating the requested spreadsheet.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order95-v65.json",
+  "candidate_parent_config_sha256": "6300abbb426f26d43f808299a9663f49ddeaa9dba320fd25ad60a3bacb2edf7c",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "462d51097f583316c917513d696ad94894115e00110af3dd3023c645dfad72a2",
+  "change_scope": "Add generic pdf.extract_text_batch to the OS Adapter, expose it unchanged through Multi-Apps, and make it discoverable from PDF reading instructions. The action returns bounded raw text selected by model-provided directory, glob, page range, and layout parameters; it does not parse authors, create spreadsheets, access task identity, or consult golden/evaluator state.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "baseline_result_sha256": "2e7778bd028994780946cd9a63257d04d48f5155b84e44804063b619d148e46f",
+    "baseline_audit_sha256": "e9116b62bce779e4ce01f432abb610a0afff4bdefcc8833e83962f90416a0fff",
+    "baseline_status": "interrupted_after_13_completed_steps_due_to_repetitive_no_evidence_loop",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "completion_policy_sha256": "0d0fbbf5f70a6b1ad759e23332911c068026299301805d4303f6b0649e39ba3b",
+    "tool_catalog_sha256": "7e4187c825f60222e29d48e3f69f2ca051cecfafcee1d0aa7e6a2aab6c1d42aa",
+    "os_actions_sha256": "26370dfd7f544a0c858215ac2bd641a1a21b44b9c6a0896553996eb0095c81d1",
+    "os_schema_sha256": "aaecfebc4af22d533ea5cf2fff40c1aa5256622f8a51723ecbe2c12ec4124e47",
+    "os_tool_manifest_sha256": "81c00bd8adbb228c461600311cfc06ed3359d7a5751979c2e78509e7200439ae",
+    "multi_apps_generic_actions_sha256": "33e95492ed9ffcda509a9afa81f92d40fb57817495a91d90f2f8309c34d06a62",
+    "multi_apps_generic_schema_sha256": "3ff20938433bdb4fdfeeff8bb328bac23a7827b10e64abe4decb386116374af9",
+    "full_unit_tests": "1544 passed",
+    "focused_tests": "324 passed",
+    "ruff": "active source and tests passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_pdf_text_batch_v66_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for Order 95 baseline failure using generic hypothesis 1/3",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "on_failure": "Preserve and classify this A/B. Do not rerun it unchanged. Continue with at most two materially different generic hypotheses; after the third failed hypothesis mark task_blocked and advance immediately.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 95,
+      "source_order": 196,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "source_episode_id": "a257bf8cd547615701592fe0",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "5c35ef727754eb6874153205858551456165b1f9156e798636800033d2fac67f",
+      "execution_class": "golden",
+      "pool_order": 95
+    }
+  ]
+}

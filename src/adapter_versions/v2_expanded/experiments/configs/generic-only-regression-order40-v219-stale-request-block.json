@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order40-v219-stale-request-block",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 40. Expire a repeated-request block after a later successful application mutation makes the exact request potentially valid again. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order23-v218-multi-target-fill-down.json",
+  "parent_config_sha256": "6ea35fbc0a6bd29f92f48096988377bb8b138e6ecbd05fc12b263631a4d261f6",
+  "hypothesis": "The v210 model moved the slide title far enough to satisfy the original evaluator, but an episode-scoped block created by repeated premature presentation.save calls remained active after shape.set_geometry changed the document. If a request block expires only after a later successful content mutation, the model-selected save can execute unchanged and persist the already-correct geometry.",
+  "change_scope": "A focused request-block module classifies successful Adapter content mutations and successful GUI events as state changes. Read-only Adapter actions, save/export actions, catalog operations, failed events, and completion events do not expire a block. RuntimeState filters stale blocks before exposure and execution; it does not select an action, add an argument, rewrite a model call, inspect a task identity, or access evaluator/golden state. Counterfactual tests use different slide numbers, names, coordinates, filenames, and a Calc sheet mutation.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order40-v19-run1/results.json",
+    "historical_clean_pass_results_sha256": "d744705c3a08ac12cedb3ef7a8789a2ec9ac7ae34d7d6547d7b2b62bbb29c675",
+    "historical_clean_pass_audit": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order40-v19-run1/worker-01-audit.json",
+    "historical_clean_pass_audit_sha256": "e95f3b9cbd67088469463d7110af221ec00a65b2c6007f1670a7348b5aa05144",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order23-v218-multi-target-fill-down-run1/results.json",
+    "preceding_ab_results_sha256": "8935d0a3082edb2c7f5977527e81e7e463769ebc2e6805fd02f8c941edae007c",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order23-v218-multi-target-fill-down-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "f5f6c737e42a52c192093d5ba9eb7c0706c9e7a2263061a1d30b2ba71e74ab33",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "request_blocks_sha256": "3a3864b91c5319a3c315ec24ef7015596fb10f54592c4f945c7337eaa85fcaf7",
+    "state_core_sha256": "c8b5e3196158b960e3061e29bc8f46224a2955720444580595badc4a3f22409b",
+    "request_block_tests_sha256": "741d4f9b51f3bd3b16424c4075b93dbb33b4bdb7f6d71963b4e5376040185631",
+    "project_layout_check_sha256": "2dd54cc7f69a8f29ed4d0b56619eb14fcbf5aa0926ffafc5605e67b27191b936",
+    "runtime_modules_test_sha256": "9f6bce3df60f6eda74ff50ae45f6de1db208480c39f92538f6e82399ee711d81",
+    "focused_tests": "20 passed, including read-only/save/catalog/failed non-expiration, a structurally different Calc mutation, and exact model-selected Impress arguments before and after stale-block expiration",
+    "unit_tests": "2427 passed",
+    "ruff": "active LiteAgent, scripts, and unit sources passed",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_stale_request_block_v219_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T19:36:26Z",
+  "tasks": [
+    {
+      "order": 40,
+      "pool_order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

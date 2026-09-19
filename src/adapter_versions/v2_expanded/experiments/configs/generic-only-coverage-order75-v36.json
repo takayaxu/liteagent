@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order75-v36",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order74-writer-deduplicate-natural-column-v36.json",
+  "candidate_parent_config_sha256": "a59211a2cf381cbe6d98ab4dfe394042dfa0dc678f35fda95a847bc25d26fd03",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "d6516a59914707cee02d2bc5559039b3db378903bc641a3d8395718a6c67569b",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "hypothesis": "In v35 Qwen selected document.deduplicate_records and correctly identified train_id as the second field, but supplied 2 to a zero-based key_column parameter and therefore deduplicated the third field. A reusable one-based key_column_number contract should align the API with the model's natural representation without Runner correction or task-specific state.",
+    "writer_tool_manifest_sha256": "04cfe9c34320ae84117751f7d4da3e47f3bcdc5f93d854c17dc076ea7cf19d92",
+    "writer_schema_sha256": "796851148dcece241da0e6dd7bc8964b74dbd728bd022715375f97bae19eee75",
+    "writer_uno_worker_sha256": "e0369c28a3f150a8bc4485246b8d997c36b8266a19957dc654fbec4d6bed326f",
+    "tool_catalog_sha256": "34039011badafc7e7add68c5b91c21a1f7e4724414666d72034d202be65a67e4",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "writer_schema_test_sha256": "60bfb7dfb4118ada4167460ce89160e5163e86dda37940b0de92cb61d744708d",
+    "writer_worker_test_sha256": "0542414af74c2e6cef2b9ec6897066eb98bdeede1849db12acefcc38b9ff973c",
+    "tool_catalog_test_sha256": "9d0baa7e3887786d059fce54a80c02a7da57552ebac90b69743faac6d11478f9",
+    "runtime_test_sha256": "d0d56e76fc9ea7ce91e40f355247ab5752cdbae337598e3e306ea57797c6d99a",
+    "strict_manifest_test_sha256": "93a097ad1b8c952ab22028a7e1dd0616e24ed47ee29cae1820cde40acb03836e",
+    "generic_only_audit_test_sha256": "4898c880ef9c92ff9ff4032035395a3c4f31c4785c3531fa4382ee1118156a6e",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_worker_catalog_runtime_audit_tests": "491 passed",
+    "full_unit_tests": "1337 passed",
+    "counterfactual": "Writer tests use pipe-delimited customer records keyed by natural column 1 and semicolon-delimited device records keyed by natural column 3, with different duplicate values and record structures. Runtime tests prove the exact one-based arguments selected by the model-facing call reach the Adapter executor unchanged. A separate compatibility test covers the unexposed legacy zero-based input.",
+    "current_instruction_router_check": "document.deduplicate_records is third in the seven-action candidate list after document.inspect and document.save; its schema requires delimiter and one-based key_column_number and rejects additional properties.",
+    "prior_v35_result_sha256": "c1cbbc9172be1e2e9e7cec57ce7aaa4c34458caf17e03865e4cbb6a07c77d416",
+    "prior_v35_audit_v3_sha256": "4f45af703f4c43e4e5007b11c33c8396fab9729484b4cf87e9c7b989198e5ce9",
+    "prior_v35_audit_valid": true,
+    "prior_v35_model_selected_actions_and_arguments": true,
+    "prior_v35_outcome": "Original evaluator 0.0 after four model turns. Qwen selected document.deduplicate_records and passed delimiter comma plus key_column 2 unchanged through the Runner. Because the contract was explicitly zero-based, the Adapter deduplicated station_id in the third field and left duplicate train_id values.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, train values, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_deduplicate_natural_column_v36_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 75,
+      "source_order": 166,
+      "domain": "libreoffice_writer",
+      "task_id": "72b810ef-4156-4d09-8f08-a0cf57e7cefe",
+      "source_episode_id": "020dd4a24a834c13b35521f2",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3da15923169e5bea35504bc9cd13b197ad691517718add21a0114d74071bb2c1",
+      "execution_class": "task_specific",
+      "pool_order": 75
+    }
+  ]
+}

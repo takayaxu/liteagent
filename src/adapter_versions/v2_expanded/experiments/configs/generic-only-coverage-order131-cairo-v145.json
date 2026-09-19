@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order131-cairo-v145",
+  "status": "frozen",
+  "purpose": "Single targeted Order 131 hypothesis-2 A/B: retain model-selected pdf.split_by_outline arguments while the generic auto backend matches a verified existing output's Cairo producer.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order131-pdf-outline-v144.json",
+  "candidate_parent_config_sha256": "fcd02ddc78f3485a5da680fb915dcc32db612ab5daeabf2ac8921ebb755d36c0",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "93085d9877e059ff3fab943eefbcaae6b97fa5bc43a54f64de48e5b5a36fb08e",
+  "blocked_backlog": "experiments/generic-only-task-blocked-backlog.json",
+  "blocked_backlog_sha256": "ef4885946fde6630b88f71d79cb259d2b25c2cba7d632205bb5e21ceee42deab",
+  "parent_result": "experiments/generic-only-coverage-order131-pdf-outline-v144-run1/results.json",
+  "parent_result_sha256": "5b903f5dff09d264d0b57e72accc489fa019b755e1db7d65243e0f783715f8fb",
+  "parent_audit": "experiments/generic-only-coverage-order131-pdf-outline-v144-run1/generic-only-audit.json",
+  "parent_audit_sha256": "5f02217a890a4822c97b510cb76a2b71d5399ce1ec0eb3ce9247913c3123a016",
+  "parent_trajectory": "experiments/generic-only-coverage-order131-pdf-outline-v144-run1/workers/worker-01/raw/run-1/131-multi_apps-5df7b33a-9f77-4101-823e-02f863e1c1ae/trajectory_manifest.json",
+  "parent_trajectory_sha256": "0c8d53eb8dbe11e739c195ae6bb0b620f76264218997312175ec278815f22d08",
+  "change_scope": "Extend the generic PDF writer with auto, preserve_pages, and cairo backends. Auto uses Cairo only when one or more pre-existing outputs independently match their live source page spans and every observed producer belongs to the Cairo family; otherwise it preserves source page objects. Split boundaries and names remain derived from the model-selected PDF and its outline. No task identity, fixed title, page range, golden artifact, evaluator state, or instruction parser is present in runtime code.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_pdf_cairo_auto_v145_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this final bounded Order 131 A/B. If the original evaluator is below 1.0 for any non-environment reason, mark Order 131 task_blocked immediately and advance to Order 132. Do not add another Order-131-local wrapper, alter the evaluator, or rerun unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3_final_bounded_attempt",
+    "hypothesis_class": "verified_existing_output_renderer_convention",
+    "failure_evidence": "The v144 Agent selected pdf.split_by_outline immediately and produced correct filenames and page spans, but pypdf-preserved page objects scored 0.9957239064716509 because the expected outputs were Cairo re-exports with slightly different extracted text. The model action and arguments were correct and the strict audit was valid.",
+    "offline_comparison": "Ubuntu 22.04 pdftocairo page-span exports scored 1.0 for each of the seven missing chapters under the evaluator's PyMuPDF plus RapidFuzz comparison.",
+    "clean_guest_smoke": "experiments/generic-only-pdf-outline-cairo-clean-guest-v145-smoke.json",
+    "clean_guest_smoke_sha256": "ede0929d073e1048a8a15c291a0dfb430eff5bb60250b8365c820c05a2f89f40",
+    "clean_guest_evaluator_equivalent_score": 1.0,
+    "focused_unit_suite": "285 passed",
+    "full_unit_suite": "2013 passed",
+    "static_verification": "Active-source Ruff, changed-file Ruff format, compileall, project layout and generic deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and unchanged tracked evaluator/task tree passed. The user-deferred fixed-16 regression was not run.",
+    "source_sha256": {
+      "os_adapter/pdf_tools.py": "07577fa8d0c7c0a8b758a58accf09616717a0997e32be675ee640ec9493f15de",
+      "os_adapter/schema.py": "a8ee579092a7dee2d33fa01e1b9397747c2ab6fd09477b3508ee279b5726526d",
+      "os_adapter/tool_manifest.py": "8b06f3589b161fbbce46eb5782e5e6823ea34696927c1bce89a0a35269f1d90e",
+      "os_adapter/service.py": "4a1544d9b73cf5e2ae5ffcc46bbbb72ecd46d2882f4e6d5886abe3df717259f3",
+      "os_adapter/deploy_host.py": "4a63c18840bcd01a8179297e91f36a191e9e41e0c02288839ae6854288a6d5d5",
+      "os_adapter/deploy/install.sh": "fc53e541646f56f75921472330111737d05bd11744f0120f35e152f3147d4e6f",
+      "multi_apps_adapter/os_contracts.py": "21d4eb474c665cb977545d50cf3c31cf6562a08c00355d7ab0744db3d2d3805e",
+      "integrations/lite_agent/adapter_results.py": "4a7ff442b5abb665f866813d0e18747495635ade99137187229452a44f1ba696",
+      "integrations/openapa_osworld/tool_catalog.py": "96ecd8a5f33c313c0c6ca250509faf65e8df2fe6a4957ad49e65839364a70a9b",
+      "GOAL.md": "4936a2c57f647a68a9f9a7c2f76bcb4f0cb6b6bed90c7ca4b7686c123a5d7619"
+    },
+    "runtime_task_identity_or_golden_dependency": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same affected task after one materially different reusable implementation",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "source_episode_id": "4c74fe351d0f71a3011bb1e6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4234dd2401149635bc444e41b0ed27296fd6e38402fea0fef36d8de5073c784a",
+      "execution_class": "golden",
+      "pool_order": 131
+    }
+  ]
+}

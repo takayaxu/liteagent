@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order99-file-move-v80",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 99 hypothesis 1 of 3: expose a reusable flat filesystem move action whose model-selected destination may create missing parent directories.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order99-v79.json",
+  "candidate_parent_config_sha256": "b4ba5729d8a47f37037d2b3657e7867640beef51b3e6cb6cd35d3caf8468e76e",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "ef42b0bdfdbf64043fa5d93f44eb2b8822a2cc163ac6d3947b587d5844443136",
+  "change_scope": "Add generic Multi-Apps filesystem.move schema, forwarding, compact result context, routing, duplicate-route suppression, and counterfactual tests. The action reuses OS filesystem.rename with exact model-selected source and destination paths. No file classifier, discrepancy rule, task identity, filename, expected target, golden artifact, or evaluator state is available at runtime.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_flat_filesystem_move_with_parent_creation",
+    "parent_result_sha256": "575309b0b3d540d419ad88bddba660731109e2af1fd63a6f3ce8f2f79050eb5d",
+    "parent_audit_sha256": "08afbf4b74a04b31c244901b526cd4a078e934bf2110607fceefc0c15afdd262",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_11_steps",
+    "parent_diagnosis": "The untouched baseline discovered and read all supplied PDFs, then repeatedly misused filesystem.find to create a directory and guessed unsupported filesystem.create_new_directory. It made no file mutation and stopped inside the eight-event no-progress window after 104.879 Agent seconds; strict audit remained valid.",
+    "counterfactual_scope": "Unit tests use unrelated ODT summaries, report archives, manual-review directories, and alternate absolute paths. They vary path structure, reject relative paths and extra parameters, and contain no Order 99 task ID, supplied filename, discrepancy value, answer path, golden artifact, or evaluator state.",
+    "multi_apps_generic_actions_sha256": "26487e90a89028c63ae739b637a931a3da3e0dcdaf76ddce92678e9b843731a8",
+    "multi_apps_generic_schema_sha256": "7419839a181a41bccc50245bc24fd2b0832d0e8d07b7398a23c1c52d8b01aff7",
+    "multi_apps_catalog_actions_sha256": "435b371856ff989fc6140df6ccda426cd263468196f8dbb3dbdaebed55079f86",
+    "multi_apps_catalog_schema_sha256": "051dbc61a78cb6e4f83a75de3b1fc0fb5bb0fb5ae5a9ad9be14cc32244aa151b",
+    "tool_catalog_sha256": "f9715d9b971c6f1e1f1f4eb1629adcebbf77fec95fc9e447b6076947f2f05487",
+    "adapter_results_sha256": "c1cc24949cc5884a74b0834880b6d418604d0a60c5de2185f3c19a140667a524",
+    "openapa_catalog_sha256": "d51e33cd6b09b70e6ff859eb22b00ff2d26599495cf9eda4d96737b5fe2f3709",
+    "focused_tests": "366 passed; covers strict generic schemas, unchanged Multi-Apps forwarding, OS rename semantics, direct-tool schema, instruction recall, search ranking, duplicate-route suppression, compact verified destination context, and structurally different paths.",
+    "full_unit_tests": "1625 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_file_move_v80_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-1 A/B and do not rerun it unchanged. Diagnose the trace, then use at most two further materially different generic hypotheses with one targeted A/B each. After hypothesis 3 fails, mark Order 99 task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 99,
+      "source_order": 207,
+      "domain": "multi_apps",
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "source_episode_id": "78e0011f09a65ed2a286336f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a00f1de5712d6ed12efa773f8cc9b7952e3bcc55e3181054d5311f99bdc215fe",
+      "execution_class": "golden",
+      "pool_order": 99
+    }
+  ]
+}

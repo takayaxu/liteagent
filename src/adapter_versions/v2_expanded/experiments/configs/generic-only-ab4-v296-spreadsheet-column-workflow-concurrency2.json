@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v296-spreadsheet-column-workflow-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for a generic rowwise single-column spreadsheet concatenation contract and a separately model-selected visible terminal-open contract. This historical-outcome-selected cohort is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v296",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v296.json",
+    "candidate_manifest_sha256": "82e4f8423ece78263cad82e1f7a73f45e0541e9d4a3dbe3c27fb29bce11e1b64",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "f754c7ace4452fc95b11df9fbf299c1e7f15f71a94a4e28761be31c1df461c77"
+  },
+  "hypothesis": {
+    "generic_cluster": "rowwise_single_column_spreadsheet_combination",
+    "statement": "A model-selected spreadsheet.concatenate_single_columns action followed by a separately model-selected spreadsheet.open_in_terminal action should replace brittle raw shell planning while preserving exact model ownership of all paths, separator semantics, overwrite behavior, and execution order.",
+    "counterfactual_support": [
+      "Both DGX endpoints passed seven structurally different requests across concatenation and terminal-open behavior.",
+      "All fourteen requests were schema valid, semantically correct, and preserved raw model arguments exactly.",
+      "The Adapter validates one column per source and equal row counts, writes one quoted CSV column atomically, and fails closed for ambiguity.",
+      "Ordinary spreadsheet conversion, accepted command-line conversion, and recursive file discovery remain controls."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v296-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "ee5a4f544e5aa2bcb0c04321d601fb483d0411457c8a38e7ad7491ccc41ca4fb",
+    "accepted_parent_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v294-active-vscode-workspace-discovery.json",
+    "accepted_parent_disposition_sha256": "7774c6d384959955adabcad8dcedf97b2b923d296ef861a66e6621dcab907058",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 88 is the affected v252 failure. Orders 90 and 109 are v252 clean controls for ordinary spreadsheet conversion and recursive file discovery. Order 92 is an accepted v294 development control for LibreOffice command-line conversion and visible terminal provenance.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v296_spreadsheet_column_workflow_ab4_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "One affected failure, two v252 clean shared-contract controls, and one accepted-development LibreOffice terminal control in fixed source order. Round-robin assigns Orders 88/92 to DGX1 and Orders 90/109 to DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [88],
+    "clean_control_orders": [90, 109],
+    "accepted_development_control_orders": [92],
+    "same_domain_controls": true,
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "accepted_development_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "order_88_must_execute_spreadsheet_concatenate_single_columns": true,
+    "order_88_must_execute_spreadsheet_open_in_terminal": true,
+    "order_88_arguments_must_be_model_selected": true,
+    "order_92_command_line_conversion_must_remain_valid": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T13:31:00Z",
+  "tasks": [
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "cohort_role": "affected_rowwise_single_column_spreadsheet_combination_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_ordinary_spreadsheet_conversion_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "cohort_role": "accepted_command_line_spreadsheet_conversion_control_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v294_status": "passed",
+      "v294_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "clean_recursive_file_discovery_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

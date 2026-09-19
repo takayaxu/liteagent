@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order109-json-literal-artifact-v103",
+  "status": "frozen",
+  "purpose": "Final targeted generic-only A/B for Order 109 hypothesis 3 after preserving and strictly auditing the failed v102 JSON-provider DOCX attempt.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order109-json-provider-docx-v102.json",
+  "candidate_parent_config_sha256": "b53ff0a6bdf2d9a9dcf58e9b386961dff9e5d89f4c5e823f292b70612bab09c4",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b6fd193df60c15787a3acd8d3cf52311fea3c4c499de31b693f4f81188458d85",
+  "change_scope": "Make document.create_from_json_values a single-purpose lexical JSON string-copy contract by removing the model-selectable representation mode and example provider placeholder. Extend generic completion evidence so a verified artifact result with output_path and positive output_bytes proves the produced filename and directory without requiring an unrelated second save action.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_json_literal_artifact_v103_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and strictly audit this final hypothesis-3 A/B. If it fails, add an Order 109 task_blocked record with all four immutable attempts and immediately advance to Order 110. Do not retry any Order 109 version unchanged and do not create a fourth hypothesis.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3_final",
+    "hypothesis_class": "generic_json_literal_semantics_and_verified_artifact_completion",
+    "parent_result_sha256": "49e18a0c2e9e22a88cb7f62045a077f98e3ec9c538a83d0cf0069d4a60c9dffd",
+    "parent_audit_sha256": "731b6c88af560ad98c1b9e3fc53b0596485304ea379cf86f24b543b710c9fc0e",
+    "parent_status": "failed_reward_0_after_30_steps_and_501_22_agent_seconds",
+    "parent_diagnosis": "The model selected the correct reusable JSON-provider action and produced a structurally verified DOCX, but explicitly chose decoded string representation, which changed lexical content. Generic completion then failed to recognize the action's verified output_path as save evidence, causing repeated reads, mutations, GUI actions, and late document.save calls until the step budget expired.",
+    "counterfactual_scope": "ENGINE_X and MODEL_Z fixtures use unrelated provider labels, nested shapes, response fields, values, paths, escape sequences, highlights, and case behavior. An ORBIT artifact-completion fixture proves unverified output is rejected while a verified output_path and positive output_bytes satisfy generic filename and Desktop evidence. No task identity, fixed target provider, requested highlight term, answer text, or target filename appears in runtime code or schemas.",
+    "model_choice_contract": "The model still selects the action and supplies source_path, output_path, provider_name, optional response_field, matching behavior, paragraph separation, highlight terms, overwrite, and opening behavior. Lexical copying is the explicit action semantic rather than a hidden argument rewrite; a future decoded operation requires a separately named contract.",
+    "json_document_sha256": "1e105a30bdfe5a639670bc20ba3725adcb6077b50595351f6575f0be770ce75f",
+    "multi_apps_generic_schema_sha256": "45fe134f25501c373f63a3cdacf6b413d7a15c1759e06b323aec8a60ef61def6",
+    "multi_apps_host_schema_sha256": "8c5c4bbd7daed8b75562a3659b6ba2dc256e2a7345afaeae7a948a3109303c6f",
+    "lite_agent_runtime_sha256": "08eac7e5153d666501ba0e4f79404de70fad4849e429c86d86774cb6779ce514",
+    "lite_agent_tool_catalog_sha256": "86e8bfc7607ae7b259f274383dedba421182c4c3218b9a20a953eccccae00af7",
+    "openapa_tool_catalog_sha256": "9fb1b06bf9eb36f5cd2083bac50b2d868f9af232192eb7195f23859cb2caf083",
+    "generic_runtime_tests_sha256": "5e42bd37ea2c216fba15379fc62f1cee65c55378682bf991e80652fb9e4164b6",
+    "catalog_tests_sha256": "948194ec8801e93bc7e384c23207691d4db629864eb6e2bd420c1fed66cea639",
+    "lite_agent_runtime_tests_sha256": "131d42e46368d1c8bd13966d2da599b61b6fed0a83a8232474ce8e830c8b177f",
+    "focused_tests": "382 passed across Multi-Apps generic runtime, LiteAgent catalog, and LiteAgent runtime; nine directly targeted counterfactual tests also passed",
+    "full_unit_tests": "1689 passed",
+    "ruff": "all nine changed Python files passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1": "SHA256SUMS validation passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "source_episode_id": "444071c0b0ae05c2634529c8",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "cb76207b86e50b7709d1e5c268b5059fe33f56da27ae48d6e015a3b6279f2ae5",
+      "execution_class": "golden",
+      "pool_order": 109
+    }
+  ]
+}

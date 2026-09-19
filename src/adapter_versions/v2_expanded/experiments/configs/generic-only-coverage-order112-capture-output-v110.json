@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order112-capture-output-v110",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 112 testing the generic Multi-Apps command.capture_output facade with a required output destination.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order112-command-output-context-v109.json",
+  "candidate_parent_config_sha256": "affbafb71a5899c114b427c38569cd1f77d8b9d88d40b6f2b34be06c89a6db41",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "045dfd8ff30b5ffb2aac9b8386700e9c47e85eebd6bdd7b16dea9319bad880cc",
+  "change_scope": "Add a generic Multi-Apps command.capture_output facade that requires model-selected argv, cwd_source, stdout_path, and provenance, omits terminal mode, and forwards the selected parameters unchanged to OS command.run. The action contains no task ID, fixed command, path, duration, answer, golden, evaluator state, workflow, argument rewrite, or argument injection.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_command_capture_output_v110_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this final allowed hypothesis. If it fails, mark Order 112 task_blocked and immediately advance to Order 113 without a fourth hypothesis or unchanged retry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_3",
+    "hypothesis_class": "generic_required_command_output_facade",
+    "parent_task_implementation_evidence_inherited": true,
+    "changed_files": [
+      "multi_apps_adapter/tool_manifest.py",
+      "multi_apps_adapter/generic_schema.py",
+      "multi_apps_adapter/schema.py",
+      "multi_apps_adapter/generic_actions.py",
+      "multi_apps_adapter/actions.py",
+      "integrations/lite_agent/tool_catalog.py",
+      "integrations/openapa_osworld/tool_catalog.py",
+      "tests/unit/test_multi_apps_generic_runtime.py",
+      "tests/unit/test_multi_apps_schema_manifest.py",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py"
+    ],
+    "focused_tests": "90 Multi-Apps runtime/schema tests passed; 254 strict manifest/catalog tests passed; Ruff passed",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same Order 112 task as v107 baseline and v108-v109 hypotheses 1-2",
+    "selected_count": 1,
+    "prior_development_status": "failed_after_generic_hypothesis_2",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 112,
+      "source_order": 228,
+      "domain": "multi_apps",
+      "task_id": "2373b66a-092d-44cb-bfd7-82e86e7a3b4d",
+      "source_episode_id": "79745c44d1206f889475d2f8",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a15a7975f6befda816f400c6b36ca00e8c6a7f35adf812277002224bec19b253",
+      "execution_class": "task_specific",
+      "pool_order": 112
+    }
+  ]
+}

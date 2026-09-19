@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-write-ack-smoke2-v4",
+  "status": "exploratory",
+  "purpose": "Non-promotable two-task check of direct ASCII typing and truthful OSWorld desktop command acknowledgements before restarting the frozen random-10 sample.",
+  "hypothesis": {
+    "statement": "Replacing unavailable guest clipboard typing with direct PyAutoGUI typing and retaining the OSWorld command reply removes the observed harness failure without regressing a stable GUI-only task.",
+    "affected_task_order": 148,
+    "stable_control_order": 165,
+    "expected_observable": "Order 148 executes at least one write with returncode 0 and visible terminal output; Order 165 remains a pass; every model call, prepared command, and captured transport command remains identical after deterministic coordinate conversion.",
+    "stop_condition": "Run each task once. If direct typing still fails or the stable control regresses, do not restart the random-10 condition."
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop",
+    "holo_model_card": "https://huggingface.co/Hcompany/Holo-3.1-4B"
+  },
+  "condition": {
+    "stage": "exploration",
+    "baseline_candidate": false,
+    "promotable": false,
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "One task exposed the harness defect and one task is a preserved stable control."
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "reasoning_effort": "medium",
+    "thinking": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "temperature": 0.8,
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "tools": "holo_native_gui_only",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "best_of": false,
+    "resume": false,
+    "preserve_every_attempt": true
+  },
+  "tasks": [
+    {
+      "order": 148,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "source_order": 288,
+      "role": "affected"
+    },
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309,
+      "role": "stable_control"
+    }
+  ]
+}

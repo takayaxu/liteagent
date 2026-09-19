@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order98-v76",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order97-heading-prefix-recovery-v76.json",
+  "candidate_parent_config_sha256": "d795b474f330b865a213bf990b8109791117c2151685a794f0f4ed6bf5d68c0b",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "597b65340cbd121383b850f86c8c62925007226f1ed8feed03d6bb8f0ef8ad67",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3_final",
+    "hypothesis_class": "generic_bounded_numbered_heading_prefix_recovery",
+    "parent_result_sha256": "5c3105855f575d505884733a1b3ca950bbb3a50f1f340c7404f1079287546097",
+    "parent_audit_sha256": "0542ac061c1a499d0d948e5383432a691dbb4ff4d23198147a4f8bfb75bfea27",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_8_steps",
+    "parent_diagnosis": "The model immediately used the unique candidate_docx_path returned after its first wrong path, proving v75 recovery worked. It then called the same correct action five times with heading_prefix Page despite SOURCE_SECTIONS_NOT_FOUND and catalog feedback. The 42.961-second Agent loop stopped at the eight-event no-progress bound; strict audit remained valid.",
+    "notes_transfer_sha256": "969c7ef23122107825dd565835b96cc21ea4128521ef22e0ef45294b4531fd6e",
+    "multi_apps_generic_actions_sha256": "4dcf05e9d8f941a18571a1ec281533d99570d1ea2239b08cdf18e6688a8d19f1",
+    "multi_apps_catalog_actions_sha256": "fb5d6dc4d795d4c08b03b18f6c1c559c3aa6581b990ff653334672ee88868e77",
+    "multi_apps_generic_schema_sha256": "62d1cd67dd70d7a20c69938f311c6afaaf5a46b6f82a64385430156beeaad4d1",
+    "multi_apps_catalog_schema_sha256": "0dda2a89c3784d67094a747de23a5a5906b99c0d6c56b7973646d3e6a1061603",
+    "tool_catalog_sha256": "d0293ab592467a86a84d18bc1d33f0b1306ed4a1884baaeb402ac7d7d95d3c18",
+    "adapter_results_sha256": "9ecbf6d63d0af13410422eb656a6dc1f911e0ba19efb86b5f21f0c3864fba347",
+    "openapa_catalog_sha256": "0b562c3a9e61c990621ffd630a837c56222395a2f071563f94b19c892aa6c9eb",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "runner_sha256": "e13b95f88d4909ee7dcac756a64b80f1c3c39477b6dfedf26ed8b6cbf546ee08",
+    "trajectory_builder_sha256": "dec7e6623f824db35ae20efba0f076bd771fa76c90cdf601ffcc474054c4bbb3",
+    "focused_tests": "74 passed; includes 14 structurally different numbered-prefix candidates, bounded output, zero downstream mutation, wrong-path recovery, and compact result context",
+    "full_unit_tests": "1587 passed",
+    "ruff": "active source and tests passed lint and format checks",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_heading_prefix_recovery_v76_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 98,
+      "source_order": 206,
+      "domain": "multi_apps",
+      "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+      "source_episode_id": "337f86b24d147814b39514df",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a20790c3e3a6ab8c2b8e027299f6d0395bb00af53c887519d8ee43a24b6ad68e",
+      "execution_class": "golden",
+      "pool_order": 98
+    }
+  ]
+}

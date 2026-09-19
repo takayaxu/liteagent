@@ -1,0 +1,150 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-exact-catalog-validation2-v349-concurrency2",
+  "status": "frozen",
+  "purpose": "Failure-directed v349 validation of exact public-action catalog narrowing on the prior source-editing failure, with the newly recovered presentation task as a regression control. Both tasks were selected before observing any v349 OSWorld reward.",
+  "freeze_timestamp": "2026-08-19T00:50:05Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-lifecycle-recovery-validation4-v348-concurrency4.json",
+    "selection_template_sha256": "54b983c398e6467958b3006420973efcdc3ca34dc96bb7789c7bc4c4fe746b3f",
+    "predecessor_result": "adapter_versions/v2_expanded/experiments/generic-only-lifecycle-recovery-validation4-v348-concurrency4-run1/results.json",
+    "predecessor_result_sha256": "f76a96afbab4cd094137c44dbf07f8fcaee1182f9a488ae75be8a24aada9c91c",
+    "real_model_preflight": "adapter_versions/v2_expanded/experiments/preflight-qwen35-exact-catalog-v349-run1/results.json",
+    "real_model_preflight_sha256": "b45d2babf33f9a697b91584c496fc24a1df21f342e428cb23f1eaa6be0d364e1",
+    "granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v349-granularity-audit.json",
+    "granularity_audit_sha256": "e76b4c276a8d1775ba2a5ed385ae613c92d963319100130958f34dc685c2f033"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v349",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-exact-catalog-validation2-v349-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 770,
+      "total_bytes": 63583235,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "2551e095bc6d27fd40ac6c659733e7ba25a532c6437548e60898d5a258651119"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v349_exact_catalog",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one v348 failure directly affected by exact catalog narrowing and one v348 recovered-pass regression control",
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_impress": 1,
+      "multi_apps": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 40,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "source_order": 126,
+      "selection_role": "regression_control"
+    },
+    {
+      "order": 116,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_order": 233,
+      "selection_role": "prior_failure_target"
+    }
+  ]
+}

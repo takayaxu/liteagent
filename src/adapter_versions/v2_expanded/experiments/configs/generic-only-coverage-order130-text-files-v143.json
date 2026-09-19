@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order130-text-files-v143",
+  "status": "frozen",
+  "purpose": "Targeted Order 130 A/B for one parameterized Writer action that combines model-selected UTF-8 text files in model-selected order, applies a model-selected separator and font size, saves a model-selected DOCX path, and verifies it after reopening.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order130-runner-stop-v142.json",
+  "candidate_parent_config_sha256": "e77de0a64fb834a844e8a144d997e31e3916ab3a17473df1c818f5f657b18fd5",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "48b81c09a518f4a12582c5a658d524ba33b4fd2fd48c7ddc28b31efee80e42b9",
+  "blocked_backlog": "experiments/generic-only-task-blocked-backlog.json",
+  "blocked_backlog_sha256": "7875752c5edb24a12fcd1e0f94d22b7e57be2b84d85d6440e16fe119e7b03bbe",
+  "baseline_result": "experiments/generic-only-coverage-order130-runner-stop-v142-run1/results.json",
+  "baseline_result_sha256": "6611e4ec50e5f40a32fadf7ece2a99813c47d08de0b919321a5271a7081474b9",
+  "baseline_audit": "experiments/generic-only-coverage-order130-runner-stop-v142-run1/generic-only-audit.json",
+  "baseline_audit_sha256": "5387c3ebb2472c9acaf9a467e59e851cbe4e5ecd99ac55a9e736f201146b9d0b",
+  "baseline_trajectory": "experiments/generic-only-coverage-order130-runner-stop-v142-run1/workers/worker-01/raw/run-1/130-multi_apps-98e8e339-5f91-4ed2-b2b2-12647cb134f4/trajectory_manifest.json",
+  "baseline_trajectory_sha256": "72ead6fe6e363c720c8da3cdae54c29e732c9fbe232a26ce83ccf6cbf0b73c86",
+  "change_scope": "Add the generic document.create_from_text_files action to Writer and its Multi-Apps facade. The model supplies every input path and its order, output path, exact separator, uniform font size, and overwrite policy. The Adapter performs no discovery or sorting and contains no task ID, instruction parser, fixed filename, fixed file count, fixed font size, golden value, or evaluator access. LiteAgent and OpenAPA expose the same typed contract; routing uses only semantic instruction tokens.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_text_files_v143_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this targeted A/B. Because the previously missing generic capability is now directly exposed, do not add a second task-local wrapper or repeat an unchanged run. If the model still does not complete the task, mark Order 130 task_blocked and immediately continue to Order 131. Only a proven transient environment fault may receive a bounded retry under the shared environment allowance.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3",
+    "hypothesis_class": "parameterized_text_files_to_writer_document",
+    "failure_evidence": "The v142 baseline found five text files, then called document.read_file with unsupported TXT input and document.convert_batch to create separate DOCX files. It stalled after 20 steps without creating the requested combined document. The original evaluator reward was 0.0 and the strict generic-only audit was valid.",
+    "contract": {
+      "action": "document.create_from_text_files",
+      "model_supplied": [
+        "input_paths_and_order",
+        "output_path",
+        "separator",
+        "font_size",
+        "overwrite"
+      ],
+      "adapter_internal_discovery_or_sorting": false,
+      "task_identity_or_golden_dependency": false
+    },
+    "counterfactual_tests": "Tests cover two and three unrelated input files, non-TXT text suffixes, reversed orders, empty and nonempty separators, font sizes 9 and 13.5, unrelated output names, UTF-8 BOM and CRLF normalization, schema rejection, unchanged Multi-Apps forwarding, semantic tool ranking, unrelated-intent exclusion, and compact completion evidence.",
+    "focused_unit_suite": "642 passed",
+    "full_unit_suite": "1987 passed",
+    "static_verification": "Ruff lint and format, compileall, project layout and generic deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and unchanged evaluator tree passed.",
+    "real_guest_counterfactual": "experiments/generic-only-writer-text-files-counterfactual-v143-smoke.json",
+    "real_guest_counterfactual_sha256": "79145d09d070ae5a90d177783e92c6797f2545bb5df1257a9d6a637bba508ca0",
+    "source_sha256": {
+      "writer_adapter/schema.py": "2451e88cb9e481c17d5d9f79a5d5a37984b9a07d6bfd5a66a74c2e597a409338",
+      "writer_adapter/tool_manifest.py": "1d5fd7e2133ecc4e44ce382cd435816bfb09825c0abd89292d46ce11c27a9470",
+      "writer_adapter/uno_worker.py": "35e26a8a38c828ddb266febbbb5b6ade8b9786f52fe95fab25f2fec5bd88a7c5",
+      "multi_apps_adapter/generic_schema.py": "31d0609dd148107497ad58f2e7cd2825d9816451d6afb4538741ec8d07c08156",
+      "multi_apps_adapter/tool_manifest.py": "8c91d084c9350fa5717904a5a11453b7b7285eaca4c3cf1036a3daf4632dd25c",
+      "multi_apps_adapter/generic_actions.py": "3360d6dd74d24377f5e6765b9203a2c0c2340c59739ad00c4ad9e31191731f7b",
+      "integrations/lite_agent/tool_catalog.py": "c0c741fd544955573569a2f46eff05c339b395e79ea9aa163b1f2b54792e14cd",
+      "integrations/lite_agent/adapter_results.py": "55465f467830f1e453da3cd14b23a8fa24f23d9cc5a80c9d828c5bce202787d4",
+      "integrations/openapa_osworld/tool_catalog.py": "29cae67fd92e66b03d2ffed4ab64696edafdb737d7ba5bd47ebf787fa4173166",
+      "GOAL.md": "4936a2c57f647a68a9f9a7c2f76bcb4f0cb6b6bed90c7ca4b7686c123a5d7619"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 130,
+      "source_order": 263,
+      "domain": "multi_apps",
+      "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+      "source_episode_id": "50cbffdd4e5ab6980d938321",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "b87d273bacd4b496263a49cbed63d44a4c99df63843c18d494b3456929c5bc63",
+      "execution_class": "golden",
+      "pool_order": 130
+    }
+  ]
+}

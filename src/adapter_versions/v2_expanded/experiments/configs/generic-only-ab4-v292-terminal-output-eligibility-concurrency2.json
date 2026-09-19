@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v292-terminal-output-eligibility-concurrency2",
+  "status": "frozen",
+  "purpose": "Second-hypothesis development A/B for semantic eligibility isolation of the validated visible finite-command terminal action. It reruns the exact v291 cohort once in a new directory. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v292",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v292.json",
+    "candidate_manifest_sha256": "7834ae23c09c45c73283abb8064eeae74e91fb255f6f221d8154f7f954a5aec6",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "98c76c7b824a343f8444e00d0ec1abb034fdbd444a91183f27b50f35c54490b7"
+  },
+  "hypothesis": {
+    "number": 2,
+    "generic_cluster": "terminal_output_and_active_desktop_directory",
+    "statement": "The v291 action and active-context resolver should retain the affected pass while a reusable explicit-visible-terminal-output eligibility boundary prevents the action from entering unrelated workflows and restores the regressed control.",
+    "counterfactual_support": [
+      "Recursive file-copy, text mutation, and permission instructions cannot see terminal.show_output.",
+      "A catalog expansion cannot bypass the public-language eligibility boundary.",
+      "Paraphrased visible command-output requests still receive the action.",
+      "The affected instruction still receives terminal.show_output as its sole action.",
+      "No Adapter, schema, argument forwarding, or completion behavior changed from v291."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v292-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "592353b076a87dd4d4ffc335982fca1423103e8f8b22ca50bc9190e671ef86d8",
+    "failed_parent_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v291-visible-terminal-output.json",
+    "failed_parent_disposition_sha256": "432a52981f5b7f50a4a45e2b8f39d25c9cc15855c8e1826ff6e8b3d6e26e2634",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Exact same cohort and round-robin assignment as v291: affected Order 146 plus clean same-domain controls 141, 143, and 144. This directly tests whether the only changed eligibility filter restores the regressed control while retaining the affected pass.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v292_terminal_output_eligibility_ab4_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Exact v291 source-order-preserving cohort; round-robin gives Orders 141/144 to DGX1 and Orders 143/146 to DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [146],
+    "clean_control_orders": [141, 143, 144],
+    "same_domain_controls": true,
+    "domain_counts": {"os": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 3,
+    "unexplained_control_regressions_allowed": 0,
+    "order_143_must_not_expose_or_execute_terminal_show_output": true,
+    "order_146_terminal_show_output_requires_exact_model_selected_arguments": true,
+    "active_context_must_resolve_from_live_focused_desktop_state": true,
+    "real_command_completion_and_visible_output_required": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T08:30:07Z",
+  "tasks": [
+    {
+      "order": 141,
+      "source_order": 280,
+      "domain": "os",
+      "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+      "cohort_role": "clean_os_terminal_configuration_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 143,
+      "source_order": 283,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "cohort_role": "clean_os_active_terminal_filesystem_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 144,
+      "source_order": 284,
+      "domain": "os",
+      "task_id": "5ced85fc-fa1a-4217-95fd-0fb530545ce2",
+      "cohort_role": "clean_os_text_file_mutation_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 146,
+      "source_order": 286,
+      "domain": "os",
+      "task_id": "4127319a-8b79-4410-b58a-7a151e15f3d7",
+      "cohort_role": "affected_visible_recursive_line_count_in_focused_files_directory_dgx2",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

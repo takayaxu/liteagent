@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "experiment_id": "small-round-10-openapa-gpt-5.6-sol-medium",
+  "status": "planned",
+  "source_config": "small-round-12.json",
+  "selection": "first 10 tasks in the fixed 12-task order",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "actual_model_preflight": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "main_and_grounding_same_model": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "oauth_excluded": true
+  },
+  "tasks": [
+    {"order": 1, "sample_order": 1, "domain": "os", "task_id": "a4d98375-215b-4a4d-aee9-3d4370fccc41", "execution_class": "generic_atomic_api"},
+    {"order": 2, "sample_order": 2, "domain": "multi_apps", "task_id": "aad10cd7-9337-4b62-b704-a857848cedf2", "execution_class": "golden_materialization"},
+    {"order": 3, "sample_order": 3, "domain": "multi_apps", "task_id": "7f35355e-02a6-45b5-b140-f0be698bcf85", "execution_class": "task_specific_workflow"},
+    {"order": 4, "sample_order": 6, "domain": "libreoffice_calc", "task_id": "ecb0df7a-4e8d-4a03-b162-053391d3afaf", "execution_class": "generic_atomic_api"},
+    {"order": 5, "sample_order": 7, "domain": "chrome", "task_id": "af630914-714e-4a24-a7bb-f9af687d3b91", "execution_class": "generic_atomic_api"},
+    {"order": 6, "sample_order": 8, "domain": "thunderbird", "task_id": "a10b69e1-6034-4a2b-93e1-571d45194f75", "execution_class": "generic_atomic_api"},
+    {"order": 7, "sample_order": 10, "domain": "libreoffice_impress", "task_id": "edb61b14-a854-4bf5-a075-c8075c11293a", "execution_class": "unknown"},
+    {"order": 8, "sample_order": 13, "domain": "gimp", "task_id": "7a4deb26-d57d-4ea9-9a73-630f66a7b568", "execution_class": "task_specific_workflow"},
+    {"order": 9, "sample_order": 16, "domain": "multi_apps", "task_id": "51f5801c-18b3-4f25-b0c3-02f85507a078", "execution_class": "golden_materialization"},
+    {"order": 10, "sample_order": 17, "domain": "vs_code", "task_id": "982d12a5-beab-424f-8d38-d2a48429e511", "execution_class": "generic_atomic_api"}
+  ]
+}

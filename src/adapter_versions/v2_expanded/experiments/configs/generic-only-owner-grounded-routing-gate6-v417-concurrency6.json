@@ -1,0 +1,195 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-owner-grounded-routing-gate6-v417-concurrency6",
+  "status": "frozen",
+  "purpose": "Prior-outcome-selected causal validation of v417 explicit-owner observation routing, unresolved local presentation discovery, catalog-result commitment, and atomic attachment transfer on three affected failures plus three stable pass controls. This diagnostic is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-27T04:52:38.316585Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v405-remaining27/selection.json",
+    "selection_record_sha256": "83008d6f965122af5273987d49239adde0078b4016db487b786f940419a6814c",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v417-owner-grounded-routing/source-seal.json",
+    "source_seal_sha256": "6fc190e3ba3e014554d9e2838066060aa74311f54a8e7462b238365c81cfaba0",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v417-owner-grounded-routing/strict-tool-granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "89be538c379e20cd49f060c8198eb68b27f917e43446fa1f15073b9571e32df0",
+    "smoke_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-clean-boundary-smoke2-v417-owner-grounded-routing-concurrency2.json",
+    "smoke_config_sha256": "bb722768718479883223cc383218442c95a277823d98f7f5e2ae3bda52b96163",
+    "smoke_results": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v417-owner-grounded-routing-concurrency2-run1/results.json",
+    "smoke_results_sha256": "4868ecc7e6141fe8ae2193c43fc002e16ca3d58b5c2ed8b0c71f764f08a93b41",
+    "smoke_worker_audit_sha256": {
+      "worker_01": "67e2b53a8cc6c39ba083c0242e41654ab90fd75be4c7ab901641bdf3c7add899",
+      "worker_02": "1f0240e225ee9629ae98c9c91b83ec48d4f408be8e5447a51ada598f0782c71e"
+    }
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v417-owner-grounded-routing-gate6",
+    "role": "diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-owner-grounded-routing-gate6-v417-concurrency6-run1",
+    "source_tree": {
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 842,
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "sha256": "c022d8fbe41685214581f2091fe86321defdc425d3600084c885dca6661aeaca",
+      "total_bytes": 64375944
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v417_owner_grounded_routing_experimental",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_search_generic_input_discovery_typed_artifact_staging_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "orders 97, 122, and 127 exercise changed generic routing and transfer policies; orders 55, 61, and 90 are stable historical-pass controls",
+    "selected_count": 6,
+    "affected_orders": [
+      97,
+      122,
+      127
+    ],
+    "control_orders": [
+      55,
+      61,
+      90
+    ],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 55,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_order": 146
+    },
+    {
+      "order": 61,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "source_order": 152
+    },
+    {
+      "order": 90,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_order": 186
+    },
+    {
+      "order": 97,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "source_order": 202
+    },
+    {
+      "order": 122,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_order": 243
+    },
+    {
+      "order": 127,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "source_order": 253
+    }
+  ]
+}

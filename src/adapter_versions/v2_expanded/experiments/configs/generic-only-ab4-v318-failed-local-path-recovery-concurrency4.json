@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v318-failed-local-path-recovery-concurrency4",
+  "status": "frozen",
+  "purpose": "First Order-131 targeted A/B for generic state-derived missing local path recovery. This is not a baseline score, best-of selection, consolidated validation, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v317",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v317.json",
+    "candidate_manifest_sha256": "d51ad08e36b5f826ca11bbdeb06300fbdae004f580cbd5e44744e67f2dc74f55",
+    "targeted_disposition": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ab-v317-impress-ordered-textbox-colors.json",
+    "targeted_disposition_sha256": "ebcd094eca56ae8dee0094fd88c17456de98ff2f98b32384e0d8c080f2aabd0e",
+    "outcome": "Accepted into the Phase-1 development candidate after a 4/4 targeted A/B with all strict audits admissible.",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v318",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v318.json",
+    "candidate_manifest_sha256": "86f5561015cab437d5bfbf3bc63a18db12d6049940439666e7ed77e4ea5ec4ff",
+    "active_runtime_and_test_tree_sha256": "f788940fa1b40b17f5eb0e59e25043046ece8387294f9d9d6783d30f35468a8d"
+  },
+  "hypothesis": {
+    "generic_cluster": "state_derived_missing_search_root_rejection",
+    "statement": "After filesystem.find proves a model-selected root unavailable, reject only that already disproven root in the next model-visible schema. The model must choose a different root, consume the live discovered path, and select every follow-up argument itself.",
+    "runtime_answer_materialization": false,
+    "runner_selects_replacement_root_or_correct_path": false,
+    "runner_argument_rewrite_or_injection": false,
+    "host_filesystem_probe": false
+  },
+  "sources": {
+    "hypothesis_record": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/hypothesis-v318-local-path-recovery.json",
+    "hypothesis_record_sha256": "82fbd42a295b86edc5dcd4efe6f2b672d30af477eaac6fa6d26c1d9cc1a22bc3",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ledger-v318-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "5cb6ca65e733f78bbde22255fd8b29073678f5558aa57a22d7f4c55b9e76bc1f",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "task_pool_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "development_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "development_results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 131 is the active v252 historical pass that failed v307. Controls are the three nearest preceding tasks in frozen source order that share multi_apps and passed in both immutable v252 and v307: Orders 121, 128, and 130. No task was selected from v318 outcomes.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v318_failed_local_path_recovery_ab4_concurrency4_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 4,
+    "workers_per_endpoint": 2,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "runner_sha256": "1321afcff5e4cee4f34e32577c76ff93fbda52560bf949e6e185b27763533b3e",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Fixed source order [121, 128, 130, 131], one task per worker; workers 1-2 use DGX1 and workers 3-4 use DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [131],
+    "clean_control_orders": [121, 128, 130],
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "all_four_tasks_must_pass": true,
+    "order_131_must_terminate_by_agent_propose_done": true,
+    "affected_environment_failures_allowed": 0,
+    "unexplained_control_regressions_allowed": 0,
+    "order_131_model_must_select_every_executed_argument": true,
+    "all_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0,
+    "if_recovery_is_exercised_order_131_must_select_a_different_root": true,
+    "if_recovery_is_exercised_order_131_must_reuse_the_discovered_path": true
+  },
+  "freeze_timestamp": "2026-08-13T21:12:00Z",
+  "tasks": [
+    {
+      "order": 121,
+      "source_order": 241,
+      "domain": "multi_apps",
+      "task_id": "f5c13cdd-205c-4719-a562-348ae5cd1d91",
+      "cohort_role": "third_nearest_preceding_clean_control_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "cohort_role": "second_nearest_preceding_clean_control_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 130,
+      "source_order": 263,
+      "domain": "multi_apps",
+      "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+      "cohort_role": "nearest_preceding_clean_control_dgx2",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "cohort_role": "affected_historical_regression_dgx2",
+      "v252_status": "passed",
+      "v307_status": "failed",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

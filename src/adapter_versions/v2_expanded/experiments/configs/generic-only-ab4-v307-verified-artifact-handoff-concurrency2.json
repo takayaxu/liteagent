@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v307-verified-artifact-handoff-concurrency2",
+  "status": "frozen",
+  "purpose": "Targeted development A/B of a reusable verified local-artifact handoff contract. This is not a baseline score, best-of selection, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v307",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v307.json",
+    "candidate_manifest_sha256": "27bd2af3501b9d90280c0b4cbdac9afa49a2038d8fa3b582823bb79fca1bffe0",
+    "active_runtime_and_test_tree_sha256": "b27ced5beaeab19257fe0fa53b67e8d0046eb05c737836c48f1a9366dbfaa6b2"
+  },
+  "hypothesis": {
+    "generic_cluster": "verified_local_artifact_handoff",
+    "statement": "A model-visible enum containing only type-compatible local files from a preceding successful verified Adapter result lets Qwen select the exact downstream path without any Runner-selected value.",
+    "runtime_answer_materialization": false,
+    "runner_selects_action_or_argument": false,
+    "runner_argument_rewrite_or_injection": false,
+    "automatic_downstream_execution": false
+  },
+  "sources": {
+    "pre_edit_hypothesis": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/hypothesis-v307-verified-local-artifact-handoff.json",
+    "pre_edit_hypothesis_sha256": "44d11efbd60b36569bc5d9ee34e0052777c961d747c57785bead1f34bbd8e8c3",
+    "pre_ab_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v307-pre-ab.json",
+    "pre_ab_ledger_snapshot_sha256": "d81db4cb9f02fb651c7fcc96de07d8c0c0ca6e89ca432fb201c023b7d2c04450",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Orders 125 and 127 are the two observed downstream path-binding failures. Order 126 is the nearest same-mechanism non-binary comparison, and Order 90 is a clean cross-application control. Source order and round-robin endpoint assignment were frozen before execution.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v307_verified_artifact_handoff_ab4_concurrency2_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Two affected failures plus one same-mechanism comparison and one clean cross-application control, with source order preserved and round-robin endpoint assignment.",
+    "selected_count": 4,
+    "affected_failure_orders": [125, 127],
+    "comparison_orders": [90, 126],
+    "clean_control_orders": [90],
+    "non_binary_comparison_orders": [126],
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "order_90_minimum_reward": 1.0,
+    "order_126_minimum_reward": 0.8042889575503194,
+    "unexplained_comparison_regressions_allowed": 0,
+    "affected_binary_reward_required_for_validated_fix": 1.0,
+    "affected_consumer_path_must_be_selected_from_model_visible_observed_enum": true,
+    "producer_must_precede_consumer": true,
+    "all_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "automatic_consumer_executions_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-13T07:23:26Z",
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_cross_application_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 125,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "cohort_role": "affected_audio_to_presentation_handoff_dgx2",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 126,
+      "source_order": 252,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "cohort_role": "same_mechanism_non_binary_comparison_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.8042889575503194,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 127,
+      "source_order": 253,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "cohort_role": "affected_document_image_to_wallpaper_handoff_dgx2",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

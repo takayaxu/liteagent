@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order130-runner-stop-v142",
+  "status": "frozen",
+  "purpose": "Untouched Order 130 baseline under retained v141 generic Adapters and the user-requested bounded Runner stop policy.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order129-image-crop-v141.json",
+  "candidate_parent_config_sha256": "c01b200f5b465fb01c67f7fc67e1cd1880b4ae68e2641ec01389dd51b5e0df4a",
+  "parent_attempt_result": "experiments/generic-only-coverage-order129-image-crop-v141-run1/results.json",
+  "parent_attempt_result_sha256": "357751e550dc921dba4017689010894bb47d8cab87fb61c7bbe65bdceb415de8",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order129-image-crop-v141-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "575ab2e9f1d38fcb3a87e7c73428e541753193c699f31d93b7352fb16cbda52a",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order129-image-crop-v141-run1/workers/worker-01/raw/run-1/129-multi_apps-91190194-f406-4cd6-b3f9-c43fac942b22/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "d2acdd6aa4cdbf3d9bb0f905c6a8c95971b48027719f3309f63035e80f75f766",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "48b81c09a518f4a12582c5a658d524ba33b4fd2fd48c7ddc28b31efee80e42b9",
+  "blocked_backlog": "experiments/generic-only-task-blocked-backlog.json",
+  "blocked_backlog_sha256": "7875752c5edb24a12fcd1e0f94d22b7e57be2b84d85d6440e16fe119e7b03bbe",
+  "change_scope": "No Adapter capability or task routing change. The generic Runner now stops after 300 Agent seconds, the parallel supervisor explicitly forwards both time and no-progress limits, and repeated successful program launches or equivalent GUI operations without explicit state-change evidence count toward the eight-event no-progress window. Detection uses only model-originated action kind, action name, arguments, and structured result evidence; it does not inspect task identity, instruction text, golden data, or evaluator state.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_runner_stop_v142_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit the untouched baseline. Diagnose before editing. Attempt only materially different reusable hypotheses, and stop early after one or more meaningful attempts when the correct capability is already visible but the model remains in a low-value selection or binding loop. Never exceed 300 Agent seconds or eight no-progress events in one attempt. Mark task_blocked and immediately continue when the selected per-task budget is exhausted.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "shared_runner_policy_before_untouched_baseline",
+    "hypothesis_class": "generic_bounded_runtime_and_repeated_successful_action_detection",
+    "failure_evidence": "Order 129 v141 reached 30 steps because repeated successful command.run launches and GUI actions were treated as unconditional progress. A replay of the immutable trace under v142 identifies the repeated launch/search loop at step 20. The user explicitly required that one task not remain stuck, that bounded retries become task_blocked, and that source-order development continue.",
+    "counterfactual_tests": "Tests cover repeated command launches with alternating terminal and cwd modes, semantically new GUI coordinates, explicit changed=true mutations, existing rejection/search cycles, unchanged mutations, equivalent reads, and new read results.",
+    "focused_unit_suite": "31 passed",
+    "full_unit_suite": "1970 passed",
+    "static_verification": "Ruff lint and format checks, compileall with an isolated cache, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. Broader task regression remains deferred by user instruction.",
+    "source_sha256": {
+      "integrations/lite_agent/stall_policy.py": "f285d7ce8f568f553f274a6e8784d009bb51381afae7ad7ad242282ddad36d3b",
+      "scripts/supervise_lite_agent_parallel.py": "7bf6c32023407223f3fd5fb96d81d2a226ae2b03d38ec429afaaf91bee570c69",
+      "scripts/run_lite_agent_pilot.py": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+      "tests/unit/test_lite_agent_stall_policy.py": "9db321cefb114770c4f4bb8e36300b4e7bb929f58074da9a503e55c75c25fd63",
+      "tests/unit/test_lite_agent_parallel.py": "fc2e48dd85fc43b34e5e7a09693126075fe88a7f347dc90e33e9ae118f836b20",
+      "GOAL.md": "4936a2c57f647a68a9f9a7c2f76bcb4f0cb6b6bed90c7ca4b7686c123a5d7619"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first unseen source-order task after Order 129 was marked task_blocked",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 130,
+      "source_order": 263,
+      "domain": "multi_apps",
+      "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+      "source_episode_id": "50cbffdd4e5ab6980d938321",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "b87d273bacd4b496263a49cbed63d44a4c99df63843c18d494b3456929c5bc63",
+      "execution_class": "golden",
+      "pool_order": 130
+    }
+  ]
+}

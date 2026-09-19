@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order70-writer-pdf-schema-v30",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after replacing Writer PDF export's opaque params wrapper with a reusable explicit-path or active-document same-basename contract.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order70-v29.json",
+  "candidate_parent_config_sha256": "34ee76a993d45ad74311e035e4370f81a8b00eeebe04f691a4b9687f12a4674a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "bec890465909994dfed74b880d69544c3b26123a2f8aa92159d2723c60ab4c36",
+  "change_scope": "Expose document.export_pdf through an Adapter-owned direct schema supporting either an explicit path or same_basename=true derived from the active document URL. Leave model, prompt, routing, VM, evaluator, and all other tool behavior unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The model already selects document.export_pdf, but the legacy opaque params wrapper causes it to emit an invalid empty string. A direct semantic choice between an explicit destination and same_basename=true should let the model express the instruction while the Adapter deterministically derives the latter from the active saved document URL.",
+    "writer_schema_sha256": "a78c7e029e019e9283c26689ecf0910d3bcaf2cf420deb3a754a23e7869d491a",
+    "writer_tool_manifest_sha256": "e093a3a9fcb6545527aae9c2030973ad94f7676e0d52d78d6f2bb066aa3e3c7e",
+    "writer_uno_worker_sha256": "3faf70477541267138bf8dc7b4d426689b59327eedd0cc59a26b74e0afff7603",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_schema_test_sha256": "9058b7b382cd77a67efb278af3b7660109fb44c1e9f136c464f4fa58fbdc354c",
+    "writer_worker_test_sha256": "b5feb345978067f6a8a9bb508eabb5a57455b020cc15f3e50319c75ee89d6d4f",
+    "tool_catalog_test_sha256": "4478803aed9fd3c72a8c3f4624d699bf487accc0b1fd94f558a759f727ba249e",
+    "strict_manifest_test_sha256": "8d010014722f07610528c1119294c7879ce8e1ba4cc3445e33ed9f8a37f8c1f2",
+    "runtime_test_sha256": "4ee2df1cd8b296e4587033769520c12eafed18213341e09430b2e726283fb536",
+    "audit_test_sha256": "08d833822c712c7b9e6c75341bb4074098e44c229858509f3fb36c7b53008aaa",
+    "writer_guest_integration_test_sha256": "b722e5fbccf9866ddc6bd15e4b2e4dff742dbfcc22123289114507ea61fa89d2",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_audit_tests": "454 passed",
+    "full_unit_tests": "1296 passed",
+    "counterfactual": "Schema, worker, and LiteAgent tests use field-notes.odt and quarterly-review.pdf in unrelated directories. They cover explicit paths, active-document same-basename derivation, an unsaved-document error, direct top-level dispatch, exactly-one validation, and rejection of the old empty params wrapper.",
+    "changed_source_leakage_scan": "No current task UUID, episode ID, task filename, full instruction, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "prior_v29_result_sha256": "5695d785aca527f2735f59155d61e0cdb5b2ba2c507a6e890617ab24d54bac4c",
+    "prior_v29_audit_sha256": "daf73e829caa71c96a13827cc0c56aead9cc514ceb34e313c30b6b1f637144d6",
+    "prior_v29_audit_valid": true,
+    "prior_v29_outcome": "evaluator 0.0 after 30 steps; the model selected document.export_pdf 16 times and searched 14 times, but every mutation was rejected because it emitted an empty string in the legacy params wrapper",
+    "audit_zero_call_fix": "The strict audit now treats a missing lazily-created adapter_calls.jsonl as a valid zero-call log while still requiring all LLM evidence logs; focused tests cover both cases.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_pdf_export_schema_v30_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 70,
+      "source_order": 161,
+      "domain": "libreoffice_writer",
+      "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+      "source_episode_id": "e5a608f2b450fa9d9719aa90",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "295a6ec97186999d97690ca1fc1f5dba4f473fde47984500fa47e15fa31226ae",
+      "execution_class": "task_specific",
+      "pool_order": 70
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order178-v244-keybinding-operation-semantics",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for Order 178. Remove the redundant model-selected context field from semantic VS Code keybinding operations and map each complete operation to its stable command and natural trigger condition inside the Adapter. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order156-v243-thunderbird-file-chooser-readiness.json",
+  "parent_config_sha256": "91d2fc16665fce553e9beecc077aa0cc900e83dddee9c756c7b4099556b6c09d",
+  "hypothesis": "v210 routed keybindings.ensure first and Qwen selected the correct key, tree_view_find operation, and disabled=true, but the public schema separately required a context enum. Qwen chose context=always, so the Adapter truthfully persisted only key=ctrl+f and command=-list.find without the Explorer when-clause; its own verifier passed that incomplete binding while the original evaluator failed. The eligible historical pass used the correct raw command and when-clause. If tree_view_find is exposed as a complete semantic operation whose Adapter mapping includes both list.find and listFocus && listSupportsFind, Qwen should select key, operation, and disabled unchanged, the persisted binding should match the evaluator, and the current completion recovery should terminate the episode.",
+  "change_scope": "Replace the compositional semantic keybinding operation+context contract with a complete operation contract. Each reusable operation maps to both a stable VS Code command and its natural trigger condition: tree_view_find maps to Explorer list-find availability, focus_active_editor maps to terminal focus, focus_terminal maps to editor focus, global operations omit a when-clause, and save_file uses editor focus. Keep legacy explicit binding and command/when forms for non-model compatibility, but reject context in the model-facing semantic shape. No Runner argument derivation, instruction-specific parameter injection, evaluator change, or completion-policy change.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "historical_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order178-keybinding-contract-v164-run1/results.json",
+    "historical_results_sha256": "6468f448ebfbd0b4d35dd2f3f8a05b4d5429b25ef0dd2cb28d1ddd14c6b770d3",
+    "historical_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order178-keybinding-contract-v164-run1/workers/worker-01/results.json",
+    "historical_worker_results_sha256": "2b57d6dc638417c7450b4be37fa0d3cddb4fbc1044b6e3658cfec6805b2ba878",
+    "historical_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-178-generic-only-coverage-order178-keybinding-contract-v164-run1.json",
+    "historical_current_strict_audit_sha256": "719a81750b881b343b178b6a27b91c4966e90a23cc6ff966800f39e47467f0be",
+    "v210_outcome": "Reward 0.0 in three steps. Qwen selected keybindings.ensure with key=ctrl+f, operation=tree_view_find, context=always, and disabled=true. The Adapter persisted and verified {key: ctrl+f, command: -list.find} without a when-clause. One length-truncated completion attempt was rejected and the next completion succeeded, but the evaluator required when='listFocus && listSupportsFind'.",
+    "historical_outcome": "Reward 1.0 with model-selected raw key=ctrl+f, command=list.find, when='listFocus && listSupportsFind', and disabled=true. The mutation succeeded at step one but the older Agent repeated the successful action and stalled after nine steps. Current strict re-audit is valid, evidence-valid, and baseline-admissible with zero leakage, action mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "vscode_keybindings_sha256": "d0997c38cf448734a02018a9c5ccdf32b2f1b55327770e1f18d6c7b4695526c3",
+    "vscode_actions_sha256": "b372ea49ee2d1574a36b811fc0317981c01b23812613e92019e6e8bd2f3cb076",
+    "vscode_schema_sha256": "4ca39e525cfc02562e40ac0a542b2fd0a23450715ce258f476ec1f318d7c83da",
+    "vscode_tool_manifest_sha256": "ede47127cf201c806b3bcb94d78f295987f51cdf887c364fbd66cfd3a68a4023",
+    "vscode_worker_sha256": "1744b018359c11f8d6e4f6d9ddde64163fbd6e72cd2ba5359d6b5c762dd90198",
+    "vscode_verifier_sha256": "578bd7bfde6b3ad2860d533ffe307b54da6b2f3ebda8ea354bd6e2a4f25bdf77",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "instruction_semantics_sha256": "8fe1fd1c94ea4480e348b2a7f1fb966bb58417a855bffe7888858d04cd9dd64e",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "vscode_schema_tests_sha256": "b28793be1fd255ef14a623caee6a8ad7d36dcd9d98fee3ebcac82f9ebee4548b",
+    "vscode_files_tests_sha256": "ca5e355685005f3e33bc2137f02ee4afd61d47f30512d62ebf44dd99d24f2bc7",
+    "lite_agent_tool_catalog_tests_sha256": "5da51f71886bad415e59dc1691540e66b90b790a6a04a0f8b78dcc708d3e1f6c",
+    "lite_agent_runtime_tests_sha256": "f4daec128d1051e2168115710b7eff83953987489dbfec11307232ee0b5b7dbd",
+    "strict_schema_manifest_tests_sha256": "c1b74bd928d723290e1050a2bb3626aa29651d0cd89518c4f9af9fa66e8de85e",
+    "counterfactuals": "Tests cover tree_view_find disabled on a different chord, focus_active_editor enabled on ctrl+shift+j with terminalFocus, and quick_open without a when-clause. Schema tests reject unknown operations, legacy context in the semantic shape, mixed semantic/raw fields, and preserve explicit raw binding compatibility. A strict LiteAgent test records key, operation, and disabled unchanged through Adapter execution.",
+    "focused_tests": "317 passed, 467 deselected",
+    "unit_tests": "2617 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_keybinding_operation_semantics_v244_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "last fixed eligible regression item and first evidence-backed reusable hypothesis",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T04:29:18Z",
+  "tasks": [
+    {
+      "order": 178,
+      "pool_order": 178,
+      "source_order": 325,
+      "domain": "vs_code",
+      "task_id": "ea98c5d7-3cf9-4f9b-8ad3-366b58e0fcae",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

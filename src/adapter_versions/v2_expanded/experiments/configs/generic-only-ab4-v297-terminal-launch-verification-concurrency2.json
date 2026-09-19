@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v297-terminal-launch-verification-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the reusable OS terminal.launch default verifier while retaining v296's generic rowwise single-column spreadsheet and terminal-open contracts. This historical-outcome-selected cohort is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v297",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v297.json",
+    "candidate_manifest_sha256": "294a65a2a30f63601244a7a411b33c4bb7ade1be41191a45adff54b87ec4fcb3",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "b6f5f9844cc62b6cf993aa18cdb346771bb282183bd5d82f4f9397acfc537492"
+  },
+  "hypothesis": {
+    "generic_cluster": "terminal_launch_default_verification",
+    "statement": "Retaining v296's model-selected spreadsheet actions while adding a reusable OS terminal.launch verifier should turn the real observable launch into a truthful executed=true Adapter result and prevent the 30-step recovery loop.",
+    "counterfactual_support": [
+      "The verifier accepts visible terminal launches with and without requested shell history.",
+      "It rejects wrong argv, absent terminal windows, and missing requested history.",
+      "No model-visible tool surface, routing rule, action parameter, or completion prompt changed from v296.",
+      "Ordinary spreadsheet conversion, accepted command-line conversion, and recursive file discovery remain controls."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v297-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "c3cb57e85fd697a1c010dcbbed4ec33be58e71e4ea7b30a2c0b6b68679837c7f",
+    "predecessor_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v296-spreadsheet-column-workflow.json",
+    "predecessor_disposition_sha256": "246069e97a1cf104bee15e64a0b99e85cdb6c35682965d31d1e15d92d1560448",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "The cohort is identical to v296. Order 88 is the affected failure. Orders 90 and 109 are v252 clean controls. Order 92 is an accepted v294 development control for LibreOffice command-line conversion and visible terminal provenance.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v297_terminal_launch_verification_ab4_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "The exact v296 cohort and assignment are retained: Orders 88/92 on DGX1 and Orders 90/109 on DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [88],
+    "clean_control_orders": [90, 109],
+    "accepted_development_control_orders": [92],
+    "same_domain_controls": true,
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "accepted_development_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "order_88_must_execute_spreadsheet_concatenate_single_columns": true,
+    "order_88_must_execute_spreadsheet_open_in_terminal": true,
+    "order_88_terminal_open_must_be_recorded_executed_true": true,
+    "order_88_arguments_must_be_model_selected": true,
+    "order_92_command_line_conversion_must_remain_valid": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T13:54:46Z",
+  "tasks": [
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "cohort_role": "affected_rowwise_single_column_spreadsheet_combination_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_ordinary_spreadsheet_conversion_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "cohort_role": "accepted_command_line_spreadsheet_conversion_control_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v294_status": "passed",
+      "v294_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "clean_recursive_file_discovery_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

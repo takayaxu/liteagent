@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order76-v37",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order75-writer-format-routing-v37.json",
+  "candidate_parent_config_sha256": "e9fc097b78621f09fd5c000a962f8aa02b20843362d18aa06947a313f2cf1be0",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "43ffc2a4301404fe73f128191c53a4c0c63d6406979b0f40af771cc8cef31a8f",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "hypothesis": "The unchanged v36 candidate omitted paragraph.set_format from the initial top seven despite an explicit strikethrough request. Qwen selected paragraph.apply_split_tabstop, mutated all nonempty paragraphs, and completed without applying strikethrough. Generic formatting vocabulary should expose the existing typed action and let Qwen select the target ordinal and format arguments itself.",
+    "tool_catalog_sha256": "9ab8cecdfa6ca02978370f9e5ed469db76ec30f37b3ac1faa3d2e2294948b782",
+    "tool_catalog_test_sha256": "89a1ab27bb204ffcc8e35dd323cdf3074cb90ec6cc8ab42cadcf297c8bb8cc3d",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "generic_only_audit_test_sha256": "4898c880ef9c92ff9ff4032035395a3c4f31c4785c3531fa4382ee1118156a6e",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_catalog_runtime_manifest_audit_tests": "419 passed",
+    "full_unit_tests": "1342 passed",
+    "counterfactual": "Routing tests use meeting notes, a legal draft, a policy memo, and explicit paragraph-number formatting. They cover strike-through, cross-out, alignment, and line-spacing requests, and prove paragraph.set_format outranks the unrelated split-tabstop action for crossed-out words. No course content, source filename, task identity, or fixed paragraph ordinal appears in changed sources.",
+    "current_instruction_router_check": "paragraph.set_format is third in the seven-action candidate list after document.inspect and document.save; paragraph.apply_split_tabstop is sixth.",
+    "prior_v36_result_sha256": "ee7cbbc0644e0720de7562cb57fc1468867057cf7e186b4da28b15743cc98628",
+    "prior_v36_audit_sha256": "3d67dba094173759c1b27305a9b0f0deed540b1d5c234096fb4f27743d5787d8",
+    "prior_v36_audit_valid": true,
+    "prior_v36_model_selected_actions_and_arguments": true,
+    "prior_v36_outcome": "Original evaluator 0.0 after six model turns. The top seven omitted paragraph.set_format. Qwen inspected, saved, selected paragraph.apply_split_tabstop with word_count 1, changed all three nonempty paragraphs, inspected, and terminated while claiming the still-unperformed strikethrough could be applied through the toolbar.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, course text, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_format_routing_v37_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 76,
+      "source_order": 167,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_episode_id": "3fe16573f1ee098a7f4f9ed3",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "509b635c3fecef89eb1cba1ff0fd2dd56db5d3d0d86731c329368d17badfe1c7",
+      "execution_class": "task_specific",
+      "pool_order": 76
+    }
+  ]
+}

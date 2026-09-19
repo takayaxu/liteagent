@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order179-v164",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order178-keybinding-contract-v164.json",
+  "candidate_parent_config_sha256": "8b48d5beab03aa3a01aec08385e05b14ca7e907ac4bbe3f8e952e17948e05a96",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "937ed5b352d134751a34953efbb63b300d43c389513f90ff3819fff277249ad9",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_keybinding_contract_v164_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. By default try one materially different, high-value generic hypothesis with one targeted A/B. A second or third hypothesis is exceptional and requires concrete new evidence plus clear cross-task reuse; three remains the absolute ceiling. After multiple attempts still fail, or once another task-local variant has low expected value, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "untouched_baseline",
+    "hypothesis_class": "none_unchanged_candidate",
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 179,
+      "source_order": 326,
+      "domain": "vs_code",
+      "task_id": "930fdb3b-11a8-46fe-9bac-577332e2640e",
+      "source_episode_id": "b5706f21756fed422602a900",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "a3e578d634d1dcd474282f90f000fb1fbbf9bef9ccd433e2b83423975c0cf2b9",
+      "execution_class": "generic_api_only",
+      "pool_order": 179
+    }
+  ]
+}

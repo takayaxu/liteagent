@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order127-document-images-wallpaper-v137",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 127 hypothesis 1: expose reusable ordered image extraction from DOCX/ODT packages and verified GNOME desktop wallpaper mutation as direct generic actions.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order127-v136.json",
+  "candidate_parent_config_sha256": "1296f70751d31f1a041f57d73b73926c0b45984c65347744cf466e7de0fc5361",
+  "parent_attempt_result": "experiments/generic-only-coverage-order127-v136-run1/results.json",
+  "parent_attempt_result_sha256": "1a109271cdab1efaf43a5f334c47b4b219fbcbb382ebaa63a40074a6fd98e9e8",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order127-v136-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "9a045732e481f3a5927806cf5c25cf48c5245805ad22d0f499f582f7fd3c0093",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order127-v136-run1/workers/worker-01/raw/run-1/127-multi_apps-c2751594-0cd5-4088-be1b-b5f2f9ec97c4/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "8580605466494f87728624c8d7cb9f324e5ccbdd5cf573a1f6fb308e29603487",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "7aecc43abe6fbb08f95af64c519bfd9f0ea53ab3e6ce5b3ce53a207816ad4650",
+  "change_scope": "Add parameterized Writer action document.extract_images and OS action desktop.set_wallpaper, expose both through their owning Adapters and the generic Multi-Apps facade, and rank the two-action cohort only for explicit document-image extraction and desktop-wallpaper intent. document.extract_images accepts a model-selected DOCX/ODT source path, output directory, first/all selection, and overwrite flag; it parses package relationships and exports images in main-document reference order. desktop.set_wallpaper accepts a model-selected local raster path, validates the actual image format, writes GNOME picture-uri settings, and reads them back. No email query, attachment selection, combined task workflow, task identity, dataset order, fixed path, answer value, golden material, evaluator state, or Runner argument rewrite is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_document_images_wallpaper_v137_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the remaining failure is action selection, exact path binding, package extraction, extracted-path reuse, wallpaper mutation/read-back, completion, or environment. Try at most two further materially different generic hypotheses only when the trace supports them; otherwise mark Order 127 task_blocked and immediately continue to Order 128. No individual attempt may exceed 600 Agent seconds or eight no-progress events.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "semantic_document_package_image_extraction_and_verified_desktop_wallpaper_actions",
+    "failure_evidence": "The untouched v136 baseline returned evaluator 0.0 after 30 steps and 392.733 seconds. Qwen successfully queried the latest Notes message, saved its DOCX attachment, and found the exact local file. It then repeatedly searched for and attempted nonexistent document.extract_images operations, so no image was exported and the wallpaper was never changed.",
+    "counterfactual_tests": "Tests construct unrelated DOCX and ODT packages with multiple differently named images and relationship order distinct from archive order; they verify first/all selection, exact output paths, hashes, media types, overwrite rules, malformed-package rejection, and reference/size bounds. Wallpaper tests use unrelated PNG/JPEG files, verify actual-format validation, exact GNOME URI writes and read-back, dark-setting compatibility, and invalid/nonlocal input rejection. Routing tests verify the two actions lead only for explicit matching intent and do not preload for unrelated spreadsheet, Writer, presentation, image-editing, or GIMP-background tasks.",
+    "focused_unit_suite": "693 passed",
+    "full_unit_suite": "1939 passed",
+    "static_verification": "Edited-file Ruff lint and formatting, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "implementation_bundle_sha256": "ac01f76d8e27519af0e7df6183cb4f79a84562796951829616d63d94ab5315f8",
+    "source_sha256": {
+      "writer_adapter/image_extract.py": "b79255a068e0738b5bc9b9943ca99766fe128bc2fa066b0db307fb12f94cfec6",
+      "writer_adapter/schema.py": "ee27de989e597c8e3a3cfb3da25367789ef627d901dbfcd4f049efea39f7c527",
+      "writer_adapter/tool_manifest.py": "5041b01a7ce2a6ac9da9e2bfb80a309c0fcb7e19efd886c9d0b8a7c72d89dd9c",
+      "writer_adapter/uno_worker.py": "068b327f4b44d02b3bcbbb4c656c8c51bf23e5807b4471c2b1bf220106b80f88",
+      "os_adapter/wallpaper.py": "f6d388c16ea79c58196180a72b7ace081c26424e4a5cd1de00cb626a837d824d",
+      "os_adapter/actions.py": "4123b61915c733598149767c5bfeff082b9a6b1eae7f2c96bf1f1952a7b8fe87",
+      "os_adapter/schema.py": "8242640e1d511d41aa6109c54565aa83cc1ca84249ff444f5b6a77445a59b2e2",
+      "os_adapter/tool_manifest.py": "5d9f4f7ee82810ee7e789b6c4842febd48921fa4913ba2c6776e7f65902b4a3f",
+      "os_adapter/worker.py": "8b01c8b53ab6e7fe62ebe8d3b77089ff4340eee10e47e67e4756fad82940b2cd",
+      "multi_apps_adapter/actions.py": "4f268f3431d0f12fd407dc5106f1e0e0ec3071178453054b77fa160fbd6d9bda",
+      "multi_apps_adapter/generic_actions.py": "9c4d26490cb9e1ad1619935ea38038a86ea0b2dc1a69d744fecd7973df62ea99",
+      "multi_apps_adapter/generic_schema.py": "0a0f3fdc58e07f14d73c6ef5eed8aa5fea9c18e2b733a57fbc504f3c073bc4ab",
+      "multi_apps_adapter/schema.py": "32fe0af253b121856b054cf460173213ef896353043ea9adfc4b547189e8e14e",
+      "multi_apps_adapter/tool_manifest.py": "ea946ecdaf6fd80843cc9f7c346eb70fe225feaae338a731a38a4080abb011ec",
+      "integrations/lite_agent/tool_catalog.py": "8f04d5ebc99755c65dcd4f25cbcb805e9f5cdc28400aa3c72787cca7d5b053fa",
+      "integrations/openapa_osworld/tool_catalog.py": "73a5fafaa4d89f25cf2a9d46f9cf8be3ad330ca734f6b3354b134c926d0391f8"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 127 v136 missing document-image extraction and desktop-wallpaper capability failure",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_preserved_in_generic-only-coverage-order127-v136-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 127,
+      "source_order": 253,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "source_episode_id": "172935c7d79395229e282323",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "d2707e8944a19bc6f38387436e60b6bd9d0b72e356e9614cff60f3fab5fc80af",
+      "execution_class": "task_specific",
+      "pool_order": 127
+    }
+  ]
+}

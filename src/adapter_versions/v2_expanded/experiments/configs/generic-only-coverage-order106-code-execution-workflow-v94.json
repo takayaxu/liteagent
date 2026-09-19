@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order106-code-execution-workflow-v94",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 106 hypothesis 3 after preserving and auditing the v93 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order106-run-code-routing-v93.json",
+  "candidate_parent_config_sha256": "e745906931146eb247b4f1084b0fffde33f796be60d7cb447c35ec6a2c5523cb",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "94f7260902ac5b69db435f3c43a6d99601023eed9d0640f19691afdfd59b9baa",
+  "change_scope": "One generic prompt-policy change for instructions that explicitly require source-code execution: read relevant source, use model-selected command.run for a finite baseline before the first mutation, then use it again for finite post-edit verification. Interactive programs receive generic bounded-test guidance. No task identity, filename, answer, command argv, tool argument, action schema, or execution route is injected.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_code_execution_workflow_v94_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this final hypothesis-3 A/B. If it does not produce a valid clean pass, mark Order 106 task_blocked and immediately advance to the next ledger entry. Do not try a fourth hypothesis or rerun v94 unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3_final",
+    "hypothesis_class": "generic_finite_code_execution_workflow_prompt",
+    "parent_result_sha256": "3252cdd4fd993ea5d9ad57fc4d9b8d4cb53dd0b70a22c1875cffbef101a16f17",
+    "parent_audit_sha256": "786dc399e0be5178dcedebd256ed6b07b02d47639a06202c7175c230eae73e80",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_28_steps",
+    "parent_diagnosis": "v93 correctly exposed command.run in the initial seven-action tool surface, but Qwen never selected it. The model read all four source files, made several verified but incorrect edits, and then entered rejected read/write plus catalog-search cycles. The no-progress policy stopped the attempt after 215.218 Agent seconds; evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "A structurally unrelated report-formatter crash instruction receives the finite pre-edit and post-edit command workflow. A non-code git terminal instruction does not receive the code workflow, while command routing remains available.",
+    "model_choice_contract": "The prompt tells the model when execution evidence is required but does not select a command, argv, working directory, file, edit, or tool call. Every action and argument must still come from the captured model response.",
+    "tool_catalog_sha256": "56833a0b1d3f8f296b440a18054f5f886ee24120cfea701adbdf065b238737b8",
+    "runtime_sha256": "4b1e10fd97fd7c087d3144184cba9791fa5a8b68524b1bea47dc5e5f0ab16a16",
+    "tool_catalog_tests_sha256": "28e48e3d9512f62d90d4ada7b424d149e1848d704ff9d12a596637333e897e4a",
+    "focused_tests": "3 passed",
+    "full_unit_tests": "1667 passed",
+    "ruff": "changed source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 106,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "source_episode_id": "6713526f8ed37221d60ebd82",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3e24d356caf5f1fade549e59bf9e48e82e59bc4115204f3c4011037d22340336",
+      "execution_class": "task_specific",
+      "pool_order": 106
+    }
+  ]
+}

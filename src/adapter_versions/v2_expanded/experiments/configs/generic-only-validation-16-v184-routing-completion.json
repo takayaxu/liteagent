@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-validation-16-v184-routing-completion",
+  "status": "frozen",
+  "purpose": "Frozen fixed-16 generic-only validation of the v184 routing, model-facing schema, truthful result projection, and completion-recovery candidate.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v9-semantic-completion-recovery.json",
+  "parent_config_sha256": "273d4dde50c55699d0c9b5108b24d600d0a265c7dc91e475bafdacd2b376fb57",
+  "change_scope": "Run the unchanged fixed 16-task slice after v184 generic routing, schema, result projection, and completion-state fixes. No task identity, answer, golden, evaluator, application-specific, or task-specific branch is exposed to the Agent.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_parent": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v6.json",
+    "selection_parent_sha256": "adaac59e2da22f1751d351aa0af8e3f24af1488b609f6b965077d306a2a31015",
+    "historical_execution_class_or_outcome_used": false
+  },
+  "implementation_evidence": {
+    "completion_policy_sha256": "06799678a4a7c3a2a9310a578cc34837ffff37b2a69891b7632d0810d71140f2",
+    "completion_recovery_sha256": "42f5ff68aadaceae3e2be6fb03c4fc19a33f8fcb20d551b3595cc155fecd18d0",
+    "lite_agent_tool_catalog_sha256": "98a60dffed050670e6986556ab5e291ac1bde6f21115096a20e254eee428360c",
+    "openapa_tool_catalog_sha256": "791ace143e230a50075ca65096daca1f9d667ea908fdb817ab0d158f0717e476",
+    "runtime_sha256": "37af365a82b11731f998fae18596edf4bd6f05f8d03ef2415f34dd8e201e3263",
+    "tool_validation_sha256": "ffd0db8cd6ce3101b53ebb42a908e05a191172a6081a58b579d3e871c015fadd",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "calc_schema_sha256": "8837ca9293ad855832c11559415a8be08df9d9b0fc0b33c9c87fb1787aebdef1",
+    "calc_uno_worker_sha256": "08b8c87650017e2c928890772ec140671793b436d829f1312a6ac3d71eb32ecb",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "2198 passed",
+    "ruff": "lint passed; changed-file format check passed",
+    "project_layout": "passed",
+    "generic_completion_sha256": "e1253f23b33767911c04b1fde46d347b3be849810ccd5da8c4a682ad72832a8a",
+    "generic_routing_sha256": "8c95fe6a5e695c25ccce611bae7e2fab6c0ce20597a670b17b0b0b03bc4c6bfa",
+    "adapter_results_sha256": "c4e4e270b945c2e8845d7bdcf0a0bc9d39fca96a737fd594e8779c86e2411be2",
+    "strict_smoke_parent": "v184 orders 1 and 3: 2/2"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_routing_completion_v184_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "model_visible_schema_enforcement",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first_two_tasks_per_domain_in_fixed_189_source_order",
+    "selected_count": 16,
+    "domain_count": 8,
+    "per_domain": 2,
+    "source_order_preserved_within_domain": true,
+    "replace_after_run": false,
+    "domain_counts": {
+      "libreoffice_calc": 2,
+      "libreoffice_impress": 2,
+      "libreoffice_writer": 2,
+      "multi_apps": 2,
+      "os": 2,
+      "thunderbird": 2,
+      "vlc": 2,
+      "vs_code": 2
+    },
+    "candidate_condition": "v184 routing/schema/completion; no mid-run changes"
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "pool_order": 1,
+      "source_order": 66,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3"
+    },
+    {
+      "order": 2,
+      "pool_order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371"
+    },
+    {
+      "order": 3,
+      "pool_order": 29,
+      "source_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e"
+    },
+    {
+      "order": 4,
+      "pool_order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07"
+    },
+    {
+      "order": 5,
+      "pool_order": 64,
+      "source_order": 155,
+      "domain": "libreoffice_writer",
+      "task_id": "0810415c-bde4-4443-9047-d5f70165a697"
+    },
+    {
+      "order": 6,
+      "pool_order": 65,
+      "source_order": 156,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c"
+    },
+    {
+      "order": 7,
+      "pool_order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908"
+    },
+    {
+      "order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 9,
+      "pool_order": 133,
+      "source_order": 271,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d"
+    },
+    {
+      "order": 10,
+      "pool_order": 134,
+      "source_order": 272,
+      "domain": "os",
+      "task_id": "ec4e3f68-9ea4-4c18-a5c9-69f89d1178b3"
+    },
+    {
+      "order": 11,
+      "pool_order": 149,
+      "source_order": 289,
+      "domain": "thunderbird",
+      "task_id": "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397"
+    },
+    {
+      "order": 12,
+      "pool_order": 150,
+      "source_order": 290,
+      "domain": "thunderbird",
+      "task_id": "15c3b339-88f7-4a86-ab16-e71c58dcb01e"
+    },
+    {
+      "order": 13,
+      "pool_order": 161,
+      "source_order": 303,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967"
+    },
+    {
+      "order": 14,
+      "pool_order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89"
+    },
+    {
+      "order": 15,
+      "pool_order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951"
+    },
+    {
+      "order": 16,
+      "pool_order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb"
+    }
+  ],
+  "freeze_timestamp": "2026-08-09T00:00:00+00:00"
+}

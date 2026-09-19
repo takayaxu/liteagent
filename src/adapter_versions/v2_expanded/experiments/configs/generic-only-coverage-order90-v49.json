@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order90-v49",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order89-v49.json",
+  "candidate_parent_config_sha256": "2547e40e1da2882b7a3b32eed1dcbf162fb94032bdf0d1dc47cddce76f8b540f",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "73a77e59d2c242c30c1b997b709e3df942ccbcd5e51f542fe934035e238912f0",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "before_result_sha256": "74b6d59452fe7b75f706362cc3ac6ee210c5e0ab7380a9cc8a7be0539faa4100",
+    "before_audit_sha256": "4439e6c11df689e0ef3ef3e9cac36461fe9f864bbe13b0f8ec24aad41b05fac7",
+    "before_trajectory_manifest_sha256": "c29034ee756ebaae5466de31c709f8cdf88235129cf2fc67b668390265dd350e",
+    "failure_class": "wrong_text_separator_and_terminal_launch_tool_selection",
+    "hypothesis_index": 3,
+    "hypothesis_limit": 3,
+    "os_command_sha256": "5bd6e12c2d6079450420fe64c956d478d5ba51ba0e42bb7084f0ec3d3abb83f3",
+    "os_actions_sha256": "57d784c4f483f7e3019ebfd7497b51e22a67ebb450d864d465bdf594f706c771",
+    "os_schema_sha256": "0408e93c9fe1f008de97c68648557fce58250414be9fa414f0663e11829683d1",
+    "os_tool_manifest_sha256": "0bb7b18bfcba15f3d6845d74686e076cfc62afabbe8b118a2f5a3fa55f137ace",
+    "os_worker_sha256": "08b6e2bfdaddc796c6d1d17f42a81b931e2329d6605e5c37b4c351585ecb8db3",
+    "multi_apps_generic_schema_sha256": "14447b34df6ad3ee3523c4428207e6797385f28dba52b2364aad995d02e2fa96",
+    "lite_agent_tool_catalog_sha256": "ebd4999a6cb681c6519c97dc136fe08c746352f9ab9b410cbf933387800ef957",
+    "counterfactuals": "Three unrelated text columns at different paths are joined with a literal-space separator, a separate two-column case uses an explicit empty separator, unequal row counts fail closed, a different GUI application exercises terminal.launch, Multi-Apps forwarding preserves all semantic arguments, and search returns both actions without task routes.",
+    "focused_unit_tests": "273 passed",
+    "full_unit_tests": "1469 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_semantic_text_terminal_v49_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_episode_id": "3b8df687caf86c3add9a59ff",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "558e207ad4e70263b9eb288102a9b9a137f76d3efd05149797d1d2a8cb4427fc",
+      "execution_class": "golden",
+      "pool_order": 90
+    }
+  ]
+}

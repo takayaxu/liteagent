@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-secondary4-v294-batch-document-conversion-concurrency2",
+  "status": "frozen",
+  "purpose": "Secondary development coverage check for the already accepted v294 generic document.convert_batch contract. This historical-outcome-selected cohort introduces no source change and is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v294-secondary-order93",
+    "active_source_candidate": "v294",
+    "active_source_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v294-active-vscode-workspace-discovery.json",
+    "active_source_disposition_sha256": "7774c6d384959955adabcad8dcedf97b2b923d296ef861a66e6621dcab907058",
+    "source_change_for_this_condition": false,
+    "active_runtime_and_test_tree_sha256": "5543928416cce8363df0b057336c7979e7ae51c8f34a1f9adc2ad52a5cd88445"
+  },
+  "hypothesis": {
+    "generic_cluster": "batch_document_conversion_with_command_provenance",
+    "statement": "The accepted v294 document.convert_batch contract should cover batch DOC-to-PDF command-line conversion because it expands the model-selected glob in the selected directory, uses isolated LibreOffice profiles, verifies every output, and records shell-history provenance without Runner argument changes.",
+    "counterfactual_support": [
+      "Both DGX endpoints selected exact arguments for active-terminal *.doc to PDF.",
+      "Both DGX endpoints selected exact arguments for explicit-directory quarterly-*.odt to DOCX.",
+      "All four synthetic calls were schema valid and raw model arguments equaled Adapter parameters.",
+      "Ordinary command and non-terminal spreadsheet conversion routes remain controls.",
+      "The accepted single-file command-line conversion remains a direct shared-contract control."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v294-secondary-order93-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "21c51cd103bbb7577932024789d56f944fb582155c5f15fe01bd32232e81dcbc",
+    "accepted_source_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v294-active-vscode-workspace-discovery.json",
+    "accepted_source_disposition_sha256": "7774c6d384959955adabcad8dcedf97b2b923d296ef861a66e6621dcab907058",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 93 is the queued failure whose public application semantics overlap the accepted v294 batch conversion contract. Order 85 controls ordinary command execution, Order 90 controls non-terminal spreadsheet conversion, and Order 92 controls the accepted v294 command-line LibreOffice conversion path.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v294_secondary_batch_document_conversion_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "One queued failure plus three same-domain controls in fixed source order. Round-robin assigns Orders 85/92 to DGX1 and Orders 90/93 to DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [93],
+    "clean_control_orders": [85, 90, 92],
+    "same_domain_controls": true,
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 3,
+    "unexplained_control_regressions_allowed": 0,
+    "order_93_must_execute_document_convert_batch": true,
+    "order_93_input_pattern_must_be_model_selected_glob": true,
+    "order_93_conversion_requires_shell_history_provenance": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T11:46:38Z",
+  "tasks": [
+    {
+      "order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+      "cohort_role": "clean_ordinary_command_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_ordinary_spreadsheet_conversion_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "cohort_role": "accepted_v294_command_line_conversion_control_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 93,
+      "source_order": 190,
+      "domain": "multi_apps",
+      "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+      "cohort_role": "affected_batch_doc_to_pdf_command_line_dgx2",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

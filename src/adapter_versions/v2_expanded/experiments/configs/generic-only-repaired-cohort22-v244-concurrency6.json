@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-repaired-cohort22-v244-concurrency6",
+  "status": "frozen",
+  "purpose": "Single scripted regression of the 22 fixed eligible historical-clean-pass regressions after the v212-v244 reusable repairs. This outcome-selected cohort validates the unchanged final v244 candidate and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order178-v244-keybinding-operation-semantics.json",
+  "parent_config_sha256": "17593450c97624748001b528978bdb7323560ac1b67a87f2fcd86fcbbb2cd198",
+  "change_scope": "No runtime, Prompt, Router, schema, Adapter, model, or protocol change after the targeted v244 pass. Freeze the complete repaired cohort from the closed repair ledger and run it once with six workers split three per DGX, fresh VM reset per task, and every attempt preserved.",
+  "sources": {
+    "v210_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v210-concurrency6.json",
+    "v210_config_sha256": "3cb21e971630405e8167e3f7d4bc285f0413fa27cf618a2a41310c608649576d",
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "repair_ledger": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/repair-ledger.json",
+    "repair_ledger_sha256": "e18130f63c422fdb331cd73784ef1577dbfbc361230ac16c60b71ab8494f8195",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "retained_candidate": "v244",
+    "active_runtime_and_test_tree_sha256": "7c4b0439a479f56e783b9fe824fd327a530605c66ab0f6fc78645061e5f88f0c",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "strict_auditor_sha256": "c0ff52cfe538b5ab24c6deb4ec400c374400dfae58a805dc519c39ef660d1a24",
+    "vscode_keybindings_sha256": "d0997c38cf448734a02018a9c5ccdf32b2f1b55327770e1f18d6c7b4695526c3",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "instruction_semantics_sha256": "8fe1fd1c94ea4480e348b2a7f1fb966bb58417a855bffe7888858d04cd9dd64e",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "unit_tests": "2617 passed",
+    "focused_tests": "317 passed, 467 deselected for the final v244 change; every preceding repair has focused counterfactual coverage recorded in its frozen config",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all files changed by v244",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_repaired_cohort_v244_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "all 22 eligible v210 historical-clean-pass regressions closed as repaired_clean_pass, in original fixed-pool order",
+    "selected_count": 22,
+    "domain_counts": {
+      "libreoffice_calc": 5,
+      "libreoffice_impress": 5,
+      "libreoffice_writer": 3,
+      "multi_apps": 5,
+      "os": 2,
+      "thunderbird": 1,
+      "vs_code": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T04:39:00Z",
+  "tasks": [
+    {
+      "order": 12,
+      "source_order": 88,
+      "domain": "libreoffice_calc",
+      "task_id": "a01fbce3-2793-461f-ab86-43680ccbae25",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 14,
+      "source_order": 91,
+      "domain": "libreoffice_calc",
+      "task_id": "4188d3a4-077d-46b7-9c86-23e1a036f6c1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 19,
+      "source_order": 98,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 23,
+      "source_order": 102,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 46,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 51,
+      "source_order": 141,
+      "domain": "libreoffice_impress",
+      "task_id": "70bca0cc-c117-427e-b0be-4df7299ebeb6",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 72,
+      "source_order": 163,
+      "domain": "libreoffice_writer",
+      "task_id": "6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 73,
+      "source_order": 164,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 79,
+      "source_order": 170,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 89,
+      "source_order": 185,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 118,
+      "source_order": 236,
+      "domain": "multi_apps",
+      "task_id": "02ce9a50-7af2-47ed-8596-af0c230501f8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 138,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 147,
+      "source_order": 287,
+      "domain": "os",
+      "task_id": "4d117223-a354-47fb-8b45-62ab1390a95f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 156,
+      "source_order": 297,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 178,
+      "source_order": 325,
+      "domain": "vs_code",
+      "task_id": "ea98c5d7-3cf9-4f9b-8ad3-366b58e0fcae",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

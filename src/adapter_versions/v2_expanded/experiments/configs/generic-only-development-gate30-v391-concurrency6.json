@@ -1,0 +1,449 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-development-gate30-v391-concurrency6",
+  "status": "frozen",
+  "purpose": "Prospectively frozen run of the deterministic v386-derived 30-task development gate on the sealed v390 generic-only source. The outcome-informed set contains 24 prior failures and 6 stable controls across eight domains. It measures combined routing recovery and model-authored state before any confirmation or fixed-189 run and is not a baseline or promotion condition.",
+  "freeze_timestamp": "2026-08-22T11:54:34Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v391-development-gate30/plan.json",
+    "prospective_plan_sha256": "07bd0ef734c01fab2dee0561b21fd135e4b3174bbbe21f577c8faacf758f2cad",
+    "v386_reference_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-development-gate30-v386-reference-concurrency6.json",
+    "v386_reference_config_sha256": "0184cda4c0a60d1eb3bac24db149ace432021c89b221745fb5183c3e36b8b7d3",
+    "v390_summary": "adapter_versions/v2_expanded/experiments/analysis-v390-impress-fit-route-overlap2/summary.json",
+    "v390_summary_sha256": "f68199601a650e5c5f93e26a7a95d5291aa02fe05913afef125a5f9707276cb0",
+    "strict_action_contracts_sha256": "1c1c61165f0f344ab17792031be8fd71a59a87f27a33cf27b862a31d70eb04b4",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v390-impress-fit-route-overlap2/granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "6d3b645ae8fa0a7a57a49c30e2a37486d90b1027c6d70717141131551a248002",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v390-impress-fit-route-overlap2/source-seal.json",
+    "source_seal_record_sha256": "6df62865cfdcc1cdfb68ad1032ade68be8f6587c2c1a7d2742e5a7d2c8bd5747",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v391",
+    "role": "development_gate30_combined_v390",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-development-gate30-v391-concurrency6-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 811,
+      "total_bytes": 64006438,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "a0cf1fcf213eb8224c15efc8ae93f8383e6df600b6489e1967de6373a0fa2c55"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v391_development_gate30_2026-08-22",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_authored_state_protocol": "collection_compact_batch_evidence_patch_v17",
+    "initial_work_state_observation_mode": "instruction_only",
+    "model_tool_transport_mode": "stream_first_complete_object_call",
+    "maximum_uncheckpointed_execution_events": 4,
+    "model_retries": 3,
+    "request_timeout": 180,
+    "docker_api_timeout_seconds": 180,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20,
+      "minimum_elapsed_before_first_model_seconds": 85
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "deterministic outcome-informed strata frozen in the referenced selection record before v387 source changes; reused unchanged for the sealed v390 combined candidate",
+    "selected_count": 30,
+    "failed_target_count": 24,
+    "stable_pass_control_count": 6,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "domain_counts": {
+      "libreoffice_calc": 5,
+      "libreoffice_impress": 5,
+      "libreoffice_writer": 3,
+      "multi_apps": 8,
+      "os": 4,
+      "thunderbird": 1,
+      "vlc": 1,
+      "vs_code": 3
+    },
+    "subsets": {
+      "routing_regression": [
+        7,
+        23,
+        40,
+        47,
+        65,
+        91,
+        115,
+        141,
+        144,
+        180
+      ],
+      "workflow_completion": [
+        20,
+        39,
+        76,
+        94,
+        131,
+        154,
+        163,
+        182
+      ],
+      "parameter_grounding": [
+        13,
+        63,
+        103,
+        142
+      ],
+      "long_loop_or_truncation": [
+        97,
+        98
+      ],
+      "stable_pass_control": [
+        22,
+        29,
+        73,
+        85,
+        137,
+        174
+      ]
+    },
+    "changed_factor": "sealed v390 generic routing and model-authored state condition versus the v386 reference source",
+    "unchanged_factors": [
+      "the exact frozen 30-task membership, source order, and five non-overlapping strata",
+      "Qwen/Qwen3.5-4B on the two fixed DGX endpoints, non-thinking mode, temperature zero, and 512 output tokens",
+      "30 steps, 300 Agent seconds, Top-K seven, retry policy, fresh VM resets, original evaluator, and OAuth exclusion",
+      "runs one, concurrency six, three workers per endpoint, no resume, no best-of, and immutable raw evidence",
+      "strict generic-only deployment, evaluator-after-episode boundary, model-selected action and arguments, and audit-v5"
+    ],
+    "success_criteria": {
+      "tasks_completed": 30,
+      "failed_targets_recovered_minimum": 12,
+      "stable_pass_controls_retained_minimum": 5,
+      "workflow_completion_false_completions_maximum": 7,
+      "long_loop_or_truncation_repeated_action_blocked_total_maximum": 8,
+      "environment_failures": 0,
+      "invalid_leakage_or_evidence_episodes": 0,
+      "strict_audit_v5_all_workers_valid": true,
+      "runner_argument_rewrites_or_injections": 0,
+      "model_tool_action_mismatches": 0,
+      "adapter_or_gui_trace_mismatches": 0,
+      "transport_reconstruction_mismatches": 0,
+      "model_authored_state_mismatches": 0,
+      "baseline_pointer_unchanged": true
+    },
+    "stop_rules": {
+      "runs_maximum": 1,
+      "rerun_same_condition": false,
+      "read_reward_only_after_all_worker_audits": true,
+      "advance_to_confirmation60_only_if_all_success_criteria_pass": true,
+      "advance_to_fixed189": false
+    }
+  },
+  "tasks": [
+    {
+      "order": 7,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "source_order": 75,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 13,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "source_order": 89,
+      "development_stratum": "parameter_grounding"
+    },
+    {
+      "order": 20,
+      "domain": "libreoffice_calc",
+      "task_id": "a9f325aa-8c05-4e4f-8341-9e4358565f4f",
+      "source_order": 99,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 22,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "source_order": 101,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 23,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "source_order": 102,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 29,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "source_order": 108,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 39,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "source_order": 125,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 40,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "source_order": 126,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 47,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "source_order": 135,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 63,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "source_order": 154,
+      "development_stratum": "parameter_grounding"
+    },
+    {
+      "order": 65,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+      "source_order": 156,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 73,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_order": 164,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 76,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_order": 167,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 85,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+      "source_order": 177,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 91,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_order": 187,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 94,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_order": 192,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 97,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "source_order": 202,
+      "development_stratum": "long_loop_or_truncation"
+    },
+    {
+      "order": 98,
+      "domain": "multi_apps",
+      "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+      "source_order": 206,
+      "development_stratum": "long_loop_or_truncation"
+    },
+    {
+      "order": 103,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_order": 212,
+      "development_stratum": "parameter_grounding"
+    },
+    {
+      "order": 115,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "source_order": 231,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 131,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "source_order": 266,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 137,
+      "domain": "os",
+      "task_id": "5ea617a3-0e86-4ba6-aab2-dac9aa2e8d57",
+      "source_order": 275,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 141,
+      "domain": "os",
+      "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+      "source_order": 280,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 142,
+      "domain": "os",
+      "task_id": "23393935-50c7-4a86-aeea-2b78fd089c5c",
+      "source_order": 281,
+      "development_stratum": "parameter_grounding"
+    },
+    {
+      "order": 144,
+      "domain": "os",
+      "task_id": "5ced85fc-fa1a-4217-95fd-0fb530545ce2",
+      "source_order": 284,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 154,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "source_order": 294,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 163,
+      "domain": "vlc",
+      "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+      "source_order": 305,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 174,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "source_order": 318,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 180,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "source_order": 327,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 182,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_order": 329,
+      "development_stratum": "workflow_completion"
+    }
+  ]
+}

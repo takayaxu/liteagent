@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order189-v178",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the final unseen task in the fixed 189-task development ledger under the current generic candidate after a shared VSIX postcondition correction.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order188-extension-source-v177.json",
+  "candidate_parent_config_sha256": "6a18b61fda8d8c2a7f51e6d2777e1e418b8a59e1a314fde901e10a7f9c7d39d3",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "374468080a9a4d0be18408efd09387eb70fcedb969abddcd6a491739516ff6e4",
+  "change_scope": "No Order-189-driven code change. Before selecting this unseen task, correct the generic extension.install postcondition so local VSIX installation resolves the actual registered extension ID from before/after CLI inventories instead of assuming package metadata is preserved byte-for-byte. The change is reusable across arbitrary VSIX files and is unrelated to Python variable visualization. Measure Order 189 once on a fresh VM and immutable result directory.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_extension_inventory_v178_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. By default try one materially different, high-value generic hypothesis with one targeted A/B. A second or third hypothesis is exceptional and requires concrete new evidence plus clear cross-task reuse; three remains the absolute ceiling. After multiple attempts still fail, or once another task-local variant has low expected value, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "untouched_baseline",
+    "hypothesis_class": "none_unchanged_candidate",
+    "parent_task_implementation_evidence_inherited": false,
+    "preceding_shared_correction": {
+      "class": "generic_vsix_before_after_inventory_postcondition",
+      "trigger_evidence": "experiments/generic-only-coverage-order188-extension-source-v177-run1/results.json",
+      "behavior": "Resolve an installed local extension by exact manifest identity when available, otherwise by a unique newly registered extension or a unique matching extension name; return the actual CLI identity for worker verification.",
+      "focused_tests": "692 passed",
+      "full_non_guest_tests": "2173 passed",
+      "ruff_and_format": "passed",
+      "compileall": "passed",
+      "project_layout_and_leakage": "passed",
+      "frozen_v1_hashes": "passed",
+      "osworld_evaluator_tree": "frozen_commit_clean",
+      "source_sha256": {
+        "vscode_adapter/extensions.py": "0d5b897c567c6e00e3d77fbf90e8bfbc211fa494a73673e432ef271edc5edef8",
+        "vscode_adapter/actions.py": "b372ea49ee2d1574a36b811fc0317981c01b23812613e92019e6e8bd2f3cb076",
+        "vscode_adapter/verifier.py": "578bd7bfde6b3ad2860d533ffe307b54da6b2f3ebda8ea354bd6e2a4f25bdf77",
+        "tests/unit/test_vscode_files.py": "584d4adbbc96dc012379ed31b2df781c63bb6c080d24491bdf43f704f8a8824a",
+        "tests/unit/test_vscode_tasks_verifier.py": "97d0790123457c691cf179aa7e71e834d1342032b604e8c3d8aa24d55d9abfe0"
+      }
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 189,
+      "source_order": 336,
+      "domain": "vs_code",
+      "task_id": "7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
+      "source_episode_id": "ed3ddb3c14242dc6fbd5d5f3",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "aaf1c3babae32996e9cb2bc599985ac9abbc48cee432bbec1ae899a932aba18f",
+      "execution_class": "generic_api_only",
+      "source_execution_class": "generic_api_only",
+      "pool_order": 189
+    }
+  ]
+}

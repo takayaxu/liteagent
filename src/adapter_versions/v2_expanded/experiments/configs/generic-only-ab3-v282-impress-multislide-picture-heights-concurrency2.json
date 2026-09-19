@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v282-impress-multislide-picture-heights-concurrency2",
+  "status": "frozen",
+  "purpose": "Carry-forward development A/B for the reusable strict picture.set_size contract and per-target completion staging already present in accepted candidate v282. It runs one unresolved v252 multi-slide picture-height failure, one same-mechanism accepted control, and one clean control exactly once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v282",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v282.json",
+    "candidate_manifest_sha256": "5e9bf4b1cbb5d6b73c8dc0c7fa77693ec88359eceedb516a5adefa7635c5a1a5",
+    "candidate_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v282-impress-visual-textbox-order.json",
+    "candidate_disposition_sha256": "145a16ee1499b6b635b969cf9ac6e4711f366855a08b083ea878b67ff6da6ea1",
+    "source_change_for_this_condition": false,
+    "active_runtime_and_test_tree_sha256": "fd0e4cfc43d8d1ad3a54ad25a48589f00e6cb84230ca87ea3e150708251ef9ed"
+  },
+  "hypothesis": {
+    "generic_cluster": "multislide_physical_picture_height_completion",
+    "statement": "The generic picture.set_size contract and strict per-target completion staging added after v252 should prevent the model from changing only the first requested slide and then claiming that all requested picture heights are complete. Each executed call must contain the model-selected one-based slide number, semantic picture role, and physical measurement unchanged; the Adapter may resolve only that explicit role against live presentation geometry.",
+    "v252_observation": "Order 55 changed one shape on slide 3 with shape.set_geometry, then claimed that slides 3, 4, and 6 were all complete. The original evaluator returned zero.",
+    "counterfactual_support": [
+      "picture.set_size supports a different single-slide foreground picture in inches without converting units in the model call.",
+      "The same contract supports an explicit slide-cover role and a width measurement instead of a height measurement.",
+      "Per-target completion staging continues to require every distinct slide and requested physical value before completion.",
+      "Zero or multiple live candidates for the selected semantic role fail closed before mutation."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v282-order55-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "57706d23f0f5fbc2c5aa7eca8b52d09903f3b30cacf5b1e72fe6e12c24e70d2f",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "same_mechanism_control_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-ab3-v272-impress-navigation-routing-concurrency2.json",
+    "same_mechanism_control_config_sha256": "0ece599ab130d540af9f5eec247b66ddda00d77c57606a5e1ac8d38c1915186b",
+    "same_mechanism_control_results": "adapter_versions/v2_expanded/experiments/generic-only-ab3-v272-impress-navigation-routing-concurrency2-run1/results.json",
+    "same_mechanism_control_results_sha256": "9ef4de02fbc68c7e0816f9464440711adfe90925f8230f818a5e56376fe44502",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 55 is the queued high-confidence v252 failure whose first correct mutation was followed by a false multi-target completion claim. Order 60 previously passed with the same semantic picture-size contract, while source-adjacent Order 58 passed both v252 and v272 and serves as a clean control.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v282_impress_multislide_picture_heights_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed-189 source order for Orders 55, 58, and 60. Round-robin assignment gives Orders 55/60 to DGX1 and Order 58 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [
+      55
+    ],
+    "same_mechanism_control_orders": [
+      60
+    ],
+    "clean_control_orders": [
+      58
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "same_mechanism_controls_must_pass": 1,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "all_requested_picture_targets_must_be_adapter_confirmed": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T00:25:01Z",
+  "tasks": [
+    {
+      "order": 55,
+      "source_order": 146,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "cohort_role": "affected_multislide_picture_height_completion_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_source_adjacent_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "same_picture_size_contract_control",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

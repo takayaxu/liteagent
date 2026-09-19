@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  liteagent-shared-osworld:
+    image: happysixd/osworld-docker:latest
+    container_name: liteagent-shared-osworld
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/kvm:/dev/kvm
+    environment:
+      DISK_SIZE: "32G"
+      RAM_SIZE: "4G"
+      CPU_CORES: "4"
+    volumes:
+      - "${OSWORLD_QCOW2:?set OSWORLD_QCOW2 to the shared Ubuntu.qcow2}:/System.qcow2:ro"
+    ports:
+      - "127.0.0.1:${OSWORLD_CONTROL_PORT:-5020}:5000"
+      - "127.0.0.1:${OSWORLD_VNC_PORT:-8020}:8006"
+      - "127.0.0.1:${OSWORLD_VNC_RAW_PORT:-5920}:5900"
+      - "127.0.0.1:${OSWORLD_CHROME_PORT:-9236}:9222"
+      - "127.0.0.1:${OSWORLD_VLC_PORT:-8095}:8080"
+      - "127.0.0.1:${OSWORLD_CALC_PORT:-8905}:8765"
+      - "127.0.0.1:${OSWORLD_IMPRESS_PORT:-8906}:8766"
+      - "127.0.0.1:${OSWORLD_CHROME_ADAPTER_PORT:-8907}:8767"
+      - "127.0.0.1:${OSWORLD_GIMP_PORT:-8908}:8768"
+      - "127.0.0.1:${OSWORLD_OS_PORT:-8909}:8769"
+      - "127.0.0.1:${OSWORLD_WRITER_PORT:-8910}:8770"
+      - "127.0.0.1:${OSWORLD_VSCODE_PORT:-8911}:8771"
+      - "127.0.0.1:${OSWORLD_VLC_ADAPTER_PORT:-8912}:8772"
+      - "127.0.0.1:${OSWORLD_THUNDERBIRD_PORT:-8913}:8773"
+      - "127.0.0.1:${OSWORLD_MULTI_APPS_PORT:-8914}:8774"

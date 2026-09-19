@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-recovery-latest-ab107-187-thinking4k-dgx1-concurrency2",
+  "status": "frozen",
+  "purpose": "Exploratory affected/control validation of structured observation and bounded recovery on a cross-application PDF-to-Calc workflow. Order 107 is a prior v337 failure; Order 187 is a stable same-domain-independent control. The provider highest thinking mode is explicitly enabled with a bounded 4096-token response budget. This condition is non-promotable and is not a baseline.",
+  "freeze_timestamp": "2026-08-29T15:12:00Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "candidate_commit": "3c13d0f6aa529a5fdd5e697996589392e4385eaa",
+    "hypothesis_report": "adapter_versions/v2_expanded/docs/archive/recovery-context-architecture-fix-2026-08-29.md",
+    "selection_uses_prior_outcome": true,
+    "prior_outcome_label": "v337_failed_affected_plus_stable_control"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "3c13d0f-latest-recovery-ab107-187-thinking4k-dgx1",
+    "role": "development_architecture_diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-recovery-latest-ab107-187-thinking4k-dgx1-concurrency2-run1",
+    "source_git_commit": "3c13d0f6aa529a5fdd5e697996589392e4385eaa",
+    "source_dirty": false,
+    "source_tree": {
+      "scope_roots": ["integrations", "scripts", "tests", "deployment", "calc_adapter", "chrome_adapter", "gimp_adapter", "impress_adapter", "multi_apps_adapter", "os_adapter", "thunderbird_adapter", "vlc_adapter", "vscode_adapter", "writer_adapter"],
+      "excludes": ["__pycache__", ".pytest_cache", ".ruff_cache", ".venv*", "*.pyc"],
+      "file_count": 403,
+      "total_bytes": 54015469,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "6cc67979772fb5d9f0bd6935adf7bc55c6889c630a864c8ae06b869b8342fd09"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_recovery_context_projection_pathcwd_3c13d0f",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "thinking_highest_provider_mode_budget4096",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 600.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_bounded_recovery_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "resume": false,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "selection_uses_prior_outcome": true,
+    "non_promotable": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one prior v337-failed affected task plus one stable control under the latest source; no result replacement",
+    "selected_count": 2,
+    "affected_orders": [107],
+    "control_orders": [187],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "prior_outcome_label": "v337_failed_affected_plus_stable_control",
+    "baseline_candidate": false,
+    "non_promotable": true
+  },
+  "tasks": [
+    {
+      "order": 107,
+      "domain": "multi_apps",
+      "task_id": "881deb30-9549-4583-a841-8270c65f2a17",
+      "source_order": 216,
+      "cohort_role": "affected_v337_failed",
+      "prior_outcome": "v337_failed"
+    },
+    {
+      "order": 187,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "source_order": 334,
+      "cohort_role": "stable_control"
+    }
+  ],
+  "diagnostic_gate": {
+    "pre_registered_before_result": true,
+    "expected_tasks": 2,
+    "runs": 1,
+    "promotion_eligible": false,
+    "success_criterion": "Order 107 passes with a live observed directory/cwd handoff and Order 187 remains passed under this same frozen source/model/reasoning/protocol condition",
+    "stop_condition": "If either task fails, times out, fails to exercise the observed-directory handoff, or model transport remains blocked through the time box, preserve evidence and do not rerun or promote this condition"
+  }
+}

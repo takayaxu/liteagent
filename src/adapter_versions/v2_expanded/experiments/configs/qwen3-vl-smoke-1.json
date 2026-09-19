@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "experiment_id": "qwen3-vl-4b-openapa-smoke-1",
+  "status": "planned",
+  "purpose": "Validate one end-to-end Qwen3-VL plus OpenAPA plus v2 Adapter OSWorld task without changing the fixed GPT small-round results.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "qwen3-vl-4b-instruct",
+    "actual_model_preflight": "qwen3-vl-4b-instruct",
+    "main_and_grounding_same_model": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 20,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "oauth_excluded": true
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "domain": "libreoffice_impress",
+      "task_id": "a097acff-6266-4291-9fbd-137af7ecd439",
+      "execution_class": "generic_atomic_api"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order182-workspace-schema-v167",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 182 after the baseline showed that the model-visible workspace.write contract was an untyped params wrapper even though the Adapter already required structured path and folders fields.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order182-v166.json",
+  "candidate_parent_config_sha256": "4043710b653b41cbbf7a9107c7817030ce64e55694e8f2db59bd872041ecbb58",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "dcc7c3cd47a6602f5c561537b273ef2a553cd32e65f92b4f56b59aeada04ee72",
+  "change_scope": "Make workspace.write and workspace.set_folders direct strict schemas owned by the VS Code Adapter. The model selects the .code-workspace output path and every folder entry unchanged; the existing Adapter converts eligible absolute folder paths to portable relative paths, writes JSON, and verifies it. No task identity, requested workspace name, fixed path, answer value, instruction parser, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_workspace_schema_v167_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass after the direct workspace schema is deployed, mark Order 182 task_blocked immediately and advance to Order 183. Do not add a task-local workspace name, fixed output path, default folder, instruction parser, GUI sequence, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_adapter_owned_workspace_schema",
+    "baseline_result": "experiments/generic-only-coverage-order182-v166-run1/results.json",
+    "baseline_result_sha256": "171852227157d216871d2b3f2a3ac6b94567a5721b883f04c017e49db0db5e69",
+    "baseline_audit": "experiments/generic-only-coverage-order182-v166-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "9aaafa4d5d87e4c6f7a66f8b4f9ec1bd93f9c458598973e0a0d9068cd4e21f58",
+    "baseline_outcome": "failed_reward_0_model_opened_the_project_then_repeated_workspace_write_with_params_as_an_empty_string_because_no_direct_action_schema_existed",
+    "counterfactual_contracts": [
+      {
+        "params": {
+          "path": "/home/user/alternate/research.code-workspace",
+          "folders": [
+            {
+              "path": "/home/user/alternate/analysis",
+              "name": "Analysis"
+            },
+            {
+              "path": "/home/user/shared-data"
+            }
+          ]
+        },
+        "expected": "A structurally different multi-root workspace is accepted; the colocated folder becomes portable and the external folder remains absolute."
+      },
+      {
+        "boundary": "LiteAgent normalize_adapter_arguments",
+        "expected": "The model-selected output path, folders, and optional display names reach the Adapter unchanged."
+      }
+    ],
+    "focused_tests": "29 passed across workspace Adapter, schema, strict manifest, catalog, and Runtime boundary tests",
+    "full_non_guest_tests": "2144 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/tool_manifest.py": "00a386f2b06c9bd7a7c8a219dad0cf9be7db14725adbbc9323de402238906545",
+      "integrations/openapa_osworld/tool_catalog.py": "aa4e8f6aa00e192952d0cca0a7be1e6b2c4be659b6a86111185d80a1dfeb9199",
+      "tests/unit/test_vscode_files.py": "1bb855f31cc119973498eda6c172d6d1fc90a20ebd45f18e1272ec3d8dfa6842",
+      "tests/unit/test_lite_agent_tool_catalog.py": "cdb6c00cbe20018a47a8ddac0269dc2068cb5fbe92c29508053c639c0ae6faee",
+      "tests/unit/test_lite_agent_strict_schema_manifest.py": "92bf624fc9d414872b757862d59016335a30507789448554a1863f727043ac82",
+      "tests/unit/test_lite_agent_runtime.py": "67b830e86ae4e97934ad6929ea0788d07ff2b451fbfc5de8a48a7c6dd94db4b5"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 182 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 182,
+      "source_order": 329,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_episode_id": "394d579e865649789125ca98",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "434725739b32f54363f72ffa26e8b83d41d3a591b18a2450c74daa5e0b2bddc9",
+      "execution_class": "generic_api_only",
+      "pool_order": 182
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order126-router-v136",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 126 hypothesis 2: recognize ordinary plural presentation wording and preserve model-requested direct actions after explicit catalog search.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order126-current-frame-background-v135.json",
+  "candidate_parent_config_sha256": "59badb7044809f046334249851e575f33fe5f21c5b3b77d516f8785f7ea35aa7",
+  "parent_attempt_result": "experiments/generic-only-coverage-order126-current-frame-background-v135-run1/results.json",
+  "parent_attempt_result_sha256": "77b604645cf609a939f914de11e0bd6d21fd6624b200687f71c1b5811102898c",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order126-current-frame-background-v135-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "6e818a777527522d8e5073232bf460a85fb57d6abd5bb35e5b0aebd5dace1804",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "6d9b425bff6643af25b148e46bbd6ad2cf918c4956f16e22101301367da30de9",
+  "change_scope": "Extend generic presentation subject intent with ordinary plural deck/presentation/slide forms. Preserve strict initial gates for media.extract_current_frame and presentation.set_background_image, but let an action explicitly selected through tools_search enter the next model tool surface. No task identity, dataset order, fixed path, answer, golden material, evaluator state, Runner argument rewrite, workflow, or application mutation is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_search_expansion_router_v136_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the searched background action is exposed and selected, whether frame/background mutations succeed, and whether completion is grounded. Consider at most one further materially different generic hypothesis only if the trace demonstrates shared high-value leverage; otherwise mark Order 126 task_blocked and immediately continue to Order 127.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "plural_presentation_intent_and_explicit_search_expansion",
+    "failure_evidence": "In v135, Qwen successfully called media.extract_current_frame at step 1 with timestamp=8 and produced verified frame index 240. It then searched repeatedly for presentation.set_background_image and received that direct action as the first search match, but the following model request did not contain the tool. The generic router recognized singular slide but not the instruction's plural slides, and its strict background gate discarded the action even after tools_search added it to expanded_actions.",
+    "counterfactual_tests": "Tests use a paraphrased current-video frame request with plural opened slides, explicitly expand both direct actions from an initially unrelated instruction, assert that the next build_tools surface contains each searched action, and verify that unrelated audio, PDF, and speaker-note presentation requests do not receive either facade.",
+    "focused_unit_suite": "86 passed",
+    "full_unit_suite": "1920 passed",
+    "static_verification": "Ruff lint and modified-file format checks, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. Regression validation remains deferred by user instruction.",
+    "source_sha256": {
+      "integrations/lite_agent/tool_catalog.py": "40d6391da64322c4b2f3bfe71d3e51e715b1fdcab6ff0abe355d503d4bc7d97b",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py": "0f458faf1b1c12f985632c874d8a3aa4a32297866dbb2db4976bb91133710ce8"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 126 v135 catalog-search exposure failure",
+    "selected_count": 1,
+    "prior_development_status": "generic_hypothesis_1_failed_preserved_in_generic-only-coverage-order126-current-frame-background-v135-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 126,
+      "source_order": 252,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "source_episode_id": "ac71c2df71df07bca8ecfeee",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "58684aae255f4c278e57647ce8ec2e2f10acf657766cdb7676b27ef4dc46d6bf",
+      "execution_class": "task_specific",
+      "pool_order": 126
+    }
+  ]
+}

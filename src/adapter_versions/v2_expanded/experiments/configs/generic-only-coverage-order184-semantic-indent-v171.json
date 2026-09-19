@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order184-semantic-indent-v171",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 184 after the untouched baseline selected file.indent_lines from the first step but could not express its legacy nested params wrapper and never executed an action.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order184-v170.json",
+  "candidate_parent_config_sha256": "2df44c34d57720257da76479561ef94388e0eda81c6a95e074ec2882ee569c73",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a87f63ad2e4d27a5992ad8b42cd8d7e7f0422d191d900613051b5f23deb54852",
+  "change_scope": "Make file.indent_lines a direct strict schema owned by the VS Code Adapter. The model selects the absolute path, one-based inclusive line range, and number of indentation levels unchanged. The Adapter detects tabs versus spaces and the existing indentation width from the current file, prefixes the selected lines, writes atomically, and verifies exact text. Legacy explicit indent remains Adapter-only compatibility. No task identity, fixed path, line range, answer text, instruction parser, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_semantic_indent_v171_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass, mark Order 184 task_blocked immediately and advance to Order 185. Do not add a fixed file path, fixed line range, fixed whitespace literal, task-local parser, GUI sequence, Runner argument injection, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_adapter_owned_semantic_indentation_contract",
+    "baseline_result": "experiments/generic-only-coverage-order184-v170-run1/results.json",
+    "baseline_result_sha256": "7513ce75b1d69719989ed26c5297d1ff4a2e9c0d96a8c3f7a438053861c0f9ed",
+    "baseline_audit": "experiments/generic-only-coverage-order184-v170-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "2d66089568ae3ac3e07aff76862a0821a99d64b751f8dd09026d5565fd793a18",
+    "baseline_outcome": "failed_reward_0_model_selected_the_correct_action_but_the_legacy_wrapper_schema_produced_empty_string_params_and_no_successful_action",
+    "counterfactual_contracts": [
+      {
+        "input": "A structurally different source file with four-space nesting; model selects lines 2 through 4 and levels=1.",
+        "expected": "The Adapter detects four spaces and prefixes exactly those inclusive lines with one level."
+      },
+      {
+        "input": "A tab-indented text hierarchy; model selects one line and levels=2.",
+        "expected": "The Adapter detects a tab unit and prefixes the line with exactly two tabs."
+      },
+      {
+        "boundary": "LiteAgent normalize_adapter_arguments",
+        "expected": "The model-selected path, one-based range, and levels reach file.indent_lines unchanged."
+      }
+    ],
+    "focused_tests": "669 passed across VS Code Adapter, schema, strict manifest, catalog, and Runtime boundary tests",
+    "full_non_guest_tests": "2159 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/tool_manifest.py": "c004da54684ba63b4405fa01697c9af7c5daf08e7d3d8508225db60f999b00ae",
+      "vscode_adapter/schema.py": "9b2ec9d46d9af62c2ad75fca0abb6f51243fc95f74526fb4bbfc093315ac8e42",
+      "vscode_adapter/actions.py": "c4bb129e8483903fec6bb0e46c38e091d626e669ed46629569a486eb7b28fc78",
+      "integrations/openapa_osworld/tool_catalog.py": "052b07c90a9dc19d9a0755c2a0ec3700206465a1478bd61bbe5d3b89c7618767",
+      "tests/unit/test_vscode_files.py": "232b2a4845a7afd0e7dc48910c5c023434e14518ed16d9b8d58bcbca8902d8cb",
+      "tests/unit/test_vscode_schema.py": "44ced1de3d2c4cdd111390619b964e6b63990843db90f263a27c47a4a2bc2010",
+      "tests/unit/test_lite_agent_tool_catalog.py": "897a4cbe985574e659ade1b5f0e7d6d53036c53683cc3902d4bf348c529091f9",
+      "tests/unit/test_lite_agent_strict_schema_manifest.py": "de510296ae0ce7629b2f6eb4615f5d714f268ab8978c989970de085c0a54951b",
+      "tests/unit/test_lite_agent_runtime.py": "3e112a688c3d9bec679fa30852ccd0ab171613a8718864443e2ccd0c71f93d8b"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 184 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 184,
+      "source_order": 331,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "source_episode_id": "7876be02361fd1962d39fe37",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "27a5f14e8cad90e39ecf9bee5647b95aec42cfc151fa6efb68e49479eed1dc63",
+      "source_execution_class": "generic_api_only",
+      "execution_class": "generic_api_only",
+      "pool_order": 184
+    }
+  ]
+}

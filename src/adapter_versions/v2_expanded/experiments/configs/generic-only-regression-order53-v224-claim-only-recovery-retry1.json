@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order53-v224-claim-only-recovery-retry1",
+  "status": "frozen",
+  "purpose": "Environment-only replacement for the immutable v224 run1 startup failure. It evaluates the same third and final Order 53 hypothesis with identical code and conditions, adding only the OpenAPA commit field required by the current Runner.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order53-v224-claim-only-recovery.json",
+  "parent_config_sha256": "fa0a040809701896cbd5b2f7b786d408b2649ef6e0b66ea88fc154cb0890bbdc",
+  "hypothesis": "When structural completion evidence is already satisfied, classifying contradictory completion text as claim_only will give truthful recovery guidance and let the model terminate without repeating task actions or using GUI.",
+  "change_scope": "No runtime or task condition changed from v224. The only configuration addition is openapa_commit=147b98491f0ea0af0bad88f43ce4565ac20b52d6, verified from the frozen third_party/OpenAPA checkout. The original v224 run1 remains immutable environment-failure evidence.",
+  "sources": {
+    "v224_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order53-v224-claim-only-recovery.json",
+    "v224_config_sha256": "fa0a040809701896cbd5b2f7b786d408b2649ef6e0b66ea88fc154cb0890bbdc",
+    "v224_environment_failure": "adapter_versions/v2_expanded/experiments/generic-only-regression-order53-v224-claim-only-recovery-run1/results.json",
+    "v224_environment_failure_sha256": "a3d5a080d6222d536b34cc7b965177cb232a7982edeba46ddee59164f8a02c0b",
+    "environment_failure_reason": "RunnerExit code 1 before VM/model execution because the frozen config lacked the currently required openapa_commit key",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "completion_policy_sha256": "bfb0b28a8b19ee3e9339bf59072b3ab7986dec22e210a7b60057c86df6915828",
+    "completion_policy_tests_sha256": "9b9de4d7dc2383726c35f99270db6a767159e68770e3fd5150b6cd1d4d78559d",
+    "runtime_tests_sha256": "8a125ee5995f2b53142bba0f6ffb6e386dff2c2f7cc16e396f5348a5a4f50d3a",
+    "focused_tests": "71 passed",
+    "unit_tests": "2450 passed",
+    "ruff": "passed for active source and all changed tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged",
+    "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded_generic_only_claim_only_recovery_v224_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "environment-only retry of the same third hypothesis after a pre-execution config failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T21:39:19Z",
+  "tasks": [
+    {
+      "order": 53,
+      "pool_order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+results/
+run-output/
+src/adapter_versions/v2_expanded/experiments/work/
+src/third_party/OSWorld/cache/
+src/third_party/OSWorld/docker_vm_data/

@@ -1,0 +1,188 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-raster-recovery-gate5-v415-concurrency4",
+  "status": "frozen",
+  "purpose": "Prior-outcome-selected causal validation of v415 exact embedded-picture selectors and verified raster-output read-back finalization on two affected failures plus three stable historical-pass controls. This diagnostic is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-27T02:49:49.505185Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v405-remaining27/selection.json",
+    "selection_record_sha256": "83008d6f965122af5273987d49239adde0078b4016db487b786f940419a6814c",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v415-exact-raster-finalization/source-seal.json",
+    "source_seal_sha256": "34a6340752abd16afaeac3a588ac3fcc87d9d03ed897d257015e890ed18b9669",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v415-exact-raster-finalization/strict-tool-granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "07b81cb3b24239a90c6cf2706295b575a74c03c1085ee306cb7ca481597da03b",
+    "smoke_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-clean-boundary-smoke2-v415-exact-raster-finalization-concurrency2.json",
+    "smoke_config_sha256": "a956a8ca987b6c714c7dbed8ae8a93be8e09bde2cc2b6127446cff15d8d26829",
+    "smoke_results": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v415-exact-raster-finalization-concurrency2-run1/results.json",
+    "smoke_results_sha256": "0f53c2c2b34cf4fe2d780d026c849e7b4da13a3f798bb2f0a47dd7eaf60576b0",
+    "smoke_worker_audit_sha256": {
+      "worker_01": "dc1a4891fc2346cd7bf5f1725a995c815baba389a2499e45a5a06e6a9fdeeaa0",
+      "worker_02": "045a25f02194d34cdc5a08809cb9cccaeae491781dce6c4a1d0d95ab344cac36"
+    }
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v415-exact-raster-finalization-gate5-concurrency4",
+    "role": "diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-raster-recovery-gate5-v415-concurrency4-run1",
+    "source_tree": {
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 842,
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "sha256": "6675e3beb35fb9bf567b761f621d8f6cdad18ebc7c9ab58769dfec3d1c29768f",
+      "total_bytes": 64361865
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v415_exact_raster_finalization_experimental",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 4,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_search_generic_input_discovery_typed_artifact_staging_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "orders 119 and 129 exercise changed reusable contracts; orders 55, 61, and 90 are stable historical-pass controls",
+    "selected_count": 5,
+    "affected_orders": [
+      119,
+      129
+    ],
+    "control_orders": [
+      55,
+      61,
+      90
+    ],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 55,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_order": 146
+    },
+    {
+      "order": 61,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "source_order": 152
+    },
+    {
+      "order": 90,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_order": 186
+    },
+    {
+      "order": 119,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "source_order": 237
+    },
+    {
+      "order": 129,
+      "domain": "multi_apps",
+      "task_id": "91190194-f406-4cd6-b3f9-c43fac942b22",
+      "source_order": 261
+    }
+  ]
+}

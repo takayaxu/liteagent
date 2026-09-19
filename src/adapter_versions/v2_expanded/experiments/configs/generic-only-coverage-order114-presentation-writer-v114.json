@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order114-presentation-writer-v114",
+  "status": "frozen",
+  "purpose": "Order 114 hypothesis-1 A/B: test exact current-presentation inspection followed by a parameterized presentation-text-to-Writer operation selected and fully parameterized by the model.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order114-v113.json",
+  "candidate_parent_config_sha256": "c5af98ee09bf7b3086b18f3967a8be61801722d7b6842e14efd12752505e451c",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "00b05ea37a2e7166f6e74be3fb7e500e396f75fee0484df893ab39286443d284",
+  "change_scope": "Preserve v113 and add presentation.inspect_current plus document.create_from_presentation as generic Multi-Apps facades. Inspection returns the exact active Impress URL and structural content. The model then supplies source_path, output_path, and all options unchanged. Writer extracts selected nonempty slide text, optionally notes and automatic fields, saves DOCX, reopens it, and verifies every paragraph.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_presentation_writer_v114_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this hypothesis-1 A/B, classify the new failure, and do not rerun it unchanged. At most two further materially different generic hypotheses remain before marking Order 114 task_blocked and advancing.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3",
+    "hypothesis_class": "missing_generic_cross_application_capability_and_source_identity",
+    "parent_ab_result": "experiments/generic-only-coverage-order114-v113-run1/results.json",
+    "parent_ab_result_sha256": "ed0c1908df9386dfb0ff082c7aad3b3cb3e639077ed6c39b5458eb1987b9f147",
+    "parent_ab_audit_sha256": "b9f9482c1c65eec8df630449cb945c221ee628623cedb3058d155a03af641d06",
+    "parent_ab_reward": 0.0,
+    "parent_ab_diagnosis": "The untouched v113 model repeatedly guessed a nonexistent presentation.odp path and selected conversion or Writer-file readers that could not inspect the open PPTX. No successful action ran and script.docx was never created.",
+    "model_facing_actions": [
+      "presentation.inspect_current",
+      "document.create_from_presentation"
+    ],
+    "model_facing_arguments": [
+      "source_path",
+      "output_path",
+      "include_notes",
+      "include_auto_fields",
+      "overwrite"
+    ],
+    "model_argument_policy": "Inspection accepts no arguments and returns the exact active presentation identity. Every create argument is copied unchanged from the captured structured model call through the Multi-Apps facade. Runtime code has no task identity, instruction parser, fixed filename, answer, golden, or evaluator access.",
+    "candidate_bundle_sha256": "849b1bfadda12b030bd0d2e3016acfe913c180096801081a0622d692c71a4baf",
+    "candidate_bundle_hash_method": "SHA-256 of the sorted newline-delimited sha256sum output for the 11 modified production modules listed by this hypothesis.",
+    "focused_tests": "510 focused tests and the complete 1767-test unit suite passed. Ruff, compileall, project layout, deployment leakage, frozen-v1 SHA256SUMS, and OSWorld commit/evaluator-tree checks passed.",
+    "counterfactual": "Tests use unrelated PPTX/ODP identities, output paths, slide counts, grouped shapes, table text, notes, automatic fields, overwrite options, and fake create-save-reopen state. No Order 114 task ID, filenames, source content, expected output, golden data, or evaluator values are present in runtime code.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first targeted generic A/B for Order 114 in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 114,
+      "source_order": 230,
+      "domain": "multi_apps",
+      "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "source_episode_id": "2c349e590817f3ec59453a79",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c12aa9e3be77882b4b46b4e878389dbd454147105939095f4d436eaf2076cda4",
+      "execution_class": "golden",
+      "pool_order": 114
+    }
+  ]
+}

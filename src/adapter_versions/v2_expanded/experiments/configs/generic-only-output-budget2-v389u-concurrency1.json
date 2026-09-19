@@ -1,0 +1,193 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-output-budget2-v389u-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen two-task diagnostic of one token-budget factor. Relative to v389t, the source tree, v16 work-state protocol, Router, tools, Adapter contracts, transport, model, VM, evaluator, step budget, timeout, retry policy, and concurrency are unchanged; only max_output_tokens increases from 512 to 1024. The target is the v389t terminal transport failure and the control is the v389t mutation-evidence recovery. This outcome-informed condition cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-22T08:21:00Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v389u-output-budget2/plan.json",
+    "prospective_plan_sha256": "28f4c0aafcd7a4fab2725ee782fa38b8f35d0f2d2b09e862d216f6fb4f2ac277",
+    "v389t_summary": "adapter_versions/v2_expanded/experiments/analysis-v389t-model-authored-evidence-effect4/summary.json",
+    "v389t_summary_sha256": "3eba6793b622090be3bb17290c0807a3bfe47268a74a634f4e0e18cbfcdd1360",
+    "strict_action_contracts_sha256": "2b55149d1d69bda32e23bfffa28aaa85f026d86a2d5a3e87b22991d9b20b3449",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v389t-model-authored-evidence-effect4/granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "2bc4bdb7dd350e2a419ec46223737225d7328ca720a11f909a86becd149b6c11",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v389u",
+    "role": "development_output_budget2",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-output-budget2-v389u-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 800,
+      "total_bytes": 63907362,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "78382cc024470018497c12aebc0b586e44339a987ee6a232e1d87a953d391473"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v389u_output_budget2_2026-08-22",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 1024,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_authored_state_protocol": "collection_evidence_effect_patch_v16",
+    "initial_work_state_observation_mode": "instruction_only",
+    "model_tool_transport_mode": "stream_first_complete_object_call",
+    "maximum_uncheckpointed_execution_events": 4,
+    "model_retries": 3,
+    "request_timeout": 180,
+    "docker_api_timeout_seconds": 180,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20,
+      "minimum_elapsed_before_first_model_seconds": 85
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "unchanged target and recovered control selected from the completed v389t four-task condition",
+    "selected_count": 2,
+    "failed_target_count": 1,
+    "stable_pass_control_count": 1,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "changed_factor": "max_output_tokens 512 to 1024",
+    "unchanged_factors": [
+      "exact v389t source tree and source seal",
+      "v16 work-state prompt, schema, role validation, checkpoint policy, and completion gate",
+      "v389t public routing, ranking, Top-K membership, search behavior, and GUI fallback",
+      "stream_first_complete_object_call transport and strict execution validation",
+      "application APIs, Adapter request contracts, and mutation semantics",
+      "Qwen/Qwen3.5-4B, non-thinking mode, temperature zero, and retry policy",
+      "30 steps, 300 Agent seconds, single endpoint, concurrency one, fresh VM per task, and original evaluator"
+    ],
+    "success_criteria": {
+      "tasks_completed": 2,
+      "passes_minimum": 2,
+      "environment_failures": 0,
+      "model_propose_done_terminations": 2,
+      "terminal_output_token_truncations": 0,
+      "completed_state_change_outcomes_with_readback_primary_evidence": 0,
+      "model_selected_effect_or_evidence_argument_rewrites_or_injections": 0,
+      "invalid_leakage_or_evidence_episodes": 0,
+      "strict_audit_v5_all_valid": true,
+      "transport_reconstruction_mismatches": 0,
+      "model_tool_action_mismatches": 0,
+      "adapter_or_gui_trace_mismatches": 0,
+      "baseline_pointer_unchanged": true
+    },
+    "stop_rules": {
+      "runs_maximum": 1,
+      "rerun_same_condition": false,
+      "advance_to_gate30": false,
+      "advance_to_confirmation60_or_fixed189": false
+    }
+  },
+  "tasks": [
+    {
+      "order": 76,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_order": 167,
+      "development_stratum": "workflow_completion"
+    },
+    {
+      "order": 182,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_order": 329,
+      "development_stratum": "workflow_completion"
+    }
+  ]
+}

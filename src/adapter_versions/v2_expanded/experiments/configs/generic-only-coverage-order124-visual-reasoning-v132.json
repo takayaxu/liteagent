@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order124-visual-reasoning-v132",
+  "status": "frozen",
+  "purpose": "Single bounded targeted A/B for Order 124 hypothesis 2: enable the model's generic thinking mode after v131 exposed the correct visual-file tools but the non-thinking model repeatedly reopened clear landmark images without retaining identities or producing valid rename paths.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order124-visual-file-routing-v131.json",
+  "candidate_parent_config_sha256": "ca1dda1057df315f22dd3539280e001d6c54c214ee49d73c1b9a454d62e2a0d5",
+  "parent_attempt_result": "experiments/generic-only-coverage-order124-visual-file-routing-v131-run1/results.json",
+  "parent_attempt_result_sha256": "d344061fa8d5ffa6656f13b856e19bc1ec41d969754ed818392a8c6fc36033c3",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order124-visual-file-routing-v131-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "f92a1be6a6f0bbcfcb9948248ff2c1001bd6cd1a563d05c557bedf64dd4b5908",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "9ad983ac42e621f662225ac6fdff1afe6b87ce2490032a4002e2622f9f81dcc5",
+  "change_scope": "Keep the v131 generic tool surface unchanged and enable Qwen thinking so visual observations can be related to exact source paths before the model selects filesystem.move. Increase the output-token ceiling only to accommodate thinking tokens. Apply a stricter 20-step and 300-Agent-second supervision budget so a repeated visual cycle terminates promptly. No task identity, dataset order, filename-to-landmark mapping, mountain name, image hash, golden material, evaluator state, argument injection, or task workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_visual_reasoning_v132_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 20,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 1024,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and strictly audit this A/B, mark Order 124 task_blocked without a third hypothesis, and immediately continue to Order 125.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "generic_model_visual_reasoning_and_bounded_supervision",
+    "failure_evidence": "v131 found all three exact image paths at step 1 and opened all three by step 4. The screenshots clearly showed distinct landmarks, but the non-thinking model cycled through desktop.open_path for the remainder of the episode. Its only filesystem.move used source and destination both equal to ~/, so no requested rename occurred and the evaluator returned 0.0.",
+    "runtime_code_change": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single bounded targeted A/B for the preserved Order 124 v131 visual-recognition and state-retention failure",
+    "selected_count": 1,
+    "prior_development_status": "baseline_and_generic_hypothesis_1_failed_with_strict_valid_evidence",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 124,
+      "source_order": 247,
+      "domain": "multi_apps",
+      "task_id": "ce2b64a2-ddc1-4f91-8c7d-a88be7121aac",
+      "source_episode_id": "b2bbf41eb2b8f3d6c35f86bf",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "9fa53cbd3329e100a1b476322abe4f29fd7d12b0c62eec85c3630c571f2c0ee5",
+      "execution_class": "task_specific",
+      "pool_order": 124
+    }
+  ]
+}

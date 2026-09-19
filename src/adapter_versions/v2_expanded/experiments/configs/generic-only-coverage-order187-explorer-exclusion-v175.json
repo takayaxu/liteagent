@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order187-explorer-exclusion-v175",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 187 after the untouched baseline selected a generic settings API but expressed nested Explorer matching as a root-only pattern.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order187-v174.json",
+  "candidate_parent_config_sha256": "e84f3ab50701eb9c61ed8da9c0b2ae4498c8f8d230bf85fd6832f19a3e1d104c",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "51122d40a774eba43453e7ae4b9465d811a39a328fd62d09c7d18837e99bfac2",
+  "change_scope": "Add an Adapter-owned explorer.set_exclusion contract. The model selects the file or folder pattern, semantic scope, hidden state, and optional settings path unchanged. The Adapter maps any_depth or workspace_root semantics to files.exclude, deep-merges the selected entry with current settings, writes atomically, and verifies the exact subset. No task identity, fixed pattern, expected answer, instruction parser, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_explorer_exclusion_v175_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass, mark Order 187 task_blocked immediately and advance to Order 188. Do not add a fixed pattern, expected setting value, task-local parser, GUI sequence, Runner argument injection, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_adapter_owned_explorer_exclusion_contract",
+    "baseline_result": "experiments/generic-only-coverage-order187-v174-run1/results.json",
+    "baseline_result_sha256": "3dc2c6b26f17c8b94af392da8fa70c825b29ac11f2506058c6bb0ddc155ef486",
+    "baseline_audit": "experiments/generic-only-coverage-order187-v174-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "7bd22fb8fa505d4665341eafe68118becb0fd86e8891077923157edd3d53c53a",
+    "baseline_outcome": "failed_reward_0_model_selected_a_generic_settings_action_but_used_root_only_matching_for_a_nested_explorer_request",
+    "counterfactual_contracts": [
+      {
+        "input": "Hide node_modules folders at any directory depth while unrelated exclusions and editor settings already exist.",
+        "expected": "The Adapter derives the recursive glob from the model-selected any_depth scope and preserves every unrelated setting."
+      },
+      {
+        "input": "Restore visibility for build/*.tmp only at the workspace root.",
+        "expected": "The Adapter keeps the model-selected root pattern unchanged and records false for that exclusion without dropping other entries."
+      },
+      {
+        "boundary": "LiteAgent normalize_adapter_arguments",
+        "expected": "The model-selected pattern, scope, hidden state, and optional path reach explorer.set_exclusion unchanged."
+      }
+    ],
+    "focused_tests": "676 passed across VS Code Adapter, schema, strict manifest, catalog, and Runtime boundary tests",
+    "full_non_guest_tests": "2166 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/explorer.py": "b97b9ae742683241f28121208d1712d1d88d2b6dcc77bcaaeee561a82837f4ab",
+      "vscode_adapter/tool_manifest.py": "ed24159833a3892aae185baa81e32bcbf1636aa705ff9467ebedb253d637eaed",
+      "vscode_adapter/schema.py": "6bbfdb44d022043921bc08620ebb69d820ad38c134a3447001a5c89dcc7e5d26",
+      "vscode_adapter/actions.py": "c89e2911206e4cfffbde56a6790f92baa8675d5dad477245ed88c28c3b42cebd",
+      "vscode_adapter/worker.py": "1744b018359c11f8d6e4f6d9ddde64163fbd6e72cd2ba5359d6b5c762dd90198",
+      "integrations/openapa_osworld/tool_catalog.py": "641a576bf706b6313faf25e9df42a8117219312a94bb45afd7bd9cc66ac3cf9a",
+      "integrations/lite_agent/tool_catalog.py": "f6dd349ad33501f959f113b9ddfc8e7d23bf2f989f933817c4b07c9e5a9b7b0b",
+      "tests/unit/test_vscode_files.py": "3e574e015ec2bfe03f5542dadf5b00104fcb9292e2e965acb00d066d67c48bfd",
+      "tests/unit/test_vscode_schema.py": "1c76361729bd9ea4654822e4f29e85be2b9160b3e42f0461590ff0e2d5bf8477",
+      "tests/unit/test_lite_agent_tool_catalog.py": "feda17246e6ca42472c54738106574fecf70777ec9178f74526b540c143d874c",
+      "tests/unit/test_lite_agent_strict_schema_manifest.py": "de0c4647ab87fa0bfce9cb69874c5e90a19b74baf84f60dcf6cb1b20c9943c9a",
+      "tests/unit/test_lite_agent_runtime.py": "ec7c32ee7e90e16344fac7e926683aca75ae9f831b420cd23bc3551c4252bf58"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 187 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 187,
+      "source_order": 334,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "source_episode_id": "c612bfabd60eead189c5ebe4",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "0ebec635f000ef1ee896bb492ff78d55ba9e006df437171a4c68ee7101a820b5",
+      "source_execution_class": "generic_api_only",
+      "execution_class": "generic_api_only",
+      "pool_order": 187
+    }
+  ]
+}

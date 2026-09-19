@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order148-relative-path-resolution-v154",
+  "status": "frozen",
+  "purpose": "Second and final targeted A/B for order 148. The preserved v153 trace showed that path regex constraints caused guided decoding to emit the shortest legal placeholders despite an exact filesystem.find result, so this candidate accepts natural relative paths and resolves them deterministically from the active terminal working directory.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order148-copy-to-directories-schema-v153.json",
+  "candidate_parent_config_sha256": "fe8c2cff876322710ffe36afa2083938f9bb582be911e5e38b21eff2253a62a8",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4c129d0dec73139c9a32eb1cd3fc39eac4e5aec9f8cab8ff2edd845254f84e6f",
+  "change_scope": "Remove path regexes from the existing filesystem.copy_to_directories model-facing schema, accept model-selected basenames and relative paths, and resolve them inside the Adapter against the observable active terminal working directory. Absolute and ~/ paths remain supported. No task identity, fixed path, filename, directory, answer, workflow, prompt injection, or Runner argument rewrite is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_copy_relative_paths_v154_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single hypothesis. If it fails without a new shared high-value defect, mark order 148 task_blocked immediately; do not consume hypothesis slot 3 on another local path-schema or prompt variant.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_final_local_attempt",
+    "hypothesis_class": "relative_paths_from_observable_active_terminal_directory",
+    "previous_result": "experiments/generic-only-coverage-order148-copy-to-directories-schema-v153-run1/results.json",
+    "previous_result_sha256": "89173943e607d27ad1981a8425a840b098ebadbf7777e82797e16a33ae869685",
+    "previous_audit": "experiments/generic-only-coverage-order148-copy-to-directories-schema-v153-run1/generic-only-audit.json",
+    "previous_audit_sha256": "bb48175a7d56e4dd0bcd44b8e76d997c2404257e854cc726a57a7da487b2bc03",
+    "previous_outcome": "failed_reward_0_stalled_no_progress_after_9_steps_valid_audit",
+    "counterfactual_values": {
+      "active_terminal_directory": "/tmp/alternate-workspace",
+      "source": "notes.dat",
+      "destinations": [
+        "reviewed",
+        "approved/batch-7",
+        "published"
+      ]
+    },
+    "focused_tests": "443 passed",
+    "full_unit_tests": "2055 passed",
+    "ruff_and_format": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_with_only_preexisting_untracked_.conda",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 148 generic hypothesis 2",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 148,
+      "source_order": 288,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "source_episode_id": "96f6a63353abeb04707ee6b7",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "983cd049ad2b66e83ab54452c82f241bf4de8b47edb992e3c0322e897f338f8a",
+      "execution_class": "task_specific",
+      "pool_order": 148
+    }
+  ]
+}

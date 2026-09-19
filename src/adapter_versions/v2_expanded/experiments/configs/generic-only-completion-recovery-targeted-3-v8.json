@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-completion-recovery-targeted-3-v8",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM validation of generic completion recovery on the v7 failure and two completion-rejection stress cases.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v7-schema-enforced.json",
+  "parent_config_sha256": "2a5eea450a4746f992ab3d2b267339389f6ff2d6168a29826d413852cd99fbae",
+  "change_scope": "After a malformed or truncated completion claim, expose only compact completion/failure tools when structural state is complete; when only read-back is missing, expose read-only inspection. Enforce the same restriction at execution. No task identity, answer, golden, evaluator, application-specific, or task-specific branch.",
+  "implementation_evidence": {
+    "completion_policy_sha256": "cf9a4329dd79a6cbead76f0294d324e5e0882d30917d8ce33e2f9bb389fd9a81",
+    "completion_recovery_sha256": "a6b04348a1c1d9d6ef5144ab082a4c9c25d8b38914e26b4168a2e5689528b597",
+    "lite_agent_tool_catalog_sha256": "0cca524d81aad6662b969ab851b3011452c185fda026fcaf5bf01e906a63b896",
+    "runtime_sha256": "4ec1e0844ea9684aae98f37af334c654beefb69c543e9e84236a623ae6114bc5",
+    "tool_validation_sha256": "ffd0db8cd6ce3101b53ebb42a908e05a191172a6081a58b579d3e871c015fadd",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "1196 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "clean"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_completion_recovery_v8_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v7 failure plus the two highest completion-rejection VS Code stress cases",
+    "selected_count": 3,
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 4,
+      "pool_order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07"
+    },
+    {
+      "order": 15,
+      "pool_order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951"
+    },
+    {
+      "order": 16,
+      "pool_order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order51-v221-single-slide-background-scope",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 51. Reject an overbroad all-slide background request when the instruction names one slide, resolve a relative title color from structural observation, and require exact target read-back. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order46-v220-impress-semantic-colors.json",
+  "parent_config_sha256": "7b0ede88c41ac2398a1611f88477fd42cdc9c09eb3493c4e496a1bf1164ad1be",
+  "hypothesis": "The v210 model correctly observed slide 2's red title but selected all_slides=true, irreversibly changing slide 1 before later applying the correct single-slide call. If the reusable background contract distinguishes an explicitly numbered slide from all/every/each slides, reads a referenced title color from the initial structural inspection, and rejects an overbroad or mismatched model call without rewriting it, the model can replan to slide=1 and preserve non-target slides.",
+  "change_scope": "The focused Impress background module now supports literal colors and relative title-color requests, resolves the source color only from pre-mutation presentation.inspect evidence, validates the exact model-selected target and color, and rejects preserved overbroad traces at completion. ExecutionEngine invokes this public application-semantic validator and returns a truthful ValueError; it never replaces all_slides with slide, fills a color, or mutates model arguments. The generic tool schema explicitly distinguishes one numbered slide from all slides. Counterfactual tests use slide 4 with a blue title. Supervisor lifecycle polling is decoupled from unchanged progress heartbeat: poll=5 seconds and heartbeat=600 seconds.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order51-v21-run1/results.json",
+    "historical_clean_pass_results_sha256": "ba5214e8761db41cf99c4eea3d3f8fc71085a8bcd7768afe58e3bbfdef8067e9",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-051-generic-only-coverage-order51-v21-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "7c67e55e81d2f797a5696952926ed358d931706fe8d79a7fc263dca8b8f63c3f",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order46-v220-impress-semantic-colors-run1/results.json",
+    "preceding_ab_results_sha256": "837084acdcc07fb8e6f557b65f67559449de79e1eed9adfa883c931f49917cfd",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order46-v220-impress-semantic-colors-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "ea2a1b79c6948e74cf02b267c5e885d59f2854bdd3061109de58cb4a752f1561",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "impress_background_sha256": "3cdc300f8d93397dd417a182de72386e92840aa204acfcc690d3660b64ee2ac5",
+    "impress_colors_sha256": "6e35cef53fb1515fb179d71d32cf7855d3026c578509518d3ec56245036d8b5a",
+    "execution_engine_sha256": "a4be5301e482a6fb03e5dc941ad581c85da40ba377bf2143c8bdcb680f0f243a",
+    "instruction_semantics_sha256": "cb307a3c5a195da7330cf216f16c97c2ab84eb8554c5885a1019fb9149ca62e8",
+    "semantic_requirements_sha256": "ca343ff93041d41362b3b0047329cb2d8c25e1398b7ac4755d82e482c594e523",
+    "tool_catalog_sha256": "f099948a53df4b9837717e61ba417cfba03d30f48429fc36d82dfd605e6452c5",
+    "impress_background_tests_sha256": "be1a493c08a6e5a5df83dab83a2c4b784082f4eedb953281440488778f50fb26",
+    "lite_supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "openapa_parallel_supervisor_sha256": "bfdcd48c454297f5210b3328a0c5f0b57f2441ef3f662d8fe61d5d1526d4f005",
+    "supervisor_tests_sha256": "91257e12a097c00efb0b3f45daa0ff99944ac02a5a05e833a2b256abe644bc88",
+    "focused_background_and_schema_tests": "314 passed, covering single-slide and all-slide contracts, literal and observation-derived colors, exact model argument preservation, structural read-back, and existing strict schema behavior",
+    "focused_supervisor_tests": "25 passed, covering five-second internal polling, ten-minute unchanged heartbeat, and immediate meaningful status changes",
+    "unit_tests": "2440 passed",
+    "ruff": "all active LiteAgent and changed supervisor sources passed",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_single_slide_background_scope_v221_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in corrected fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T20:45:26Z",
+  "tasks": [
+    {
+      "order": 51,
+      "pool_order": 51,
+      "source_order": 141,
+      "domain": "libreoffice_impress",
+      "task_id": "70bca0cc-c117-427e-b0be-4df7299ebeb6",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

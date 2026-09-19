@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "policy_id": "posttrain-v1",
+  "source_dataset_version": "main-v1",
+  "description": "Exclude successful episodes whose route first failed API calls and then fell back to model-driven GUI.",
+  "excluded_tasks": [
+    {
+      "task_id": "ef9d12bd-bcee-4ba0-a40e-918400f43ddf",
+      "order": 113,
+      "reason_code": "failed_api_plus_gui",
+      "reason": "settings.set attempts failed before GUI fallback; exclude the entire task ID from post-training data"
+    },
+    {
+      "task_id": "0f84bef9-9790-432e-92b7-eece357603fb",
+      "order": 115,
+      "reason_code": "failed_api_plus_gui",
+      "reason": "settings.set failed before GUI fallback; exclude the entire task ID from post-training data"
+    },
+    {
+      "task_id": "2cd43775-7085-45d8-89fa-9e35c0a915cf",
+      "order": 122,
+      "reason_code": "failed_api_plus_gui",
+      "reason": "settings.set attempts failed before GUI fallback; exclude the entire task ID from post-training data"
+    }
+  ]
+}

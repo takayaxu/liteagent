@@ -1,0 +1,198 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-writer-case-recovery-retest-20260907-v1",
+  "status": "frozen",
+  "purpose": "Affected/control replay of preserved Writer case-transform completion failures using current shared recovery fixes. No new runtime changes, gate, API, mutation semantics, injected arguments, generation override, promotion or full-189 claim.",
+  "freeze_timestamp": "2026-09-07 20:29:57 UTC",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "selection_seed": null,
+    "selection_rule": "One affected Order 83 case-transform completion recovery attempt plus passing Writer image-insertion control 73, one fresh attempt each in source order. Current source includes preceding shared fixes; no pure concurrency or isolated transport causal claim.",
+    "selection_digest": "b61a3c3f67cc6f063e60bed69173f0b3a1f38860f15fd39b0c69185897180bab",
+    "selection_digest_method": "sha256(concat task_id values in scheduled order)",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_worktree_sealed": true,
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-integrated-repair-20260906-v1.json",
+    "parent_condition_sha256": "d9a2a7a8a61992f3e7be490b176a727332dec5081cc2f38144052e0c62f6a624",
+    "parent_worker_results": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-integrated-repair-20260906-v1-run1/workers/worker-05/results.json",
+        "sha256": "c2b6f108b24bebc23dda75d39184c59f1cb459ac0d8de82c8d3a76d1b52c9437",
+        "order": 83,
+        "role": "affected"
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-writer-strikethrough-observation-retest-20260907-v1-run1/workers/worker-01/results.json",
+        "sha256": "12d2e3b23d74898e532f58a2b014eb455cf6a5b2544451dedd9139d570d5c9f7",
+        "order": 73,
+        "role": "passing_control"
+      }
+    ],
+    "selection_uses_prior_outcome": true,
+    "failure_reference_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-fixed189-20260831-thinking-mode.json",
+    "failure_reference_condition_sha256": "5da128f399afb55f47f38a1532980cd09f5af10046a5b164651c638e1d7964a4",
+    "failure_reference_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-fixed189-20260831-thinking-mode-run1/results.json",
+    "failure_reference_result_sha256": "705f9195c6f0ad4970e116b6d4dbbacd3515eeb60e47c6c6b2113a75fa0916f6",
+    "control_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-writer-strikethrough-observation-retest-20260907-v1.json",
+    "control_condition_sha256": "e240128676c7501a85386a311df5cf2af46f4c6b4d5269d0a735704cd7b695cf"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "current-writer-case-recovery-20260907-v1",
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-writer-case-recovery-retest-20260907-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 473,
+      "total_bytes": 54871149,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "6d957a0c17da438cf6f82d02aab597b7d9402bcd559c4090c2e0c84769572f2a"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_hybrid_writer_strikethrough_observation_20260907_v1",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch",
+    "minimum_free_disk_gib": 30
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/opt/anaconda3/bin/python3.13",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "Hcompany/Holo-3.1-4B",
+      "expected_model_root": "Hcompany/Holo-3.1-4B",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180
+    },
+    "minimum_free_disk_gib": 30
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "One affected Order 83 case-transform completion recovery attempt plus passing Writer image-insertion control 73, one fresh attempt each in source order. Current source includes preceding shared fixes; no pure concurrency or isolated transport causal claim.",
+    "seed": null,
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_writer": 2
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": []
+  },
+  "promotion_gate": null,
+  "tasks": [
+    {
+      "order": 73,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_order": 164
+    },
+    {
+      "order": 83,
+      "domain": "libreoffice_writer",
+      "task_id": "e528b65e-1107-4b8c-8988-490e4fece599",
+      "source_order": 174
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order154-semantic-filters-v158",
+  "status": "frozen",
+  "purpose": "Single targeted A/B after the preserved order-154 baseline repeatedly searched for Thunderbird folder and filter management but could not retrieve a usable deterministic action.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order154-v157.json",
+  "candidate_parent_config_sha256": "b7b50ca7b154f22dda2e67b7b049269ca4c7b04f030edbbced5fa752888fd86d",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "3655c933bfc400321b12028e7747ed187f1b17e9cb85b03582fc333dd864a9bb",
+  "change_scope": "Add the reusable Thunderbird filters.configure action with semantic conditions, move-or-forward actions, deterministic compilation to Thunderbird rule syntax, idempotent local destination-folder creation, Adapter verification, and generic filter-intent retrieval. Preserve the legacy raw filters.upsert action. No task identity, instruction parser, fixed folder, fixed condition, answer value, task route, prompt injection, golden data, evaluator access, or Runner argument rewrite is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_semantic_filters_v158_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it fails without a new shared high-value defect, mark order 154 task_blocked immediately and advance; do not add another local schema, prompt, GUI coordinate, or task-shaped workflow.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_final_local_attempt",
+    "hypothesis_class": "semantic_application_filter_contract_and_intent_scoped_retrieval",
+    "baseline_result": "experiments/generic-only-coverage-order154-v157-run1/results.json",
+    "baseline_result_sha256": "e0d55ee3ea348841801f20468d12d76546d0920459d218fc7780ecab1bdaa53f",
+    "baseline_audit": "experiments/generic-only-coverage-order154-v157-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "d94fe773a8a0ff6a011ac45b2f3cccd69f7f27440aad990f063bd7055dbe7932",
+    "baseline_outcome": "failed_reward_0_gui_only_repeated_folder_search_and_dock_clicks_stalled_after_18_steps_valid_audit",
+    "counterfactual_contracts": [
+      {
+        "filters": [
+          {
+            "name": "Route conference notices",
+            "enabled": true,
+            "match": "all",
+            "conditions": [
+              {
+                "field": "subject",
+                "operator": "contains",
+                "value": "conference"
+              }
+            ],
+            "action": "move_to_local_folder",
+            "destination": "Events 2032"
+          }
+        ]
+      },
+      {
+        "filters": [
+          {
+            "enabled": false,
+            "action": "forward",
+            "destination": "archive@example.test"
+          }
+        ]
+      }
+    ],
+    "focused_tests": "416 passed",
+    "full_unit_tests": "2089 passed",
+    "ruff_and_touched_file_format": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_with_only_preexisting_untracked_.conda",
+    "source_sha256": {
+      "thunderbird_adapter/filter_contract.py": "5653bf2620e465735c706a5bc05b2d831835d3b9b3073d39f1b863e6522c3bbb",
+      "thunderbird_adapter/profile.py": "18cd22cc4434800a45147addc3b40546fc3e9ce72502874aa0d52e44bb5b35b4",
+      "thunderbird_adapter/schema.py": "b566d8802e49d22a4d7b95bb9ceb7719f7b32341098ea93e035c1a72cd2027db",
+      "thunderbird_adapter/actions.py": "d1d6fbb73bdf538ca9eddce1c45973561d0967e747d5cf7034bdf4b1101bc9e4",
+      "thunderbird_adapter/worker.py": "91f353507a06f9b4a01acfc2f79af9b5a7f2dd45ee90573cf6846ba2a9852d3d",
+      "thunderbird_adapter/verifier.py": "bdbdbc6f5f797f6e56ff02f15dbcc7b2846ac5bd8c05eaab1da311ecc15e750f",
+      "thunderbird_adapter/tool_manifest.py": "b189ee80a0c12fb701b9e48999062b1acc54b5be4ee2de0bf6bc19b643292ca5",
+      "integrations/lite_agent/tool_catalog.py": "a4d7998c36935339bad30d4195565fe941218137659835719c6c45a0051d3a9c"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 154 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 154,
+      "source_order": 294,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "source_episode_id": "c10d9c18b7f9747fdde7a778",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "c09b9334518ae5f9049e9ee51383163073d0049c857ec91eedddf103a59d9641",
+      "execution_class": "task_specific",
+      "pool_order": 154
+    }
+  ]
+}

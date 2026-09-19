@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order81-writer-case-routing-v43",
+  "status": "frozen",
+  "purpose": "Immutable targeted A/B rerun of fixed-ledger order 81 after a reusable Writer case-transformation schema and catalog-routing fix.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order81-v42.json",
+  "candidate_parent_config_sha256": "36288f88195610568d11afd022375d16f1d64f6df307843c53e6765a5114b9d4",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "9bdfbec11b59480261869a297618c8482f6628a369daf15fbf72c2c72d69415b",
+  "change_scope": "Expose the existing Writer document.transform_case action through an Adapter-owned direct schema and improve generic case-transformation catalog recall, including compound lower case/title case/upper case token normalization. Writer UNO execution logic is unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The v42 action catalog never returned the existing document.transform_case capability for a lowercase request, so Qwen spent 21 searches selecting unrelated formatting tools. A direct typed mode contract plus generic case vocabulary should make the reusable action discoverable without task identity, fixed arguments, answer injection, or Runner planning.",
+    "preserved_v42_failure": "experiments/generic-only-coverage-order81-v42-run1 is immutable: evaluator 0.0, 30 steps, no Agent termination, 21 catalog searches, generic_api_only, strict audit valid=true, and zero task/golden leakage, Runner argument rewrite/injection, model/action mismatch, or Adapter payload mismatch.",
+    "preserved_v42_result_sha256": "89685e65eb5aed5cda473667aa0cf7ef446b364616bfcde51f8aff191c688e21",
+    "preserved_v42_audit_sha256": "01c10138fa35a6552fbf2f0ce27543774de881128f0876226364f404428b6bcd",
+    "preserved_v42_trajectory_manifest_sha256": "a1b9758305d0eb3c9f7c4ad7c43fdbf4a98f0427416125497d02955aea6c7e21",
+    "current_instruction_router_check": "For a generic lowercase-document request, document.transform_case ranks first. A generic title-case request also ranks it first, while an unrelated request to format a title blue and bold does not expose it in the initial Top-K. task.execute is absent in all strict checks.",
+    "counterfactual": "Tests use varied lowercase and title-case requests unrelated to the OSWorld instruction, an unrelated title-formatting request, strict enum validation, and exact Runtime forwarding of a model-selected title mode. No task identity, filename, answer text, or fixed mode is embedded.",
+    "writer_tool_manifest_sha256": "abdaa2852c56dd3049b9a8b9016ad60abd3a93c66d0be7545595528c8397d7e3",
+    "writer_schema_sha256": "4cdd697519a2ba3e3caca5d82a60d3f85d2ff4409ead4fde3395e2ac41b94add",
+    "writer_uno_worker_sha256": "d3a140dcdf10f619e62641fdda6bb640ae808bc7d49fdda0a50a76bebc37254c",
+    "tool_catalog_sha256": "cc3b0e0bda13c37ddcfd4e895aadf7c87be500d55c1c1546d69a41b1df950568",
+    "tool_catalog_test_sha256": "079bb8fe7dda8272c97f5f6e091497a4c1192c9e77234db3f9dc1b4d8fd30751",
+    "runtime_test_sha256": "9012d5b07aa2811b82040122b99987977f9678e4fa3ab4fc6116fbe585492172",
+    "runtime_sha256": "d820262d674c7cbbef3144e2544611c2a209a9a6bd43b806de38e058121bc866",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "focused_writer_catalog_runtime_tests": "383 passed",
+    "full_unit_tests": "1424 passed",
+    "ruff_changed_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, source filename, instruction fingerprint, golden value, evaluator expected state, or fixed mode was added to production code or counterfactual tests.",
+    "setup_cache_evidence": "The UUID-prefixed setup source remains pristine at SHA-256 26932140b262b8886b42d82e3a8acd1e48a4c9c97abe803791e9cf1ab10d3ce8. Evaluator result and golden cache files are not used by OSWorld setup reset.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_case_routing_v43_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted rerun of the first non-pass in the task-ID-deduplicated development coverage ledger after a reusable fix",
+    "selected_count": 1,
+    "prior_development_status": "failed_v42_preserved",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 81,
+      "source_order": 172,
+      "domain": "libreoffice_writer",
+      "task_id": "d53ff5ee-3b1a-431e-b2be-30ed2673079b",
+      "source_episode_id": "198bfe18f8159030a5701677",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "248569074d02067ab9adec03ef93fbcfd927d7e5b5bc8eb1ddf5f688f56767d9",
+      "execution_class": "task_specific",
+      "pool_order": 81
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order32-orientation-contract-v17",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B for the first non-pass task after adding a generic Impress page-orientation contract driven only by instruction semantics and observed presentation geometry.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order32-v16.json",
+  "candidate_parent_config_sha256": "6470fc283ba5e9492ad2eed5b9ef130b84128227e9f09bbbc2a360d1cb515c4d",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "46883fc9feb211e81a114bd8930e2c499a2469e7b88e1aa5102390c110e227a4",
+  "source_failure_results": "experiments/generic-only-coverage-order32-v16-run1/results.json",
+  "source_failure_results_sha256": "6900f3e53ed875b6c649389905eaace81afb2a1de89b5f802e1d6a6bb0eebbdc",
+  "source_failure_audit": "experiments/generic-only-coverage-order32-v16-run1/worker-01-audit.json",
+  "source_failure_audit_sha256": "0496acaf1bf4fe8ced5ed21ca73e176485ff65109635ee206bee97bf29387268",
+  "change_scope": "Recognize upright/vertical/portrait and sideways/horizontal/landscape page-orientation requests, reject text-alignment ambiguity, expose an inspect-change-save-inspect lifecycle, constrain slide.set_orientation to the instruction-derived target and an observed slide index, and require every saved slide dimension to prove the target orientation. No task identity, expected state, golden artifact, or evaluator value enters runtime behavior.",
+  "implementation_evidence": {
+    "calc_worker_sha256": "fce13134c1a0ccb41ab799dc1e11a6a921d3764c5a8c9cde496779dd663165a3",
+    "calc_tool_manifest_sha256": "3a0a77683e36603a7a5fd3204d3416b73adb4101f85532bc57b03f3b919c704b",
+    "calc_readme_sha256": "c44d43cb63dcaa9d947c818c1e59db098c20a9a8219a00a97b6f5565c993cb22",
+    "calc_semantics_sha256": "e38e69400b976e1bd00908d33a5f82c334a8c8db8d17b75da2c4a49490f63802",
+    "runtime_sha256": "8e84026f9dfdfd6fe7cc739e4c02af30b766ba7c14feb08f63d333cf8c6e1cf2",
+    "impress_semantics_sha256": "2ca909066a022552308bca015a7318234474ede2561800075d0a8bfc49318e22",
+    "tool_catalog_sha256": "431d083c746c30432890f9f667d2a51537c9dd29c2dbaa27b8ff22807513554b",
+    "calc_worker_test_sha256": "68788830ff6fccf374ada37ad4b499d4c3bc10ef5f27269c09488c2eeba29df3",
+    "runtime_test_sha256": "d61a9c9f406ac2db55b0e8202b8185a1905b490fe3f6c61623d5a88c0dba7dab",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "impress_semantics_test_sha256": "68b2a2e5b1b85700ac9cd4d4cb44b14d0a078f9984d38d2e9e2ea44a5a3d9bf4",
+    "lite_agent_runtime_and_strict_schema_tests": "366 passed",
+    "leakage_runner_and_freeze_tests": "22 passed",
+    "counterfactual": "A structurally different three-slide portrait deck switched to landscape; one deliberately unswitched slide blocked completion. Text and textbox vertical-alignment requests did not activate page orientation.",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_impress_orientation_contract_v17_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 32,
+      "source_order": 116,
+      "domain": "libreoffice_impress",
+      "task_id": "ce88f674-ab7a-43da-9201-468d38539e4a",
+      "source_episode_id": "0b56048d59a2396dd8ff50c2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "f8310515842ab4f667b1c221906bb56163d3f963f1a12f2aa7d4ec89d75aa44e",
+      "execution_class": "generic_api_only",
+      "pool_order": 32
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order125-media-audio-v133",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 125 hypothesis 1: expose reusable current-media inspection, audio extraction, and active-presentation audio insertion as direct generic Multi-Apps actions.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order125-v131.json",
+  "candidate_parent_config_sha256": "6ffc0fde95cc3fd135e30607b45e86cf6bdf4296d1524dce08f5653ed66564a7",
+  "parent_attempt_result": "experiments/generic-only-coverage-order125-v131-run1/results.json",
+  "parent_attempt_result_sha256": "6cb9cd3c2e5c5f8f2b24704075a101f2137e12636c656928ec9b86141732e690",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order125-v131-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "d09901f1d4d623b36131f8be304073a07389700fdb3098b83e71c85e3297f604",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "7192f18dfc9f39b76fa7ed5e8f27ad1b053d689f853515749389439d9f892b61",
+  "change_scope": "Add three parameterized Multi-Apps facades: media.inspect_current resolves the current VLC basename through bounded filesystem.find; media.extract_audio forwards model-selected local input/output paths unchanged; presentation.insert_audio targets the active presentation URL, inserts model-selected audio on a model-selected slide, saves the same file, and verifies the media shape. Rank this reusable audio-transfer cohort for matching cross-application intent and suppress equivalent nested routes. Select PCM for model-requested WAV output and retain MP3 behavior for MP3 output. No task identity, dataset order, fixed source/output/presentation filename, expected audio, golden material, evaluator state, argument injection, or task workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_media_audio_v133_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the remaining failure is tool selection, model arguments, media extraction, presentation insertion/save, completion, or environment. Try another materially different generic hypothesis only when the trace supports it and the per-task budget remains; otherwise mark Order 125 task_blocked and immediately continue.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_current_media_audio_transfer_facades_and_routing",
+    "failure_evidence": "The untouched v131 baseline returned evaluator 0.0 after 30 steps. Initial Top-K omitted all relevant media actions. After a malformed command.run, Qwen searched for VLC audio extraction on every remaining step. Search repeatedly returned the relevant VLC media.extract_audio contract only through nested adapter.call, but the model never selected it and executed no successful mutation.",
+    "counterfactual_tests": "Parameterized tests use unrelated Aurora, Forest Survey, Winter Survey, and Seasonal Review media, audio, and presentation paths. They verify bounded current-media resolution, unchanged model path forwarding, active-presentation URL reuse, same-file save, media-shape read-back, direct Top-K/search routing, compact contexts, and WAV PCM selection without task data.",
+    "focused_unit_suite": "273 passed",
+    "full_unit_suite": "1896 passed",
+    "static_verification": "Ruff check and format, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "source_sha256": {
+      "multi_apps_adapter/media_contracts.py": "bf2171fe2cbbf3066c13cc6bc50ea69644e2260585b2aa1cfb0968364d1a439e",
+      "multi_apps_adapter/tool_manifest.py": "605e1f6e2f4c345724a61fe6df828d27703203db76a6fb953a49da8a1cbb7c9a",
+      "multi_apps_adapter/generic_actions.py": "343f7bb7f826b66be58bb490975043e59ff2fee02c5ff7eebf5edfe422d7d27e",
+      "integrations/lite_agent/tool_catalog.py": "1f4cae2b72f2a615c0f5cdaa55fe6f483bd4fe18a41178c5521ff958e86d85da",
+      "integrations/lite_agent/adapter_results.py": "fd1f39ed5bb6e13c0bbabd745cae6cd098722a31cd95f49cb6270e78ed49f981",
+      "vlc_adapter/actions.py": "cdf4fde6660850e89adc801a0447bd80b7794f29fb74e3fec00b4c28755340c9"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 125 v131 tool-discovery failure",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_preserved_in_generic-only-coverage-order125-v131-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 125,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "source_episode_id": "dbaed1c93f81ec6acb2fa518",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "05145c76138ed6fb2b6554751726ab9ad6db33f243d37f2b56ad160a09356e35",
+      "execution_class": "task_specific",
+      "pool_order": 125
+    }
+  ]
+}

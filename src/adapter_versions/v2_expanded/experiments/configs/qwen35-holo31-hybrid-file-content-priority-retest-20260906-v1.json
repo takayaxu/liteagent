@@ -1,0 +1,185 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-file-content-priority-retest-20260906-v1",
+  "status": "frozen",
+  "purpose": "Affected-only verification of source-content retention in bounded recovery. Observe whether the model reads the needed source, makes a behaviorally meaningful edit, and passes the original post-episode evaluator. No new gate, answer injection, task-specific route, or promotion.",
+  "freeze_timestamp": "2026-09-06T06:20:50Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "selection_seed": null,
+    "selection_rule": "Affected Order 105 only, one fresh attempt after primary file content was prioritized over usage guidance. Recent Order 63 control passed in the preceding chart condition and is not rerun as an unrelated workload.",
+    "selection_digest": "c7e62ee197d795c5a2a3fbf8e9e584c251ed9481c2804fb35e5a1432283de9a3",
+    "selection_digest_method": "sha256(concat task_id values in scheduled order)",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_worktree_sealed": true,
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-environment-high-probability-retest-current-20260905-v30.json",
+    "parent_condition_sha256": "bbf5a0a06f7e60d323db868c5750d96fc9c11fefeb873d241f6ecaca22b0ed70",
+    "parent_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-environment-high-probability-retest-current-20260905-v30-run1/results.json",
+    "parent_result_sha256": "414505aa51c85480ac60b6325d3cabc4e2f6122f87c97bcdd4dcf2d3cebc77e5",
+    "selection_uses_prior_outcome": true,
+    "failure_reference_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-fixed189-20260831-thinking-mode.json",
+    "failure_reference_condition_sha256": "5da128f399afb55f47f38a1532980cd09f5af10046a5b164651c638e1d7964a4",
+    "failure_reference_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-fixed189-20260831-thinking-mode-run1/results.json",
+    "failure_reference_result_sha256": "705f9195c6f0ad4970e116b6d4dbbacd3515eeb60e47c6c6b2113a75fa0916f6",
+    "control_reference_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-calc-chart-readback-retest-20260906-v1.json",
+    "control_reference_condition_sha256": "baaef3cb9f4f610d0b207440fc29e89a2ad8adc54df29a2a99f23370d48b61ff",
+    "control_reference_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-calc-chart-readback-retest-20260906-v1-run1/results.json",
+    "control_reference_result_sha256": "5583642c45a8d58c7ce80203c0c9b047fd82afc248c6bc59b23e074e5a95c568"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "current-file-content-priority-20260906-v1",
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-file-content-priority-retest-20260906-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 461,
+      "total_bytes": 54735079,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "263410e4dfc21befd20b91caa820cf874b53a4e458f84220cc4870052df9151e"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_hybrid_file_content_priority_20260906_v1",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/opt/anaconda3/bin/python3.13",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 60,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "Hcompany/Holo-3.1-4B",
+      "expected_model_root": "Hcompany/Holo-3.1-4B",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180
+    },
+    "minimum_free_disk_gib": 30
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Affected Order 105 only, one fresh attempt after primary file content was prioritized over usage guidance. Recent Order 63 control passed in the preceding chart condition and is not rerun as an unrelated workload.",
+    "seed": null,
+    "selected_count": 1,
+    "domain_counts": {
+      "multi_apps": 1
+    },
+    "source_order_preserved": false,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": [],
+    "historical_environment_orders": [
+      105
+    ]
+  },
+  "promotion_gate": null,
+  "tasks": [
+    {
+      "order": 105,
+      "domain": "multi_apps",
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "source_order": 214,
+      "environment_history": "historical_environment_failure"
+    }
+  ]
+}

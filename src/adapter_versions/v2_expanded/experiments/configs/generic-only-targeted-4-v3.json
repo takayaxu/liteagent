@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-targeted-4-v3",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM validation of the four v2 residual failure or non-terminating cases before a full v3 rerun.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v2.json",
+  "change_scope": "Page-geometry-derived Writer tabstops, flat generic Multi-Apps command.run, terminal provenance enforcement, and completion preservation after repeated actions. No task IDs, golden routes, evaluator access, answer constants, or task substitutions.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v2.json",
+    "selection_fields_used": [
+      "order",
+      "pool_order",
+      "source_order",
+      "domain",
+      "task_id"
+    ],
+    "historical_execution_class_or_outcome_used": true,
+    "selection_reason": "Preserved v2 orders 6, 7, 8, and 14 are the three evaluator failures plus the successful task that did not terminate by Agent decision. This diagnostic set is not a score denominator."
+  },
+  "parent_evidence": {
+    "audit": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v2-audit.json",
+    "required_valid": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_targeted_v3_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "initial_concurrency": 1,
+    "repeat_concurrency_max": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v2_residual_failures_plus_nonterminating_success",
+    "selected_count": 4,
+    "replace_after_run": false,
+    "score_denominator": false,
+    "parent_orders": [
+      6,
+      7,
+      8,
+      14
+    ],
+    "domain_counts": {
+      "libreoffice_writer": 1,
+      "multi_apps": 2,
+      "vlc": 1
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "parent_order": 6,
+      "pool_order": 65,
+      "source_order": 156,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c"
+    },
+    {
+      "order": 2,
+      "parent_order": 7,
+      "pool_order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908"
+    },
+    {
+      "order": 3,
+      "parent_order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 4,
+      "parent_order": 14,
+      "pool_order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89"
+    }
+  ]
+}

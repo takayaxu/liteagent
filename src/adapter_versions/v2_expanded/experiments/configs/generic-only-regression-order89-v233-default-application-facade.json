@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order89-v233-default-application-facade",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for the eligible historical-pass regression at Order 89. Expose the existing deterministic desktop default-application capability through a focused generic Multi-Apps facade and strict instruction route. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order79-v232-writer-reference-schema-completion-retry.json",
+  "parent_config_sha256": "04d6d521a475e70b3fe88b35239f86a40cdd9f59caf5e65c06746bc769c37456",
+  "hypothesis": "The v210 failure did not expose desktop.set_default_application in its initial strict tool surface, so Qwen searched for a terminal command, guessed a nonexistent GNOME schema, and entered a repeated search/read cycle. The eligible v49 historical pass eventually discovered the same reusable OS action through the broad nested adapter.call tool and passed, but only after 30 steps. If an explicit request to change a default application exposes a flat desktop.set_default_application action whose public schema requires the model to choose both the application and exactly one MIME selector form, Qwen will select that action with unchanged arguments, receive deterministic association verification, terminate without GUI, and pass the original evaluator.",
+  "change_scope": "A focused desktop_default_semantics module detects only explicit default-application changes and does not parse application names or MIME values. instruction_semantics maps that reusable intent to desktop.set_default_application for OS and Multi-Apps. The OS tool manifest is the schema source of truth; Multi-Apps copies it into a flat facade, validates application plus exactly one of exact MIME types or MIME prefixes, and forwards the model-selected params unchanged to the OS Adapter. The Router gives the direct facade semantic keywords and suppresses the duplicate nested adapter.call route. Verified Adapter evidence feeds the existing generic completion gate. No task ID, answer value, application name, MIME selector, command, or model argument is selected, rewritten, or injected by the Runner.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-05/raw/run-1/89-multi_apps-937087b6-f668-4ba6-9110-60682ee33441",
+    "v210_outcome": "Strict evidence-valid failure: reward 0.0, generic_api_only, 11 steps, no Agent termination, and stalled_no_progress. The initial top-k omitted desktop.set_default_application; Qwen guessed gsettings set org.gnome.media-player default-app vlc-media-player, then repeatedly listed GNOME schemas and searched the catalog.",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order89-v49-run1/results.json",
+    "historical_clean_pass_results_sha256": "7a2b5aafb85c3595474de0fb22971e37c3b358e351023b986720add5a43252d4",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-089-generic-only-coverage-order89-v49-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "15d6fd9506ceb7f941f9643564bb94882b518220d3dcc7994e4a333f2058c8cd",
+    "historical_clean_pass_outcome": "Reward 1.0 and current strict re-audit valid, evidence-valid, and baseline-admissible with zero task/golden leakage. Qwen eventually selected nested adapter.call for os desktop.set_default_application with application vlc and MIME prefix video, and the Adapter verified all associations, but the episode used all 30 steps and did not terminate through the Agent protocol.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "desktop_default_semantics_sha256": "c7d215ea789edc47a821e7610a7afa568549289e61353bf49a4a27e82d2451e8",
+    "instruction_semantics_sha256": "2bc04677491c1bfd5e191646294088e5185e5bd87ba7db0f27a410daae0b2818",
+    "lite_agent_tool_catalog_sha256": "fb6d3abd2ca0f3c06c17f8fc323ef52857d4c841a8d08c34e763e55eceb9ac05",
+    "openapa_tool_catalog_sha256": "d7d5683f522f39588a19144d05fb2630c7dc340e5b2cba615ec699796dbed92b",
+    "multi_apps_tool_manifest_sha256": "b3d2df77718b344a7cb08f45e26851e738550a731adf80f00a0bb0f146a79342",
+    "multi_apps_generic_schema_sha256": "8461f2df03f2b0819d7c6b0203b1b042c5333c70e5dd1d026b5b070da37f3881",
+    "multi_apps_schema_sha256": "b4e894cbb54bb3512f9a0eaf7c4500841074777513eb42ef89116560fe223e59",
+    "multi_apps_generic_actions_sha256": "34b904b505483e4e7e6517b991bbd0b080e241d319f15ec24b0b26291b736aa7",
+    "multi_apps_actions_sha256": "397797273e749e8fb9790c5e11b4867f6fdadccbc32ded79a339f2e58aac896f",
+    "os_tool_manifest_sha256": "3899f1507a15442678ebbcba5e03e13ae1601002f1efe1737dc1fc4e372eb0b7",
+    "desktop_default_tests_sha256": "95cbd88fe2633ce41a22964c7f12edfea00c8fd1d960116ad652234d878295a2",
+    "multi_apps_runtime_tests_sha256": "805378b3c7875e4c8dfa602baa38fb628fdf3017fcf45ede57ba6b1316cbbe70",
+    "multi_apps_catalog_tests_sha256": "2e9158fe3e03900ae7d22acec31f0967b0bc4351268b5ddc7d5bca1c58fedf78",
+    "project_layout_sha256": "533972708e3284397dc04926e6be98a30309d0f6b18b603b75c2749c5ed889ca",
+    "runtime_module_tests_sha256": "0b7f4c8430766cf0108bf711f9f79b6a2d39b05c09b527048fe0983c6572957c",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "lite_agent_supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "counterfactuals": "Three different applications and file classes route through the same semantic action: Photo Tool for image, SoundBox for audio, and Reader Pro for PDF viewing. Four negative instructions reject one-time opening, current playback switching, wallpaper changes, and an application's own default zoom. A synthetic Photo Tool/image call proves the strict surface contains no unrelated business action, the schema requires model-selected application plus one MIME selector form, execution preserves every model-facing argument unchanged, verified Adapter evidence satisfies completion, and the next surface is propose_done only. Schema tests also cover a structurally different Foo Player/audio call and reject missing, conflicting, duplicate, malformed, and empty selectors.",
+    "focused_tests": "660 passed across default-application semantics, strict tool surface, unchanged forwarding, Multi-Apps runtime/catalog behavior, Adapter result completion, OS desktop behavior, and strict schema-manifest validation",
+    "unit_tests": "2510 passed",
+    "ruff": "passed for active source, scripts, tests, and Adapters",
+    "format": "passed for all changed files; the unrelated full tree retains 175 historical formatting differences",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_default_application_facade_v233_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 actual requests with the current strict re-audit of the historical clean pass",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T00:43:48Z",
+  "tasks": [
+    {
+      "order": 89,
+      "pool_order": 89,
+      "source_order": 185,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

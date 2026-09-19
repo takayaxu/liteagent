@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order98-file-discovery-v77",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 98 hypothesis 1 of 3: expose reusable read-only file discovery and model-selected desktop path opening through strict flat Multi-Apps facades.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order98-v76.json",
+  "candidate_parent_config_sha256": "a9de2d533eefd12bd3dd1a61227c4b585ca8ad2487865fb4161e97927bcf12bd",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c6fb04cd3798b6fae02b576b83921963a8c0a39ef6059bc4c2fe47a55b50bb03",
+  "change_scope": "Add generic filesystem.find and desktop.open_path OS actions, strict schemas, Multi-Apps forwarding, compact catalog routing, duplicate-route suppression, and counterfactual tests. No receipt parser, bookkeeping workflow, task identity, expected transaction, golden artifact, or evaluator state is available at runtime.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_file_discovery_and_desktop_path_opening",
+    "parent_result_sha256": "c08fe91ad9d43fb88a5a1d69e69d94aca3f5d4e6b52d8d0a245b403e1e220e12",
+    "parent_audit_sha256": "a82d2cc55a2553c2fdc1a4a387008b3917e06a45f73aefdcc4e73d04f96221d5",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_8_steps",
+    "parent_diagnosis": "The untouched baseline repeatedly requested nonexistent os.open with a fabricated /home/user/transactions path. It executed no successful action and stopped after the eight-event no-progress window in 43.884 Agent seconds; the strict audit remained valid.",
+    "counterfactual_scope": "Unit tests use structurally different photo archives, diagrams, research PDFs, alternate roots, globs, depth limits, and desktop paths; no Order 98 task ID, transaction values, receipt filenames, answer rows, or evaluator state is encoded.",
+    "os_actions_sha256": "0d0d2b1f9779a8d62d6a96f2dfd847d3009d73100d87210d51ab97feda0aa855",
+    "os_schema_sha256": "ab181fa0f01cafd93fb5586496a5b88267c44df632254e4c908ca3c66b5c45c6",
+    "os_tool_manifest_sha256": "eb53237967e3e27cad122f1dbd8947266d5ccda0f8794e761987d0cc1e963d2d",
+    "os_worker_sha256": "e67e27baf61a0122b0ae0069a4a48eaa1fe36334cfbca4bcd8102b1dba723f72",
+    "multi_apps_generic_actions_sha256": "70b21095cb54488b8ce651f6ace02f5b9170e5ad36d84954a2688aec97f56737",
+    "multi_apps_generic_schema_sha256": "59cb6252e7690a477bf0db266851bd134799b9ce31cca10144082fb7859a70c2",
+    "multi_apps_catalog_actions_sha256": "d80e7b73a83153b512ff2cab1430abf38683f9db764e76be994b8fb694115b5e",
+    "multi_apps_catalog_schema_sha256": "d5b69528498728ea71d38baf34795c2274aa07b253935eaf255bb5350e6233b4",
+    "tool_catalog_sha256": "d7c6cfbec43c1b067372bbbaf16f5c5b5918b26d9d35a6a96b6a3dd7aa8dec1e",
+    "openapa_catalog_sha256": "aae4554eb8461d2e78f8435caaff5dc12a2855ba30d7e792e97a1c01d9b897ef",
+    "focused_tests": "339 passed; covers typed schemas, non-string rejection, real recursive file trees, hidden/depth filtering, gio launch, unchanged Multi-Apps forwarding, strict manifest compatibility, varied-workflow recall, and duplicate-route suppression",
+    "full_unit_tests": "1605 passed",
+    "ruff": "active source and tests passed lint and format checks",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_file_discovery_v77_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-1 A/B and do not rerun it unchanged. Diagnose the trace, then use at most two further materially different generic hypotheses with one targeted A/B each. After hypothesis 3 fails, mark Order 98 task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 98,
+      "source_order": 206,
+      "domain": "multi_apps",
+      "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+      "source_episode_id": "337f86b24d147814b39514df",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a20790c3e3a6ab8c2b8e027299f6d0395bb00af53c887519d8ee43a24b6ad68e",
+      "execution_class": "golden",
+      "pool_order": 98
+    }
+  ]
+}

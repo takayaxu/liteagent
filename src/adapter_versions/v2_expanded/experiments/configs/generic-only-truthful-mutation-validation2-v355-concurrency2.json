@@ -1,0 +1,154 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-truthful-mutation-validation2-v355-concurrency2",
+  "status": "frozen",
+  "purpose": "Outcome-informed diagnostic validation of v355 truthful mutation evidence. Order 19 exercises blank-range rejection without a model-visible bypass; Order 143 exercises declared no-op handling and completion suppression. This condition is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-19T09:39:41Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_evidence": "adapter_versions/v2_expanded/experiments/generic-only-truthful-recovery-validation4-v354-concurrency4-run1/results.json",
+    "selection_evidence_sha256": "40dd8338744654d13bca56ff7fdf30c57dc72db8ca71903883be12668b12aab7",
+    "real_model_preflight": "adapter_versions/v2_expanded/experiments/preflight-qwen35-truthful-mutation-v355-run1/results.json",
+    "real_model_preflight_sha256": "8a8b81c81aa6da8332694b0fc989f3401ace293d2c25a13a67a48045059f246a",
+    "granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v355-granularity-audit.json",
+    "granularity_audit_sha256": "37b2dde3049d0013399a86fb556f31443fb76ef1a0c1695866e2ccb38d3f341e",
+    "smoke_result": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v355-concurrency2-run1/results.json",
+    "smoke_result_sha256": "d356bb8d0cc7761d1ee4cd93b915be62785239074a7903a5c77ce2597141eede",
+    "smoke_worker_audit_sha256": {
+      "worker-01": "0090f256a1d1a73cb93321a5c6b91139164f31fd5dc01d653828ba93c3797459",
+      "worker-02": "b1e72b9e9ac978c149308ebf7d689d67003f8a268d15e624e713d7373ac28a1b"
+    }
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v355",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-truthful-mutation-validation2-v355-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 783,
+      "total_bytes": 63699763,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "7bbc5284a6e05935908cec5e143b556cb79d6e61e6cb834a95d562f4a9496902"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v355_truthful_mutation",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "two directly affected v354 failures selected before any v355 reward on either target",
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_calc": 1,
+      "os": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 19,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "source_order": 98,
+      "selection_role": "blank_target_feedback_target"
+    },
+    {
+      "order": 143,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "source_order": 283,
+      "selection_role": "declared_noop_completion_target"
+    }
+  ]
+}

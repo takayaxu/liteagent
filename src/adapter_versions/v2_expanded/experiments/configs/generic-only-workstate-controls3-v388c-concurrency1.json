@@ -1,0 +1,197 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-workstate-controls3-v388c-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen low-concurrency environment and regression gate for the three v388 workflow controls that previously passed. It keeps the sealed v388b source, model, token limit, action budgets, state protocol, Adapter surface, VM image, and evaluator unchanged while reducing host KVM concurrency from six to one. The task subset is outcome-informed, is not unseen evidence, is not a full v388b rerun, and cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-21T13:29:13Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "v388_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-workstate8-v388-concurrency6.json",
+    "v388_config_sha256": "1d9405974d2c86f1300bae57ceef0606ea2dc9b47759d6e7935ae31ce6a73fea",
+    "v388_results": "adapter_versions/v2_expanded/experiments/generic-only-workstate8-v388-concurrency6-run1/results.json",
+    "v388_results_sha256": "b3f6acc600cda45f3cd6c04176265cb3774078616b3491d89436425eb9aa4915",
+    "v388_analysis": "adapter_versions/v2_expanded/experiments/analysis-v388-workstate8/summary.json",
+    "v388_analysis_sha256": "24b166e9c501eb9587db95e0bd2bd22520ec1d01a88b7ede2380c57a71497bd2",
+    "v388b_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-workstate8-v388b-concurrency6.json",
+    "v388b_config_sha256": "07f14eebca93f82753f91f7324ce666a05c97ed7aa40f6fc11a818dc7264e0a3",
+    "v388b_results": "adapter_versions/v2_expanded/experiments/generic-only-workstate8-v388b-concurrency6-run1/results.json",
+    "v388b_results_sha256": "f606f06c44af52b255540dbb795865c3675f944f479f54ca58b4b1a2842cd3ea",
+    "v388b_analysis": "adapter_versions/v2_expanded/experiments/analysis-v388b-workstate8/summary.json",
+    "v388b_analysis_sha256": "9078ef696611d0ca6287b31eeabe3a5d7289268c8edf4295d439fe7362a1a2c2",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v388c",
+    "role": "development_low_concurrency_workstate_control_gate",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-workstate-controls3-v388c-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 780,
+      "total_bytes": 63387560,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "53994e2063584d3d64e800d6d024dd6de0c4dd5e6b315fe7698ec1c166450b75"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v388c_patch_state_low_concurrency_2026-08-21",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5.0
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20.0,
+      "minimum_elapsed_before_first_model_seconds": 85.0
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true,
+    "model_authored_state_protocol": "patch_v2"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "the three v388 workflow_completion tasks that passed, selected before v388c to test environment recovery and regression retention only",
+    "selected_count": 3,
+    "historical_pass_control_count": 3,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "reference_behavior": {
+      "v388_passes": 3,
+      "v388_environment_failures": 0,
+      "v388b_passes": 0,
+      "v388b_environment_failures_on_controls": 1,
+      "v388b_runtime_readiness_degradations_on_controls": 2
+    },
+    "subsets": {
+      "historical_pass_controls": [
+        39,
+        154,
+        182
+      ]
+    },
+    "success_criteria": {
+      "passes_minimum": 2,
+      "environment_failures": 0,
+      "model_authored_state_declared_minimum": 3,
+      "rejected_state_updates_maximum": 3,
+      "strict_audit_v5_all_valid": true,
+      "work_state_protocol": "patch_v2",
+      "work_state_transition_mismatches": 0,
+      "no_runner_argument_rewrite_injection_or_trace_mismatch": true
+    }
+  },
+  "tasks": [
+    {
+      "order": 39,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "source_order": 125,
+      "development_stratum": "workflow_completion_historical_pass_control"
+    },
+    {
+      "order": 154,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "source_order": 294,
+      "development_stratum": "workflow_completion_historical_pass_control"
+    },
+    {
+      "order": 182,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_order": 329,
+      "development_stratum": "workflow_completion_historical_pass_control"
+    }
+  ]
+}

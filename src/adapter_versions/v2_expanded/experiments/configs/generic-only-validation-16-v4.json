@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-validation-16-v4",
+  "status": "frozen",
+  "purpose": "Repeat the unchanged frozen 16-task generic-only validation slice after the generic contradictory-completion rejection passed targeted clean-VM validation.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v3.json",
+  "change_scope": "Reject a proposed success claim when it explicitly says a logical, required, or necessary next step still needs to be performed. No task IDs, command constants, golden routes, evaluator access, answer constants, or task substitutions.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189.json",
+    "task_pool_sha256": "4acc28da4b1fce59d196bd181deaefc3b59e565bda98cabc11aa41927d499f2a",
+    "selection_fields_used": [
+      "order",
+      "source_order",
+      "domain",
+      "task_id"
+    ],
+    "historical_execution_class_or_outcome_used": false
+  },
+  "targeted_gate": {
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-targeted-1-v4.json",
+    "config_sha256": "2bfcc3bb9454cf4096de073877e0f4cd95c94b03be95cd3740e19de8c854cd87",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-targeted-1-v4-run1/results.json",
+    "results_sha256": "d257f6eff4d0e4a4489e78df62d2f8c9466c556352ddfe44c4ffab74a7c7a308",
+    "audit": "adapter_versions/v2_expanded/experiments/generic-only-targeted-1-v4-audit.json",
+    "audit_sha256": "7aa9cb47eb85c66bb26ac441a66c3d6b449fc59ff0d5c8d58019a326913624f9",
+    "required_valid": true,
+    "required_passed": 1,
+    "required_total": 1
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_validation_v4_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "initial_concurrency": 1,
+    "repeat_concurrency_max": 2,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first_two_tasks_per_domain_in_fixed_189_source_order",
+    "selected_count": 16,
+    "domain_count": 8,
+    "per_domain": 2,
+    "source_order_preserved_within_domain": true,
+    "replace_after_run": false,
+    "domain_counts": {
+      "libreoffice_calc": 2,
+      "libreoffice_impress": 2,
+      "libreoffice_writer": 2,
+      "multi_apps": 2,
+      "os": 2,
+      "thunderbird": 2,
+      "vlc": 2,
+      "vs_code": 2
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "pool_order": 1,
+      "source_order": 66,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3"
+    },
+    {
+      "order": 2,
+      "pool_order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371"
+    },
+    {
+      "order": 3,
+      "pool_order": 29,
+      "source_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e"
+    },
+    {
+      "order": 4,
+      "pool_order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07"
+    },
+    {
+      "order": 5,
+      "pool_order": 64,
+      "source_order": 155,
+      "domain": "libreoffice_writer",
+      "task_id": "0810415c-bde4-4443-9047-d5f70165a697"
+    },
+    {
+      "order": 6,
+      "pool_order": 65,
+      "source_order": 156,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c"
+    },
+    {
+      "order": 7,
+      "pool_order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908"
+    },
+    {
+      "order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 9,
+      "pool_order": 133,
+      "source_order": 271,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d"
+    },
+    {
+      "order": 10,
+      "pool_order": 134,
+      "source_order": 272,
+      "domain": "os",
+      "task_id": "ec4e3f68-9ea4-4c18-a5c9-69f89d1178b3"
+    },
+    {
+      "order": 11,
+      "pool_order": 149,
+      "source_order": 289,
+      "domain": "thunderbird",
+      "task_id": "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397"
+    },
+    {
+      "order": 12,
+      "pool_order": 150,
+      "source_order": 290,
+      "domain": "thunderbird",
+      "task_id": "15c3b339-88f7-4a86-ab16-e71c58dcb01e"
+    },
+    {
+      "order": 13,
+      "pool_order": 161,
+      "source_order": 303,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967"
+    },
+    {
+      "order": 14,
+      "pool_order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89"
+    },
+    {
+      "order": 15,
+      "pool_order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951"
+    },
+    {
+      "order": 16,
+      "pool_order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb"
+    }
+  ]
+}

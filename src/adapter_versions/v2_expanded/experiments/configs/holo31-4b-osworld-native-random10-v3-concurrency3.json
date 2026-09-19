@@ -1,0 +1,204 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-native-random10-v3-concurrency3",
+  "status": "frozen",
+  "purpose": "Prospectively selected, outcome-independent 10-task validation of Holo3.1-4B with H Company's documented native agent-loop conventions. This is not an official OSWorld score or a baseline promotion.",
+  "freeze_timestamp": "2026-08-29T05:20:00+00:00",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "candidate_commit": "596ed5daa4238c2a8bcee37258731cc79331b328",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop",
+    "holo_model_card": "https://huggingface.co/Hcompany/Holo-3.1-4B"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "holo31-native-v3",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/holo31-4b-osworld-native-random10-v3-concurrency3-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 392,
+      "total_bytes": 53894134,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "bcd9a19a691f4c8b6c4df3e6835f45ab3d6ff488f5eb556635dfd88164a091be"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": false,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "top_k": 7,
+    "temperature": 0.8,
+    "thinking": true,
+    "gui_enabled": true,
+    "reasoning_effort": "medium",
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 3,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "holo_native_gui_only",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Sort all 189 task IDs by SHA256(seed + ':' + task_id) and take the first 10.",
+    "seed": "holo31-4b-osworld-native-random10-v3",
+    "selected_count": 10,
+    "uses_prior_outcome": false,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 148,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "source_order": 288,
+      "selection_digest": "014fe4ec396d9f8b5b0b05354ba217f7a5401d3ffdfdf0b4226915c3d4660599"
+    },
+    {
+      "order": 128,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_order": 260,
+      "selection_digest": "0251c0bf0f2abe0bff184dd550cf40bc203d1cbbab2e99faa314b3c51bedc2bd"
+    },
+    {
+      "order": 1,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+      "source_order": 66,
+      "selection_digest": "02e4c4cffcab8d391d5680773267e79e4d998fe5673074521ac52eb56b2cfef6"
+    },
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309,
+      "selection_digest": "037e07159307d27335b4c1e6f84ce8f26894b90825bd8e5b3fa630ca47f6de7c"
+    },
+    {
+      "order": 185,
+      "domain": "vs_code",
+      "task_id": "70745df8-f2f5-42bd-8074-fbc10334fcc5",
+      "source_order": 332,
+      "selection_digest": "054b87480b1529f4957ac3d0d0beea6a8a08ea5a836544305b54a1fa4cc8b13e"
+    },
+    {
+      "order": 155,
+      "domain": "thunderbird",
+      "task_id": "dd84e895-72fd-4023-a336-97689ded257c",
+      "source_order": 295,
+      "selection_digest": "05886f2241a12747a4b904c3f80b79fc8952932a872040edbf92db02182ad956"
+    },
+    {
+      "order": 166,
+      "domain": "vlc",
+      "task_id": "aa4b5023-aef6-4ed9-bdc9-705f59ab9ad6",
+      "source_order": 310,
+      "selection_digest": "060ce0b4d9e14dae681b6ea0df5fb233964776b91959a7ef897076211642e69e"
+    },
+    {
+      "order": 108,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_order": 217,
+      "selection_digest": "06f7e24abb5a41c761c85f7252a350ca7623ee8d80ad415a1cf589eb8a6b978c"
+    },
+    {
+      "order": 3,
+      "domain": "libreoffice_calc",
+      "task_id": "f9584479-3d0d-4c79-affa-9ad7afdd8850",
+      "source_order": 69,
+      "selection_digest": "092b83364584824f7633a0281157194f0f6c475322345b62d3dfaa718bb42dcf"
+    },
+    {
+      "order": 157,
+      "domain": "thunderbird",
+      "task_id": "3f49d2cc-f400-4e7d-90cc-9b18e401cc31",
+      "source_order": 299,
+      "selection_digest": "0cd025c4abe4e0d5cd17f22eb189104c78b84f2afb10af35818f0292359a7ce5"
+    }
+  ]
+}

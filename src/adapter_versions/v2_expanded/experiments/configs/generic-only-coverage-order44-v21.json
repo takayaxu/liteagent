@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order44-v21",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order43-notes-lifecycle-v21.json",
+  "candidate_parent_config_sha256": "590ca3da663593f0ed37d719df0e5b3129f37df2426fd2f0fe4ea058d78b3595",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a162cb8cdddf9ad43867a334369cf31ee870447c6d866375ecbe88551a4c3204",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "runtime_sha256": "703e3cf300384ce19d1f3378c61a7a0e1e3cfe3114537ec616bd0b946f0b204d",
+    "impress_semantics_sha256": "d7773d8a8d28b7ffb52936eae118e79f77db75170769786cdcc83b5b682d2d72",
+    "tool_catalog_sha256": "2adad66cb13cd498490350d47c3fe11e103a493527b7ce8cbe468ba893a69a92",
+    "impress_semantics_test_sha256": "6c25db5b0742cc23b0471eaaa5c774fd6d2ecd2c3b8aac9d03884f796b50723d",
+    "tool_catalog_test_sha256": "c8a48346fbdd86bd0d77bfc4ffeb75a0a17caaeb1c7783c7af903ff64cbd979e",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "runner_test_sha256": "d3dbf1fbcafd001c909c64af3f11f3b8a6a1adba2f6c38e62c809a64655c03dc",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "focused_notes_and_catalog_tests": "27 passed",
+    "full_unit_tests": "1236 passed",
+    "counterfactual": "Synthetic three-slide and two-slide decks use unrelated task metadata, different target slides, and titles Quarterly Review and Release Checklist. Empty saved-note readback rejects a false completion claim and exposes slide.set_notes again. Existing literal-note plus background and title-to-notes plus background workflows remain green.",
+    "preserved_trace_replay": "The immutable v20 step-5 false completion changes from accepted to rejected, with the missing action derived as slide.set_notes for slide 1 and observed title Team Members.",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_notes_lifecycle_v21_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "source_episode_id": "9372e9f4aab60b8977cb22a6",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "217cdd397a9a4a4604831bf4aa310dda042968b9debe9f5c8ea038edf5fa5b2c",
+      "execution_class": "generic_api_only",
+      "pool_order": 44
+    }
+  ]
+}

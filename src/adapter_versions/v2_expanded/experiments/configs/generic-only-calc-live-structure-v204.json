@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-calc-live-structure-v204",
+  "status": "frozen",
+  "purpose": "One scripted clean-VM retry of the two Calc historical-pass regressions still unresolved after v203. Selection uses prior outcomes and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-calc-robust-facades-v203.json",
+  "parent_config_sha256": "db9f4b97531eb42242b1ad5204364476f1865fc03613acffa48ebf28438c0c78",
+  "change_scope": "Summary-row charts omit categories whose selected live summary cell is blank. Repeated non-replacing stacked-pivot calls treat the model-selected destination as a lower bound and move downward only when an existing overlapping live pivot output requires the requested blank-row gap. Strict semantic-facade tasks no longer receive the 2048-token matrix-write budget merely because range.write remains visible. Model-selected tool calls and arguments are not rewritten.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "historical_regression_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-historical-pass-regression17-v198.json",
+    "historical_regression_config_sha256": "1208faea18f94e3fd91a9bfeebb7ad72ec75fdca0f666cedfd079a0b10324bea",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-calc-robust-facades-v203-run1/results.json",
+    "parent_results_sha256": "89c9b0eb96ed28c75f8284495cd1d3cf1b13741c39b7eea24ec5e866132e7c55",
+    "parent_strict_audits_sha256": [
+      "0acf4a11f96727d8cb84061a4cd0f74d919cca2883f0136dbc1284ac76afc6e2",
+      "69e86c58961cde286d3ec39e372329ced649682c880494f823831672201a69ee"
+    ],
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "calc_semantic_tables_sha256": "ddf0f9a3b3f4d548067b9ff234b8409a8d182066fea648ac784664912e858d84",
+    "calc_schema_sha256": "51afc4edaaa457d3166ab83196f144cc6fde81ba8bd72dadd47f9a97cd999073",
+    "calc_tool_manifest_sha256": "d406422d17300c80b515f508e11059bc9627a699f478ff1169146ab6e53efaac",
+    "calc_uno_worker_sha256": "961c475555ffd14d7572d7eadcd00097a12516cd1b672c621e8f0aab9f9b497b",
+    "agent_protocol_sha256": "7efadce9ff2b2ed3b633c2da3c77f548373a84e61e1febee1b76bbb76d453e32",
+    "calc_semantics_sha256": "cfa83790fd4bcf930387f54ac87bac6fb00b873a1bc4199acd9ce7c44dc86353",
+    "strict_contracts_sha256": "605589878e688eb9f222876a56866384cda85049279c778532605afb6bdaf611",
+    "tool_catalog_sha256": "58a4f6b5a3081e30141dd6795223f2cc193db2aa2276f9e91a7e143ba7aaa44f",
+    "tool_surface_sha256": "d722341c583c07f7f8c0191dc652727569be1206e43766904178528714d336e0",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "state_core_sha256": "8c5fc32d5dd542265ae7fba430091eb6647b67b5abbe2dfd69d54d0e6eb0d742",
+    "semantic_requirements_sha256": "4c11213207287611f8bbad30aa0ab0a22e1252dfcb3cb38fb5a88752b5b00cc6",
+    "adapter_results_sha256": "99f58b1afd3b5d47f70ad01c5e54faa4a67639d2873909f31c9a7a550133d540",
+    "action_selection_sha256": "64267aea28543fd851bf6b0b1e3a03a0a6dbe5e84b845736982387c8983fbb22",
+    "state_calc_sha256": "064c4a34482a457a7edd5124f5d108ca5bce878b3eeaedd16ba4ce158ad5dfd9",
+    "openapa_tool_catalog_sha256": "45c20281aecd640a9aaae5c33472d158be9795dc9be08f0fcb6311ea0a7952e5",
+    "semantic_table_tests_sha256": "46e7d956b90f9e4d164f04c621f60452ce67b4b2f3c20636f250c61b0d4fcdb5",
+    "runtime_tests_sha256": "88068b6e183cb2fae5e9e874da046a187e2029f499e0900a92a8896157e91b60",
+    "strict_manifest_tests_sha256": "a0d48e67b5fa57ee123dbc7e292650e9c0c10b9f3c3a9810f7dbcb2e9747da7a",
+    "unit_tests": "2349 passed",
+    "focused_tests": "815 passed",
+    "ruff": "changed active source and tests passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_calc_live_structure_v204_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "the two v203 Calc failures from the frozen 17-task historical-pass regression set",
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_calc": 2
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T11:27:17Z",
+  "tasks": [
+    {
+      "order": 13,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 24,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order132-assessment-grading-v146",
+  "status": "frozen",
+  "purpose": "Single targeted Order 132 A/B for a parameterized action that grades multiple-choice DOCX submissions against the current reference document and writes detailed scores into the current spreadsheet.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order132-v145.json",
+  "candidate_parent_config_sha256": "7201eb9df8ce9a50681a297ecb265e9d7af58bb7a277bff32157cfd84dfdea85",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "9f5b535b2c8e3a0fbe00d1d9548d0e59f0ad40a6a79250610de213ddfde85c8e",
+  "blocked_backlog": "experiments/generic-only-task-blocked-backlog.json",
+  "blocked_backlog_sha256": "ef4885946fde6630b88f71d79cb259d2b25c2cba7d632205bb5e21ceee42deab",
+  "baseline_result": "experiments/generic-only-coverage-order132-v145-run1/results.json",
+  "baseline_result_sha256": "29f9817fde11fcf0a6187764efd3c9ca99081417afdf7e1bd9e0d1f1214fc120",
+  "baseline_audit": "experiments/generic-only-coverage-order132-v145-run1/generic-only-audit.json",
+  "baseline_audit_sha256": "bae67b5a16b22cab3eeea5f8086b82fa4225f2693c2edb7ae4ecbdd418f40a3c",
+  "baseline_trajectory": "experiments/generic-only-coverage-order132-v145-run1/workers/worker-01/raw/run-1/132-multi_apps-aceb0368-56b8-4073-b70e-3dc9aee184e0/trajectory_manifest.json",
+  "baseline_trajectory_sha256": "b3b8f8464935950b86bd5bf10ee69661b4f2f7c8d2517af4690b1f62163a0b56",
+  "change_scope": "Add assessment.grade_multiple_choice_documents as a reusable Multi-Apps action. The model may supply reference_path, workbook_path, submissions_directory, submission_glob, sheet, scoring values, and preservation policy, or omit paths to use the current Writer and Calc documents. The Adapter discovers submissions beside the selected reference, parses identities and answer markers, maps semantic spreadsheet headers, preserves completed rows, writes detailed scores, saves, and reads every changed row back. Runtime code contains no task ID, dataset order, fixed filename, student identity, answer value, row, question count, evaluator access, golden artifact, or instruction fingerprint.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_assessment_grading_v146_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this one targeted A/B. The required generic capability has passed counterfactual tests and a real clean-guest execution. If the model still does not complete the task for a non-environment reason, mark Order 132 task_blocked immediately and continue to Order 133; do not add a task-local schema or prompt variant and do not rerun unchanged. Only a proven transient environment fault may receive a bounded retry under the shared environment allowance.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3_final_bounded_attempt",
+    "hypothesis_class": "parameterized_multiple_choice_document_grading",
+    "failure_evidence": "The untouched v145 baseline made no mutation, repeatedly searched for nonexistent answer_key.txt and PDF inputs instead of the live DOCX documents and workbook, and stopped after 10 steps with stalled_no_progress. The original evaluator reward was 0.0 and the strict generic-only audit was valid.",
+    "contract": {
+      "action": "assessment.grade_multiple_choice_documents",
+      "model_supplied": [
+        "reference_path_optional",
+        "workbook_path_optional",
+        "submissions_directory_optional",
+        "submission_glob_optional",
+        "sheet_optional",
+        "points_per_correct_optional",
+        "correct_value_optional",
+        "incorrect_value_optional",
+        "preserve_existing_optional"
+      ],
+      "omitted_path_source": "current_writer_and_calc_documents",
+      "submission_source": "selected_reference_parent_or_model_selected_directory",
+      "adapter_internal_task_identity_or_golden_dependency": false,
+      "runtime_fixed_answers_or_student_rows": false
+    },
+    "counterfactual_tests": "Tests use unrelated filenames, three questions instead of ten, different candidate identities, Candidate ID/Name and Question N headers, different per-question scores, preservation of an existing completed row, explicit paths and current-document path discovery, plus saved-workbook read-back verification.",
+    "focused_unit_suite": "232 passed",
+    "full_unit_suite": "2019 passed",
+    "static_verification": "Full Ruff lint, compileall, project layout and generic deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and unchanged evaluator tree passed. The user-deferred fixed-16 OSWorld regression was not run.",
+    "real_guest_smoke": "experiments/generic-only-assessment-grading-clean-guest-v146-smoke.json",
+    "real_guest_smoke_sha256": "0fd0d2b081b1883cdfef37e2d37d14ff393bbcc610dd2a29d431519d1f5c3d0e",
+    "source_sha256": {
+      "multi_apps_adapter/assessment_grading.py": "a97c0a167924e8205ce024404135d3dedc1cc8218150c78d062d65dcec7dda3f",
+      "multi_apps_adapter/generic_actions.py": "c27078cb3adabd60c82198ce1d8fc980591f938213cdeb442cf62ca0cc693594",
+      "multi_apps_adapter/actions.py": "988d6e7397a243773df381421976cf2593ad1ccf1ee35ae15dd3fa51220d9400",
+      "multi_apps_adapter/generic_schema.py": "01b9df8951e5396067e4c756a66595fea448b999a6d0346232c7343643ee5015",
+      "multi_apps_adapter/schema.py": "441786ecc957485e53da05c908080bac7448f78cb4b4daf065da98d3c2a43ba4",
+      "multi_apps_adapter/tool_manifest.py": "ff71f881d8f11a210f13dc344c436bafebf2991515c64b6ef7a1dd298a1bc7d3",
+      "integrations/lite_agent/tool_catalog.py": "1a1bbd9ae6dd1a4c7dde112ff75a240c2fd17fd67afa442b9723b1d9e50f6744",
+      "integrations/lite_agent/adapter_results.py": "076d189cc5fc55ca2586a5eebf9df96c0eb5ea79aab388ac44b4c627e924adfa",
+      "GOAL.md": "4936a2c57f647a68a9f9a7c2f76bcb4f0cb6b6bed90c7ca4b7686c123a5d7619"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 132,
+      "source_order": 267,
+      "domain": "multi_apps",
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "source_episode_id": "ae5990977a8b954956aff2ac",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "b369916902df9fd4f91b1345fe9c6674e050b2ca991ea964fd6b09f862dabc21",
+      "execution_class": "golden",
+      "pool_order": 132
+    }
+  ]
+}

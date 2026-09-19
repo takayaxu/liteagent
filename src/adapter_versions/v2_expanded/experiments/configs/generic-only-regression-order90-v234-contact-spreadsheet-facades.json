@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order90-v234-contact-spreadsheet-facades",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for the eligible historical-pass regression at Order 90. Expose reusable contact CSV export and spreadsheet file conversion as staged generic Multi-Apps facades. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order89-v233-default-application-facade.json",
+  "parent_config_sha256": "07c45891089bb802d552cb407c655aa913170f687dc752d2f933c5197c37421e",
+  "hypothesis": "The v210 failure had both required deterministic capabilities only behind the broad nested adapter.call route. Qwen exported the contacts successfully, but repeatedly called Calc workbook.convert_file with source_path even though the nested downstream schema required input_path, then created an incomplete workbook and tried an unrelated presentation conversion route. The eligible v51 historical pass eventually used input_path correctly and passed, but only after 30 steps and 15 errors. If explicit contact CSV export followed by spreadsheet conversion exposes two staged flat actions with model-friendly public contracts, Qwen can choose the address book and both paths unchanged while the Multi-Apps Adapter performs only the documented source_path-to-input_path representation conversion behind the spreadsheet facade.",
+  "change_scope": "A focused contact_spreadsheet_semantics module detects reusable contact CSV export and local CSV/ODS/XLSX conversion intent without parsing address-book names, paths, filenames, task identity, or answer values. The strict surface stages contacts.export_csv before spreadsheet.convert_file when both operations are requested. Multi-Apps owns flat schemas for the two facades, forwards contact arguments unchanged to Thunderbird, and maps the public spreadsheet source_path field to Calc workbook.convert_file input_path inside the explicit Adapter contract. Tool search prioritizes the facades and suppresses duplicate nested routes. The Runner does not select, rewrite, inject, or infer any model-facing argument.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-06/raw/run-1/90-multi_apps-c867c42d-a52d-4a24-8ae3-f75d256b5618",
+    "v210_outcome": "Strict evidence-valid failure: reward 0.0, generic_api_only, 18 steps, no Agent termination, and stalled_no_progress. Qwen exported contacts.csv successfully through nested adapter.call, then repeatedly used source_path against Calc workbook.convert_file, whose downstream schema required input_path, and later created an incomplete workbook and selected an unrelated presentation conversion route.",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order90-csv-xlsx-recovery-v51-run1/results.json",
+    "historical_clean_pass_results_sha256": "8a6a186a7d70a4c6f3e0088a4738ed39d407f9df04eaec7651a13779f7c09ab6",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-090-generic-only-coverage-order90-csv-xlsx-recovery-v51-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "235f02438780c1bdf890bf01895d796e64687f29949f746c0e1787a6d83f24f4",
+    "historical_clean_pass_outcome": "Reward 1.0 and current strict re-audit valid, evidence-valid, and baseline-admissible with zero task/golden leakage and zero model/Runner argument mismatches. Qwen eventually selected nested Thunderbird contacts.export_csv and Calc workbook.convert_file with input_path, but used all 30 steps, produced 15 errors, and did not terminate through the Agent protocol.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "contact_spreadsheet_semantics_sha256": "1e8bce96e39c75cddb279b74cdf0eb4ec8c093bf49eaa31bb07f1bcf1f0b03ae",
+    "action_selection_sha256": "8750e69caa318ac8e4e41e5f1b94a7156897ee0adce127f56be9fb12882f7042",
+    "instruction_semantics_sha256": "a30ea2b2a342df9e46b357593db76d6efb3e0f16786ee0d3caf6a99ca0b74103",
+    "lite_agent_tool_catalog_sha256": "aff3d55ee7fd3834de6ebec88887285f338f19bf3de0fe455c7309b4c2d8b143",
+    "openapa_tool_catalog_sha256": "44571d229c9cbfeec468eb723b2193d97bcd98693004886d5b51312d22185c0d",
+    "multi_apps_tool_manifest_sha256": "6fa279dc3b1a5f3fb64fd5e012dc8ad76585594e8aff74811fd6cc187933d26b",
+    "multi_apps_generic_schema_sha256": "57651fb5c2d21bb10c2a13a8b3f66c607fbd9d4e8a71f6383ff084305c508675",
+    "multi_apps_schema_sha256": "0c3be4d39b592bed32502daebea28002d59371868c23da2a17e8d12395f1ca85",
+    "multi_apps_generic_actions_sha256": "82ea1e761606befaf911c9d6242d733a5774a52d86670db51c5c1ddbfdaa1d21",
+    "multi_apps_actions_sha256": "bb065915b505c83b006451c62fe0022d29fc9029cf62244a06409dad19a6167e",
+    "contact_spreadsheet_tests_sha256": "92db99f3cfb1e3a9adfdbdc0102bcad83224cdb7831214f56cb7b82cea15a81a",
+    "multi_apps_runtime_tests_sha256": "57f2b5955fcfd31cb669720aa6446907dde776bca91cf49c0c032075a09ff865",
+    "multi_apps_catalog_tests_sha256": "329b62e962852e22e1ca69607c0cc014aa34f39f7c77610e5a1ba632b39bb4a4",
+    "project_layout_sha256": "c04ab598f1c775c129504010b89f6ac0a9987c7e4c27ad3b46c47c14b5e223ed",
+    "runtime_module_tests_sha256": "ee1ec38ae4d2713fb87450ba8d934dc1f025e078d340458a19441fe4694ac49a",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "lite_agent_supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "counterfactuals": "Different address books and destinations exercise contact export; different CSV, ODS, and XLSX pairs exercise conversion. Negative cases reject EML export, JSON contact backup, opening a CSV, creating a new workbook, and video conversion. A structurally different Research Team CSV-to-ODS workflow proves the strict surface exposes only one business action per stage, both LiteAgent calls and all model-facing arguments reach the executor unchanged, the Adapter alone performs the documented field-name conversion, completion requires both public actions, and the final surface is propose_done only. Schema tests reject task_id, relative paths, missing fields, unsupported formats, and identical source/destination paths.",
+    "focused_tests": "747 passed across contact/spreadsheet semantics, strict staged tool surface, schema and forwarding behavior, Multi-Apps catalog, generic routing/completion, runtime module ownership, and strict schema-manifest validation",
+    "unit_tests": "2535 passed",
+    "ruff": "passed for active source, scripts, tests, and Adapters",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_contact_spreadsheet_facades_v234_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 requests with the current strict re-audit of the historical clean pass",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T01:15:04Z",
+  "tasks": [
+    {
+      "order": 90,
+      "pool_order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

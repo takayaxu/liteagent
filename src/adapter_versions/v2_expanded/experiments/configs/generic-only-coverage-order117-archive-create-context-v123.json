@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order117-archive-create-context-v123",
+  "status": "frozen",
+  "purpose": "Order 117 hypothesis-2 A/B: expose a reusable, model-parameterized ZIP create/extract action and preserve verified document-conversion paths in the next model context so the Agent can complete a convert-then-package workflow without repeating conversion.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order117-document-convert-verifier-v122.json",
+  "candidate_parent_config_sha256": "0ed401b68fc4473a7d6a2320f57172346f662124b9fbfc2f7e824e55c3caf19e",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c5c5e6cb1f9e1d0080601d17bd4106c5268a70727c3f111e513db6dcea6009ff",
+  "change_scope": "Preserve the v122 prompt, model, runtime limits, VM, evaluator, generic-only boundary, and model-owned arguments. Add archive.create_extract as a flat Multi-Apps facade over an OS Adapter action whose mode, archive_path, input_paths, base_directory, destination_directory, and overwrite policy all come from the captured model call. ZIP creation is transactional and verifies persisted members; extraction rejects absolute paths, traversal, backslashes, duplicate names, encrypted entries, and symbolic links before writing. Add compact truthful context for document.convert_batch and archive.create_extract. No task identity, instruction fingerprint, fixed input/output filename, answer, golden content, evaluator state, Runner rerouting, or argument rewriting participates.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_archive_create_context_v123_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. Try at most one further materially different generic hypothesis with one targeted A/B. If hypothesis 3 also fails, mark Order 117 task_blocked and immediately advance to Order 118.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3",
+    "hypothesis_class": "generic_zip_archive_and_post_conversion_context",
+    "parent_attempt_result": "experiments/generic-only-coverage-order117-document-convert-verifier-v122-run1/results.json",
+    "parent_attempt_result_sha256": "fa44aeaf1f84eeaaf0a8722019d30edf9e6133522fcb21ce617e01ebbbd8ee1e",
+    "parent_attempt_audit_sha256": "1c29d35af75023aa9f2c8d9e07484c685a29bd976b3ee3cc5387d03aeccc392f",
+    "parent_attempt_trajectory_sha256": "ebf5f8b5d8f023d0499ce376bad0afa4a72aa5321c846b275c1d67e2c8efab19",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "v122 made document.convert_batch truthful and verified: the first conversion completed at step 2 with status=ok and verification_passed=true. The model nevertheless repeated conversion because LiteAgent discarded matched and converted paths as downstream_context=null. It later read both available documents but never created a ZIP because no deterministic archive action existed in the public OS or Multi-Apps tool surface. The no-progress guard stopped the 30-step run; original evaluator reward was 0.0 and strict audit valid=true with zero leakage or argument rewriting.",
+    "production_file_sha256": {
+      "os_adapter/archive.py": "8d702e2dd20039b6c959f1f279983b2839a9d3b75b9d9231d507b9b8086cb743",
+      "os_adapter/actions.py": "fb5e33f15e74173d704e4178c34ecc75cac61ae7a0a56b25c8b0ad380ebd39d2",
+      "os_adapter/schema.py": "aa10da40969b750682f3b55e4b24e910657d5aa7c5d9b96d7acac9affa5103ee",
+      "os_adapter/tool_manifest.py": "72f42e1279c5c4ef41896e188a7936da77ae95e13b8024d32738986b153160a8",
+      "os_adapter/verifier.py": "c806288b1b7ce8bcf1c01689562a3b7d9179488b47cb58c3fc52849c1144bb68",
+      "os_adapter/worker.py": "6189bb10d2fb4fe60666b972c45323c1dca17dd4482a2b5c812d022227999461",
+      "multi_apps_adapter/generic_actions.py": "7f6c9dd6d0619bd875060f078c953e2d769ce2b934ec399ef9184dddb1ff5ae7",
+      "multi_apps_adapter/generic_schema.py": "5896ad5bccdad5fd5647e6ae3c86446f95422078cb6b90be63839c39d335e02f",
+      "multi_apps_adapter/actions.py": "49902c73bb6b3f36eadeba4ce88f6118b0d21b20c27715264ae9bafecb4d11b5",
+      "multi_apps_adapter/schema.py": "2fca4e929e5c4aaf839d82806281c1429e2903779cc9cf8e8e8cf0e9b1207b5b",
+      "multi_apps_adapter/tool_manifest.py": "edece49ec825565bed9b016d5a3a2d3994cbd3362c6fc78fa2e0c8a0b4ccee6b",
+      "integrations/lite_agent/tool_catalog.py": "e2e98f57fb84c3d7aedd0736c9610e43a8d81a0a5035b67ff3c3512c15f651be",
+      "integrations/lite_agent/adapter_results.py": "ad3a05041a389a21b65a1e8b119a5b78d4fc9fa05e44a17a79932a52a87c7701"
+    },
+    "candidate_bundle_sha256": "3ae16d5a47716a5476ebce3b9f28a4e87fb2464aa4ded42bf48e55cc0636a146",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for the 13 modified production modules listed above.",
+    "focused_tests": "314 OS action/schema/verifier, Multi-Apps generic facade, LiteAgent tool-catalog, and result-context tests passed. The complete unit suite reported 1803 passed. Ruff lint on active OS, Multi-Apps, LiteAgent, and unit-test trees passed; all 19 modified files passed Ruff formatting and compileall. Project layout and generic deployment leakage checks, frozen-v1 SHA256SUMS, and the OSWorld commit/evaluator-tree check passed.",
+    "counterfactual": "Structurally unrelated report, JSON, SVG, RTF, image, and CSV fixtures prove exact two-file ZIP creation, base-directory member naming, persisted content and size read-back, safe round-trip extraction, overwrite protection, rejection of a ../outside.txt traversal before any destination write, exact model-argument forwarding, direct tool search, conversion-path context, archive completion evidence, and failure after persisted members are replaced. The ordered counterfactual test bundle SHA-256 is 06fe34e9c18a5a8e13518db17fff7a9b213ce070e208bf093209381d3d76b947. No task ID, task filename, requested archive name, source essay name, golden content, or evaluator value appears in the implementation or counterfactuals.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "second and only targeted generic A/B for hypothesis 2 on Order 117",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 117,
+      "source_order": 234,
+      "domain": "multi_apps",
+      "task_id": "8df7e444-8e06-4f93-8a1a-c5c974269d82",
+      "source_episode_id": "8a7a585c2768a879154150c5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1c995c83fed1cbd942b52efc5477a525a455f20789ec7b8ce42a16f6c497db0",
+      "execution_class": "golden",
+      "pool_order": 117
+    }
+  ]
+}

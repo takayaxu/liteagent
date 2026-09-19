@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v253-impress-export-contract-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the generic presentation.export format-to-destination contract. Contains the affected v252 outcome and the nearest clean-pass Impress control on each side in the frozen source order. Two workers satisfy the supervisor endpoint divisibility invariant. This is not a baseline score or promotion run.",
+  "planning_predecessor": {
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-ab3-v253-impress-export-contract-concurrency3.json",
+    "config_sha256": "b0e231cfad5a5a5e44c4114d507ff8c35635b9c91a52f8d28552b0ee1593a99a",
+    "disposition": "Rejected by plan-only validation before any worker, VM, model request, result directory, or episode was created because three workers are not divisible across two endpoints.",
+    "resume": false
+  },
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "change_scope": "Only the public Impress presentation.export format/destination validation, its Adapter-owned tool schema, and related tests changed from the v252 source condition. Model, Prompt, Router algorithm, remaining schemas and Adapters, VM, evaluator boundary, limits, no-proxy policy, and audit v4 remain unchanged. The Adapter rejects a mismatch and does not rewrite model-selected arguments.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v253.json",
+    "candidate_manifest_sha256": "38677157e43be6d55dd7f50a745d6d0b1096f5d2d222c806d62af46bf694bdd4",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v253-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "e6668e3d3c37ac8af0a6e1414d11324c161ae8ec57f414d8cc1669fcfc710c30",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "One affected outcome plus clean controls are required by the bounded development A/B protocol.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v253",
+    "active_runtime_and_test_tree_sha256": "e27eb469a053ba41fbce95d5767fe491a9d58672dff45a9aa9fe44cb874baa35",
+    "focused_tests": "557 passed",
+    "complete_unit_suite": "2663 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "1/1 schema-valid and semantically matched on each of dgx1 and dgx2",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v253_impress_export_contract_ab3_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Select v252 Order 60 as the affected artifact-output-contract outcome, then select the nearest preceding and nearest following v252 clean-pass tasks in the same libreoffice_impress domain by fixed source order.",
+    "selected_count": 3,
+    "affected_orders": [
+      60
+    ],
+    "clean_control_orders": [
+      58,
+      62
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "affected_order_must_produce_a_valid_scored_episode": true,
+    "affected_order_must_not_repeat_the_format_extension_corruption": true,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T03:19:00Z",
+  "tasks": [
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_control_before",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "affected",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "cohort_role": "clean_control_after",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

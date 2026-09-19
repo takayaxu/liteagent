@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-native-smoke2-v1",
+  "status": "exploratory",
+  "purpose": "Non-promotable two-task check of Holo3.1-4B under H Company's documented native function-calling agent-loop conventions on the pinned OSWorld environment.",
+  "hypothesis": {
+    "statement": "A GUI-only Holo-native loop with reasoning enabled, normalized coordinates, native function calls, and a three-screenshot budget can produce exact executable GUI calls and complete one simple OSWorld task without task identity or evaluator leakage.",
+    "affected_task_order": 165,
+    "stable_control_order": 133,
+    "expected_observable": "At least one task passes, every executed action exactly derives from the captured model call, and no request contains a task UUID, evaluator field, or forbidden task route.",
+    "stop_condition": "Stop after these two runs. If neither passes and no format or coordinate failure category is removed, do not expand the task set."
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop",
+    "holo_model_card": "https://huggingface.co/Hcompany/Holo-3.1-4B"
+  },
+  "condition": {
+    "stage": "exploration",
+    "baseline_candidate": false,
+    "promotable": false,
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Known-stable tasks selected for harness bring-up, not score estimation."
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "reasoning_effort": "medium",
+    "thinking": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "temperature": 0.8,
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "tools": "holo_native_gui_only",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "best_of": false,
+    "resume": false,
+    "preserve_every_attempt": true
+  },
+  "tasks": [
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309,
+      "role": "affected"
+    },
+    {
+      "order": 133,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d",
+      "source_order": 271,
+      "role": "stable_control"
+    }
+  ]
+}

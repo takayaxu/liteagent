@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order115-image-document-v117",
+  "status": "frozen",
+  "purpose": "Order 115 hypothesis-2 A/B: expose a reusable image-to-Writer document action that renders layered image formats, embeds the result, saves, reopens, and verifies the DOCX.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order115-file-discovery-v116.json",
+  "candidate_parent_config_sha256": "f47a4667946ade93261a7293f0ff8d5f30cd17ebdf28114a1744816a9dde5c83",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "72f7ec9dc9eeb922ca9c08f2a46561e06dfc5b8edf3f7b9a95d40850f8a1fa7b",
+  "change_scope": "Preserve v116 path discovery and all existing behavior. Add model-selected document.create_from_image(source_path, output_path, overwrite). Multi-Apps renders XCF, PSD, ORA, and SVG through the existing generic GIMP image.export action, passes only the temporary raster representation to Writer, removes that temporary file, and returns structural save/reopen/image-count verification. Raster input skips GIMP. Tool ranking and filesystem.find context expose this action only for generic image-to-Writer intent. No task identity, source basename, answer artifact, golden value, or evaluator state participates in runtime behavior.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_image_document_v117_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. At most one final materially different generic hypothesis remains before marking Order 115 task_blocked and advancing immediately.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3",
+    "hypothesis_class": "parameterized_layered_image_to_writer_creation",
+    "parent_attempt_result": "experiments/generic-only-coverage-order115-file-discovery-v116-run1/results.json",
+    "parent_attempt_result_sha256": "2eed326badff2d140320fb15d0f87a9711ce317ab862c54a7638383b6b4f708d",
+    "parent_attempt_audit_sha256": "e62a9e4f574cb0f51e52e5be9e146e84c23f1efaeea286da0001c96aed9478b2",
+    "parent_attempt_trajectory_sha256": "af953e6744f7410eaa1f2754a215f134796bff5f82dde4176911fe8b6fe20e2b",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "v116 solved exact file discovery on its first action, then the model hallucinated nonexistent Writer and Impress open actions and terminal routes because no parameterized generic capability could turn a layered image into a new Writer document.",
+    "production_file_sha256": {
+      "multi_apps_adapter/image_document.py": "8e23b40bc7abe1d3de581eca1d1a325632d3d4612ca400edf56d0223bf7bc17a",
+      "multi_apps_adapter/generic_actions.py": "8e724925fda36f267f3aa563cbc18850fafab27ec489abfb629326e92e58365a",
+      "multi_apps_adapter/actions.py": "ff83137207a2900af12326943b03ca5a9330714d388a450ed757b666c5a1c33e",
+      "multi_apps_adapter/generic_schema.py": "bceb0d578c46ce5cbd0e96510a84ba328e1772188c686f40fec709a1ade6a411",
+      "multi_apps_adapter/schema.py": "d6e77134881fd698ecec79bd1af6f59c625535737f7bdb1f3d9e7c910a322545",
+      "multi_apps_adapter/tool_manifest.py": "e1a433ff37066ef90327023e2b2dc3d67b30ec98d4aea222a4c1e98836b7c710",
+      "writer_adapter/schema.py": "2e3a76990002ef75346d9fe40dc044f3d95f7f245a9fbc99842380b59676fe2a",
+      "writer_adapter/tool_manifest.py": "069b6944ae78f2255d1616e8383f8ad819785e54c75cccf182ee7bfb7a47f527",
+      "writer_adapter/uno_worker.py": "6bf82b1e15c78458832f01afe7c28d3384e4d702cf4cade038be9faac2902e32",
+      "integrations/lite_agent/tool_catalog.py": "227f20acee655119ceabd98b63472542bb547a675b79be38b48f199861a5bba1",
+      "integrations/lite_agent/adapter_results.py": "534b1c0c6ed6a88a6a26e40738192ba1cb93edc4bea95820edc2a1b4ae8815c0"
+    },
+    "candidate_bundle_sha256": "c0013d480443e4c40b8a80771847d940116d4f369c206466bd7e230ed61b6ba4",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for the eleven modified production modules listed above.",
+    "focused_tests": "529 Writer, Multi-Apps, catalog, result-context, and strict-schema tests passed. The complete unit suite reported 1786 passed. Ruff, compileall, project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the tracked OSWorld evaluator-tree check passed.",
+    "counterfactual": "Structurally different ORA, PSD, and SVG sources pass the same runtime schema. An ORA test proves GIMP render, Writer handoff, verification, and temporary cleanup; an unrelated PNG test proves direct Writer handoff without GIMP. An image-review instruction without Writer intent does not expose the create facade. No task ID, dataset order, original XCF basename, requested output basename, golden content, or evaluator value appears in production code or counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "second and only targeted generic A/B for hypothesis 2 on Order 115",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "source_episode_id": "71a7ff92a0db1b71995a58fb",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "1255b7ae73e513d97f84d422ede13d20ae7eeb9ae5b5aabb5ab9e67a44826a55",
+      "execution_class": "golden",
+      "pool_order": 115
+    }
+  ]
+}

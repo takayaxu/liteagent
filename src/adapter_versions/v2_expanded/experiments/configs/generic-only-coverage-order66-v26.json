@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order66-v26",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order63-impress-ordered-colors-v26.json",
+  "candidate_parent_config_sha256": "691cd5e3f1d8ad5a3aed3856a0745c0de9c22409922067bd87ee2811c1d4a236",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a261cc7e0c2e758d32884a353124173efce8f78c73c62906773f693b0233600d",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "adapter_results_sha256": "52675d23cd911ce4fba04f0b5fefaf7855632186c3d85e183f27f708a71e91cd",
+    "impress_semantics_sha256": "48a586d89653d64dabc92a82c40f00c283fc991f9906eeb6fa4de346fd0b8470",
+    "tool_catalog_sha256": "8404a953c549caf58fa8d6dc629fbe9aeb3a77a819a480b124e30cce3a60e0db",
+    "impress_tool_manifest_sha256": "2e0927c517f09176106a088f6c6b404f2dd465a35d763fd99ddc02a6977781b3",
+    "impress_semantics_test_sha256": "34bea01d3fc5ce30390db6084004c34ee2b72b20a6afee2cd1983f4a2734b282",
+    "tool_catalog_test_sha256": "7755313b1384eeddfc746b5dbddcafef3e027e92164388c8b77af06f813ebdd9",
+    "runtime_test_sha256": "87ce60473845bce896320b4b8c2f2d1816db5b821a8787303ef37cca368b2876",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_semantics_catalog_and_compatibility_tests": "49 passed",
+    "full_unit_tests": "1260 passed",
+    "counterfactual": "A structurally different page 5 contains nested text boxes in shuffled observation order and assigns blue, orange, and magenta from right to left. The test proves no-argument model tools, exact observation-derived paths, saved structural read-back, and an individual retry after one deliberately incorrect color. Additional parser cases use different pages, bottom-to-top order, named colors, and an explicit hex value.",
+    "preserved_initial_observation_replay": "A task-ID-free synthetic replay of the failed run's three slide-1 text-box geometries resolves paths [1], [4], and [0] in top-to-bottom order and maps yellow, red, and LibreOffice green without consulting the golden file or evaluator.",
+    "prior_v25_result_sha256": "4eeadc23b836b5d2e11b55084285052dcdaff0935247065f892d67133f0cfe40",
+    "prior_v25_audit_sha256": "bae6216a80f127454271621df2d9cfe9dff069cc06ec96cadb8497ca2aeb0a01",
+    "prior_v25_audit_valid": true,
+    "prior_v25_outcome": "evaluator 0.0 after 15 steps; only the top text box changed because the model confused visible text with exact shape names and then terminated despite contradictory structural read-back",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_impress_ordered_text_colors_v26_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 66,
+      "source_order": 157,
+      "domain": "libreoffice_writer",
+      "task_id": "0b17a146-2934-46c7-8727-73ff6b6483e8",
+      "source_episode_id": "09f095d68bc57fb9a4db98dc",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2f977722c51e7d4de8d6c3b9eadbd5454246d61a962228ae0453a92260e9942a",
+      "execution_class": "task_specific",
+      "pool_order": 66
+    }
+  ]
+}

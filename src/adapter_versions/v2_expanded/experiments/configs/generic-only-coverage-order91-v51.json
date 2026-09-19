@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order91-v51",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of Order 91 under the unchanged v51 generic-only candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order90-csv-xlsx-recovery-v51.json",
+  "candidate_parent_config_sha256": "22dbe670fce19d679cdcb6f928eb86f1e54176ed8f7d406435496870ceae2632",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4abbd00d238da327f4ddfd8cce483521c164a033818dafb412917829c13fe0f9",
+  "change_scope": "No task-driven code change. Measure the unchanged v51 generic candidate on the first actionable ledger task using a fresh VM and an immutable result directory.",
+  "implementation_evidence": {
+    "previous_clean_pass": "Order 90 v51 received evaluator reward 1.0 with strict audit valid=true.",
+    "previous_result_sha256": "8a6a186a7d70a4c6f3e0088a4738ed39d407f9df04eaec7651a13779f7c09ab6",
+    "previous_audit_sha256": "fd040d8df8043807579de99366d37fb2bcb926e46dd03728aefdf459d9e29455",
+    "previous_trajectory_manifest_sha256": "6392738556d9d535504bc22a836238119fe5c143c4fa34e7463f84310c88e708",
+    "focused_unit_tests": "290 passed",
+    "full_unit_tests": "1484 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_csv_xlsx_recovery_v51_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first actionable task in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_episode_id": "1d8f32c422b527f3c458a150",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4bab5a876dbf50c88a2755c91433673e822fbb589249d291cd759e3d01a71e52",
+      "execution_class": "golden",
+      "pool_order": 91
+    }
+  ]
+}

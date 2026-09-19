@@ -1,0 +1,172 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-qwen35-visual-ab30-63-20260831-thinking-mode-v2",
+  "status": "frozen",
+  "purpose": "Outcome-selected exploratory replay of orders 30 and 63 with Qwen3.5-4B replacing Holo as the gui_request visual grounder. Main orchestration, tools, VM, thinking mode, and budgets remain unchanged. Non-promotable.",
+  "freeze_timestamp": "2026-08-31T01:27:42Z",
+  "sources": {
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-random20-20260830-thinking-mode.json",
+    "parent_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-random20-20260830-thinking-mode-run1/results.json",
+    "supersedes_invalid_config": "adapter_versions/v2_expanded/experiments/configs/qwen35-qwen35-visual-ab30-63-20260831-thinking-mode.json",
+    "source_git_commit": "c940d47",
+    "source_worktree_sealed": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "c940d47-hybrid-qwen35-qwen35-visual-ab30-63-thinking-mode-v2",
+    "role": "exploration_qwen_visual_grounding_affected2",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-qwen35-visual-ab30-63-20260831-thinking-mode-v2-run1",
+    "source_git_commit": "c940d47",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 413,
+      "total_bytes": 54428112,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "a1dfe6a2bc6335bc09ef0fbc23349e9f8b1952145748735abea4943a8c422d12"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_hybrid_qwen35_qwen35_visual",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_qwen_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "qwen",
+      "requested": "qwen3.5-4b",
+      "model": "qwen3.5-4b",
+      "base_url": "http://192.168.0.224:8001/v1",
+      "served_root": "Qwen/Qwen3.5-4B",
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180.0
+    },
+    "reasoning_mode": "thinking"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "outcome-selected affected-task replay from the preceding random-20 diagnostic run",
+    "selected_count": 2,
+    "orders": [
+      30,
+      63
+    ],
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true
+  },
+  "tasks": [
+    {
+      "order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 63,
+      "source_order": 154,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "execution_class": "generic_api_plus_gui"
+    }
+  ],
+  "diagnostic_gate": {
+    "pre_registered_before_result": true,
+    "expected_tasks": 2,
+    "runs": 1,
+    "promotion_eligible": false,
+    "hypothesis": "Qwen3.5-4B can replace Holo for screenshot-to-coordinate grounding without reducing GUI execution success on the affected Impress tasks.",
+    "success_criterion": "At least one affected task becomes a new evaluator pass and every invoked Qwen grounding call yields one valid audited GUI action.",
+    "stop_condition": "Stop after these two attempts. If neither task adds a pass or neither invokes Qwen grounding, do not expand this visual-model hypothesis to the other failures."
+  }
+}

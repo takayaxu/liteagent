@@ -1,0 +1,1940 @@
+{
+  "schema_version": 1,
+  "experiment_id": "qwen35-lite-agent-fixed-189",
+  "status": "frozen",
+  "purpose": "Measure the untrained Qwen3.5-4B LiteAgent baseline on every unique task ID in the posttrain-v1 189-task pool.",
+  "sources": {
+    "posttrain_index": "adapter_versions/v2_expanded/experiments/trajectory-datasets/posttrain-v1/index.json",
+    "posttrain_index_sha256": "cc9d6cc3ffaaae0e0894d6d17191397e342e275967d8c8a4a8afa1deec111144",
+    "dataset_version": "posttrain-v1",
+    "source_count": 189
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_native_tool_calls_plus_v2_adapter_and_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "preserve_previous_results": true
+  },
+  "selection": {
+    "method": "all_posttrain_v1_in_source_order",
+    "selected_count": 189,
+    "domain_counts": {
+      "libreoffice_calc": 28,
+      "libreoffice_impress": 35,
+      "libreoffice_writer": 21,
+      "multi_apps": 48,
+      "os": 16,
+      "thunderbird": 12,
+      "vlc": 13,
+      "vs_code": 16
+    },
+    "source_order_preserved": true
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 66,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+      "source_episode_id": "8824d46fcfa54b603a308cf1",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "cf71ea7946c81b7d27c3da1b559ea41b3ba325b83c7c7735c164c2dd99fe1f2c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371",
+      "source_episode_id": "e21f540c12c5e9d42202636d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "62e13a78552184135f665a827218c39678b3ed7eb38b00f0fe7619335ddbc2b7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 3,
+      "source_order": 69,
+      "domain": "libreoffice_calc",
+      "task_id": "f9584479-3d0d-4c79-affa-9ad7afdd8850",
+      "source_episode_id": "fcab00989c99301ff9dd0fb3",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "c334992ff3158e4aa165d4d308914f937418610b0437cd1486340aac556e3aa8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 4,
+      "source_order": 70,
+      "domain": "libreoffice_calc",
+      "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+      "source_episode_id": "5d6611617ccb927bd54a1a40",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "8eaaaac40c1d789283acff5f8a9e262281620373350b0287960db6230830a3e5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 5,
+      "source_order": 72,
+      "domain": "libreoffice_calc",
+      "task_id": "4f07fbe9-70de-4927-a4d5-bb28bc12c52c",
+      "source_episode_id": "0461fb321d2abc518b627898",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "74ec2091ee5cf05f8c04cb1654521fc0e3e7c8fd983c835b9ba368fccb837fa7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 6,
+      "source_order": 73,
+      "domain": "libreoffice_calc",
+      "task_id": "04d9aeaf-7bed-4024-bedb-e10e6f00eb7f",
+      "source_episode_id": "5cc465d71a4f7ab41f664b36",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "c63603b28f0414ebea8a36aafacb5615976ab169b8c76b7740147eb75fc2a5a1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 7,
+      "source_order": 75,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "source_episode_id": "70d113522c6ecac550d3dfcb",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "80b4e271e9cb3a67f2709b360c39f6e66abdd8d86824819f0115e9867f67de66",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 8,
+      "source_order": 78,
+      "domain": "libreoffice_calc",
+      "task_id": "26a8440e-c166-4c50-aef4-bfb77314b46b",
+      "source_episode_id": "fe8b6adadbb0811bd7749486",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "85c7138f3b1395c85c53e67a612fffdc5098dae04dac1a1cd33e245add98e0ed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 9,
+      "source_order": 83,
+      "domain": "libreoffice_calc",
+      "task_id": "aa3a8974-2e85-438b-b29e-a64df44deb4b",
+      "source_episode_id": "865c49f8e2847b7cd7d56341",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "a4a65ef4e23c74e88b5e93cd34d80e061e49182452b40fb6d170748ebfe45931",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 10,
+      "source_order": 84,
+      "domain": "libreoffice_calc",
+      "task_id": "51b11269-2ca8-4b2a-9163-f21758420e78",
+      "source_episode_id": "f98266423ac9f914aa584282",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "eb30c52c90d5662c9c652f4845469f9869792434784ecec046dd557488c9e95d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 11,
+      "source_order": 87,
+      "domain": "libreoffice_calc",
+      "task_id": "8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14",
+      "source_episode_id": "c35c192985e7aa449a4bb46d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "b467c214b52333c594570e7eb10309d1e67bae3a8e1e29793082a6e160350c3c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 12,
+      "source_order": 88,
+      "domain": "libreoffice_calc",
+      "task_id": "a01fbce3-2793-461f-ab86-43680ccbae25",
+      "source_episode_id": "b82585251e3b29567a3b5093",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "43ee1dd4b75f9500cf5d64587806541f03ae3e63a99f8a8a91fdff8c2cb853cf",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 13,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "source_episode_id": "42b405e0cf76674488352722",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "308f2f80a213c35f71c3914f740536bf3e0888229fde4a84e3d4986b18c994ab",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 14,
+      "source_order": 91,
+      "domain": "libreoffice_calc",
+      "task_id": "4188d3a4-077d-46b7-9c86-23e1a036f6c1",
+      "source_episode_id": "72cbcae6be22479ac4406f31",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "173d723963aff22af5c26d738ffa3f67cd96fe921888119e6780e3a87c2a263a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 15,
+      "source_order": 92,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "source_episode_id": "e3cfd15356f99fbf5ee36bc3",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "464ed40f1e7896c21334853814ac4f36ac0930d7e073e93aeeb3d4a111437209",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 16,
+      "source_order": 94,
+      "domain": "libreoffice_calc",
+      "task_id": "0cecd4f3-74de-457b-ba94-29ad6b5dafb6",
+      "source_episode_id": "0768d324cb0f00d59403285f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "d079b36dc13c2f709670a019b2a8e02a232ab51b5c761094edd066d4f30e1d8b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 17,
+      "source_order": 95,
+      "domain": "libreoffice_calc",
+      "task_id": "1d17d234-e39d-4ed7-b46f-4417922a4e7c",
+      "source_episode_id": "eac759a297cb71df57bbfc78",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "81b590257e15517671babf18e94a44f1b06ca27d7d4943bd5fbd7caacfcac842",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 18,
+      "source_order": 97,
+      "domain": "libreoffice_calc",
+      "task_id": "01b269ae-2111-4a07-81fd-3fcd711993b0",
+      "source_episode_id": "35fa2953ec3d149fcf7627ba",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "651cba3dc18229f5f772ff9df478af163f62a5100b57f1fb75b9ccd009ac6df0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 19,
+      "source_order": 98,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "source_episode_id": "a1d80e0fdbb567a0a1a599c7",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "6e79c2ace82e54fc0c0cbb22c2d01c634faf5aa29950fd60c9f8da7725f095ec",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 20,
+      "source_order": 99,
+      "domain": "libreoffice_calc",
+      "task_id": "a9f325aa-8c05-4e4f-8341-9e4358565f4f",
+      "source_episode_id": "b68fb38d9e3b4fef36c92fbd",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "dad59ecdee47bae1d9b39314b5347a98b05ee5518eba227ef5befcb4fe407c9b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 21,
+      "source_order": 100,
+      "domain": "libreoffice_calc",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "source_episode_id": "262768ec81d9acfc2f9b89ce",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "196b418ca572126c5cf7ac7bc99ca674e55f97a9296ea8050ee872f4ab46463e",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "source_episode_id": "ffbc6518951d1b42cb643766",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "ef2aa63e286baec7372f22c32ac5d6b9b4188a0aed593b3d117c3f2a3bdfba14",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 23,
+      "source_order": 102,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "source_episode_id": "d99577a5ea7a363fcb0d9b4a",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "2051f7b03f41d30f26ca2e486f9c6b78b657a6a37f08f4c27bd131ca1ad317b3",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 24,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "source_episode_id": "a40ea528a2c4e399d6903310",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "f52924987f1967e0d16467a82de4d5a993cef4a2cdfed4d7b9ce8a919cf341dc",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 25,
+      "source_order": 104,
+      "domain": "libreoffice_calc",
+      "task_id": "4172ea6e-6b77-4edb-a9cc-c0014bd1603b",
+      "source_episode_id": "b2614dac6f3217241626eb56",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "c4c0f1c86c4f5600732045b1b372350d7faded964ee81343f4b0b45e6c82bad4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 26,
+      "source_order": 105,
+      "domain": "libreoffice_calc",
+      "task_id": "1334ca3e-f9e3-4db8-9ca7-b4c653be7d17",
+      "source_episode_id": "189b303c1742398518e00198",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "1256a8c03a37ef09ac7a94ac35d854b0d6b64fb8bc879e445b5a313fc7518a17",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 27,
+      "source_order": 106,
+      "domain": "libreoffice_calc",
+      "task_id": "3a7c8185-25c1-4941-bd7b-96e823c9f21f",
+      "source_episode_id": "3549b94139c3e46d787335d2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "691d5b6c2f6a534a66e34a0e5eccbd1da5400f5c9c1afcaadd4effedc91d8288",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 28,
+      "source_order": 107,
+      "domain": "libreoffice_calc",
+      "task_id": "21ab7b40-77c2-4ae6-8321-e00d3a086c73",
+      "source_episode_id": "d99bcce2662f36afa17de308",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "e7c784d645be9ce8e65108446528f426e9c8a4c6e40b91d65dc276c5eddc0023",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 29,
+      "source_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "source_episode_id": "9f56f3237416fa5ca3b12e26",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7af04cd1aa63518e53fc422a7b6b54a304fbe12063899dd35dff31c43260a68c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
+      "source_episode_id": "5d4ada753902c0b45c11065b",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "49c64c842a163681b82b8776d74b50a1f236a3ba188e1220c7cdf291584b489b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 31,
+      "source_order": 112,
+      "domain": "libreoffice_impress",
+      "task_id": "c59742c0-4323-4b9d-8a02-723c251deaa0",
+      "source_episode_id": "15dd882748886be84ce8fb8f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "16f0f10bc719ae859ecc9d636f40520e37e78c93de9278c7b17d14c420d1db49",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 32,
+      "source_order": 116,
+      "domain": "libreoffice_impress",
+      "task_id": "ce88f674-ab7a-43da-9201-468d38539e4a",
+      "source_episode_id": "0b56048d59a2396dd8ff50c2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "f8310515842ab4f667b1c221906bb56163d3f963f1a12f2aa7d4ec89d75aa44e",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 33,
+      "source_order": 117,
+      "domain": "libreoffice_impress",
+      "task_id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
+      "source_episode_id": "31b2fec4c7245984fc7f405f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "8755a29903da64bceb7699de5090d2757f61d4d5234722c6f97f36a65527a0fe",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 34,
+      "source_order": 118,
+      "domain": "libreoffice_impress",
+      "task_id": "a097acff-6266-4291-9fbd-137af7ecd439",
+      "source_episode_id": "a36ccbf438203b383a1686aa",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "01441ab7e3fa6378932ae75a19f70d883baa943cdd7cb9e06f53061f3ba8b819",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 35,
+      "source_order": 119,
+      "domain": "libreoffice_impress",
+      "task_id": "bf4e9888-f10f-47af-8dba-76413038b73c",
+      "source_episode_id": "f49eeb33ac4fc6ea9db5a353",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "31d3a68a390c008f06d6e2eac51aeb2c8d3f20a75169a5ca0f558ca4f6986ed4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 36,
+      "source_order": 120,
+      "domain": "libreoffice_impress",
+      "task_id": "21760ecb-8f62-40d2-8d85-0cee5725cb72",
+      "source_episode_id": "e535fa93b1228770fbcf377f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7af589dc31125d6bd233da26663ce5b338b5d0bbe82027db43b8207536bc8c47",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 37,
+      "source_order": 121,
+      "domain": "libreoffice_impress",
+      "task_id": "ac9bb6cb-1888-43ab-81e4-a98a547918cd",
+      "source_episode_id": "6d55e789858fd93e51c21396",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "35f28eb7aa4f630095a73c81edf5e74662da1f6a42c4e3db99a6da208c45b9a0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 38,
+      "source_order": 124,
+      "domain": "libreoffice_impress",
+      "task_id": "a669ef01-ded5-4099-9ea9-25e99b569840",
+      "source_episode_id": "8c6a3bd140ce2052df003c5f",
+      "source_path_class": "generic_api_plus_gui",
+      "source_manifest_sha256": "19c1b9ab312eb3f5c35ae53d5d343926068f20a59baf0e6036940d2a864bff29",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 39,
+      "source_order": 125,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "source_episode_id": "ab454e5150a04cd940f2f37c",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "20839aeea304ccc4693c5de1b804ab3591335dd25d82cc1f1a66bd14f1a5da2d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "source_episode_id": "76898fd34cfe46bee459dd9d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "4bb1086db6aed1c4b20a0e344a5ab209ffb373139085bac476cc776af840db3d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 41,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "source_episode_id": "4d5b23f540c2a410261dddb2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "869051adfb10a6c14b8dd6a4ab616aa4af98792e94881777ce0ae108c2740a74",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 42,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "source_episode_id": "73d115a4541ddf6391d0ee0b",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "d371ca0fa63abea82306ce07d4303a897f247a8dd99b62eb50d8084ee2eae145",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 43,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "source_episode_id": "70ad2beb86faa2f6dc490861",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "ba3ccd05ae328d802a724391b60e2350d55211da844af398dadcfe0406a57bc8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "source_episode_id": "9372e9f4aab60b8977cb22a6",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "217cdd397a9a4a4604831bf4aa310dda042968b9debe9f5c8ea038edf5fa5b2c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 45,
+      "source_order": 133,
+      "domain": "libreoffice_impress",
+      "task_id": "2b94c692-6abb-48ae-ab0b-b3e8a19cb340",
+      "source_episode_id": "cab9196f102f8f21e25f1945",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "8962d387fde94d2e386d3776a8945bafe191659860837e107c0274d92eeb9a3c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 46,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "source_episode_id": "b28adcfc0acd43757295e678",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "fa991ac65e55fa213f6a886452c751cfa6f2d7056b7e134d678c47d06978b8c9",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 47,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "source_episode_id": "742880d1045458bcb901c202",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "77c570f8fdbe8c7bd1b260314c5dc654d6cec3e176d77699ea15e585335abe19",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 48,
+      "source_order": 137,
+      "domain": "libreoffice_impress",
+      "task_id": "c82632a4-56b6-4db4-9dd1-3820ee3388e4",
+      "source_episode_id": "8eed59a462ebb4f9ba206bee",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "1e3f5ceac45b0d2745a40582b120abdf1b093cceefb5be7584e3fc483d603c32",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 49,
+      "source_order": 138,
+      "domain": "libreoffice_impress",
+      "task_id": "39be0d19-634d-4475-8768-09c130f5425d",
+      "source_episode_id": "2425cc958305e03e08dbe909",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "94dd67964a8401c93f4b03e2bf5271b4f9017cda65a8818b0cbf37ad7ba6540d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 50,
+      "source_order": 139,
+      "domain": "libreoffice_impress",
+      "task_id": "ac1b39ff-ee4d-4483-abce-c117e98942f0",
+      "source_episode_id": "d9e44d52b11084a70f55609d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "973c272923dc16267e58bbdbfd284c8e7c1cb47f8b274d9c324e982c753e3ca2",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 51,
+      "source_order": 141,
+      "domain": "libreoffice_impress",
+      "task_id": "70bca0cc-c117-427e-b0be-4df7299ebeb6",
+      "source_episode_id": "4970a27eda501d5778d98e7d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "99bfcf8ac874d6773e526cfc3210d73ed4269b88393543c1597527ce19088c59",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 52,
+      "source_order": 142,
+      "domain": "libreoffice_impress",
+      "task_id": "af2d657a-e6b3-4c6a-9f67-9e3ed015974c",
+      "source_episode_id": "3532667cabe1f355d636dc2a",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "fc45a6ee48bf4f1a72cc5f625b2cb2744eca3a393a775fa0d16c58417f455617",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "source_episode_id": "50a7f7af13d8136facb1b789",
+      "source_path_class": "generic_api_plus_gui",
+      "source_manifest_sha256": "6ec3351598c3be1919fe57b4e6af281a0e36642276bd2c5549d977204d370ed8",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 54,
+      "source_order": 145,
+      "domain": "libreoffice_impress",
+      "task_id": "a53f80cd-4a90-4490-8310-097b011433f6",
+      "source_episode_id": "cb503fbbf6dfd8ece23f6202",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7b9dbf6cb3ceb1a204e352aafc6ad23ead7f5a8938fa0ec5f7c2a6f1eaa3fa7f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 55,
+      "source_order": 146,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_episode_id": "85e2f268d8a7b3ef7bd5195f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "97c090c7bb9929bc49db44e36d9017d5eee8a8683bbf5112de4f9e7fbdef6219",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 56,
+      "source_order": 147,
+      "domain": "libreoffice_impress",
+      "task_id": "5cfb9197-e72b-454b-900e-c06b0c802b40",
+      "source_episode_id": "9f56e3a1349f5826ddec1640",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7664f3ab717c5a7302d282eedf2bb74b0a3a898e19354afb7a1ff381c4474d42",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 57,
+      "source_order": 148,
+      "domain": "libreoffice_impress",
+      "task_id": "05dd4c1d-c489-4c85-8389-a7836c4f0567",
+      "source_episode_id": "b531319c240810932ca8fdd0",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "9b95534bf8be14d6821842ee349c9df1573f379fb72b61fb261b7bcc52271be2",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "source_episode_id": "9ee7987a35db423c40f19d8f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "e08330a62ed276324e63d5b14e224b537b872acb61e5af99340a331426f9a059",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 59,
+      "source_order": 150,
+      "domain": "libreoffice_impress",
+      "task_id": "4ed5abd0-8b5d-47bd-839f-cacfa15ca37a",
+      "source_episode_id": "c8dbd657e9a8d115d129b3ec",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "4b7c290304bb8e841d0c9ea299b09111716d984889cd3f98b45ab88335f9bae7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "source_episode_id": "2dc366181491e4b92d281de6",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "66266f55751846f62a29bbdd785fd85d9faf2162b56799763c135d07341dbc94",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 61,
+      "source_order": 152,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "source_episode_id": "4bbd5acab2f779b29e662f03",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "c861295cc4ee3f4f8c1193da8c97e5964e38824df2db2ea0cae994fe3e38eb03",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "source_episode_id": "543ab6cee6e08454d7980837",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "bc2eb9afafbd4619f8a90a25463e596757187443c97daf34a5585d6e296fc36a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 63,
+      "source_order": 154,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "source_episode_id": "b4e3596f27126f81362ef357",
+      "source_path_class": "generic_api_plus_gui",
+      "source_manifest_sha256": "76dbbbabda664dc4e0a8832088f59c01d33afbd8f974cac42f8fe98cf13e534a",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 64,
+      "source_order": 155,
+      "domain": "libreoffice_writer",
+      "task_id": "0810415c-bde4-4443-9047-d5f70165a697",
+      "source_episode_id": "0f7241acc2822b93590a5794",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "aa122b815eb16acbe1803a7eec6307d936120afb5f07e57701ee2eff11974133",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 65,
+      "source_order": 156,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+      "source_episode_id": "4c8380ef5b98ec4a613aad08",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "945c251ef9e67a0561b93ad86ac016c711e3fcab9b3b8fb80c2066ce36b6d8c1",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 66,
+      "source_order": 157,
+      "domain": "libreoffice_writer",
+      "task_id": "0b17a146-2934-46c7-8727-73ff6b6483e8",
+      "source_episode_id": "09f095d68bc57fb9a4db98dc",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2f977722c51e7d4de8d6c3b9eadbd5454246d61a962228ae0453a92260e9942a",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 67,
+      "source_order": 158,
+      "domain": "libreoffice_writer",
+      "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+      "source_episode_id": "ac1b6a2a380d6ef052f4eb51",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b197eadb8eac4527236759999ad412d739780c32c6cf57bf651aebd8744af059",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 68,
+      "source_order": 159,
+      "domain": "libreoffice_writer",
+      "task_id": "0e763496-b6bb-4508-a427-fad0b6c3e195",
+      "source_episode_id": "e8a62b358b11bf971de72304",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "acaa5a808335df46934e21bada42337f388203d46517111fa706f49a22eadb80",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 69,
+      "source_order": 160,
+      "domain": "libreoffice_writer",
+      "task_id": "3ef2b351-8a84-4ff2-8724-d86eae9b842e",
+      "source_episode_id": "e961b8f8eb107ba8af87d44d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "cb134a4d05c6b37742717dddab4d6c1cf2f0b6efad275c7e47d55df7ee97c931",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 70,
+      "source_order": 161,
+      "domain": "libreoffice_writer",
+      "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+      "source_episode_id": "e5a608f2b450fa9d9719aa90",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "295a6ec97186999d97690ca1fc1f5dba4f473fde47984500fa47e15fa31226ae",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 71,
+      "source_order": 162,
+      "domain": "libreoffice_writer",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "source_episode_id": "1ad96a8d7733aafc283b53de",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "62a4ccc9a37170880a39dac31259e74c2aac9a82c33f8380e1d53e7f84050c78",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 72,
+      "source_order": 163,
+      "domain": "libreoffice_writer",
+      "task_id": "6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
+      "source_episode_id": "03d3793946bc3197f60efe0b",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "86e9e568d56197419f066535e3034f465f1f4d14b6fe2974cf9470e67ec90a6e",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 73,
+      "source_order": 164,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_episode_id": "6cde5bf7f9fcd02fc266c72a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "43b4f1e8e456aa90e2c61107239249da2f23829100dc160aab4f1639518d3847",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 74,
+      "source_order": 165,
+      "domain": "libreoffice_writer",
+      "task_id": "6f81754e-285d-4ce0-b59e-af7edb02d108",
+      "source_episode_id": "53021bc09347180be7d88f78",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "7b3da4dbc4eda52a40a6afc8c74d852179bdd61d622fb8674c5d8c269479578c",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 75,
+      "source_order": 166,
+      "domain": "libreoffice_writer",
+      "task_id": "72b810ef-4156-4d09-8f08-a0cf57e7cefe",
+      "source_episode_id": "020dd4a24a834c13b35521f2",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3da15923169e5bea35504bc9cd13b197ad691517718add21a0114d74071bb2c1",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 76,
+      "source_order": 167,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_episode_id": "3fe16573f1ee098a7f4f9ed3",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "509b635c3fecef89eb1cba1ff0fd2dd56db5d3d0d86731c329368d17badfe1c7",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 77,
+      "source_order": 168,
+      "domain": "libreoffice_writer",
+      "task_id": "88fe4b2d-3040-4c70-9a70-546a47764b48",
+      "source_episode_id": "3e25cfea4958d7e8e1f27ac5",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "aea6b14ab04719ca646dd787f8fcf9f48484a536e5b771fea6bc1930e44b73eb",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 78,
+      "source_order": 169,
+      "domain": "libreoffice_writer",
+      "task_id": "936321ce-5236-426a-9a20-e0e3c5dc536f",
+      "source_episode_id": "4d2deb7306463e5f129530e9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b4583416eb95dd526a68f4fcc543c0fac5f3096896285f8d3d6198a12c057e5c",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 79,
+      "source_order": 170,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "source_episode_id": "930ef94d9512d8b0eaa87b1e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b6052c550d5b4be467df64efa97c54ef9cfc16a927bb8798eb1229c96b8c1c04",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 80,
+      "source_order": 171,
+      "domain": "libreoffice_writer",
+      "task_id": "b21acd93-60fd-4127-8a43-2f5178f4a830",
+      "source_episode_id": "cc2f30473f8004b13a4acb50",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "cf8e1a6b4a411ede8120746a0fd2e5839b982864ff2690aaa466c65ee6331cd0",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 81,
+      "source_order": 172,
+      "domain": "libreoffice_writer",
+      "task_id": "d53ff5ee-3b1a-431e-b2be-30ed2673079b",
+      "source_episode_id": "198bfe18f8159030a5701677",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "248569074d02067ab9adec03ef93fbcfd927d7e5b5bc8eb1ddf5f688f56767d9",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 82,
+      "source_order": 173,
+      "domain": "libreoffice_writer",
+      "task_id": "e246f6d8-78d7-44ac-b668-fcf47946cb50",
+      "source_episode_id": "5f1db99c77000c95f930aa47",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "4a116121668b8000c9d7dd28a6d43bcb9e33b7eb9166da66698cf84bfaacbd82",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 83,
+      "source_order": 174,
+      "domain": "libreoffice_writer",
+      "task_id": "e528b65e-1107-4b8c-8988-490e4fece599",
+      "source_episode_id": "04c11aa007d8ec9c42db0817",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a21ee998af3e467a712af647dc7eebff1975130caa3d0748db3d46998c7cb07a",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 84,
+      "source_order": 176,
+      "domain": "libreoffice_writer",
+      "task_id": "f178a4a9-d090-4b56-bc4c-4b72a61a035d",
+      "source_episode_id": "1ef0bc98c222b8e50992db1f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "54f21ca04ff345f81d7de3b7430992e1ce7be5596ab01a0aa84b3773ae061bae",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+      "source_episode_id": "7b3c7df22237badac89dad01",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "7f637d56df56227f32ce8b4f4acb37a2a72d27720b791fb6c93b7aee8cfecc63",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5",
+      "source_episode_id": "b7a2e2456745fbcfb018b7fe",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "8652fe14734a44a9f00406cdd5b6e0fe34d3032c1965ba2f68e3da752be6166f",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 87,
+      "source_order": 179,
+      "domain": "multi_apps",
+      "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+      "source_episode_id": "3ba9cef5534bdc726b6f8fef",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e5be1d483c86d7fd2c8cac8282e77096c1c074be42a4203bcedab660d4f28765",
+      "execution_class": "golden"
+    },
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "source_episode_id": "bfdf9d80ee2f9393a222da6c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "6fef6c5629552a3560a765b5d52ea2e1fd8989b92cb3a9e731b602f845505bda",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 89,
+      "source_order": 185,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "source_episode_id": "af6b471a3ef74af4af3c6526",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "98c9033b4a19c276f93c3001624e87ba8f785b29364fb6835037a986ae89dae9",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_episode_id": "3b8df687caf86c3add9a59ff",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "558e207ad4e70263b9eb288102a9b9a137f76d3efd05149797d1d2a8cb4427fc",
+      "execution_class": "golden"
+    },
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_episode_id": "1d8f32c422b527f3c458a150",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4bab5a876dbf50c88a2755c91433673e822fbb589249d291cd759e3d01a71e52",
+      "execution_class": "golden"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_episode_id": "6a989c6dcfe9db0ca1cb348a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a3ab6ed27a3924f8988db5c5956b8186842e7e15db3f2b3d1d8585c6093eede6",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 93,
+      "source_order": 190,
+      "domain": "multi_apps",
+      "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+      "source_episode_id": "4d9fcbb65ad304c3f56cc4b0",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "508ff394c442b25f60caa50997bd096fef9cfa607034d62f02416886d4cb4c91",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_episode_id": "0035a61317f6aca92dbe0138",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f150db7c95f1cc5f1003febdb398849c1482bda566e646d2ae6b5df3f9528900",
+      "execution_class": "golden"
+    },
+    {
+      "order": 95,
+      "source_order": 196,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "source_episode_id": "a257bf8cd547615701592fe0",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "5c35ef727754eb6874153205858551456165b1f9156e798636800033d2fac67f",
+      "execution_class": "golden"
+    },
+    {
+      "order": 96,
+      "source_order": 197,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "source_episode_id": "503f3e9ef6f71c61a195f97f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "18261c9eaa71be94b95c03e542361ae34f4ead515366de7c2925203e31f6f36a",
+      "execution_class": "golden"
+    },
+    {
+      "order": 97,
+      "source_order": 202,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "source_episode_id": "9a953e60d313570176bf2518",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "21f52fdcd8f4e529c7fca9a9b008a6e31cbe06bfe2191b223264617b5120e62f",
+      "execution_class": "golden"
+    },
+    {
+      "order": 98,
+      "source_order": 206,
+      "domain": "multi_apps",
+      "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+      "source_episode_id": "337f86b24d147814b39514df",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a20790c3e3a6ab8c2b8e027299f6d0395bb00af53c887519d8ee43a24b6ad68e",
+      "execution_class": "golden"
+    },
+    {
+      "order": 99,
+      "source_order": 207,
+      "domain": "multi_apps",
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "source_episode_id": "78e0011f09a65ed2a286336f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a00f1de5712d6ed12efa773f8cc9b7952e3bcc55e3181054d5311f99bdc215fe",
+      "execution_class": "golden"
+    },
+    {
+      "order": 100,
+      "source_order": 208,
+      "domain": "multi_apps",
+      "task_id": "82e3c869-49f6-4305-a7ce-f3e64a0618e7",
+      "source_episode_id": "e5bc12cd2667cab26939f87f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "fc7666f025130b8c868fa4fa7c3c05b2dd81061ee581e4e6d4f96bdb214573ea",
+      "execution_class": "golden"
+    },
+    {
+      "order": 101,
+      "source_order": 209,
+      "domain": "multi_apps",
+      "task_id": "185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
+      "source_episode_id": "42517c2dbac2e0e2a85c5487",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b071d23910469e7649f50d3eb2b4ce3e794a3593a884d6d36aaaf0b61d301445",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 102,
+      "source_order": 210,
+      "domain": "multi_apps",
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "source_episode_id": "de08ce3bf7962881407c81df",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "47fd6c4ab83e488985fda3dbcd86df00b05d02a87e908ad445053219451d970d",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 103,
+      "source_order": 212,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_episode_id": "fd18745d23fe287b5b4c3968",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ae790d67bf718d3d8fac1a2884341903a80ae9684dcb42ac6e58f28be351cb63",
+      "execution_class": "golden"
+    },
+    {
+      "order": 104,
+      "source_order": 213,
+      "domain": "multi_apps",
+      "task_id": "1f18aa87-af6f-41ef-9853-cdb8f32ebdea",
+      "source_episode_id": "d35c3f74747b28257b6915e9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ec0f04cad4ade48c1e3bea3e4fd4f9cf3b540e5d969f63053bcfb9fa33f5a681",
+      "execution_class": "golden"
+    },
+    {
+      "order": 105,
+      "source_order": 214,
+      "domain": "multi_apps",
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "source_episode_id": "0a52fccb2779dbd008a4c7e9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "dd9e6292448f40ed602b1a951566bcd2594ed26f75480d7179170d8b35e74708",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 106,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "source_episode_id": "6713526f8ed37221d60ebd82",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3e24d356caf5f1fade549e59bf9e48e82e59bc4115204f3c4011037d22340336",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 107,
+      "source_order": 216,
+      "domain": "multi_apps",
+      "task_id": "881deb30-9549-4583-a841-8270c65f2a17",
+      "source_episode_id": "87afb008f66bfca02da78b23",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "193fa196fdece1f2ee7c4ec3cd2c9d5a6e584b0d3409ae05438e57cf85e6067e",
+      "execution_class": "golden"
+    },
+    {
+      "order": 108,
+      "source_order": 217,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_episode_id": "1d126b98f6535502e57b40f1",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f32b4f130dc31487e94e0f0c776e3a0d973e472a283e02b59404f52ba3c3d69d",
+      "execution_class": "golden"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "source_episode_id": "444071c0b0ae05c2634529c8",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "cb76207b86e50b7709d1e5c268b5059fe33f56da27ae48d6e015a3b6279f2ae5",
+      "execution_class": "golden"
+    },
+    {
+      "order": 110,
+      "source_order": 223,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "source_episode_id": "9b9e40dc46d0fc01363a5ce9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "f696f3545734014420f833fd5fd617c95079a25dbb581bf7dbb9de518a3a4ba5",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 111,
+      "source_order": 225,
+      "domain": "multi_apps",
+      "task_id": "a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
+      "source_episode_id": "227b667be67572a967db2579",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "87305234072a63c368165247358774805ef68c043efc48061a4e299f480dfcea",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 112,
+      "source_order": 228,
+      "domain": "multi_apps",
+      "task_id": "2373b66a-092d-44cb-bfd7-82e86e7a3b4d",
+      "source_episode_id": "79745c44d1206f889475d2f8",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a15a7975f6befda816f400c6b36ca00e8c6a7f35adf812277002224bec19b253",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 113,
+      "source_order": 229,
+      "domain": "multi_apps",
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "source_episode_id": "cb5cbc015a30d74d0aa920f5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f975ca424a5dca67ca33f75dfad806a15c120c1ffb1583869d6cb026ccd1a865",
+      "execution_class": "golden"
+    },
+    {
+      "order": 114,
+      "source_order": 230,
+      "domain": "multi_apps",
+      "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "source_episode_id": "2c349e590817f3ec59453a79",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c12aa9e3be77882b4b46b4e878389dbd454147105939095f4d436eaf2076cda4",
+      "execution_class": "golden"
+    },
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "source_episode_id": "71a7ff92a0db1b71995a58fb",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "1255b7ae73e513d97f84d422ede13d20ae7eeb9ae5b5aabb5ab9e67a44826a55",
+      "execution_class": "golden"
+    },
+    {
+      "order": 116,
+      "source_order": 233,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_episode_id": "2f84972964e369dae0c0b6a6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c9062c19c27b3143fa874e975e48e5f06e15e8ea711cdbf2702b3aa4921a7a99",
+      "execution_class": "golden"
+    },
+    {
+      "order": 117,
+      "source_order": 234,
+      "domain": "multi_apps",
+      "task_id": "8df7e444-8e06-4f93-8a1a-c5c974269d82",
+      "source_episode_id": "8a7a585c2768a879154150c5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1c995c83fed1cbd942b52efc5477a525a455f20789ec7b8ce42a16f6c497db0",
+      "execution_class": "golden"
+    },
+    {
+      "order": 118,
+      "source_order": 236,
+      "domain": "multi_apps",
+      "task_id": "02ce9a50-7af2-47ed-8596-af0c230501f8",
+      "source_episode_id": "46411f220fed42aa2cf7b884",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "92981fd9d60c24899f570b8a219860432f65df51519dfa61e787b81ffd6deef8",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 119,
+      "source_order": 237,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "source_episode_id": "75a4c89586ed001937634517",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "caf44bbcd2ca7b0e8c685b575b4720113dfa3ddc346fef4622c2f4628779c3c8",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 120,
+      "source_order": 239,
+      "domain": "multi_apps",
+      "task_id": "09a37c51-e625-49f4-a514-20a773797a8a",
+      "source_episode_id": "5d082c25d0dc0ed7f8154466",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "62d52993114199f55716c0e1d33d7336fb87beca741dc57faa651ac60ef9db9a",
+      "execution_class": "golden"
+    },
+    {
+      "order": 121,
+      "source_order": 241,
+      "domain": "multi_apps",
+      "task_id": "f5c13cdd-205c-4719-a562-348ae5cd1d91",
+      "source_episode_id": "35ed0a3fc5369fb048b1273f",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "96c2f7a3cbee5493ec06f3d05f3bae08fd7793390b5d3a246be0e2fa1428b6a6",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 122,
+      "source_order": 243,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_episode_id": "d16263cae6d3c1419ed91ee9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "e583e6337b43803a2c963211366de82ab60893444c2571c6a8eb233043814c84",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 123,
+      "source_order": 245,
+      "domain": "multi_apps",
+      "task_id": "9f3bb592-209d-43bc-bb47-d77d9df56504",
+      "source_episode_id": "e33775e88d65b4240414e54d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b2b780bb0691f1bda3e68db9e2b5ac96ea7884921aa9f408640db498b45c8cb9",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 124,
+      "source_order": 247,
+      "domain": "multi_apps",
+      "task_id": "ce2b64a2-ddc1-4f91-8c7d-a88be7121aac",
+      "source_episode_id": "b2bbf41eb2b8f3d6c35f86bf",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "9fa53cbd3329e100a1b476322abe4f29fd7d12b0c62eec85c3630c571f2c0ee5",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 125,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "source_episode_id": "dbaed1c93f81ec6acb2fa518",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "05145c76138ed6fb2b6554751726ab9ad6db33f243d37f2b56ad160a09356e35",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 126,
+      "source_order": 252,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "source_episode_id": "ac71c2df71df07bca8ecfeee",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "58684aae255f4c278e57647ce8ec2e2f10acf657766cdb7676b27ef4dc46d6bf",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 127,
+      "source_order": 253,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "source_episode_id": "172935c7d79395229e282323",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "d2707e8944a19bc6f38387436e60b6bd9d0b72e356e9614cff60f3fab5fc80af",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_episode_id": "503c38f5889bd11baa8d1cc9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "7555740f67459d14ef12fc7771776053f4eed4b9acfcc92accd182ea4814d692",
+      "execution_class": "golden"
+    },
+    {
+      "order": 129,
+      "source_order": 261,
+      "domain": "multi_apps",
+      "task_id": "91190194-f406-4cd6-b3f9-c43fac942b22",
+      "source_episode_id": "5479d91af9546f5b9cc02aeb",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1200e6b57c13c6fe08492f96ad0a300bcb946f5b53790a54cabae0771518c25",
+      "execution_class": "golden"
+    },
+    {
+      "order": 130,
+      "source_order": 263,
+      "domain": "multi_apps",
+      "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+      "source_episode_id": "50cbffdd4e5ab6980d938321",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "b87d273bacd4b496263a49cbed63d44a4c99df63843c18d494b3456929c5bc63",
+      "execution_class": "golden"
+    },
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "source_episode_id": "4c74fe351d0f71a3011bb1e6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4234dd2401149635bc444e41b0ed27296fd6e38402fea0fef36d8de5073c784a",
+      "execution_class": "golden"
+    },
+    {
+      "order": 132,
+      "source_order": 267,
+      "domain": "multi_apps",
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "source_episode_id": "ae5990977a8b954956aff2ac",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "b369916902df9fd4f91b1345fe9c6674e050b2ca991ea964fd6b09f862dabc21",
+      "execution_class": "golden"
+    },
+    {
+      "order": 133,
+      "source_order": 271,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d",
+      "source_episode_id": "77ffeb8796feaff38f3d3e13",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "523ca7513f1e5bca802d958bcbc1bc45a7d4704e145fcbd6bbc818dab9d68025",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 134,
+      "source_order": 272,
+      "domain": "os",
+      "task_id": "ec4e3f68-9ea4-4c18-a5c9-69f89d1178b3",
+      "source_episode_id": "ea47d0fc10f62a3c65a09785",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "4e0824c72f049d5ee6179def3b127c881cb716c8ede7a724adc54a17fdedc592",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 135,
+      "source_order": 273,
+      "domain": "os",
+      "task_id": "f9be0997-4b7c-45c5-b05c-4612b44a6118",
+      "source_episode_id": "9604c60fa3af0aeb1d58adfd",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "a685d0aa9eecdeab521876a3588b82b848de9e3d21a92705988fe0e1ba7d8788",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 136,
+      "source_order": 274,
+      "domain": "os",
+      "task_id": "28cc3b7e-b194-4bc9-8353-d04c0f4d56d2",
+      "source_episode_id": "8bb434146530e0ab8d0e553d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "c2292ec96e29c2f5f9121947a1ad659eb415f0b4ca1b21402b95a1afcbcef9b5",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 137,
+      "source_order": 275,
+      "domain": "os",
+      "task_id": "5ea617a3-0e86-4ba6-aab2-dac9aa2e8d57",
+      "source_episode_id": "f15521de7b2b326b1b407256",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "9cca2f3a2ad4b001419ab4819b213a4fe12c57e19c403d7d1f9fcce51bff48fb",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 138,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "source_episode_id": "9f9e6385ffeed0beb7c66a52",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "50fcae8bedba80645e24f6597473928f96f1f059da6436808e679dc1740d4dc0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 139,
+      "source_order": 277,
+      "domain": "os",
+      "task_id": "b6781586-6346-41cd-935a-a6b1487918fc",
+      "source_episode_id": "6dbf902bdb43fd3af828117a",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "c43d7a6fddf3908fa9eca873df84b9c59ada22a8a69cb72e97c77e6bc2b4974c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 140,
+      "source_order": 278,
+      "domain": "os",
+      "task_id": "3ce045a0-877b-42aa-8d2c-b4a863336ab8",
+      "source_episode_id": "d644c4ff3007b3c67a60916f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "9f1c77bc96e2648d6071a0706cdc5e7b623d905772f1d4214cc3f4901dda6db8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 141,
+      "source_order": 280,
+      "domain": "os",
+      "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+      "source_episode_id": "c2d71456daa236bf4e0be210",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "e3a42ce88bf97bafbcb45ecd9e965b39d1ba4cd101ca1475b66b406b8d8612ed",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 142,
+      "source_order": 281,
+      "domain": "os",
+      "task_id": "23393935-50c7-4a86-aeea-2b78fd089c5c",
+      "source_episode_id": "7763d398776454e704bab938",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "230c175f2b2ca4a1a5463c8742d662447ccc8341fb18a5d15b464a1fe7ff2cdb",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 143,
+      "source_order": 283,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "source_episode_id": "adcb612932c73e8af6229d41",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "df4d0d962f652bbd209932425bac7bd3700948b418f65ca76e25aa7094a3a5bf",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 144,
+      "source_order": 284,
+      "domain": "os",
+      "task_id": "5ced85fc-fa1a-4217-95fd-0fb530545ce2",
+      "source_episode_id": "3771e96e3b02b639d12240c9",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7a1857c0b7cf25779f313caefe856d31eefec7ad4319fb2a6916f6dd64fe5031",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 145,
+      "source_order": 285,
+      "domain": "os",
+      "task_id": "37887e8c-da15-4192-923c-08fa390a176d",
+      "source_episode_id": "dc1736c70c1832d4718f9c9d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "35736fd3b54074bfa25f43efcfd2d25eeffab375a31fdf9eb3ba3691947d6687",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 146,
+      "source_order": 286,
+      "domain": "os",
+      "task_id": "4127319a-8b79-4410-b58a-7a151e15f3d7",
+      "source_episode_id": "e271186cce896f8bc1213525",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "0dc511604208e6fb8e477dccceb4ce1029de509eeb5fb1f715d1f99555e9f5b1",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 147,
+      "source_order": 287,
+      "domain": "os",
+      "task_id": "4d117223-a354-47fb-8b45-62ab1390a95f",
+      "source_episode_id": "445e17351e37702160111ce1",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "0182296f20a4fe56b37b39684e47b57cdac69bb820b1ce12d778b7aa28144b0d",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 148,
+      "source_order": 288,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "source_episode_id": "96f6a63353abeb04707ee6b7",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "983cd049ad2b66e83ab54452c82f241bf4de8b47edb992e3c0322e897f338f8a",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 149,
+      "source_order": 289,
+      "domain": "thunderbird",
+      "task_id": "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397",
+      "source_episode_id": "219965ebf284fc44fdcc5571",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "5d21bf3ab1a20d9caafa3c8aba657608958f7e8ee2ea5c99b5334a8689025983",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 150,
+      "source_order": 290,
+      "domain": "thunderbird",
+      "task_id": "15c3b339-88f7-4a86-ab16-e71c58dcb01e",
+      "source_episode_id": "23455326d55b418b2377c9e3",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "4273e2be39c71b75ee506e8c602b1a4e88a903d8f22797a02a477599bf352252",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 151,
+      "source_order": 291,
+      "domain": "thunderbird",
+      "task_id": "7b1e1ff9-bb85-49be-b01d-d6424be18cd0",
+      "source_episode_id": "7c585481e4dc2fbd811197f7",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "2ee3fa5a1d066a5aa80155075cfe6c9b3d2b4adabd0e86dc085a4300981dade4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 152,
+      "source_order": 292,
+      "domain": "thunderbird",
+      "task_id": "9bc3cc16-074a-45ac-9bdc-b2a362e1daf3",
+      "source_episode_id": "536313a84d78f966a586a6cc",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2871bf2756529b5428c014e078330a2b3b8b19509a0e1ea4066779c72dca1fd9",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 153,
+      "source_order": 293,
+      "domain": "thunderbird",
+      "task_id": "3f28fe4f-5d9d-4994-a456-efd78cfae1a3",
+      "source_episode_id": "a3b0797d517f26dd5b8be446",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "68bd8c55fc7b1910afc28235011326fcfbffc5b8e248158a3f4e8f26f5ff3bd2",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 154,
+      "source_order": 294,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "source_episode_id": "c10d9c18b7f9747fdde7a778",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "c09b9334518ae5f9049e9ee51383163073d0049c857ec91eedddf103a59d9641",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 155,
+      "source_order": 295,
+      "domain": "thunderbird",
+      "task_id": "dd84e895-72fd-4023-a336-97689ded257c",
+      "source_episode_id": "4d8b222cd7d41f64bcb66ba9",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "cf471daf55831f2444a0e3b3ee02d93403f32701aa08f521b77cf1c834b74f5a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 156,
+      "source_order": 297,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "source_episode_id": "9bcbdcace08ab4a85cefb5eb",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7aeebab143796c5c9c90c87a8a59d4fe3dfff667231996ff563481000abc13e0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 157,
+      "source_order": 299,
+      "domain": "thunderbird",
+      "task_id": "3f49d2cc-f400-4e7d-90cc-9b18e401cc31",
+      "source_episode_id": "374f8bd130230fad58ba28a7",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "d41158afc1e7b7e718f4e8ab70be7bfb251773e38abee843d5346ac1b4d1c8d6",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 158,
+      "source_order": 300,
+      "domain": "thunderbird",
+      "task_id": "f201fbc3-44e6-46fc-bcaa-432f9815454c",
+      "source_episode_id": "3a42f3ad8a0874ff6f923ba9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "17d0d012b21cbadf85e8cff57e1995f8ac8b3ab928f1c79f8c829b1615028ed7",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 159,
+      "source_order": 301,
+      "domain": "thunderbird",
+      "task_id": "10a730d5-d414-4b40-b479-684bed1ae522",
+      "source_episode_id": "ad80696693cf657cfb21b657",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "45fe4255daa6e84d15d1e4312e53b0373852e45609feeebd0b6f0d878c8c10fe",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 160,
+      "source_order": 302,
+      "domain": "thunderbird",
+      "task_id": "08c73485-7c6d-4681-999d-919f5c32dcfa",
+      "source_episode_id": "9c4e97161b1ff381343e502e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "4a845eef3acb485a26187a4854875d7ebcd6d33d32e22c8c6b2a51d4f74adf06",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 161,
+      "source_order": 303,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+      "source_episode_id": "cdb1060a9b5fd5bfe902803c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2357b22b73739d1ecc82c3971cfcd1ea01abbf560a3b09a309eadc8c2e9bcea3",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89",
+      "source_episode_id": "9dae3ee2ab33579bfa68619c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "e1f3aa1c98ecb17c2fd050b00e0c19101b8710bcef483aac7ade5a43a1aa6902",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 163,
+      "source_order": 305,
+      "domain": "vlc",
+      "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+      "source_episode_id": "9da145b6640121e04a2bf496",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "162f16b72b0062548f2a10f8c479b1e9ce112e0915f9c0816830e856a438e644",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 164,
+      "source_order": 307,
+      "domain": "vlc",
+      "task_id": "fba2c100-79e8-42df-ae74-b592418d54f4",
+      "source_episode_id": "b6458a2281e311210e594f7e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b860a3a4ffea2cbdd55a1f2d2b08bba919daa0e81fc51385d04100cdb1dfe274",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 165,
+      "source_order": 309,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_episode_id": "40ab3808798a689e18eab242",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "d6f0a22efffc5ef7bdd5a959d8a718cbd6bf7a670f0766744d7388ba8fdf215f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 166,
+      "source_order": 310,
+      "domain": "vlc",
+      "task_id": "aa4b5023-aef6-4ed9-bdc9-705f59ab9ad6",
+      "source_episode_id": "d9a79e0af2295e698bd547ad",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "83918c83d3d4fd86722b914ae51b78ed329a27581cd57d68fbbffdf3aa34e93d",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 167,
+      "source_order": 311,
+      "domain": "vlc",
+      "task_id": "386dbd0e-0241-4a0a-b6a2-6704fba26b1c",
+      "source_episode_id": "b2cbcb1e0709dafdee8700ef",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "7a34aa3ef24a6232b272d989c1fa3c5aceba1c52ef44a7d667641b934bcccdff",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 168,
+      "source_order": 312,
+      "domain": "vlc",
+      "task_id": "9195653c-f4aa-453d-aa95-787f6ccfaae9",
+      "source_episode_id": "b294b5aed3c3317383eee685",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "9059689f2f74ed269d6099541ba78683ec9d4a07f96d5e011940055833663666",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 169,
+      "source_order": 313,
+      "domain": "vlc",
+      "task_id": "d06f0d4d-2cd5-4ede-8de9-598629438c6e",
+      "source_episode_id": "8e94730680a45f540a382d11",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "184a67ace41b516dd825db5a472af81c5389542e6ff46e4f4a273c2227ad361d",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 170,
+      "source_order": 314,
+      "domain": "vlc",
+      "task_id": "a5bbbcd5-b398-4c91-83d4-55e1e31bbb81",
+      "source_episode_id": "081ec10d2fa2ebfa178ad976",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a3d587be2d957b76269d549aaad6c1e5282ea96ca576d2fe92a781312239dbc8",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 171,
+      "source_order": 315,
+      "domain": "vlc",
+      "task_id": "5ac2891a-eacd-4954-b339-98abba077adb",
+      "source_episode_id": "073059889688fe31a5492f4c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2cf7d0c7eab121ca6916866d295a0c0b6dde058fb220977ee896039de701494c",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 172,
+      "source_order": 316,
+      "domain": "vlc",
+      "task_id": "f3977615-2b45-4ac5-8bba-80c17dbe2a37",
+      "source_episode_id": "fbf7f16a6e4dc9d97217e7df",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "34d60daa05be129c7cc75f3f57036b70fb8c00cb825087c798fdfc7d9ec2eae9",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 173,
+      "source_order": 317,
+      "domain": "vlc",
+      "task_id": "215dfd39-f493-4bc3-a027-8a97d72c61bf",
+      "source_episode_id": "16a2e62a58efbcf87bb83867",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "559ba3af4bd8ebfe6681e3604c7b7694d4a98f1e8f5565d0b0f973a0a9d3441b",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "source_episode_id": "19e7d7b9bd4f820090cf053d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "acdb3e3146586683ee4d2f721510b742c81ba6c026d498179d2e0f3f765de520",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb",
+      "source_episode_id": "1bc8a65feca7af7fc702ce7d",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "43c18f93b563626e82d32f2c4f07a5f3c6acbe21104f68d73c8891dcfd042540",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 176,
+      "source_order": 323,
+      "domain": "vs_code",
+      "task_id": "e2b5e914-ffe1-44d2-8e92-58f8c5d92bb2",
+      "source_episode_id": "07c8933f2a1bd11464b4d432",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "10b875ec622f17a34088906fb9b367a9415ec0aa75cb1171baf32df7c3257b4b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 177,
+      "source_order": 324,
+      "domain": "vs_code",
+      "task_id": "9439a27b-18ae-42d8-9778-5f68f891805e",
+      "source_episode_id": "7c609a3b73c2c1f90cbf9ac0",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7c22f97b167234ab55cf3a40f418c631d21c6dc32086a542a96b84cdf9621e87",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 178,
+      "source_order": 325,
+      "domain": "vs_code",
+      "task_id": "ea98c5d7-3cf9-4f9b-8ad3-366b58e0fcae",
+      "source_episode_id": "3f5b151bb2961956b992bfc7",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "127c9847c5ed3c1e7e7f9268822760404db38d3e8d9c81125e960d1985afa4c5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 179,
+      "source_order": 326,
+      "domain": "vs_code",
+      "task_id": "930fdb3b-11a8-46fe-9bac-577332e2640e",
+      "source_episode_id": "b5706f21756fed422602a900",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "a3e578d634d1dcd474282f90f000fb1fbbf9bef9ccd433e2b83423975c0cf2b9",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 180,
+      "source_order": 327,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "source_episode_id": "8d94566029f0a55a8e5aeaad",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "417dea5e9b0c969bd6c3849ab8b3c56f30eb06b46b887df71d75c6c8b344c498",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 181,
+      "source_order": 328,
+      "domain": "vs_code",
+      "task_id": "9d425400-e9b2-4424-9a4b-d4c7abac4140",
+      "source_episode_id": "f971e8b383ab395423da9072",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "54c726ff6b9c8784a27a61b880a04e7153c132c7ff082ad734a51518479b30ef",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 182,
+      "source_order": 329,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_episode_id": "394d579e865649789125ca98",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "434725739b32f54363f72ffa26e8b83d41d3a591b18a2450c74daa5e0b2bddc9",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 183,
+      "source_order": 330,
+      "domain": "vs_code",
+      "task_id": "6ed0a554-cbee-4b44-84ea-fd6c042f4fe1",
+      "source_episode_id": "4cd5aa3fc18b2cf4aaeb03e0",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b374261fe2813f475fa864687074991036547f323036fd9a4f9bd3362c7631dc",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 184,
+      "source_order": 331,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "source_episode_id": "7876be02361fd1962d39fe37",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "27a5f14e8cad90e39ecf9bee5647b95aec42cfc151fa6efb68e49479eed1dc63",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 185,
+      "source_order": 332,
+      "domain": "vs_code",
+      "task_id": "70745df8-f2f5-42bd-8074-fbc10334fcc5",
+      "source_episode_id": "c41d83fbb1be0cf8069453ce",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "f56a41fce003b610194cb3f6d8cf34e281e8624b2d5ed53cec535c55b4cbed1d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 186,
+      "source_order": 333,
+      "domain": "vs_code",
+      "task_id": "57242fad-77ca-454f-b71b-f187181a9f23",
+      "source_episode_id": "e5ba6136e7d8993b2030a59e",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "337c383ddbd80f45d0347787f6465123519b68ff1cfd1ee466a7e3b514e7a64e",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 187,
+      "source_order": 334,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "source_episode_id": "c612bfabd60eead189c5ebe4",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "0ebec635f000ef1ee896bb492ff78d55ba9e006df437171a4c68ee7101a820b5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 188,
+      "source_order": 335,
+      "domain": "vs_code",
+      "task_id": "0512bb38-d531-4acf-9e7e-0add90816068",
+      "source_episode_id": "45919477b58d9ec782c9cbc6",
+      "source_path_class": "generic_api_plus_code",
+      "source_manifest_sha256": "34546507943030c9c7115cb045d1f5413791d7f9ed3faef1e8dfb6732f27d890",
+      "execution_class": "generic_api_plus_code"
+    },
+    {
+      "order": 189,
+      "source_order": 336,
+      "domain": "vs_code",
+      "task_id": "7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
+      "source_episode_id": "ed3ddb3c14242dc6fbd5d5f3",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "aaf1c3babae32996e9cb2bc599985ac9abbc48cee432bbec1ae899a932aba18f",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

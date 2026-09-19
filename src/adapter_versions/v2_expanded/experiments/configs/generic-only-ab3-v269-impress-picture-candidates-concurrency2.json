@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v269-impress-picture-candidates-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v269 generic Impress compact-observation repair that exposes live non-duplicate grouped picture containers and slide-relative layout roles. It repeats the affected v268 outcome and both same-domain clean controls once in a new condition. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v268",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v268-impress-selector-equivalence.json",
+    "disposition_sha256": "e91837d1f4785929b615b09fd40220d6cbe995437b9dd619084558b1a9db62ad",
+    "complete_candidate_accepted": false,
+    "retained_behavior": "All accepted v253-v266 fixes, v267 physical measurement and all-textbox contracts, v268 Adapter-confirmed selector identity checking, and exact model argument forwarding remain unchanged."
+  },
+  "change_scope": "v269 changes only the strict model-facing projection of a live Impress presentation.inspect result and its synthetic preflight coverage. It adds non-duplicate grouped picture containers and geometry-derived layout roles within the existing 6000-character budget. Tool schemas, tool count, Router ranking, Adapter contracts, completion gate, model, VM, evaluator boundary, and Runner argument forwarding are unchanged from v268.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v269.json",
+    "candidate_manifest_sha256": "eac352f938aa751418b32006b7dc24e054a26ba1cb9a4a4163f683ad07151450",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v269-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "96e3f1a55571be0d95ae082394b9ff119d5f35154488c5d54fb9cf2caa60b134",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 60 is the preserved v268 failure in which the compact live observation omitted the foreground grouped picture container and the model guessed an unrelated selector. Orders 58 and 62 are unchanged same-domain clean controls.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v269",
+    "active_runtime_and_test_tree_sha256": "5097011ab8da4cf6eda4777ec3a1c445063fdf7e7a30ecda006fbfcb2179299a",
+    "focused_tests": "97 passed",
+    "complete_unit_suite": "2800 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "Both DGX endpoints passed 6/6 schema-valid, semantic-match, and raw-arguments-equal-Adapter-params synthetic cases.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v269_impress_picture_candidates_ab3_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Repeat the exact v268 fixed source order for Orders 58, 60, and 62. Round-robin assignment puts Orders 58 and 62 on DGX1 and Order 60 on DGX2.",
+    "selected_count": 3,
+    "affected_orders": [
+      60
+    ],
+    "clean_control_orders": [
+      58,
+      62
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T13:04:49Z",
+  "tasks": [
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_control_before",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "affected_live_picture_container_observation",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "cohort_role": "clean_control_after",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

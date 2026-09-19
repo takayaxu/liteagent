@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order91-cross-app-query-context-v53",
+  "status": "frozen",
+  "purpose": "Bounded targeted A/B for coverage Order 91 after preserving generic cross-application query rows in LiteAgent context.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order91-thunderbird-message-query-v52.json",
+  "candidate_parent_config_sha256": "15c804ea785a0cbcc4795969a187e4550ae45ca252f2e9e87b88e43817937799",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4abbd00d238da327f4ddfd8cce483521c164a033818dafb412917829c13fe0f9",
+  "change_scope": "Hypothesis 2/3: preserve a bounded, structured messages.query result in the truthful context of later model turns so data selected from one application remains available for a downstream application. The representation is capped by serialized size, message count, field length, and attachment count. It is task-independent and contains no task identity, answer value, golden artifact, fixed destination, stage forcing, or Runner argument rewrite.",
+  "implementation_evidence": {
+    "before_result_sha256": "ab06bbfa66b6adbb6117d3c0af7b4560731ba785968e8a7094626cf57eb9727c",
+    "before_audit_sha256": "c8e2ad27591b25204f5c7969ac153cf8ca1c558ccf6babb79bfe2aa4d46ed085",
+    "before_trajectory_manifest_sha256": "d457fa6e1d68431940e1ef690fbaaf304d5649c902d2a7c73c3aade7f03bec87",
+    "failure_class": "cross_application_query_result_lost_from_model_context_plus_repetition_loop",
+    "hypothesis_index": 2,
+    "hypothesis_limit": 3,
+    "adapter_results_sha256": "3d04cc57f058b3a074a0699dc9aa0eb5fcbaf19eb8697ec83b844122a3340fb0",
+    "adapter_results_tests_sha256": "7100f1b0d0aa949924648f6804d185467e90d650696e245e3432756d01cd8ae5",
+    "lite_agent_runner_sha256": "b81ea162e6f73c2fa720902e77ab54ccb31c8397f1cd95297743150b6fc441af",
+    "lite_agent_supervisor_sha256": "bed048eb65925aebe2cc5f83bca77878a92738186f5613476047716971d4a5ce",
+    "counterfactuals": "A structurally different 23-message nested-folder response is compacted below 4200 serialized characters while retaining truthful ordering and omission metadata; an unrelated five-message response retains every row. Message bodies are excluded, attachment names are bounded, and the generic multi_apps wrapper preserves downstream identity and verification state.",
+    "focused_unit_tests": "201 passed",
+    "full_unit_tests": "1498 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_cross_app_query_context_v53_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 91 after reusable generic hypothesis 2/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order91-thunderbird-message-query-v52-run1",
+    "rerun_reason": "The preserved valid v52 run selected and returned the correct latest five messages at step 3, but the next model request retained only a success summary and omitted the selected rows. The model re-queried until step 30 and never created report.xlsx.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_episode_id": "1d8f32c422b527f3c458a150",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4bab5a876dbf50c88a2755c91433673e822fbb589249d291cd759e3d01a71e52",
+      "execution_class": "golden",
+      "pool_order": 91
+    }
+  ]
+}

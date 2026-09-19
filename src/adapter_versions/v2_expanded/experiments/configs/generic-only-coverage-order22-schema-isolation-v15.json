@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order22-schema-isolation-v15",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B for the preserved v14 failure after a shared mutable JSON-schema node caused the requested header enum to overwrite the observed worksheet enum in the actual model request.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order22-table-range-v14.json",
+  "candidate_parent_config_sha256": "98a3ae29b56965a544eab578d6ae11f9ea7e9bdf2f102f52c5a05ae6b30c6fa2",
+  "source_failure_results": "experiments/generic-only-coverage-order22-table-range-v14-run1/results.json",
+  "source_failure_results_sha256": "5905d8122db7a5dabf28330294d13cf85eabccaa450f350dd3be0b55dac52429",
+  "source_failure_audit": "experiments/generic-only-coverage-order22-table-range-v14-run1/worker-01-audit.json",
+  "source_failure_audit_sha256": "dbd811010134da1732b1f124903349ae633ec7ac302e5d2ebbb40d0ab8c47b74",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c6681a49be4fa5de3fc032540c02bf0955742a98f755d3a32f09f154dae47a80",
+  "change_scope": "Recursively clone every direct-tool JSON-schema mapping and list without preserving Python object aliases before applying model-facing dynamic constraints. This prevents a mutation to one property such as headers.items.enum from changing a different property such as sheet.enum. The focused test derives a different worksheet and table range from observed state and proves the two enums remain independent; no task identity, dataset order, golden, evaluator state, answer value, or task-specific route is used.",
+  "implementation_evidence": {
+    "calc_worker_sha256": "fce13134c1a0ccb41ab799dc1e11a6a921d3764c5a8c9cde496779dd663165a3",
+    "calc_tool_manifest_sha256": "3a0a77683e36603a7a5fd3204d3416b73adb4101f85532bc57b03f3b919c704b",
+    "calc_readme_sha256": "c44d43cb63dcaa9d947c818c1e59db098c20a9a8219a00a97b6f5565c993cb22",
+    "runtime_sha256": "3b40b199f17efe8b61af3226edc33b9a2d36ff0a241e028b50965c4ef2972fa0",
+    "tool_catalog_sha256": "431d083c746c30432890f9f667d2a51537c9dd29c2dbaa27b8ff22807513554b",
+    "calc_worker_test_sha256": "68788830ff6fccf374ada37ad4b499d4c3bc10ef5f27269c09488c2eeba29df3",
+    "runtime_test_sha256": "ca79f165a3f5ba5f394d69f80b174771aa6e4c8aad0d1427fd9977cd3033a751",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "focused_calc_schema_worker_and_dynamic_schema_tests": "83 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_schema_isolation_v15_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single preserved failure affected by a reusable direct-tool schema isolation fix; focused counterfactual tests, no regression controls",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "source_episode_id": "ffbc6518951d1b42cb643766",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "ef2aa63e286baec7372f22c32ac5d6b9b4188a0aed593b3d117c3f2a3bdfba14",
+      "execution_class": "generic_api_only",
+      "pool_order": 22
+    }
+  ]
+}

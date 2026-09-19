@@ -1,0 +1,2251 @@
+{
+  "schema_version": 1,
+  "experiment_id": "gui-and-failure-retest-72-openapa-gpt-5.6-sol-medium-parallel5",
+  "status": "planned",
+  "purpose": "Retest the union of tasks that previously used model-level GUI, failed the original evaluator, or ended in environment failure. Confirmed dataset defects remain excluded by the 208-task clean source config.",
+  "source_config": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/offline-remaining-208-clean.json",
+  "source_config_sha256": "d7a778c21e1e816c1a497b37abfaaa3090b6cb038b532b4897fd07ae736ac55d",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "reasoning_effort": "medium"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "official_infeasible_excluded": true,
+    "external_web_excluded": true,
+    "parallel_workers": 5,
+    "continuation_scope": "remaining_after_51_historically_attempted_tasks",
+    "selection_scope": "previous_gui_or_evaluator_failure_or_environment_failure"
+  },
+  "filter": {
+    "excluded_count": 75,
+    "retained_count": 261,
+    "reasons": {
+      "dataset_proxy_true": "example declares proxy=true",
+      "opens_external_webpage": "example config contains chrome_open_tabs",
+      "instruction_contains_external_url": "instruction contains http(s) URL",
+      "instruction_requires_external_web_search": "instruction explicitly requires external web search",
+      "instruction_implies_live_external_service": "instruction requires a live software store, site, package source, paper lookup, or other external service"
+    },
+    "excluded_tasks": [
+      {
+        "order": 2,
+        "domain": "chrome",
+        "task_id": "7b6c7e24-c58a-49fc-a5bb-d57b80e5b4c3",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 3,
+        "domain": "chrome",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 4,
+        "domain": "chrome",
+        "task_id": "e1e75309-3ddb-4d09-92ec-de869c928143",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 5,
+        "domain": "chrome",
+        "task_id": "35253b65-1c19-4304-8aa4-6884b8218fc0",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 7,
+        "domain": "chrome",
+        "task_id": "7a5a7856-f1b6-42a4-ade9-1ca81ca0f263",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 18,
+        "domain": "chrome",
+        "task_id": "fc6d8143-9452-4171-9459-7f515143419a",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 19,
+        "domain": "chrome",
+        "task_id": "a96b564e-dbe9-42c3-9ccf-b4498073438a",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 20,
+        "domain": "chrome",
+        "task_id": "1704f00f-79e6-43a7-961b-cedd3724d5fd",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 21,
+        "domain": "chrome",
+        "task_id": "f3b19d1e-2d48-44e9-b4e1-defcae1a0197",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 22,
+        "domain": "chrome",
+        "task_id": "82bc8d6a-36eb-4d2d-8801-ef714fb1e55a",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 23,
+        "domain": "chrome",
+        "task_id": "47543840-672a-467d-80df-8f7c3b9788c9",
+        "reasons": [
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 24,
+        "domain": "chrome",
+        "task_id": "c1fa57f3-c3db-4596-8f09-020701085416",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 25,
+        "domain": "chrome",
+        "task_id": "da46d875-6b82-4681-9284-653b0c7ae241",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 26,
+        "domain": "chrome",
+        "task_id": "6c4c23a1-42a4-43cc-9db1-2f86ff3738cc",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 27,
+        "domain": "chrome",
+        "task_id": "f79439ad-3ee8-4f99-a518-0eb60e5652b0",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 28,
+        "domain": "chrome",
+        "task_id": "b7895e80-f4d1-4648-bee0-4eb45a6f1fa8",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 29,
+        "domain": "chrome",
+        "task_id": "9f3f70fc-5afc-4958-a7b7-3bb4fcb01805",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 30,
+        "domain": "chrome",
+        "task_id": "7f52cab9-535c-4835-ac8c-391ee64dc930",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 31,
+        "domain": "chrome",
+        "task_id": "82279c77-8fc6-46f6-9622-3ba96f61b477",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 32,
+        "domain": "chrome",
+        "task_id": "2888b4e6-5b47-4b57-8bf5-c73827890774",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 33,
+        "domain": "chrome",
+        "task_id": "b4f95342-463e-4179-8c3f-193cd7241fb2",
+        "reasons": [
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 34,
+        "domain": "chrome",
+        "task_id": "f5d96daf-83a8-4c86-9686-bada31fc66ab",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 35,
+        "domain": "chrome",
+        "task_id": "121ba48f-9e17-48ce-9bc6-a4fb17a7ebba",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 36,
+        "domain": "chrome",
+        "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 37,
+        "domain": "chrome",
+        "task_id": "59155008-fe71-45ec-8a8f-dc35497b6aa8",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 38,
+        "domain": "chrome",
+        "task_id": "a728a36e-8bf1-4bb6-9a03-ef039a5233f0",
+        "reasons": [
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 39,
+        "domain": "chrome",
+        "task_id": "b070486d-e161-459b-aa2b-ef442d973b92",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 40,
+        "domain": "chrome",
+        "task_id": "0d8b7de3-e8de-4d86-b9fd-dd2dce58a217",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 41,
+        "domain": "chrome",
+        "task_id": "9f935cce-0a9f-435f-8007-817732bfc0a5",
+        "reasons": [
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 42,
+        "domain": "chrome",
+        "task_id": "f0b971a1-6831-4b9b-a50e-22a6e47f45ba",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 43,
+        "domain": "chrome",
+        "task_id": "cabb3bae-cccb-41bd-9f5d-0f3a9fecd825",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 44,
+        "domain": "chrome",
+        "task_id": "44ee5668-ecd5-4366-a6ce-c1c9b8d4e938",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      },
+      {
+        "order": 181,
+        "domain": "multi_apps",
+        "task_id": "4e9f0faf-2ecc-4ae8-a804-28c9a75d1ddc",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 184,
+        "domain": "multi_apps",
+        "task_id": "58565672-7bfe-48ab-b828-db349231de6b",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 188,
+        "domain": "multi_apps",
+        "task_id": "e135df7c-7687-4ac0-a5f0-76b74438b53e",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 191,
+        "domain": "multi_apps",
+        "task_id": "f8cfa149-d1c1-4215-8dac-4a0932bad3c2",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 193,
+        "domain": "multi_apps",
+        "task_id": "da52d699-e8d2-4dc5-9191-a2199e0b6a9b",
+        "reasons": [
+          "dataset_proxy_true",
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 195,
+        "domain": "multi_apps",
+        "task_id": "74d5859f-ed66-4d3e-aa0e-93d7a592ce41",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 198,
+        "domain": "multi_apps",
+        "task_id": "acb0f96b-e27c-44d8-b55f-7cb76609dfcd",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 199,
+        "domain": "multi_apps",
+        "task_id": "69acbb55-d945-4927-a87b-8480e1a5bb7e",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 200,
+        "domain": "multi_apps",
+        "task_id": "48d05431-6cd5-4e76-82eb-12b60d823f7d",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 201,
+        "domain": "multi_apps",
+        "task_id": "68a25bd4-59c7-4f4d-975e-da0c8509c848",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 203,
+        "domain": "multi_apps",
+        "task_id": "c7c1e4c3-9e92-4eba-a4b8-689953975ea4",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 204,
+        "domain": "multi_apps",
+        "task_id": "d1acdb87-bb67-4f30-84aa-990e56a09c92",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      },
+      {
+        "order": 205,
+        "domain": "multi_apps",
+        "task_id": "deec51c9-3b1e-4b9e-993c-4776f20e8bb2",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 211,
+        "domain": "multi_apps",
+        "task_id": "2c1ebcd7-9c6d-4c9a-afad-900e381ecd5e",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 218,
+        "domain": "multi_apps",
+        "task_id": "e2392362-125e-4f76-a2ee-524b183a3412",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 220,
+        "domain": "multi_apps",
+        "task_id": "26660ad1-6ebb-4f59-8cba-a8432dfe8d38",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 221,
+        "domain": "multi_apps",
+        "task_id": "a82b78bb-7fde-4cb3-94a4-035baf10bcf0",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 222,
+        "domain": "multi_apps",
+        "task_id": "36037439-2044-4b50-b9d1-875b5a332143",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      },
+      {
+        "order": 224,
+        "domain": "multi_apps",
+        "task_id": "873cafdd-a581-47f6-8b33-b9696ddb7b05",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 226,
+        "domain": "multi_apps",
+        "task_id": "6f4073b8-d8ea-4ade-8a18-c5d1d5d5aa9a",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 227,
+        "domain": "multi_apps",
+        "task_id": "da922383-bfa4-4cd3-bbad-6bebab3d7742",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 232,
+        "domain": "multi_apps",
+        "task_id": "b337d106-053f-4d37-8da0-7f9c4043a66b",
+        "reasons": [
+          "instruction_requires_external_web_search"
+        ]
+      },
+      {
+        "order": 235,
+        "domain": "multi_apps",
+        "task_id": "aad10cd7-9337-4b62-b704-a857848cedf2",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 240,
+        "domain": "multi_apps",
+        "task_id": "3e3fc409-bff3-4905-bf16-c968eee3f807",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 242,
+        "domain": "multi_apps",
+        "task_id": "5990457f-2adb-467b-a4af-5c857c92d762",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      },
+      {
+        "order": 244,
+        "domain": "multi_apps",
+        "task_id": "7ff48d5b-2df2-49da-b500-a5150ffc7f18",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 246,
+        "domain": "multi_apps",
+        "task_id": "dd60633f-2c72-42ba-8547-6f2c8cb0fdb0",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 248,
+        "domain": "multi_apps",
+        "task_id": "3f05f3b9-29ba-4b6b-95aa-2204697ffc06",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 249,
+        "domain": "multi_apps",
+        "task_id": "e1fc0df3-c8b9-4ee7-864c-d0b590d3aa56",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 250,
+        "domain": "multi_apps",
+        "task_id": "f8369178-fafe-40c2-adc4-b9b08a125456",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 254,
+        "domain": "multi_apps",
+        "task_id": "788b3701-3ec9-4b67-b679-418bfa726c22",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 255,
+        "domain": "multi_apps",
+        "task_id": "48c46dc7-fe04-4505-ade7-723cba1aa6f6",
+        "reasons": [
+          "instruction_requires_external_web_search"
+        ]
+      },
+      {
+        "order": 256,
+        "domain": "multi_apps",
+        "task_id": "42d25c08-fb87-4927-8b65-93631280a26f",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 258,
+        "domain": "multi_apps",
+        "task_id": "42f4d1c7-4521-4161-b646-0a8934e36081",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 259,
+        "domain": "multi_apps",
+        "task_id": "3c8f201a-009d-4bbe-8b65-a6f8b35bb57f",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 264,
+        "domain": "multi_apps",
+        "task_id": "0e5303d4-8820-42f6-b18d-daf7e633de21",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 265,
+        "domain": "multi_apps",
+        "task_id": "df67aebb-fb3a-44fd-b75b-51b6012df509",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 268,
+        "domain": "multi_apps",
+        "task_id": "236833a3-5704-47fc-888c-4f298f09f799",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 269,
+        "domain": "multi_apps",
+        "task_id": "67890eb6-6ce5-4c00-9e3d-fb4972699b06",
+        "reasons": [
+          "dataset_proxy_true",
+          "opens_external_webpage"
+        ]
+      },
+      {
+        "order": 270,
+        "domain": "os",
+        "task_id": "94d95f96-9699-4208-98ba-3c3119edf9c2",
+        "reasons": [
+          "instruction_implies_live_external_service"
+        ]
+      },
+      {
+        "order": 306,
+        "domain": "vlc",
+        "task_id": "bba3381f-b5eb-4439-bd9e-80c22218d5a7",
+        "reasons": [
+          "instruction_contains_external_url"
+        ]
+      },
+      {
+        "order": 320,
+        "domain": "vs_code",
+        "task_id": "eabc805a-bfcf-4460-b250-ac92135819f6",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      },
+      {
+        "order": 322,
+        "domain": "vs_code",
+        "task_id": "4e60007a-f5be-4bfc-9723-c39affa0a6d3",
+        "reasons": [
+          "dataset_proxy_true"
+        ]
+      }
+    ],
+    "setup_downloads_note": "OSWorld setup artifact downloads may still use host network; this filter only removes guest external-web workflows and disables the guest proxy."
+  },
+  "tasks": [
+    {
+      "order": 66,
+      "source_order": 78,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 34,
+      "remaining_order": 4,
+      "retest_order": 1,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 68,
+      "source_order": 80,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371",
+      "execution_class": "generic_composite_api",
+      "offline_order": 36,
+      "remaining_order": 6,
+      "retest_order": 2,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 69,
+      "source_order": 81,
+      "domain": "libreoffice_calc",
+      "task_id": "f9584479-3d0d-4c79-affa-9ad7afdd8850",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 37,
+      "remaining_order": 7,
+      "retest_order": 3,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 70,
+      "source_order": 82,
+      "domain": "libreoffice_calc",
+      "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+      "execution_class": "generic_composite_api",
+      "offline_order": 38,
+      "remaining_order": 8,
+      "retest_order": 4,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 72,
+      "source_order": 84,
+      "domain": "libreoffice_calc",
+      "task_id": "4f07fbe9-70de-4927-a4d5-bb28bc12c52c",
+      "execution_class": "generic_composite_api",
+      "offline_order": 40,
+      "remaining_order": 10,
+      "retest_order": 5,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 73,
+      "source_order": 85,
+      "domain": "libreoffice_calc",
+      "task_id": "04d9aeaf-7bed-4024-bedb-e10e6f00eb7f",
+      "execution_class": "generic_composite_api",
+      "offline_order": 41,
+      "remaining_order": 11,
+      "retest_order": 6,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 75,
+      "source_order": 87,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "execution_class": "generic_composite_api",
+      "offline_order": 43,
+      "remaining_order": 13,
+      "retest_order": 7,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 84,
+      "source_order": 96,
+      "domain": "libreoffice_calc",
+      "task_id": "51b11269-2ca8-4b2a-9163-f21758420e78",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 52,
+      "remaining_order": 22,
+      "retest_order": 8,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 87,
+      "source_order": 99,
+      "domain": "libreoffice_calc",
+      "task_id": "8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14",
+      "execution_class": "generic_composite_api",
+      "offline_order": 55,
+      "remaining_order": 24,
+      "retest_order": 9,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 88,
+      "source_order": 100,
+      "domain": "libreoffice_calc",
+      "task_id": "a01fbce3-2793-461f-ab86-43680ccbae25",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 56,
+      "remaining_order": 25,
+      "retest_order": 10,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-210-parallel5-run2/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 89,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_composite_api",
+      "offline_order": 57,
+      "remaining_order": 26,
+      "retest_order": 11,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 91,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "4188d3a4-077d-46b7-9c86-23e1a036f6c1",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 59,
+      "remaining_order": 27,
+      "retest_order": 12,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 92,
+      "source_order": 104,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 60,
+      "remaining_order": 28,
+      "retest_order": 13,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 99,
+      "source_order": 111,
+      "domain": "libreoffice_calc",
+      "task_id": "a9f325aa-8c05-4e4f-8341-9e4358565f4f",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 67,
+      "remaining_order": 34,
+      "retest_order": 14,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 102,
+      "source_order": 114,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 70,
+      "remaining_order": 37,
+      "retest_order": 15,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 103,
+      "source_order": 115,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_composite_api",
+      "offline_order": 71,
+      "remaining_order": 38,
+      "retest_order": 16,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 104,
+      "source_order": 116,
+      "domain": "libreoffice_calc",
+      "task_id": "4172ea6e-6b77-4edb-a9cc-c0014bd1603b",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 72,
+      "remaining_order": 39,
+      "retest_order": 17,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 107,
+      "source_order": 119,
+      "domain": "libreoffice_calc",
+      "task_id": "21ab7b40-77c2-4ae6-8321-e00d3a086c73",
+      "execution_class": "generic_composite_api",
+      "offline_order": 75,
+      "remaining_order": 42,
+      "retest_order": 18,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 108,
+      "source_order": 120,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 76,
+      "remaining_order": 43,
+      "retest_order": 19,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 110,
+      "source_order": 122,
+      "domain": "libreoffice_impress",
+      "task_id": "455d3c66-7dc6-4537-a39a-36d3e9119df7",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 78,
+      "remaining_order": 44,
+      "retest_order": 20,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 112,
+      "source_order": 124,
+      "domain": "libreoffice_impress",
+      "task_id": "c59742c0-4323-4b9d-8a02-723c251deaa0",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 80,
+      "remaining_order": 46,
+      "retest_order": 21,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 113,
+      "source_order": 125,
+      "domain": "libreoffice_impress",
+      "task_id": "ef9d12bd-bcee-4ba0-a40e-918400f43ddf",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 81,
+      "remaining_order": 47,
+      "retest_order": 22,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "gui_only"
+        }
+      ]
+    },
+    {
+      "order": 115,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "0f84bef9-9790-432e-92b7-eece357603fb",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 83,
+      "remaining_order": 48,
+      "retest_order": 23,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "failed_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 116,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "ce88f674-ab7a-43da-9201-468d38539e4a",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 84,
+      "remaining_order": 49,
+      "retest_order": 24,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 117,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
+      "execution_class": "unknown",
+      "offline_order": 85,
+      "remaining_order": 50,
+      "retest_order": 25,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 118,
+      "source_order": 130,
+      "domain": "libreoffice_impress",
+      "task_id": "a097acff-6266-4291-9fbd-137af7ecd439",
+      "execution_class": "unknown",
+      "offline_order": 86,
+      "remaining_order": 51,
+      "retest_order": 26,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 119,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "bf4e9888-f10f-47af-8dba-76413038b73c",
+      "execution_class": "generic_composite_api",
+      "offline_order": 87,
+      "remaining_order": 52,
+      "retest_order": 27,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 121,
+      "source_order": 133,
+      "domain": "libreoffice_impress",
+      "task_id": "ac9bb6cb-1888-43ab-81e4-a98a547918cd",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 89,
+      "remaining_order": 54,
+      "retest_order": 28,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 122,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "2cd43775-7085-45d8-89fa-9e35c0a915cf",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 90,
+      "remaining_order": 55,
+      "retest_order": 29,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "failed_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 123,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "358aa0a7-6677-453f-ae35-e440f004c31e",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 91,
+      "remaining_order": 56,
+      "retest_order": 30,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 124,
+      "source_order": 136,
+      "domain": "libreoffice_impress",
+      "task_id": "a669ef01-ded5-4099-9ea9-25e99b569840",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 92,
+      "remaining_order": 57,
+      "retest_order": 31,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 125,
+      "source_order": 137,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "execution_class": "unknown",
+      "offline_order": 93,
+      "remaining_order": 58,
+      "retest_order": 32,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 127,
+      "source_order": 139,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "execution_class": "unknown",
+      "offline_order": 95,
+      "remaining_order": 60,
+      "retest_order": 33,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 128,
+      "source_order": 140,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "execution_class": "unknown",
+      "offline_order": 96,
+      "remaining_order": 61,
+      "retest_order": 34,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 129,
+      "source_order": 141,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "execution_class": "generic_composite_api",
+      "offline_order": 97,
+      "remaining_order": 62,
+      "retest_order": 35,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 131,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "execution_class": "unknown",
+      "offline_order": 99,
+      "remaining_order": 63,
+      "retest_order": 36,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 134,
+      "source_order": 146,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 102,
+      "remaining_order": 66,
+      "retest_order": 37,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 138,
+      "source_order": 150,
+      "domain": "libreoffice_impress",
+      "task_id": "39be0d19-634d-4475-8768-09c130f5425d",
+      "execution_class": "generic_composite_api",
+      "offline_order": 106,
+      "remaining_order": 69,
+      "retest_order": 38,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 141,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "70bca0cc-c117-427e-b0be-4df7299ebeb6",
+      "execution_class": "generic_composite_api",
+      "offline_order": 109,
+      "remaining_order": 71,
+      "retest_order": 39,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 143,
+      "source_order": 155,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "unknown",
+      "offline_order": 111,
+      "remaining_order": 73,
+      "retest_order": 40,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 145,
+      "source_order": 157,
+      "domain": "libreoffice_impress",
+      "task_id": "a53f80cd-4a90-4490-8310-097b011433f6",
+      "execution_class": "unknown",
+      "offline_order": 113,
+      "remaining_order": 75,
+      "retest_order": 41,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 146,
+      "source_order": 158,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "execution_class": "unknown",
+      "offline_order": 114,
+      "remaining_order": 76,
+      "retest_order": 42,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 147,
+      "source_order": 159,
+      "domain": "libreoffice_impress",
+      "task_id": "5cfb9197-e72b-454b-900e-c06b0c802b40",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 115,
+      "remaining_order": 77,
+      "retest_order": 43,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 148,
+      "source_order": 160,
+      "domain": "libreoffice_impress",
+      "task_id": "05dd4c1d-c489-4c85-8389-a7836c4f0567",
+      "execution_class": "unknown",
+      "offline_order": 116,
+      "remaining_order": 78,
+      "retest_order": 44,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 149,
+      "source_order": 161,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "execution_class": "unknown",
+      "offline_order": 117,
+      "remaining_order": 79,
+      "retest_order": 45,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 150,
+      "source_order": 162,
+      "domain": "libreoffice_impress",
+      "task_id": "4ed5abd0-8b5d-47bd-839f-cacfa15ca37a",
+      "execution_class": "unknown",
+      "offline_order": 118,
+      "remaining_order": 80,
+      "retest_order": 46,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 151,
+      "source_order": 163,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "execution_class": "unknown",
+      "offline_order": 119,
+      "remaining_order": 81,
+      "retest_order": 47,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 152,
+      "source_order": 164,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "execution_class": "unknown",
+      "offline_order": 120,
+      "remaining_order": 82,
+      "retest_order": 48,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 153,
+      "source_order": 165,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "execution_class": "unknown",
+      "offline_order": 121,
+      "remaining_order": 83,
+      "retest_order": 49,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 154,
+      "source_order": 166,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 122,
+      "remaining_order": 84,
+      "retest_order": 50,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 167,
+      "source_order": 179,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 135,
+      "remaining_order": 97,
+      "retest_order": 51,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 180,
+      "source_order": 193,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 148,
+      "remaining_order": 109,
+      "retest_order": 52,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "task_specific_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 190,
+      "source_order": 208,
+      "domain": "multi_apps",
+      "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 155,
+      "remaining_order": 114,
+      "retest_order": 53,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "task_specific_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 196,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "execution_class": "golden_materialization",
+      "offline_order": 158,
+      "remaining_order": 116,
+      "retest_order": 54,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 206,
+      "source_order": 226,
+      "domain": "multi_apps",
+      "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+      "execution_class": "golden_materialization",
+      "offline_order": 161,
+      "remaining_order": 119,
+      "retest_order": 55,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "golden_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 215,
+      "source_order": 235,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 169,
+      "remaining_order": 127,
+      "retest_order": 56,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 219,
+      "source_order": 239,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "execution_class": "golden_materialization",
+      "offline_order": 172,
+      "remaining_order": 130,
+      "retest_order": 57,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "golden_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 231,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "execution_class": "golden_materialization",
+      "offline_order": 178,
+      "remaining_order": 136,
+      "retest_order": 58,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 233,
+      "source_order": 253,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "execution_class": "golden_materialization",
+      "offline_order": 179,
+      "remaining_order": 137,
+      "retest_order": 59,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "golden_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 236,
+      "source_order": 256,
+      "domain": "multi_apps",
+      "task_id": "02ce9a50-7af2-47ed-8596-af0c230501f8",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 181,
+      "remaining_order": 139,
+      "retest_order": 60,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0,
+          "path_class": "task_specific"
+        }
+      ]
+    },
+    {
+      "order": 237,
+      "source_order": 257,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 182,
+      "remaining_order": 140,
+      "retest_order": 61,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 241,
+      "source_order": 261,
+      "domain": "multi_apps",
+      "task_id": "f5c13cdd-205c-4719-a562-348ae5cd1d91",
+      "execution_class": "task_specific_workflow",
+      "offline_order": 185,
+      "remaining_order": 142,
+      "retest_order": 62,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "task_specific_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 251,
+      "source_order": 271,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "execution_class": "generic_composite_api",
+      "offline_order": 189,
+      "remaining_order": 146,
+      "retest_order": 63,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.9961747822781823,
+          "path_class": "code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 253,
+      "source_order": 273,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "execution_class": "generic_composite_api",
+      "offline_order": 191,
+      "remaining_order": 148,
+      "retest_order": 64,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 261,
+      "source_order": 281,
+      "domain": "multi_apps",
+      "task_id": "91190194-f406-4cd6-b3f9-c43fac942b22",
+      "execution_class": "golden_materialization",
+      "offline_order": 194,
+      "remaining_order": 150,
+      "retest_order": 65,
+      "selection_reasons": [
+        "previous_environment_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "environment_failure",
+          "reward": null,
+          "path_class": "environment_failure"
+        }
+      ]
+    },
+    {
+      "order": 293,
+      "source_order": 319,
+      "domain": "thunderbird",
+      "task_id": "3f28fe4f-5d9d-4994-a456-efd78cfae1a3",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 221,
+      "remaining_order": 174,
+      "retest_order": 66,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1.0,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 303,
+      "source_order": 330,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 231,
+      "remaining_order": 182,
+      "retest_order": 67,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 314,
+      "source_order": 341,
+      "domain": "vlc",
+      "task_id": "a5bbbcd5-b398-4c91-83d4-55e1e31bbb81",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 241,
+      "remaining_order": 191,
+      "retest_order": 68,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "task_specific_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 316,
+      "source_order": 343,
+      "domain": "vlc",
+      "task_id": "f3977615-2b45-4ac5-8bba-80c17dbe2a37",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 243,
+      "remaining_order": 193,
+      "retest_order": 69,
+      "selection_reasons": [
+        "previous_gui"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "passed",
+          "reward": 1,
+          "path_class": "task_specific_plus_code_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 324,
+      "source_order": 353,
+      "domain": "vs_code",
+      "task_id": "9439a27b-18ae-42d8-9778-5f68f891805e",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 249,
+      "remaining_order": 198,
+      "retest_order": 70,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    },
+    {
+      "order": 330,
+      "source_order": 359,
+      "domain": "vs_code",
+      "task_id": "6ed0a554-cbee-4b44-84ea-fd6c042f4fe1",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 255,
+      "remaining_order": 204,
+      "retest_order": 71,
+      "selection_reasons": [
+        "previous_gui",
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_plus_gui"
+        }
+      ]
+    },
+    {
+      "order": 331,
+      "source_order": 360,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "execution_class": "generic_atomic_api",
+      "offline_order": 256,
+      "remaining_order": 205,
+      "retest_order": 72,
+      "selection_reasons": [
+        "previous_evaluator_failure"
+      ],
+      "selection_evidence": [
+        {
+          "source": "experiments/offline-remaining-186-parallel5-run3/results.json",
+          "status": "failed",
+          "reward": 0.0,
+          "path_class": "generic_api_only"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-08-03T08:01:16.716701+00:00",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "selection": {
+    "source_task_count": 208,
+    "selected_task_count": 72,
+    "reason_counts_nonexclusive": {
+      "previous_environment_failure": 10,
+      "previous_evaluator_failure": 25,
+      "previous_gui": 54
+    },
+    "historical_results": [
+      {
+        "path": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/offline-remaining-210-parallel5-run2/results.json",
+        "sha256": "fda08e1d70d2e6d0794f72c2118dab5365bc0c42867532271c2fa2e27c889b77"
+      },
+      {
+        "path": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/offline-remaining-186-parallel5-run3/results.json",
+        "sha256": "c7d1b8ac9a22e8bce637fe0e7c2b892f820b2fb9499fed0667496b7a0a754065"
+      }
+    ],
+    "rule": "select a clean-source task when any terminal run2/run3 record has a path_class containing gui, status failed, or status environment_failure"
+  },
+  "dataset_defect_exclusions": {
+    "manifest": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/dataset-defect-exclusions.json",
+    "manifest_sha256": "c4d1a1865ca11b946310078027412d12a55e4ced29b68efd3f6b3decd8446010",
+    "excluded_task_count": 2,
+    "excluded_task_ids": [
+      "0a211154-fda0-48d0-9274-eaac4ce5486d",
+      "b8adbc24-cef2-4b15-99d5-ecbe7ff445eb"
+    ],
+    "source_task_count": 210,
+    "clean_task_count": 208,
+    "rule": "exclude only the task IDs in the evidence-backed dataset defect manifest; do not delete or rewrite historical traces, evaluator output, or source configs"
+  }
+}

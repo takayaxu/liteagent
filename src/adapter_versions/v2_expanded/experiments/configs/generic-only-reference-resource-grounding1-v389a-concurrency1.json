@@ -1,0 +1,194 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-reference-resource-grounding1-v389a-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen one-task development A/B for an application-neutral live-reference grounding rule. Relative to v388r, only the strict system policy changes: when a requested result depends on an existing example, template, pattern, convention, style, or other live resource, the model is told to select an inspection before the first dependent mutation and derive its own arguments from the truthful observation. No parser or automatic action exists. Routing, tools, schemas, Adapters, model-authored state, completion, model, budgets, VM, and evaluator remain unchanged. Order 131 is outcome-informed development evidence and cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-21T21:15:55Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v389a-reference-resource-grounding1/plan.json",
+    "prospective_plan_sha256": "c924390be1d2678611d9d6cf2ea523d606b365a0350e7f8ec274f1c46fa8bb4a",
+    "v388r_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-model-authored-collection-expansion1-v388r-concurrency1.json",
+    "v388r_config_sha256": "27ad54307036a097642443f75410ab4b6ea150a4140bbfc55d954d2c2f1fb209",
+    "v388r_results": "adapter_versions/v2_expanded/experiments/generic-only-model-authored-collection-expansion1-v388r-concurrency1-run1/results.json",
+    "v388r_results_sha256": "ad34e3d9486aa37a2ed27b58fc53257f731517d0dcd14d9ca5dad584fcfbeebf",
+    "v388r_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-model-authored-collection-expansion1-v388r-concurrency1-run1/strict-audit-v5.json",
+    "v388r_strict_audit_sha256": "0d6f250e9ba427132274c0006f40c188d38c202357e2e6f31ffc5583464e3c66",
+    "v388r_analysis": "adapter_versions/v2_expanded/experiments/analysis-v388r-model-authored-collection-expansion1/summary.json",
+    "v388r_analysis_sha256": "22caf6e412702d5c84108ab2b509e126f394ae87004b22cd257d39ae4cc4b188",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v389a",
+    "role": "development_reference_resource_grounding_ab",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-reference-resource-grounding1-v389a-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 786,
+      "total_bytes": 63537255,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "702e768b4529c6f460d7242a8c14b084d4311ed9087fa8f2443a68dc1e7d3c28"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v389a_reference_resource_grounding_2026-08-21",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5.0
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20.0,
+      "minimum_elapsed_before_first_model_seconds": 85.0
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true,
+    "model_authored_state_protocol": "collection_outcome_patch_v6"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single outcome-informed Multi-Apps failure from the frozen development workflow subset and v388r diagnostic",
+    "selected_count": 1,
+    "failed_target_count": 1,
+    "stable_pass_control_count": 0,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "changed_factor": "compact application-neutral live-reference grounding policy in the strict system message",
+    "unchanged_factors": [
+      "strict generic routing and Top-K policy",
+      "tool and Adapter schemas",
+      "application APIs",
+      "collection_outcome_patch_v6 state behavior",
+      "completion evidence rules",
+      "model-facing Adapter result projection",
+      "model and output-token budget",
+      "VM image and reset policy",
+      "original evaluator"
+    ],
+    "reference_behavior": {
+      "v388r_evidence_valid": true,
+      "v388r_reward": 0.0,
+      "v388r_steps": 17,
+      "v388r_outputs_created": 8,
+      "v388r_reference_resource_inspections": 0,
+      "v388r_environment_failures": 0
+    },
+    "success_criteria": {
+      "focused_and_full_unit_new_failures": 0,
+      "model_selects_reference_inspection_before_dependent_mutation": true,
+      "runner_selected_inspection_or_argument_count": 0,
+      "model_arguments_grounded_in_observation": true,
+      "model_selects_every_action_and_argument": true,
+      "environment_failures": 0,
+      "strict_audit_v5_all_valid": true,
+      "work_state_protocol": "collection_outcome_patch_v6",
+      "no_runner_argument_rewrite_injection_or_trace_mismatch": true
+    },
+    "stop_rules": {
+      "runs_maximum": 1,
+      "rerun_same_condition": false,
+      "advance_to_gate30": false
+    }
+  },
+  "tasks": [
+    {
+      "order": 131,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "source_order": 266,
+      "development_stratum": "workflow_completion"
+    }
+  ]
+}

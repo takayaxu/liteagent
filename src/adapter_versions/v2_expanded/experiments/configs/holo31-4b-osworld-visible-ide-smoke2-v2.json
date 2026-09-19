@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-visible-ide-smoke2-v2",
+  "status": "exploratory",
+  "purpose": "Non-promotable affected/control check after allowing task-required visible IDE interaction while retaining a GUI-only execution boundary.",
+  "hypothesis": {
+    "statement": "Allowing task-required visible IDE interaction lets Holo3.1-4B complete the previously failed VS Code indentation task without regressing a stable VLC control.",
+    "affected_task_order": 184,
+    "stable_control_order": 165,
+    "expected_observable": "Order 184 becomes a new pass relative to v337, Order 165 remains a pass, and every action remains an exact model-selected GUI call.",
+    "stop_condition": "Stop after one run of each task. If Order 184 does not pass, do not polish or broaden this prompt hypothesis."
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "candidate_commit": "52a71e366090ded6c4ffb1be596ac2aa2291e7d7",
+    "prior_baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v337-trusted-concurrency6-run1/results.json",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop"
+  },
+  "condition": {
+    "stage": "exploration",
+    "baseline_candidate": false,
+    "promotable": false,
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "One known v337 failure affected by the prompt boundary plus one stable control."
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "reasoning_effort": "medium",
+    "thinking": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "temperature": 0.8,
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "tools": "holo_native_gui_only",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "best_of": false,
+    "resume": false,
+    "preserve_every_attempt": true
+  },
+  "tasks": [
+    {
+      "order": 184,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "source_order": 331,
+      "role": "affected"
+    },
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309,
+      "role": "stable_control"
+    }
+  ]
+}

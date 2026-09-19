@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order124-visual-file-routing-v131",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 124 hypothesis 1: expose the existing generic file discovery, visual opening, and rename workflow directly for content-identification-and-rename requests.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order124-v130.json",
+  "candidate_parent_config_sha256": "1b20a8205b642204b45a67b704ff4060cefce44df4a9b57ae819cc29d1f2a958",
+  "parent_attempt_result": "experiments/generic-only-coverage-order124-v130-run1/results.json",
+  "parent_attempt_result_sha256": "395b270b70032b3b0952e750d8a3cb07be8ae7a305cf42e621ccb910b75c543a",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order124-v130-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "dfe4f2f18c33165a74462f3a451c5ad921e90a95d0f395b33062f732d3b40f98",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "9ad983ac42e621f662225ac6fdff1afe6b87ce2490032a4002e2622f9f81dcc5",
+  "change_scope": "For instructions that generically combine local images, visual identification/classification, and content-derived filenames, prioritize the existing filesystem.find, desktop.open_path, and filesystem.move actions in that order. After opening a raster image, return generic guidance to inspect the next screenshot directly, preserve the exact source path, and use filesystem.move only after deriving a destination name. Add plural visual tokens and representation variants. No task identity, dataset order, fixed source or destination, mountain name, expected mapping, image hash, golden material, evaluator state, argument injection, or task workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_visual_file_routing_v131_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the remaining failure is visual recognition, state handoff, rename arguments, GUI grounding, or environment. Try another materially different generic hypothesis only when the evidence supports it; otherwise mark Order 124 task_blocked and immediately continue.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_visual_file_workflow_routing_and_handoff",
+    "failure_evidence": "The untouched v130 baseline returned evaluator 0.0 after 30 steps. Its initial Top-K omitted file discovery, visual opening, and rename actions. Qwen spent most steps on catalog searches, unsupported GIMP open calls, and incorrect Dock clicks; it discovered exact paths at step 9 but opened the first image only at step 27, then misread the image-viewer state and made no rename.",
+    "counterfactual_tests": "Parameterized tests use unrelated bird-species photos, city-landmark images, and plant pictures with different directories and rename wording. All require the same reusable find/open/move workflow. A plain TXT rename proves the visual-identification priority does not trigger outside image classification. Separate WEBP and TXT result-context tests cover image and non-image handoff without task data.",
+    "focused_unit_suite": "110 passed",
+    "full_unit_suite": "1883 passed",
+    "static_verification": "Ruff check and format, compileall, project layout/deployment leakage, changed-source task/answer scan, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "lite_agent_tool_catalog_sha256": "f6bc2e2c644dfe7fde7c39b3f03fdae9b7cd17f471496909cacc08f04085ff5e",
+    "lite_agent_adapter_results_sha256": "35e1274b79ff541124b9894f1f2a34473cc9426cc53603315b013b4c6f77b1e4",
+    "tool_catalog_test_sha256": "817cd349f533f6ece0e48fba3c778c3cacf50b266908713dea36fde55340453e",
+    "adapter_results_test_sha256": "8f982e410319289b5946ec980acf7b3ed965aa767be7e2b7ff6acad514b412e2",
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 124 v130 tool-routing and visual-file handoff failure",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_preserved_in_generic-only-coverage-order124-v130-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 124,
+      "source_order": 247,
+      "domain": "multi_apps",
+      "task_id": "ce2b64a2-ddc1-4f91-8c7d-a88be7121aac",
+      "source_episode_id": "b2bbf41eb2b8f3d6c35f86bf",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "9fa53cbd3329e100a1b476322abe4f29fd7d12b0c62eec85c3630c571f2c0ee5",
+      "execution_class": "task_specific",
+      "pool_order": 124
+    }
+  ]
+}

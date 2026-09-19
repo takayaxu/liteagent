@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-order189-debug-picker-operator-20260911-v1",
+  "purpose": "Inspect native pending debugger selector fields after the preserved VSCODE_NOT_READY error. No Agent score or evaluator alteration.",
+  "execution_class": "operator_validation",
+  "non_promotable": true,
+  "model_requests": 0,
+  "source_tree_sha256": "a16a8e19186738e1d0c41f4105ba8472517a0702f4cf82b967cf98ec6fe3ab6a",
+  "source_condition": "qwen35-holo31-hybrid-order175-workspace-open-retest-20260911-v1",
+  "deployment": "VS Code Adapter only; host entrypoint uses the existing deploy_generic_stack(env, vs_code).",
+  "hypothesis": "The native focused debugger selector and its available choices are absent from last_observation. Reading the controller tree after public debug.start will identify the exact generic accessible roles to preserve.",
+  "stop_signal": "One fresh guest and bounded native observation, then finish the existing harness. No source edits, model requests, task answer materialization, regression cohort, or Agent PASS claim.",
+  "tasks": [{"order": 189, "domain": "vs_code", "task_id": "7aeae0e2-70ee-4705-821d-1bba5d5b2ddd", "source_order": 336}]
+}

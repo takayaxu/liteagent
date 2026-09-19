@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "experiment_id": "offline-random-30-seed-20260802-openapa-gpt-5.6-sol-medium",
+  "status": "planned",
+  "purpose": "Validate the current Agent plus v2 tool stack on a reproducible uniform random sample of previously untested offline OSWorld tasks.",
+  "sources": {
+    "offline_config": "adapter_versions/v2_expanded/experiments/configs/offline-non-oauth-261.json",
+    "offline_config_sha256": "cafd43a080f5b6085dfa3387973fd6ba7c241464821d5096b343239a0d536323",
+    "excluded_completed_config": "adapter_versions/v2_expanded/experiments/configs/failed-rerun-offline-5.json",
+    "excluded_completed_config_sha256": "b25aa18c8ad400b71a170bb05fe92569d46a5e6f17ebe974e0b78926c4bc5c07"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "external_web_excluded": true,
+    "preserve_previous_results": true
+  },
+  "selection": {
+    "method": "uniform_shuffle_without_replacement",
+    "seed": 20260802,
+    "source_count": 261,
+    "excluded_completed_count": 5,
+    "candidate_count": 256,
+    "selected_count": 30,
+    "domain_counts": {
+      "chrome": 1,
+      "gimp": 1,
+      "libreoffice_calc": 4,
+      "libreoffice_impress": 6,
+      "libreoffice_writer": 2,
+      "multi_apps": 10,
+      "os": 1,
+      "thunderbird": 2,
+      "vlc": 1,
+      "vs_code": 2
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 96,
+      "offline_order": 64,
+      "domain": "libreoffice_calc",
+      "task_id": "4e6fcf72-daf3-439f-a232-c434ce416af6",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 2,
+      "source_order": 308,
+      "offline_order": 235,
+      "domain": "vlc",
+      "task_id": "efcf0d81-0835-4880-b2fd-d866e8bc2294",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 3,
+      "source_order": 114,
+      "offline_order": 82,
+      "domain": "libreoffice_impress",
+      "task_id": "9ec204e4-f0a3-42f8-8458-b772a6797cab",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 4,
+      "source_order": 140,
+      "offline_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "f23acfd2-c485-4b7c-a1e7-d4303ddfe864",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 5,
+      "source_order": 90,
+      "offline_order": 58,
+      "domain": "libreoffice_calc",
+      "task_id": "0a2e43bf-b26c-4631-a966-af9dfa12c9e5",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 6,
+      "source_order": 109,
+      "offline_order": 77,
+      "domain": "libreoffice_impress",
+      "task_id": "550ce7e7-747b-495f-b122-acdc4d0b8e54",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 7,
+      "source_order": 194,
+      "offline_order": 157,
+      "domain": "multi_apps",
+      "task_id": "bc2b57f3-686d-4ec9-87ce-edf850b7e442",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 8,
+      "source_order": 175,
+      "offline_order": 143,
+      "domain": "libreoffice_writer",
+      "task_id": "ecc2413d-8a48-416e-a3a2-d30106ca36cb",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 9,
+      "source_order": 296,
+      "offline_order": 224,
+      "domain": "thunderbird",
+      "task_id": "9b7bc335-06b5-4cd3-9119-1a649c478509",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 10,
+      "source_order": 282,
+      "offline_order": 210,
+      "domain": "os",
+      "task_id": "5812b315-e7bd-4265-b51f-863c02174c28",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 11,
+      "source_order": 257,
+      "offline_order": 192,
+      "domain": "multi_apps",
+      "task_id": "e8172110-ec08-421b-a6f5-842e6451911f",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 12,
+      "source_order": 130,
+      "offline_order": 98,
+      "domain": "libreoffice_impress",
+      "task_id": "841b50aa-df53-47bd-a73a-22d3a9f73160",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 13,
+      "source_order": 182,
+      "offline_order": 149,
+      "domain": "multi_apps",
+      "task_id": "510f64c8-9bcc-4be1-8d30-638705850618",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 14,
+      "source_order": 238,
+      "offline_order": 183,
+      "domain": "multi_apps",
+      "task_id": "a503b07f-9119-456b-b75d-f5146737d24f",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 15,
+      "source_order": 143,
+      "offline_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 16,
+      "source_order": 104,
+      "offline_order": 72,
+      "domain": "libreoffice_calc",
+      "task_id": "4172ea6e-6b77-4edb-a9cc-c0014bd1603b",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 17,
+      "source_order": 85,
+      "offline_order": 53,
+      "domain": "libreoffice_calc",
+      "task_id": "1e8df695-bd1b-45b3-b557-e7d599cf7597",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 18,
+      "source_order": 186,
+      "offline_order": 152,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 19,
+      "source_order": 215,
+      "offline_order": 169,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 20,
+      "source_order": 223,
+      "offline_order": 173,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 21,
+      "source_order": 334,
+      "offline_order": 259,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 22,
+      "source_order": 185,
+      "offline_order": 151,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 23,
+      "source_order": 8,
+      "offline_order": 3,
+      "domain": "chrome",
+      "task_id": "2ae9ba84-3a0d-4d4c-8338-3a1478dc5fe3",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 24,
+      "source_order": 54,
+      "offline_order": 22,
+      "domain": "gimp",
+      "task_id": "d16c99dc-2a1e-46f2-b350-d97c86c85c15",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 25,
+      "source_order": 192,
+      "offline_order": 156,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 26,
+      "source_order": 129,
+      "offline_order": 97,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 27,
+      "source_order": 169,
+      "offline_order": 137,
+      "domain": "libreoffice_writer",
+      "task_id": "936321ce-5236-426a-9a20-e0e3c5dc536f",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 28,
+      "source_order": 266,
+      "offline_order": 197,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 29,
+      "source_order": 297,
+      "offline_order": 225,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 30,
+      "source_order": 318,
+      "offline_order": 245,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "execution_class": "generic_atomic_api"
+    }
+  ],
+  "result_paths": {
+    "raw": "experiments/offline-random-30-seed-20260802/tasks",
+    "results": "experiments/offline-random-30-seed-20260802/results.json",
+    "report": "experiments/offline-random-30-seed-20260802/report.md"
+  }
+}

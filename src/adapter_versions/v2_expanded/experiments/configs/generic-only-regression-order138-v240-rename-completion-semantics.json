@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order138-v240-rename-completion-semantics",
+  "status": "frozen",
+  "purpose": "Second single-run diagnostic A/B for Order 138. Retain the v239 basename rename contract and repair only strict generic completion recognition for explicit filesystem rename instructions. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order138-v239-basename-rename-contract.json",
+  "parent_config_sha256": "0084a9a16c1826e921679955fe5ee502c753b9f8f801eb8a9ce5a1a743feb95d",
+  "hypothesis": "v239 proved that Qwen selected filesystem.rename with the two instruction-derived basenames, the public Adapter resolved and executed them unchanged, worker verification passed, and the original evaluator returned 1.0. The Agent then proposed completion immediately, but strict completion rejected it because the generic semantic action set did not recognize the paraphrase 'change its name'; action_relevance_score was also zero. The model consequently entered completion/search/GUI loops. If a focused generic filesystem rename intent detector contributes only the public action name to strict required actions, the already successful unchanged call should satisfy completion on the next model turn without weakening evidence checks or deriving arguments.",
+  "change_scope": "Add a focused filesystem_rename_semantics module that recognizes explicit OS instructions to rename a filesystem object or change its name and returns only filesystem.rename. Integrate that public action into instruction_required_actions. Do not parse source or destination values, alter the tool call, bypass verification, infer completion from the evaluator, or add any task-specific string. Counterfactuals reject directory lookup, permission changes, folder creation, and worksheet renaming. The v239 Adapter/schema/result contract is otherwise unchanged.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "historical_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-138-generic-only-coverage-order138-v146-run1.json",
+    "historical_current_strict_audit_sha256": "cfea081555f23b70dc8e8d68f956a4068d24c30c92f961f7f09ff618bea574f0",
+    "v239_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order138-v239-basename-rename-contract.json",
+    "v239_config_sha256": "0084a9a16c1826e921679955fe5ee502c753b9f8f801eb8a9ce5a1a743feb95d",
+    "v239_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order138-v239-basename-rename-contract-run1/results.json",
+    "v239_results_sha256": "56553dab4426839b6fb0e874265c9c8ee6ee12d647f7ffc6bdca294fbf849ad9",
+    "v239_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order138-v239-basename-rename-contract-run1/workers/worker-01/results.json",
+    "v239_worker_results_sha256": "c0a56f729d8e2995dca7b2edc12a5d54ea7edb7c6ca46218537cdaf580c66260",
+    "v239_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/targeted-audits/order-138-v239-basename-rename-contract.json",
+    "v239_strict_audit_sha256": "8f385597e2181ddeb322f12ffd2f1b3aa1dc5f961374f302054168d1b9de07ae",
+    "v239_outcome": "Original evaluator 1.0 and strict audit valid/evidence-valid/baseline-admissible with zero leakage, action mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch. The model-selected rename succeeded at step 1, but four completion claims were rejected, two GUI clicks were executed, and the run stalled at fourteen steps as generic_api_plus_gui.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "filesystem_rename_semantics_sha256": "1fdf653306a68220f492454a9a0d19ffeb638c05c75cb3533898780d9fb9f1e7",
+    "instruction_semantics_sha256": "d1350c11eb4bc49c6dda6d036ee1b2965c58e9795e534f1f58bfb8e4d80da485",
+    "filesystem_rename_semantics_tests_sha256": "399a4e1bcd1c2d1d763cc0e848792c399f4bb37cdf8e83afa7aa4d1cac9eaff0",
+    "os_actions_sha256": "8e53eb66662ff565b8e08a3052df5106056711441f970672ac5f7dedc8e6cf35",
+    "os_schema_sha256": "705efb769242caa913205b51d8573a828aa5bbf7f5e8b76070df801d3909424d",
+    "lite_agent_tool_catalog_sha256": "23391ee9c8c224ab6e749cc1bac0d1f16c34f96e292d815d1fd2b1fca61d8b41",
+    "filesystem_contexts_sha256": "f7803accd7d307742d98177fa377252e89e73e50d13fed57b5d51eee3e7d57ac",
+    "adapter_results_sha256": "f487aa1c5735b81166e04c1e615642af32c498989b5ee3cfa65495462a2a5111",
+    "project_layout_sha256": "46d3f3237585d44f13019b48298448116d8ae1dae1c64621b1d2e79fe509a8ec",
+    "counterfactuals": "Three unrelated positive paraphrases cover rename and change-name forms for folders, directories, and files. Four negative paraphrases cover lookup, chmod-like permission changes, folder creation, and worksheet renaming. A strict LiteAgent unit test records a synthetic model-selected draft_exports to published_exports call unchanged and proves the next propose_done passes the same strict completion gate.",
+    "focused_tests": "442 passed across focused rename semantics, runtime, and catalog contracts",
+    "unit_tests": "2594 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_rename_completion_semantics_v240_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item, second evidence-backed reusable hypothesis after the preserved v239 completion-gate diagnostic",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T03:28:46Z",
+  "tasks": [
+    {
+      "order": 138,
+      "pool_order": 138,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

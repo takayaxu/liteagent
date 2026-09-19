@@ -1,0 +1,183 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-all-roles-order54-deletion-receipt-retest-20260913-v1",
+  "status": "frozen",
+  "purpose": "Current Order54 only: add truthful before-removal identity to the existing shape.delete receipt and clarify slide-local selectors/index shifts; no cleanup macro, target selection, projection branch or new gate.",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/holo31-all-roles-order54-deletion-receipt-retest-20260913-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "immutable_result_directory": true,
+    "code_label": "holo31-all-roles-order54-deletion-receipt-retest-20260913-v1",
+    "promotion_gate": false,
+    "selection_uses_prior_outcome": true,
+    "experiment_hypothesis": {
+      "description": "Original Order54 correctly formatted requested titles but reused stale deletion indices, mixed slides and selectors, removed unrelated objects, and left icons. Seven deletions all executed but returned only count. The actual removed object's identity was absent from feedback.",
+      "affected_tasks": [
+        54
+      ],
+      "expected_observable_change": "Each model-selected deletion reports its actual object and pre-removal identity, owning slide and original selector plus remaining count. The model notices effects, maintains live selector scope, chooses any further objects and completes formatting/deletion/save/readback before original scoring. No object classifier or automatic next action.",
+      "stop_signal": "One current-task terminal outcome or existing 100 global/50 local/one-restart/1800-second limits, source drift or30GiB floor. Inspect actual residual before a distinct extension; no unchanged negative replay, regression/control, new gate, scorer change, task-specific values, promotion or additional full run.",
+      "authorization": "Root GOAL.md authorizes current-task autonomous generic failure repair with no regression episodes and preserved attempts."
+    },
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 520,
+      "total_bytes": 81204789,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "1d2eaf316d871a3766c6672a125852289c326f112dbfd5ddceb6c80fdf4cdaec"
+    }
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "base_urls": [
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "binary_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.8,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python",
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "holo31_planning_api_selection_review_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "served_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "expected_model_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180,
+      "base_urls": [
+        "http://192.168.0.138:8001/v1"
+      ],
+      "endpoint_assignment": "paired_with_primary"
+    },
+    "minimum_free_disk_gib": 30,
+    "tool_call_stop_sequence": "\n</function>\n</tool_call>",
+    "oauth_excluded": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Current Order54 only after preserved trajectory demonstrates count-only deletion feedback and wrong model-selected objects.",
+    "seed": null,
+    "selected_count": 1,
+    "domain_counts": {
+      "libreoffice_impress": 1
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": []
+  },
+  "tasks": [
+    {
+      "order": 54,
+      "domain": "libreoffice_impress",
+      "task_id": "a53f80cd-4a90-4490-8310-097b011433f6",
+      "source_order": 145
+    }
+  ],
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "selection_seed": null,
+    "selection_rule": "Current Order54 only, runs=1; no best-of, regression or control.",
+    "selection_digest": "b10de03d6265a93e3e5a5377fd133d830a4468e0841444dd487e9172bfead5e3",
+    "selection_digest_method": "sha256(concat task_id values in ascending source order)",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_worktree_sealed": true,
+    "selection_uses_prior_outcome": true,
+    "implementation_precursor": "adapter_versions/v2_expanded/experiments/configs/holo31-all-roles-order46-completion-evidence-retest-20260913-v1.json",
+    "parent_results_sha256": "4c1c466066e0f8d9d4805daa423c587e626fa08d1b7ff8c3a5adf958989ea76a",
+    "comparison_notes": "Original worker12 Holo2 public route maps to direct138:8001. Both all-Holo roles use that same direct backend serially at temperature0.8, versus original public endpoint/concurrency14/mainT0. Cumulative code differs alongside the new native deletion receipt and usage; no new projection branch. The earlier duplicate-delete exemption was not a direct cause in the original seven successful deletions. Isolated results do not update aggregate accuracy."
+  },
+  "freeze_timestamp": "2026-09-13T08:48:41.641828+00:00"
+}

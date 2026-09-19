@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order73-writer-image-schema-v34",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after exposing Writer cursor-image insertion as a direct typed path argument.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order73-v33.json",
+  "candidate_parent_config_sha256": "fb4d08b536c4237bf5b6123931e649ae090b62d3223c19929ae9cb377477dbe8",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "ecff64102c7ec37bee1f22d3f74c362b2e7a448bacda143a94397f32ae2efd16",
+  "change_scope": "Expose image.insert_at_cursor through an Adapter-owned direct schema with one required nonempty path. Leave the existing generic UNO operation, model, Prompt, routing, VM, evaluator, and all other tools unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The model consistently selects image.insert_at_cursor and names the supplied image in tool searches, but the legacy opaque params wrapper causes it to emit an invalid empty string. A direct required path should let the same model pass any instruction-provided guest image without a filename parser or default.",
+    "writer_tool_manifest_sha256": "1bc97bf138764f970b61d6059e0fdeb4c49f629a3b7e9b1823ee11a002946f5a",
+    "writer_schema_sha256": "4380237e1ea307cde29d5f81b3da13e63e1ed0f75ec08e980ef1b960260bf378",
+    "writer_uno_worker_sha256": "9a12de19519cc259c9964b1692fae73e8f4358ad6ef3063c8c65782f69bdd66b",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_schema_test_sha256": "eb73d975c9c44ff39a1f45c90907513a44d800349f3f6136042450dfc330bcd5",
+    "tool_catalog_test_sha256": "8a67eae4b8424fcaf288e60cb62c2b9c5383c2b3c676b228b7bd88fb89397863",
+    "strict_manifest_test_sha256": "e3bb32394e2c954d84218fb461875d99081fdea218bda5bac6cf1f1be90a23c5",
+    "runtime_test_sha256": "c7ce01b4b4272abbffd0d15923569eafae3d3ce1261bbfaafa292ac99598ca75",
+    "writer_worker_test_sha256": "310258d28abf6c639960e1224f17fa047dd3bc7fe4d7fb48fbcf98b7d8abb77a",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "468 passed",
+    "full_unit_tests": "1318 passed",
+    "counterfactual": "Schema and LiteAgent dispatch tests use campus-map.png and timeline-draft.jpg at two different guest directories. They require a nonempty path, preserve the model-supplied value exactly, reject extra fields, and reject the old empty params wrapper before Adapter HTTP.",
+    "prior_v33_result_sha256": "4adb547eb71c3e33fc6b68912c2f6e561c2da631d073cd706727d745f0e5e93e",
+    "prior_v33_audit_sha256": "f4e5c8575cc8562849235ca1cab1b6e11cc19e487230707a47dd8fd14dd1b138",
+    "prior_v33_audit_valid": true,
+    "prior_v33_outcome": "Original evaluator 0.0 after 30 steps. Qwen selected image.insert_at_cursor 16 times and searched 14 times, but every mutation was rejected because it emitted an empty string in the legacy params wrapper; zero Adapter calls executed.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, instruction text, task filename, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_image_insert_schema_v34_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 73,
+      "source_order": 164,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_episode_id": "6cde5bf7f9fcd02fc266c72a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "43b4f1e8e456aa90e2c61107239249da2f23829100dc160aab4f1639518d3847",
+      "execution_class": "task_specific",
+      "pool_order": 73
+    }
+  ]
+}

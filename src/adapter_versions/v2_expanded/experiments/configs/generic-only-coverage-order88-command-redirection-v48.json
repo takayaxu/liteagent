@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order88-command-redirection-v48",
+  "status": "frozen",
+  "purpose": "Targeted A/B of failed coverage Order 88 after the second reusable generic command-line hypothesis adds explicit standard-output redirection.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order88-command-terminal-v47.json",
+  "candidate_parent_config_sha256": "0fe317ca6c4c82c1cc565b7a36b77054ddb259944486c13f62e8874abb98deb6",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "2f0f7f5044849a7ad681faae16dfe72766d7e3109e1dd23ffd0f75901b587b40",
+  "change_scope": "Hypothesis 2/3: add generic command.run stdout_path and append_stdout parameters for complete standard-output redirection, and return actionable SHELL_SYNTAX_UNSUPPORTED details when model argv contains shell operators. Command choice, delimiter, paths, terminal mode, and every model-facing argument remain model-selected. No task identity, fixed filename, answer content, evaluator state, or Runner argument injection is used.",
+  "implementation_evidence": {
+    "before_result_sha256": "27e8339f9c1301b49b1e90199ede95912627955f93459c80ac2f3f574bc33349",
+    "before_audit_sha256": "81fb25221dd3a77120ec41e5a85083f329024aee6472f8c918fb592129fcd7db",
+    "before_trajectory_manifest_sha256": "5fb69350d3fe4d84762b0531c1abc65ea9361dc35d56a0baf559276deb028ad6",
+    "failure_class": "correct_command_family_with_unsupported_shell_redirection_arguments",
+    "hypothesis_index": 2,
+    "hypothesis_limit": 3,
+    "os_command_sha256": "5bd6e12c2d6079450420fe64c956d478d5ba51ba0e42bb7084f0ec3d3abb83f3",
+    "os_actions_sha256": "35afd3249879bd3e057bc949ef54f398f6777398aa8e43d386dd17a27dc99713",
+    "os_schema_sha256": "5e6d4200f83ffb59601d8b70ec5baefd130b8aeaf5b6c1e7711f939e65c2d945",
+    "os_tool_manifest_sha256": "f995e00ac7e28a4304a0c8d2f32c9eed844dac552be70debfd8b916d87538c6f",
+    "multi_apps_generic_schema_sha256": "14447b34df6ad3ee3523c4428207e6797385f28dba52b2364aad995d02e2fa96",
+    "lite_agent_tool_catalog_sha256": "06c450a53c94f092892ad7ab6c30d25ed893749f0fb9f4bd4ca8f97df459cdeb",
+    "counterfactuals": "A different paste command with a literal-space delimiter and unrelated filenames proves stdout_path and append_stdout reach the OS Adapter unchanged; a destination containing spaces receives complete output; model-supplied redirection is rejected with a stdout_path recovery contract; strict manifest equality remains covered.",
+    "focused_unit_tests": "255 passed",
+    "full_unit_tests": "1459 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_command_redirection_v48_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 88 after reusable generic hypothesis 2/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order88-command-terminal-v47-run1",
+    "rerun_reason": "The preserved v47 run independently converted both Office inputs with LibreOffice CLI, but then repeatedly passed > as a positional argv item to cat or paste. Direct execution correctly rejected those calls, so no output file was created and the terminal launch stage was never reached.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "source_episode_id": "bfdf9d80ee2f9393a222da6c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "6fef6c5629552a3560a765b5d52ea2e1fd8989b92cb3a9e731b602f845505bda",
+      "execution_class": "task_specific",
+      "pool_order": 88
+    }
+  ]
+}

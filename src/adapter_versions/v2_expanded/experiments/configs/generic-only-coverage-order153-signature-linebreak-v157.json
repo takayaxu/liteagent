@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order153-signature-linebreak-v157",
+  "status": "frozen",
+  "purpose": "Single targeted A/B after the preserved order-153 baseline first wrote a correct two-line Thunderbird signature and then overwrote it with a literal escaped newline sequence.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order153-v156.json",
+  "candidate_parent_config_sha256": "2d30f81a60dd85bbc0b948bd87dbf6dbcb0c6a1f119c0b8152a0fd5f9e093f76",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "1c5669940320d11363261b8e721736bb4ad6408fc9ee5cac96dc7a2adccf1eca",
+  "change_scope": "Normalize literal escaped CRLF, LF, and CR sequences in the existing public Thunderbird mail.configure signature_text parameter to actual plain-text line breaks. The Adapter-owned schema documents the accepted representation and the response returns the normalized value. No task identity, answer value, fixed signature, instruction parser, task route, prompt injection, golden data, evaluator access, or Runner argument rewrite is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_signature_linebreak_v157_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it fails without a new shared high-value defect, mark order 153 task_blocked immediately and advance; do not add another local schema, prompt, GUI coordinate, or task-shaped workflow.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_final_local_attempt",
+    "hypothesis_class": "existing_public_action_plain_text_representation_normalization",
+    "baseline_result": "experiments/generic-only-coverage-order153-v156-run1/results.json",
+    "baseline_result_sha256": "cd90e7f9475457a26082759ebd6ae386c8c721652284f9b1d00a20804d529a47",
+    "baseline_audit": "experiments/generic-only-coverage-order153-v156-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "55a78f4b8d811f53ac81c59814aa579daef538e06ed8ed8d7b72bb5279362092",
+    "baseline_outcome": "failed_reward_0_generic_api_only_first_write_correct_then_literal_backslash_n_overwrite_stalled_after_10_steps_valid_audit",
+    "counterfactual_contracts": [
+      {
+        "identity": "studio",
+        "signature_text": "Ada Lovelace\\r\\nAnalytical Lab\\nLondon"
+      },
+      {
+        "signature_text": "Grace Hopper\\nCompiler Lab"
+      }
+    ],
+    "focused_tests": "498 passed",
+    "full_unit_tests": "2074 passed",
+    "ruff_and_touched_file_format": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_with_only_preexisting_untracked_.conda",
+    "source_sha256": {
+      "thunderbird_adapter/actions.py": "13e6954df01c9927bbc8606e1478062f60ccbdad5a0639a40aacd458b5799ba7",
+      "thunderbird_adapter/tool_manifest.py": "9f83ef1aa1fd9ee3ad85710dba97a022ae4cbcb9d629436667372c57bc1dc248",
+      "thunderbird_adapter/schema.py": "14132751a25c7d00b5e5da9ad33b430b56076d983366af13aba33763bbe76cb9",
+      "integrations/lite_agent/tool_catalog.py": "51d194187248b945654aeb637b716b7683f0563459da4ded4f713f28387e74b0"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 153 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 153,
+      "source_order": 293,
+      "domain": "thunderbird",
+      "task_id": "3f28fe4f-5d9d-4994-a456-efd78cfae1a3",
+      "source_episode_id": "a3b0797d517f26dd5b8be446",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "68bd8c55fc7b1910afc28235011326fcfbffc5b8e248158a3f4e8f26f5ff3bd2",
+      "execution_class": "task_specific",
+      "pool_order": 153
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order71-writer-table-schema-v33",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after exposing Writer table dimensions as direct typed arguments.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order71-v32.json",
+  "candidate_parent_config_sha256": "a1d1c48d4a8e96ec7570573b3d1bec7a693d3cd7365e573142dd0b3f8222f503",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "cf44b48dbb2d0a3643e4afd957842caa0221224ff96d2352b1b20da50d90ab45",
+  "change_scope": "Expose table.insert_at_cursor through an Adapter-owned direct schema with required positive integer rows and columns plus an optional boolean last-paragraph fallback. Leave model, Prompt, routing, worker semantics, VM, evaluator, and all other tools unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The model consistently selects the existing table.insert_at_cursor capability and searches for rows and columns, but the legacy opaque params wrapper causes it to emit an invalid empty string. Direct positive-integer dimensions should let the same model express arbitrary table sizes without an instruction parser or default dimensions.",
+    "writer_tool_manifest_sha256": "8f9d0a1f5c30189cb47b039a9cf31a84faf1d55546dc22b87f541bcd3cf25248",
+    "writer_schema_sha256": "4380237e1ea307cde29d5f81b3da13e63e1ed0f75ec08e980ef1b960260bf378",
+    "writer_uno_worker_sha256": "9a12de19519cc259c9964b1692fae73e8f4358ad6ef3063c8c65782f69bdd66b",
+    "writer_pdf_export_sha256": "e62761e32acdab72ef02b43b1ef91eaed0835e69f7409ca6b9d053a9952398fa",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_schema_test_sha256": "7a3c84d847c8418a38c059669c0c77f70eace3f55c6599c6226d7a9dcfd159eb",
+    "tool_catalog_test_sha256": "288db83e91a0c767b1083e3e21a7cba60ef40c41355b14e09ddc402f2040dc1e",
+    "strict_manifest_test_sha256": "cd87969cbcb507dc187214f277f28bdee56ab9ef6a248f0922a8cc14b85bb255",
+    "runtime_test_sha256": "a9af0f78ff4ba8a63235c29a5ecba6d7a8687c8bc892e2cc386f24d4a41bfd32",
+    "writer_worker_test_sha256": "310258d28abf6c639960e1224f17fa047dd3bc7fe4d7fb48fbcf98b7d8abb77a",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "462 passed",
+    "full_unit_tests": "1312 passed",
+    "counterfactual": "Schema and LiteAgent tests use 3-by-4 and 2-by-6 empty tables. They verify both dimensions are positive required integers, the optional fallback is boolean, direct dispatch preserves arbitrary dimensions, extra fields fail, and the old empty params wrapper is rejected before Adapter HTTP.",
+    "prior_v32_result_sha256": "9ec0c582319ab6c2ba7db78ae484980863edc7edd384f550ca3e098f7728f67e",
+    "prior_v32_audit_sha256": "31252a8b41905090d5dde3d7757696354ad7be35e5cb8fb10d1ee1deee1a82b8",
+    "prior_v32_audit_valid": true,
+    "prior_v32_outcome": "Original evaluator 0.0 after 30 steps. Qwen selected table.insert_at_cursor 16 times and searched 14 times, but every mutation was rejected because it emitted an empty string in the legacy params wrapper; zero Adapter calls executed.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, full instruction, requested dimensions, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_table_insert_schema_v33_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 71,
+      "source_order": 162,
+      "domain": "libreoffice_writer",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "source_episode_id": "1ad96a8d7733aafc283b53de",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "62a4ccc9a37170880a39dac31259e74c2aac9a82c33f8380e1d53e7f84050c78",
+      "execution_class": "task_specific",
+      "pool_order": 71
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order116-casefold-path-v119",
+  "status": "frozen",
+  "purpose": "Order 116 hypothesis-1 A/B: return an exact-first, case-insensitive basename recovery candidate when a model-selected local path differs only by filename case.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order116-v118.json",
+  "candidate_parent_config_sha256": "f887ab3e3e773675158ee63618115e381ff4d3a939ac1b6b6ea47bb0673f2506",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "cd5e8098d69325a704e05cf0a544186691a78fad692c8250439df977c0767f1b",
+  "change_scope": "Preserve every v118 action, schema, ranking rule, and runtime behavior. When an explicit model-selected local path does not exist, scan for exact-case basename candidates first. Only if none exist, return bounded case-insensitive basename candidates with an explicit retry option. Never open, read, or execute a recovery candidate automatically; the model must select a returned exact path and issue a new tool call. No task identity, dataset order, instruction fingerprint, fixed filename, golden content, evaluator state, Runner rerouting, or argument rewriting participates in recovery.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_casefold_path_recovery_v119_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-1 A/B, classify the new failure, and do not rerun it unchanged. Try at most two further materially different generic hypotheses with one targeted A/B each. If hypothesis 3 also fails, mark Order 116 task_blocked and immediately advance.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3",
+    "hypothesis_class": "exact_first_case_insensitive_basename_recovery",
+    "parent_attempt_result": "experiments/generic-only-coverage-order116-v118-run1/results.json",
+    "parent_attempt_result_sha256": "acd250a8ec5285b1f8b3d494b5ce636f12ec6513bb462b56a8fb7bff225eabcd",
+    "parent_attempt_audit_sha256": "cb87b8ee450acc135a0d7e9a99ebe61ed12d760ea7e36cbce5e751ce35e1c5cf",
+    "parent_attempt_trajectory_sha256": "a9fe792801940f9c1d99ea706235d26a69210a0ca730359b0a1dc514a832d63a",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "The untouched baseline selected document.read_file with a basename that differed from the existing document only by letter case. Existing recovery searched for case-sensitive basename equality and returned zero candidates. Qwen then alternated the same rejected read with one repeated catalog query. The no-progress guard stopped steps 2-9 after 43.585 Agent seconds; the original evaluator returned 0.0.",
+    "production_file_sha256": {
+      "multi_apps_adapter/path_recovery.py": "3a06d90befb14c2476dbb5c10e34c2be8ccb9878b2acb0f7a5615a8915f2ccf6"
+    },
+    "candidate_bundle_sha256": "729dab0c10bec06dbe3313c7ab3dcf1019e53ad9b8db35d4b32f6d4363700c8e",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum line for the modified production module listed above.",
+    "focused_tests": "18 path, candidate, and document-reader tests passed. The complete unit suite reported 1790 passed. Ruff on active source and tests, compileall, project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the OSWorld commit/evaluator-tree check passed.",
+    "counterfactual": "A structurally unrelated Writer document uses different words, directory roots, and capitalization. The test proves that a missing case-variant path returns one candidate and an explicit model retry option without a second downstream call. Existing tests prove that exact-case candidates continue to take precedence over case-insensitive variants and that ambiguous exact candidates are never chosen automatically. The counterfactual test source SHA-256 is d55fdd41d8a5a026e26228c838296dabf7ab6cd608206cb28ffe8fefd60e719c. No task ID, dataset order, task source basename, requested output basename, golden content, or evaluator value appears in production code or the new counterfactual.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first and only targeted generic A/B for hypothesis 1 on Order 116",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 116,
+      "source_order": 233,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_episode_id": "2f84972964e369dae0c0b6a6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c9062c19c27b3143fa874e975e48e5f06e15e8ea711cdbf2702b3aa4921a7a99",
+      "execution_class": "golden",
+      "pool_order": 116
+    }
+  ]
+}

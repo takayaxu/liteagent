@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order97-docx-path-recovery-v75",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 97 hypothesis 2 after v74 discovered the correct semantic action but supplied an existing PPTX and then an invented DOCX path instead of selecting the source document named in the instruction.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order97-fill-missing-notes-v74.json",
+  "candidate_parent_config_sha256": "456aef97f30fcffa0ab95bedbbb181c75ed2704d3e2b4f0ddf8f5832d58286f6",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "d4a5a18f2b856d042f64e99f2b45c3b27427f4b90b5d9c140702f8610f0de9d1",
+  "change_scope": "When presentation.fill_missing_notes_from_document receives a wrong local file or nonexistent path, return at most 12 visible DOCX candidates from the same directory and require the model to select one and retry. The Adapter never substitutes a candidate, searches no unrelated directory, reads no task identity or golden data, and performs no application mutation on this error path.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_bounded_nearby_docx_path_recovery",
+    "parent_result_sha256": "758c44da71b8753313072f06830c863d422b5eaa221ebe68ceca5d5ce7d9c210",
+    "parent_audit_sha256": "760ac36a96878e36595da9185d7a5dcb6ee028cd1ccd8fa5f0aacfae035a0099",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_13_steps",
+    "parent_diagnosis": "The model found and selected the new semantic action immediately, but first supplied the active PPTX as notes_path, then used GUI clicks and catalog searches, and finally invented talk_notes.docx. Both invalid calls were rejected without mutation. The 70.287-second Agent loop ended through the eight-event no-progress policy; strict audit remained valid.",
+    "notes_transfer_sha256": "0cfc4b1e1897fbc33446c26a0ed37a04dc542535180ebd19b983e7be4f15244d",
+    "multi_apps_generic_actions_sha256": "4dcf05e9d8f941a18571a1ec281533d99570d1ea2239b08cdf18e6688a8d19f1",
+    "multi_apps_catalog_actions_sha256": "fb5d6dc4d795d4c08b03b18f6c1c559c3aa6581b990ff653334672ee88868e77",
+    "multi_apps_generic_schema_sha256": "62d1cd67dd70d7a20c69938f311c6afaaf5a46b6f82a64385430156beeaad4d1",
+    "multi_apps_catalog_schema_sha256": "0dda2a89c3784d67094a747de23a5a5906b99c0d6c56b7973646d3e6a1061603",
+    "tool_catalog_sha256": "e0b8910e45bbe304b180fe6eb755b4ecd8bd2da36c67ca81792188ca94792bcd",
+    "adapter_results_sha256": "9ecbf6d63d0af13410422eb656a6dc1f911e0ba19efb86b5f21f0c3864fba347",
+    "openapa_catalog_sha256": "e890b7492a430de119ad1c07fdf366499d21f48537099ec4c5ee21ffcf966a8b",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "runner_sha256": "e13b95f88d4909ee7dcac756a64b80f1c3c39477b6dfedf26ed8b6cbf546ee08",
+    "trajectory_builder_sha256": "dec7e6623f824db35ae20efba0f076bd771fa76c90cdf601ffcc474054c4bbb3",
+    "focused_tests": "73 passed; covers wrong PPTX and nonexistent DOCX inputs, 14 unrelated candidate names, bounded results, hidden-file exclusion, and zero downstream mutations",
+    "full_unit_tests": "1586 passed",
+    "ruff": "active source and tests passed lint and format checks",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_docx_path_recovery_v75_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and classify this sole hypothesis-2 result. Do not repeat it unchanged. Try at most one materially different generic hypothesis; after hypothesis 3 fails, mark Order 97 task_blocked and immediately continue to Order 98.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of generic hypothesis 2 after the preserved Order 97 baseline and v74 hypothesis-1 failure",
+    "selected_count": 1,
+    "prior_development_status": "unseen_with_preserved_failed_baseline_and_hypothesis_1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 97,
+      "source_order": 202,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "source_episode_id": "9a953e60d313570176bf2518",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "21f52fdcd8f4e529c7fca9a9b008a6e31cbe06bfe2191b223264617b5120e62f",
+      "execution_class": "golden",
+      "pool_order": 97
+    }
+  ]
+}

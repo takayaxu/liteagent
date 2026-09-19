@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "experiment_id": "failed-rerun-offline-5-openapa-gpt-5.6-sol-medium",
+  "status": "planned",
+  "purpose": "Rerun the intersection of the interrupted 33-task failure set and the final offline non-OAuth task pool without guest external-web proxy.",
+  "sources": {
+    "offline_config": "adapter_versions/v2_expanded/experiments/configs/offline-non-oauth-261.json",
+    "offline_config_sha256": "cafd43a080f5b6085dfa3387973fd6ba7c241464821d5096b343239a0d536323",
+    "previous_rerun_state": "adapter_versions/v2_expanded/experiments/full-failed-33-tool-catalog-rerun/supervisor-state.json",
+    "previous_rerun_state_sha256": "d277f4704618c7cda53837faeb8de8f1226dc98d6f7521b238c5473bdff61312"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "runner_sha256": "80e1bf500b1262bdc9ebc6fb484ed199138c18c785ca9bc93ab1326a2e325ddd",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "external_web_excluded": true,
+    "preserve_previous_results": true
+  },
+  "selection": {
+    "rule": "intersection of prior 33 selected task IDs and offline-non-oauth-261",
+    "prior_status_counts": {
+      "failed": 2,
+      "passed": 1,
+      "not_run": 2
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 9,
+      "domain": "chrome",
+      "task_id": "480bcfea-d68f-4aaa-a0a9-2589ef319381",
+      "prior_rerun_status": "failed",
+      "execution_class": "unsupported"
+    },
+    {
+      "order": 2,
+      "source_order": 12,
+      "domain": "chrome",
+      "task_id": "12086550-11c0-466b-b367-1d9e75b3910e",
+      "prior_rerun_status": "failed",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 3,
+      "source_order": 13,
+      "domain": "chrome",
+      "task_id": "6766f2b8-8a72-417f-a9e5-56fcaa735837",
+      "prior_rerun_status": "passed",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 4,
+      "source_order": 45,
+      "domain": "gimp",
+      "task_id": "7a4deb26-d57d-4ea9-9a73-630f66a7b568",
+      "prior_rerun_status": "not_run",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 5,
+      "source_order": 52,
+      "domain": "gimp",
+      "task_id": "a746add2-cab0-4740-ac36-c3769d9bfb46",
+      "prior_rerun_status": "not_run",
+      "execution_class": "generic_atomic_api"
+    }
+  ],
+  "result_paths": {
+    "raw": "experiments/full-failed-offline-5-rerun/tasks",
+    "results": "experiments/full-failed-offline-5-rerun/results.json",
+    "report": "experiments/full-failed-offline-5-rerun/report.md"
+  }
+}

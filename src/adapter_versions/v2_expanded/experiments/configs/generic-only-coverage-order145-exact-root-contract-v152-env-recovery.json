@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order145-exact-root-contract-v152-env-recovery",
+  "status": "frozen",
+  "purpose": "Bounded environment-recovery retry for order 145 hypothesis 2 after v151 failed before the first model action because vLLM rejected a regex lookahead in the otherwise equivalent strict root schema.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order145-exact-root-contract-v151.json",
+  "candidate_parent_config_sha256": "d48185cc73bf5e3405ebd84cca21c9e322d454666b5b19d2f8e5425f2dcea5cf",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "6d745922f4e7e804e9a318d7922079a062bf0f4478992cc911ee20bd35734d4f",
+  "change_scope": "Replace the vLLM-incompatible negative-lookahead root regex with the semantically equivalent lookahead-free pattern while preserving the exact-path and broad-root safety contract. A direct counterfactual model preflight succeeded with /srv/retention and 45 days. No task identity, task path, answer, workflow, or Runner argument rewriting is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_exact_age_root_contract_v152_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve this environment-recovery result. If the model still substitutes home for the explicitly named root or repeats an invalid broad-root call, mark task_blocked and immediately advance. If the same proven model-service environment fault persists, use at most one final bounded environment retry; otherwise do not repeat unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_environment_retry_1",
+    "hypothesis_class": "exact_instruction_path_binding_and_broad_root_guard",
+    "environment_failure_result": "experiments/generic-only-coverage-order145-exact-root-contract-v151-run1/results.json",
+    "environment_failure_result_sha256": "44a8c41a905e35a9c665deec4c40abd0d59d6e4f4777254c7c64b6c184de00ab",
+    "environment_failure_audit": "experiments/generic-only-coverage-order145-exact-root-contract-v151-run1/generic-only-audit.json",
+    "environment_failure_audit_sha256": "3b5e0beec9ad9f157992a89ddc972a1dd0b06b690997abf1f3ed3fa900566af7",
+    "environment_failure_reason": "vLLM returned HTTP 500 for all three first-turn model attempts before producing an action; audit invalid only because no model response/call log existed.",
+    "compatibility_fix": "Replaced ^(?:/(?!$).+|~/.+)$ with the equivalent vLLM-compatible ^(?:/.+|~/.+)$ pattern.",
+    "counterfactual_model_preflight": {
+      "instruction_root": "/srv/retention",
+      "age_days": 45,
+      "observed_root": "/srv/retention",
+      "observed_age_days": 45,
+      "http_500_reproduced": false
+    },
+    "focused_tests": "296 passed",
+    "regression_validation": "deferred_by_user",
+    "environment_retry_index": 1,
+    "generic_hypothesis_consumed": false,
+    "parent_hypothesis": "generic_hypothesis_2"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same task and semantic hypothesis as v151 for one bounded environment-recovery retry",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 145,
+      "source_order": 285,
+      "domain": "os",
+      "task_id": "37887e8c-da15-4192-923c-08fa390a176d",
+      "source_episode_id": "dc1736c70c1832d4718f9c9d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "35736fd3b54074bfa25f43efcfd2d25eeffab375a31fdf9eb3ba3691947d6687",
+      "execution_class": "task_specific",
+      "pool_order": 145
+    }
+  ]
+}

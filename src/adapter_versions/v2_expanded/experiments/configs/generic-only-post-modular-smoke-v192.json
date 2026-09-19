@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-post-modular-smoke-v192",
+  "status": "frozen",
+  "purpose": "Post-modularization clean-VM smoke for one Calc and one Impress task that have both a strict historical clean pass and a preserved v189 failure. This is a diagnostic gate, not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-systemic-failure-followup-v191.json",
+  "parent_config_sha256": "ce769bba8e697731cd54df2cc5a71ff5a7b79fd481341fc9693d6f8792a7e71d",
+  "change_scope": "Run the current modular LiteAgent composition after static leakage and layout preflight. No task identity, answer, golden/evaluator state, Runner argument injection, or historical trajectory is exposed to the Agent. Only Runner or environment defects may be changed during this smoke gate.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "diagnostic_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed-189-v189-model-friendly-contracts-run1/results.json",
+    "diagnostic_results_sha256": "2b0b04b4c9dac2e2b89e8a44d06ab593efa1827f0b48c65abecf78bddaeacda1",
+    "offline_pair_analysis": "adapter_versions/v2_expanded/experiments/analysis-v189-historical-clean-pass-regressions/analysis.json",
+    "offline_pair_analysis_sha256": "6392d4ac6ba16ab99bdae4910ce5e7e1800bcc8eba821e0a38735fd07306e902",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "runtime_sha256": "d7521ecf3d040e3130731de128de94f492f7272a7a03c1adf2c60c1e26c3eaef",
+    "agent_sha256": "136ae18c6e1dbddf885bc4dd932945ddcb0a2fdfb4dd2b22f65e8d02da97dc47",
+    "action_selection_sha256": "ee629a204ff99767107ea912fc53ef1bdf5a5eba8a559eb3b221b627af11a1d0",
+    "tool_surface_sha256": "0ef9b0e0d9ab4f363e780dbbc35ebe8eb29081a6b491a075e32d6d9a8ecaec9d",
+    "execution_engine_sha256": "c95d28a00b657b16a4eaa1baacc8f9dc8e3356d5eedc8da96c7a9de8da5dcdf3",
+    "generic_routing_sha256": "446c37802991ab4dd5fd784f36d4d764796dbaa02313a0e6552692dc5773f2b0",
+    "tool_catalog_sha256": "00ab395f1830879a82598a5f71065d2e75a1af2425e30e68b21125432fca1b88",
+    "instruction_semantics_sha256": "816ccedf82ee55ca68d575455f60359bebcdc1063931a67f35057437065c6873",
+    "completion_sha256": "df8b2a3bef007f17d0c8fd6b2ba06aae8495fe3c7cfc2daf2185307b10b3dd69",
+    "completion_recovery_sha256": "103cb3b8d53dabecd072bf3e80d8fcac3965ce2415af288e40776099939f0eb1",
+    "adapter_executor_sha256": "bc4902e7722851807480e15d26968b31196dbb46df7fa422851bb5aae6ab1fb2",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "unit_tests": "2272 passed before analysis-only test additions; focused analysis tests 4 passed",
+    "ruff": "active source and analysis additions passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_post_modular_smoke_v192_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one preserved v189 regression from Calc and Impress with a prior strict clean pass",
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_calc": 1,
+      "libreoffice_impress": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T07:34:19Z",
+  "tasks": [
+    {
+      "order": 7,
+      "source_order": 75,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 38,
+      "source_order": 124,
+      "domain": "libreoffice_impress",
+      "task_id": "a669ef01-ded5-4099-9ea9-25e99b569840",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

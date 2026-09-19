@@ -1,0 +1,141 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-bounded-impress-observed-text-targets-orders44-57-concurrency2",
+  "status": "frozen",
+  "purpose": "Final exploratory A/B attempt for the falsifiable hypothesis that complete compact Adapter-observed Impress text handles let the model compose single-target mutations after retiring three task-shaped macros. This is not a score baseline.",
+  "freeze_timestamp": "2026-08-28T06:44:13Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "selection_template_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "clean-hardened-v2-derived-bounded-impress-text-targets-ad9c57ce",
+    "role": "exploration",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-bounded-impress-observed-text-targets-orders44-57-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 369,
+      "total_bytes": 53719547,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "ad9c57ce8f10117be00c7ebd340c791bedfea729cf27e604f653b4d8c7f17cfc"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "clean_hardened_v2_derived_bounded_impress_text_targets_ad9c57ce",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_atomic_impress_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one final affected attempt for complete model-visible text handles plus the same stable Impress control; no replacement after run",
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_impress": 2
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 44,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "source_order": 131
+    },
+    {
+      "order": 57,
+      "domain": "libreoffice_impress",
+      "task_id": "05dd4c1d-c489-4c85-8389-a7836c4f0567",
+      "source_order": 148
+    }
+  ]
+}

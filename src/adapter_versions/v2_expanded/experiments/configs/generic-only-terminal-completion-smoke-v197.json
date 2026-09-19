@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-terminal-completion-smoke-v197",
+  "status": "frozen",
+  "purpose": "Verify that a strict generic-only episode whose mutation, persistence, and readback evidence are complete exposes only propose_done and terminates without post-completion search or GUI drift. This is diagnostic smoke evidence, not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-paragraph-autoresolve-smoke-v196.json",
+  "parent_config_sha256": "f76af66a262e1cc4da44754bfb8f0fce9ff5f57ef19c73bd73349cb40dc5c3ea",
+  "change_scope": "When the strict generic completion phase is DONE, expose only propose_done. The gate is based solely on executed model-selected generic actions, Adapter verification, persistence, and readback evidence. This prevents an already-complete episode from drifting through tool search or GUI actions; it does not infer task answers or execute actions for the model.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "parent_smoke_results": "adapter_versions/v2_expanded/experiments/generic-only-paragraph-autoresolve-smoke-v196-run1/results.json",
+    "parent_smoke_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-paragraph-autoresolve-smoke-v196-run1/strict-audit-worker-01.json",
+    "offline_pair_analysis": "adapter_versions/v2_expanded/experiments/analysis-v189-historical-clean-pass-regressions/analysis.json",
+    "offline_pair_analysis_sha256": "6392d4ac6ba16ab99bdae4910ce5e7e1800bcc8eba821e0a38735fd07306e902",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "completion_recovery_sha256": "42f5ff68aadaceae3e2be6fb03c4fc19a33f8fcb20d551b3595cc155fecd18d0",
+    "impress_schema_sha256": "76d990afd70776f444ec35d515d91262e5e256d7c6f106e12120ba536ea1d2c4",
+    "impress_tool_manifest_sha256": "7a0ae4750d25d38102d4160dd133546e98b7f0cf763a752d30fcacf1574e006f",
+    "impress_uno_worker_sha256": "cfcc9a25c98a98b334cf44b8733941977d965df82aa6f11c047f62a827d5b9da",
+    "openapa_tool_catalog_sha256": "a6e8f4bcdfd37e136bb3b6a2b77870f2988190eb665623454c1cd10278ccb218",
+    "generic_routing_sha256": "2c19ea176acbf23feaa324a051d485acd742e1e529f228f18d95e490cd037752",
+    "tool_surface_sha256": "ceb1705e57fdcf6fbb0f3f46793eaaace7a1571bfaa8fb1821f4bec145f1e400",
+    "lite_tool_catalog_sha256": "f3cf0898eaf0016c23f4dc5f1f6105d8bb4c3f464c05f3b8db614fe9edcd4fe3",
+    "agent_protocol_sha256": "4ccb4ca3bbe81dd3f758d00888086713bfe9e2f1e89d5295f1e5b3cd90b78398",
+    "unit_tests": "2287 passed",
+    "focused_completion_tests": "3 passed",
+    "ruff": "active source and tests passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_terminal_completion_v197_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same single Impress task as v196 to verify only the completion-state change",
+    "selected_count": 1,
+    "domain_counts": {
+      "libreoffice_impress": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T08:36:26Z",
+  "tasks": [
+    {
+      "order": 38,
+      "source_order": 124,
+      "domain": "libreoffice_impress",
+      "task_id": "a669ef01-ded5-4099-9ea9-25e99b569840",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

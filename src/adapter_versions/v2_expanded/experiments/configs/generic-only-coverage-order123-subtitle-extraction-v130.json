@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order123-subtitle-extraction-v130",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 123 hypothesis 1: expose a reusable VLC operation that extracts an embedded subtitle stream to a model-selected SRT or VTT path.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order123-v129.json",
+  "candidate_parent_config_sha256": "1fbe5c2caa128bc4f9181da9cc10172d70d79964db84ed3f0e34e7802ab85166",
+  "parent_attempt_result": "experiments/generic-only-coverage-order123-v129-run1/results.json",
+  "parent_attempt_result_sha256": "2cb45df791e24e70c9f00be645f2e542156c45993c6afcaac427ad560e10e47d",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order123-v129-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "90263b589af74d5794a24223d78676bf46a72f13ffec626e4ae51e6e04e79386",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "78242e7f79013d3f4e36eef226a4cc3e5f0e71c6253f2fe3b8228a333c56537f",
+  "change_scope": "Add generic vlc.media.extract_subtitles with model-selected input_path, output_path, and optional zero-based subtitle_stream_index. The Adapter validates SRT/VTT output format, probes embedded subtitle streams, executes fixed-argument ffmpeg without a shell, writes atomically, and verifies UTF-8 timed cues, size, and SHA-256. LiteAgent adds semantic catalog keywords and a direct typed schema. No task identity, fixed path, subtitle content, answer, golden material, evaluator state, instruction parser, argument injection, or workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vlc_subtitle_extraction_v130_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single Order 123 targeted A/B, mark the task task_blocked, and immediately continue in source order. Do not add another Order-123-local schema, prompt, facade, or unchanged retry. A proven transient Runner or environment fault may be retried at most twice.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_embedded_subtitle_extraction",
+    "failure_evidence": "The untouched v129 baseline returned evaluator 0.0 after 22 steps. Qwen repeatedly searched for VLC subtitle extraction/export, then invented VLC document.open; no Adapter action executed and the eight-event guard stopped the episode.",
+    "counterfactual_tests": "Unit tests use unrelated MKV, WebM, MOV, SRT, and VTT names, different subtitle text, two embedded stream indexes, both supported formats, absent-stream and out-of-range errors, and independent digest/cue verification. No Order 123 path or expected subtitle content appears in runtime code or tests.",
+    "focused_unit_suite": "331 passed",
+    "full_unit_suite": "1878 passed",
+    "clean_guest_integration": "A temporary clean Docker/KVM guest embedded a synthetic subtitle into MP4, deployed the production VLC Adapter, extracted SRT through real ffprobe/ffmpeg, and passed Adapter verification; the integration test passed 1/1 and the container was removed.",
+    "static_verification": "Ruff, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "vlc_schema_sha256": "d3ac7a16978e7ec6cb3209d8c38d334a467e9110f635442c9f2337bfd881b1f7",
+    "vlc_actions_sha256": "b14f0352450f8f89252043c44a23ede3d755bc4de3a896386a01f159427bcaa7",
+    "vlc_worker_sha256": "9034be58bffb9e991c95bc9a11e200f129bf0eb769baaf1ee08ae5c0fea70ebe",
+    "vlc_verifier_sha256": "771094e23a7e5814a019b10063e0613fbe06d13e694e3f725fd83520af1f9967",
+    "lite_agent_tool_catalog_sha256": "b469823c4bc96e753202fc6ea0baad62918281208f73c428b0e8bb12e1d6cffd",
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 123 v129 missing-capability failure",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_preserved_in_generic-only-coverage-order123-v129-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 123,
+      "source_order": 245,
+      "domain": "multi_apps",
+      "task_id": "9f3bb592-209d-43bc-bb47-d77d9df56504",
+      "source_episode_id": "e33775e88d65b4240414e54d",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b2b780bb0691f1bda3e68db9e2b5ac96ea7884921aa9f408640db498b45c8cb9",
+      "execution_class": "task_specific",
+      "pool_order": 123
+    }
+  ]
+}

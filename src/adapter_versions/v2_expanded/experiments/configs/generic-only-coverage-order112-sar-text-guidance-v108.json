@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order112-sar-text-guidance-v108",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 112 testing generic command stdout guidance for human-readable sar reports.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order112-v107.json",
+  "candidate_parent_config_sha256": "ca1bb7ddb40f4b6740d99f1ccaa958c11ebab7a15e0b846ef5477ccd0c6d41d4",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "045dfd8ff30b5ffb2aac9b8386700e9c47e85eebd6bdd7b16dea9319bad880cc",
+  "change_scope": "Generic command.run contract guidance distinguishes sar binary -o output from human-readable stdout and directs arbitrary requested text destinations through stdout_path. No task ID, fixed path, duration, answer, golden, evaluator data, workflow, argument rewrite, or argument injection.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_sar_text_guidance_v108_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit each attempt. Try at most two additional materially different generic hypotheses after this A/B. If all three fail, mark task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_command_stdout_semantics",
+    "parent_task_implementation_evidence_inherited": false,
+    "changed_files": [
+      "os_adapter/tool_manifest.py",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py"
+    ],
+    "focused_tests": "4 direct tests passed; 254 strict schema/catalog tests passed; Ruff passed",
+    "known_unrelated_test_failure": "test_multi_apps_code_completion_exposes_bounded_read_and_literal_edit action-order assertion",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same Order 112 task as untouched v107 baseline",
+    "selected_count": 1,
+    "prior_development_status": "failed_valid_baseline",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 112,
+      "source_order": 228,
+      "domain": "multi_apps",
+      "task_id": "2373b66a-092d-44cb-bfd7-82e86e7a3b4d",
+      "source_episode_id": "79745c44d1206f889475d2f8",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a15a7975f6befda816f400c6b36ca00e8c6a7f35adf812277002224bec19b253",
+      "execution_class": "task_specific",
+      "pool_order": 112
+    }
+  ]
+}

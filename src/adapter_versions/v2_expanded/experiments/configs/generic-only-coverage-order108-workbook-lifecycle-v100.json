@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order108-workbook-lifecycle-v100",
+  "status": "frozen",
+  "purpose": "Final targeted generic-only A/B for Order 108 hypothesis 3 after preserving and auditing the v99 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order108-workbook-facade-v99.json",
+  "candidate_parent_config_sha256": "3a2a2314312eccaaba295808a81ba4b799d362f00066225658497d62d950ec2f",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "fbf3fe6e34d9c17cb4cf8578ef5e5fd1918b350d96c6de751c5b74e4b52beeb8",
+  "change_scope": "Carry forward generic PDF layout compaction and the direct new-workbook facade, then make the reusable Calc workbook lifecycle reliable: stage and validate replacements before commit, restore an existing workbook after failed overwrite, orient flat values from a one-column A1 target, expose spreadsheet.save for explicit persistence, and derive completion artifact evidence from successful model-selected output paths instead of treating every instruction filename as an output.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3",
+    "hypothesis_class": "generic_workbook_lifecycle_reliability",
+    "parent_result_sha256": "bbb7d28393a5049d3797f12d18e8c2a018b520e86dd2f5189e0e84dadc84b11f",
+    "parent_audit_sha256": "2fc628cacf6e32e60a4b93f8e815134baf65ff0d21d0875d3cf2003fc421ef1a",
+    "parent_status": "failed_reward_0_after_30_steps",
+    "parent_diagnosis": "v99 made spreadsheet.create_workbook directly discoverable and Qwen selected it to create the requested Desktop workbook. The model then used flat values for one-column ranges, searched for a save action that the Multi-Apps facade did not expose, and retried overwrite. The existing create_new implementation deleted the prior valid file before a failed replacement, so evaluator artifact fetch ended in 404. Completion evidence also treated source PDFs as requested outputs and did not recognize the create result as saved output evidence.",
+    "counterfactual_scope": "Synthetic inventory and weather workbooks prove two-phase creation, old-file restoration after a corrupting final-store failure, and cleanup of staged artifacts. Unrelated rainfall data proves deterministic flat-list orientation for a vertical C3:C5 range. A coastal workbook proves spreadsheet.save forwards either no arguments or the exact model-selected output path. A source-a/source-b completion test proves model-selected output evidence excludes input filenames and requires an explicit save after a later write.",
+    "model_choice_contract": "The model still selects every spreadsheet.create_workbook, spreadsheet.write_range, spreadsheet.save, and completion call and supplies every model-facing argument. A1 geometry deterministically normalizes a flat list only when the explicit target is one column; no value is inferred. The Adapter never consults task identity, dataset order, instruction fingerprints, evaluator state, golden files, expected values, filenames, years, institutions, or fixed cells.",
+    "original_instruction_top_k": [
+      "spreadsheet.insert_matching_rows_into_document",
+      "spreadsheet.read_file",
+      "spreadsheet.create_workbook",
+      "spreadsheet.write_range",
+      "document.insert_table_after_text",
+      "pdf.extract_text_batch",
+      "adapter.call"
+    ],
+    "calc_uno_worker_sha256": "08b8c87650017e2c928890772ec140671793b436d829f1312a6ac3d71eb32ecb",
+    "multi_apps_generic_schema_sha256": "5dc04b1e13f07c218d48050e4d9e998bea9296e1b19a5580b1525098ad9ba32f",
+    "multi_apps_generic_actions_sha256": "38819dd68d410881662506a635f13846f0cf683db95dd90a4cfc51a168979dc2",
+    "multi_apps_host_schema_sha256": "c8ad03dab649238ac5c7c05ad0c0d7bd755c0849346d11ed90f889eeaf4e581b",
+    "lite_agent_tool_catalog_sha256": "32e7638087f829f6fe54bdc455eb585e4004fe82b848ef61e7a3dde939362193",
+    "openapa_tool_catalog_sha256": "b0350d3f6addcf111f1d163c0f1f6cb0e908da30ef3a3bf61ca361cc1c847d19",
+    "lite_agent_runtime_sha256": "6e87bfb930ed7c9f257976bddc2fe9de5fdf4aa6082722a371e15d13f643541b",
+    "completion_policy_sha256": "84b307c374a9540f1bceffa05a8f1f9d0039324aec6424bd9fa2efa1037634d8",
+    "focused_tests": "382 passed across Calc worker, Multi-Apps generic runtime, LiteAgent Multi-Apps catalog, and LiteAgent runtime",
+    "full_unit_tests": "1680 passed",
+    "ruff": "all changed files passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_workbook_lifecycle_v100_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this final hypothesis-3 A/B. If it fails, mark Order 108 task_blocked, update the failure backlog and coverage ledger, and immediately advance to Order 109. Do not add a fourth hypothesis or rerun v100 unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 108,
+      "source_order": 217,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_episode_id": "1d126b98f6535502e57b40f1",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f32b4f130dc31487e94e0f0c776e3a0d973e472a283e02b59404f52ba3c3d69d",
+      "execution_class": "golden",
+      "pool_order": 108
+    }
+  ]
+}

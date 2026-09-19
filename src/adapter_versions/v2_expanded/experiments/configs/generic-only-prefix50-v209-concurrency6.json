@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-prefix50-v209-concurrency6",
+  "status": "frozen",
+  "purpose": "User-requested fresh scripted run of orders 1-50 from the fixed 189 non-OAuth task pool under the unchanged v207 generic-only candidate, using six workers (three per DGX). This contiguous prefix is a validation result, not a complete OSWorld baseline.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-prefix50-v208.json",
+  "parent_config_sha256": "e7d82b39edc0002a14d27c6069248617878e52e517f2e1d2d65939053c82cdd1",
+  "change_scope": "Only scheduling changes from two workers to six workers at the user's request. Restart all 50 tasks in a new empty result directory; do not resume or merge the interrupted v208 evidence. Runtime, Prompt, Router, Adapter, schemas, model, and per-task protocol remain unchanged.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-historical-pass-regression17-v207-run1/results.json",
+    "parent_results_sha256": "3dc5682b5eaf3a25931645f614a8791bc800bdec1c7593f95522420bc9476773",
+    "parent_strict_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-historical-pass-regression17-v207-run1/strict-audit-worker-01.json",
+        "sha256": "3e82d85a78abf795735cea4a16597bca339881b516cce112bc34fbc3dcb336f7"
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-historical-pass-regression17-v207-run1/strict-audit-worker-02.json",
+        "sha256": "dcd45a20d066873e75d102ff979fea2a7196e4ef21a04ad9583da25a4815dd9b"
+      }
+    ],
+    "selection_uses_prior_outcome": false,
+    "baseline_admissible": false,
+    "preceding_interrupted_run": "adapter_versions/v2_expanded/experiments/generic-only-prefix50-v208-run1/results.json",
+    "preceding_interrupted_run_sha256": "f74f958a338e650862ba082a2af56539a454006ee5d606058739c6ebc817f058",
+    "preceding_interrupted_status": "2 interrupted / 48 not_run; preserved and excluded from v209"
+  },
+  "implementation_evidence": {
+    "unit_tests": "2363 passed",
+    "focused_tests": "798 passed",
+    "semantic_requirement_tests": "8 counterfactual tests passed",
+    "ruff": "changed active source and tests passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "parent_osworld_result": "17/17 passed; reward 17.0",
+    "parent_osworld_strict_audits": "both valid with zero leakage, rewrite, injection, action mismatch, or trace mismatch",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_prefix50_v209_concurrency6_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "contiguous orders 1-50 from the fixed 189 non-OAuth task pool; fresh six-worker restart after preserving interrupted v208",
+    "selected_count": 50,
+    "domain_counts": {
+      "libreoffice_calc": 28,
+      "libreoffice_impress": 22
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T12:59:19Z",
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 66,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 3,
+      "source_order": 69,
+      "domain": "libreoffice_calc",
+      "task_id": "f9584479-3d0d-4c79-affa-9ad7afdd8850",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 4,
+      "source_order": 70,
+      "domain": "libreoffice_calc",
+      "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 5,
+      "source_order": 72,
+      "domain": "libreoffice_calc",
+      "task_id": "4f07fbe9-70de-4927-a4d5-bb28bc12c52c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 6,
+      "source_order": 73,
+      "domain": "libreoffice_calc",
+      "task_id": "04d9aeaf-7bed-4024-bedb-e10e6f00eb7f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 7,
+      "source_order": 75,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 8,
+      "source_order": 78,
+      "domain": "libreoffice_calc",
+      "task_id": "26a8440e-c166-4c50-aef4-bfb77314b46b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 9,
+      "source_order": 83,
+      "domain": "libreoffice_calc",
+      "task_id": "aa3a8974-2e85-438b-b29e-a64df44deb4b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 10,
+      "source_order": 84,
+      "domain": "libreoffice_calc",
+      "task_id": "51b11269-2ca8-4b2a-9163-f21758420e78",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 11,
+      "source_order": 87,
+      "domain": "libreoffice_calc",
+      "task_id": "8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 12,
+      "source_order": 88,
+      "domain": "libreoffice_calc",
+      "task_id": "a01fbce3-2793-461f-ab86-43680ccbae25",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 13,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 14,
+      "source_order": 91,
+      "domain": "libreoffice_calc",
+      "task_id": "4188d3a4-077d-46b7-9c86-23e1a036f6c1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 15,
+      "source_order": 92,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 16,
+      "source_order": 94,
+      "domain": "libreoffice_calc",
+      "task_id": "0cecd4f3-74de-457b-ba94-29ad6b5dafb6",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 17,
+      "source_order": 95,
+      "domain": "libreoffice_calc",
+      "task_id": "1d17d234-e39d-4ed7-b46f-4417922a4e7c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 18,
+      "source_order": 97,
+      "domain": "libreoffice_calc",
+      "task_id": "01b269ae-2111-4a07-81fd-3fcd711993b0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 19,
+      "source_order": 98,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 20,
+      "source_order": 99,
+      "domain": "libreoffice_calc",
+      "task_id": "a9f325aa-8c05-4e4f-8341-9e4358565f4f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 21,
+      "source_order": 100,
+      "domain": "libreoffice_calc",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 23,
+      "source_order": 102,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 24,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 25,
+      "source_order": 104,
+      "domain": "libreoffice_calc",
+      "task_id": "4172ea6e-6b77-4edb-a9cc-c0014bd1603b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 26,
+      "source_order": 105,
+      "domain": "libreoffice_calc",
+      "task_id": "1334ca3e-f9e3-4db8-9ca7-b4c653be7d17",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 27,
+      "source_order": 106,
+      "domain": "libreoffice_calc",
+      "task_id": "3a7c8185-25c1-4941-bd7b-96e823c9f21f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 28,
+      "source_order": 107,
+      "domain": "libreoffice_calc",
+      "task_id": "21ab7b40-77c2-4ae6-8321-e00d3a086c73",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 29,
+      "source_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 31,
+      "source_order": 112,
+      "domain": "libreoffice_impress",
+      "task_id": "c59742c0-4323-4b9d-8a02-723c251deaa0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 32,
+      "source_order": 116,
+      "domain": "libreoffice_impress",
+      "task_id": "ce88f674-ab7a-43da-9201-468d38539e4a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 33,
+      "source_order": 117,
+      "domain": "libreoffice_impress",
+      "task_id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 34,
+      "source_order": 118,
+      "domain": "libreoffice_impress",
+      "task_id": "a097acff-6266-4291-9fbd-137af7ecd439",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 35,
+      "source_order": 119,
+      "domain": "libreoffice_impress",
+      "task_id": "bf4e9888-f10f-47af-8dba-76413038b73c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 36,
+      "source_order": 120,
+      "domain": "libreoffice_impress",
+      "task_id": "21760ecb-8f62-40d2-8d85-0cee5725cb72",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 37,
+      "source_order": 121,
+      "domain": "libreoffice_impress",
+      "task_id": "ac9bb6cb-1888-43ab-81e4-a98a547918cd",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 38,
+      "source_order": 124,
+      "domain": "libreoffice_impress",
+      "task_id": "a669ef01-ded5-4099-9ea9-25e99b569840",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 39,
+      "source_order": 125,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 41,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 42,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 43,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 45,
+      "source_order": 133,
+      "domain": "libreoffice_impress",
+      "task_id": "2b94c692-6abb-48ae-ab0b-b3e8a19cb340",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 46,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 47,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 48,
+      "source_order": 137,
+      "domain": "libreoffice_impress",
+      "task_id": "c82632a4-56b6-4db4-9dd1-3820ee3388e4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 49,
+      "source_order": 138,
+      "domain": "libreoffice_impress",
+      "task_id": "39be0d19-634d-4475-8768-09c130f5425d",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 50,
+      "source_order": 139,
+      "domain": "libreoffice_impress",
+      "task_id": "ac1b39ff-ee4d-4483-abce-c117e98942f0",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

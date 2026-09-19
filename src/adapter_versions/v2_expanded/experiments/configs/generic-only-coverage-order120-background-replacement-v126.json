@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order120-background-replacement-v126",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 120 hypothesis 1: expose generic local-file discovery and centered-subject background replacement with a model-selected source, destination, and background color.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order120-v125.json",
+  "candidate_parent_config_sha256": "814259dec429039cb736aab72eaf5d23296af1c262b97cad65b186cf69c1738b",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "f7d335b8251a46238f06475e08c8aec4b4ff5580dfc375995208eff7c1410c1d",
+  "change_scope": "Add generic gimp.image.replace_background using deterministic OpenCV GrabCut, Adapter-owned strict schema and verification, deploy its offline dependency, route semantic background-removal searches to it, and expose generic filesystem.find when an unspecified Desktop source file must be discovered.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_gimp_background_replacement_v126_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this targeted A/B. If the new generic capability is deployed and callable but the original evaluator is still below 1.0, stop Order 120 early under the user's bounded per-task policy, mark it task_blocked, and immediately advance to Order 121. Retry only a proven transient Runner or environment fault, never an unchanged model failure.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_centered_subject_background_replacement",
+    "counterfactual_tests": "Two structurally different synthetic images with different dimensions, subject shapes, source backgrounds, subject colors, and a non-white requested output background.",
+    "full_unit_suite": "1827 passed",
+    "foreground_module_sha256": "67f5542045338cfd993e4e8706ae9db01230b90f7666f01a3a95bfa38a90b0e3",
+    "tool_manifest_sha256": "01fae041795bad015f4e4edde3f57e350102769554a3b9def5f951ec1f659162",
+    "tool_catalog_sha256": "268272b8c1e05561e1339ca214a60dea23749d2d24a6a28709c2d77ac9eb9f80",
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the preserved Order 120 v125 baseline failure",
+    "selected_count": 1,
+    "prior_development_status": "baseline_failed_preserved_in_generic-only-coverage-order120-v125-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 120,
+      "source_order": 239,
+      "domain": "multi_apps",
+      "task_id": "09a37c51-e625-49f4-a514-20a773797a8a",
+      "source_episode_id": "5d082c25d0dc0ed7f8154466",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "62d52993114199f55716c0e1d33d7336fb87beca741dc57faa651ac60ef9db9a",
+      "execution_class": "golden",
+      "pool_order": 120
+    }
+  ]
+}

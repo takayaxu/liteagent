@@ -1,0 +1,192 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-impress-focused-font-retest-20260909-v1",
+  "status": "frozen",
+  "purpose": "One remaining Impress font-formatting failure and recently passing control under accumulated generic observation repairs; no new API, runtime edit, gate, full-189 run or promotion.",
+  "freeze_timestamp": "2026-09-09T18:07:34Z",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-impress-focused-font-retest-20260909-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 489,
+      "total_bytes": 80827016,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "fd542220e2ad387b9c9a7ea7e97b1e9f954747567c9519a6c7ee5bbace23d274"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "immutable_result_directory": true,
+    "repair_hypothesis": {
+      "description": "Order 62 in the Aug31 repair reference and Sep6 integrated replay never changed the requested font sizes: whole-deck projection omitted the target text shapes, repeat inspection/search could not expose them, and GUI navigation failed. Reuse the subsequently implemented explicit-page inspection, observed text tool targets and pending-edit inspection availability; no new runtime change.",
+      "affected_orders": [
+        62
+      ],
+      "control_orders": [
+        61
+      ],
+      "expected_observable_change": "The model selects focused inspection and observed text targets, applies the two instruction-selected font sizes through singular shape.format_text calls, saves and reaches the unchanged evaluator with reward 1. Control 61 retains its recent reward 1.",
+      "stop_signal": "One attempt and fresh guest per task, two workers. Stop at terminal outcomes, 100 global steps, 1800 seconds, existing environment/transport/source-drift termination or 30-GiB free-disk stop. Do not change source while either worker or supervisor is live. Preserve any negative result; no unchanged repeat.",
+      "prior_attempt_disposition": "Both preserved Order 62 failures predate focused inspection and text-target fixes. The offline target-page projection now retains both observed targets and current font sizes in 4224 characters under the unchanged 9000-character budget; this is an offline projection, not an executed target choice. Current focused suites pass 106 tests.",
+      "decoding": "Retain the latest tested opt-in complete-call stop sequence and include-stop-string contract, binary thinking and full 4096-token budget. This accumulated-fix pair is not a single-factor ablation."
+    },
+    "selection": {
+      "method": "Affected Order 62 missing target-page details plus recently passing Order 61 grouped-text/picture formatting control; one fresh attempt each in source order."
+    },
+    "source_config": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-impress-focused-font-retest-20260909-v1.json",
+    "status": "frozen",
+    "non_promotable": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python",
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "expected_model_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180
+    },
+    "minimum_free_disk_gib": 30,
+    "tool_call_stop_sequence": "\n</function>\n</tool_call>"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Affected Order 62 missing target-page details plus recently passing Order 61 grouped-text/picture formatting control; one fresh attempt each in source order.",
+    "seed": null,
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_impress": 2
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": []
+  },
+  "tasks": [
+    {
+      "order": 61,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "source_order": 152
+    },
+    {
+      "order": 62,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "source_order": 153
+    }
+  ],
+  "repair_hypothesis": {
+    "description": "Order 62 in the Aug31 repair reference and Sep6 integrated replay never changed the requested font sizes: whole-deck projection omitted the target text shapes, repeat inspection/search could not expose them, and GUI navigation failed. Reuse the subsequently implemented explicit-page inspection, observed text tool targets and pending-edit inspection availability; no new runtime change.",
+    "affected_orders": [
+      62
+    ],
+    "control_orders": [
+      61
+    ],
+    "expected_observable_change": "The model selects focused inspection and observed text targets, applies the two instruction-selected font sizes through singular shape.format_text calls, saves and reaches the unchanged evaluator with reward 1. Control 61 retains its recent reward 1.",
+    "stop_signal": "One attempt and fresh guest per task, two workers. Stop at terminal outcomes, 100 global steps, 1800 seconds, existing environment/transport/source-drift termination or 30-GiB free-disk stop. Do not change source while either worker or supervisor is live. Preserve any negative result; no unchanged repeat.",
+    "prior_attempt_disposition": "Both preserved Order 62 failures predate focused inspection and text-target fixes. The offline target-page projection now retains both observed targets and current font sizes in 4224 characters under the unchanged 9000-character budget; this is an offline projection, not an executed target choice. Current focused suites pass 106 tests.",
+    "decoding": "Retain the latest tested opt-in complete-call stop sequence and include-stop-string contract, binary thinking and full 4096-token budget. This accumulated-fix pair is not a single-factor ablation."
+  }
+}

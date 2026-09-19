@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order16-v13",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order15-v13.json",
+  "candidate_parent_config_sha256": "ccfa8319dfdc86797504db62e17f9da9d72ffad6edeb5eda26fea0524d59b2f5",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "7b7206f2da527619b29e99e8e9a706e4d70883235a4c565ac85685a8f387976f",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "runtime_sha256": "3b40b199f17efe8b61af3226edc33b9a2d36ff0a241e028b50965c4ef2972fa0",
+    "tool_catalog_sha256": "90051c25b1838603597f6123956f1f673c9141d0fa4ebc5ab3b5da9d2c9a847a",
+    "runtime_test_sha256": "8ff5f906b740e9474e4abe6add6a3a4db5492eb677a93255c592bff3596d2cab",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "focused_router_tests": "20 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_router_stopwords_v13_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 16,
+      "source_order": 94,
+      "domain": "libreoffice_calc",
+      "task_id": "0cecd4f3-74de-457b-ba94-29ad6b5dafb6",
+      "source_episode_id": "0768d324cb0f00d59403285f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "d079b36dc13c2f709670a019b2a8e02a232ab51b5c761094edd066d4f30e1d8b",
+      "execution_class": "generic_api_only",
+      "pool_order": 16
+    }
+  ]
+}

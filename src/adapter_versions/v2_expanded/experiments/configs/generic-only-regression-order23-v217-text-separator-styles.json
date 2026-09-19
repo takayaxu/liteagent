@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order23-v217-text-separator-styles",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 23. Replace ambiguous free-form punctuation in the strict model-facing compose-text contract with reusable semantic separator styles. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order22-v216-column-reorder-completion.json",
+  "parent_config_sha256": "90ec570b89ea8d5d0488fbaeb4fa55bca4f747d25cd97ca1fe6b85a6c149ee41",
+  "hypothesis": "The small model copied the placeholder word Header into a free-form separator argument. If strict mode requires semantic separator enums and the Calc Adapter deterministically maps them to punctuation, the model will choose comma_space and colon_space and the original evaluator will pass without Runner argument injection or rewriting.",
+  "change_scope": "The public Calc contract adds optional semantic field and label separator styles while retaining legacy literal separators outside strict mode. Strict LiteAgent exposes only the semantic style enums. The Calc Adapter maps the exact model-selected style values to punctuation behind the reusable table.compose_text_column contract. No task identity, source coordinates, source headers, output values, golden artifact, expected state, or Runner-selected argument is embedded, injected, or rewritten.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order23-v15-run1/results.json",
+    "historical_clean_pass_results_sha256": "07d79e0ce555f4af93ea055a1ed854a9d158cae50605280559c7fe020b6bcb54",
+    "historical_clean_pass_audit": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order23-v15-run1/worker-01-audit.json",
+    "historical_clean_pass_audit_sha256": "2db44fd429f8a5e0decf7b02eb73a021599a4c09f6dd23542353fdec8912c942",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order22-v216-column-reorder-completion-run1/results.json",
+    "preceding_ab_results_sha256": "96d1675f224d496039be9a3896e06a5268c91aaf2501a27e0b69eb7e6f527d13",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order22-v216-column-reorder-completion-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "e5c37611bb652ddbddd2d0aa12e0a7397144620b6fe7f1e135a28781664a6413",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "text_composition_sha256": "1a6a079dd67a5c23ef1f55000c2cebaf2815809e103abf663b6a1c1c710b6e97",
+    "calc_tool_manifest_sha256": "c3be32d8ad1f0ac8c0e4718aa4a9de331c8a25d4a169b5e1c914e89ae064a34b",
+    "calc_schema_sha256": "7f87646e3f942ffab9293536e5f24b36d6f305f1432bb0a4a090a52670abc0d8",
+    "calc_uno_worker_sha256": "a5278c718b7858ff65589deded1e19cd58d66c25e3d178dff7c51815fd8fa435",
+    "tool_catalog_sha256": "9b2204a28206770e18c0e497c31595a6694fa206a4d6b28d43fd23b42ab21f17",
+    "focused_tests": "558 passed, including strict semantic-only exposure, legacy contract retention, invalid/ambiguous style rejection, and a structurally different worksheet/range/header/precision/separator counterfactual",
+    "unit_tests": "2414 passed",
+    "ruff": "active Calc, LiteAgent, scripts, unit, and integration sources passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_text_separator_styles_v217_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T18:53:39Z",
+  "tasks": [
+    {
+      "order": 23,
+      "pool_order": 23,
+      "source_order": 102,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

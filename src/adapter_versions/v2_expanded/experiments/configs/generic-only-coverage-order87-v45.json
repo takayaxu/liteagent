@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order87-v45",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged v45 generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order84-v45.json",
+  "candidate_parent_config_sha256": "ff94f6ce987c4d2e266db5535d6eead78df3146f27433f68ac12a2dd492c72ce",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b2f3014ac79e9b17cdab55c752c3947b1a5cf45c3563f7e84afdb95ee6131ec8",
+  "change_scope": "No task-driven code change. Measure the unchanged v45 generic candidate on the next unseen ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "candidate_status": "Order 84 clean-passed v45 with original evaluator 1.0, generic_api_only, and strict audit valid=true after the model-selected font_name reached the Adapter unchanged.",
+    "latest_clean_pass_result_sha256": "1dc73f144651f158fdfa0329fc63efcae5e359796fd77af0f135cd01c23f07f4",
+    "latest_clean_pass_audit_sha256": "797a30ae7deb950a04a089fac917957f288bf8232aefb3b118cdf3317939acae",
+    "latest_clean_pass_trajectory_manifest_sha256": "11c7fa6ba087c0464fd7f6cb2df3decc07ed447cd385f2a21f1110702734c87a",
+    "current_order_preflight": "The strict Multi-Apps initial surface contains adapter.call, artifact.verify, command.run, and state.verify, while task.execute, task.inspect, and artifact.materialize are excluded. Existing VLC and GIMP public catalogs do not expose a dedicated video-clip-to-GIF action; the immutable run measures whether the model can complete the task through existing generic command, downstream Adapter, or GUI capabilities.",
+    "full_unit_tests": "1445 passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_default_font_schema_v45_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger after skipping clean-passed orders 85 and 86",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 87,
+      "source_order": 179,
+      "domain": "multi_apps",
+      "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+      "source_episode_id": "3ba9cef5534bdc726b6f8fef",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e5be1d483c86d7fd2c8cac8282e77096c1c074be42a4203bcedab660d4f28765",
+      "execution_class": "generic_api_only",
+      "pool_order": 87
+    }
+  ]
+}

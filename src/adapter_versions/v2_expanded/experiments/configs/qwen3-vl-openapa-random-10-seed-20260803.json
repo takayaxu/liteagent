@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "experiment_id": "qwen3-vl-4b-openapa-random-10-seed-20260803",
+  "status": "planned",
+  "purpose": "Evaluate Qwen3-VL-4B with OpenAPA and the existing v2 Adapter on the same fixed 10-task posttrain-v1 sample previously used for the OpenCUA GUI-only baseline.",
+  "sources": {
+    "task_sample": "adapter_versions/v2_expanded/experiments/configs/opencua-posttrain-random-10-seed-20260803.json",
+    "dataset_version": "posttrain-v1",
+    "source_count": 189
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "qwen3-vl-4b-instruct",
+    "actual_model_preflight": "qwen3-vl-4b-instruct",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "medium",
+    "main_and_grounding_same_model": true,
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 20,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "adapter_actions_exposed": true,
+    "task_specific_or_golden_exposed": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "preserve_previous_results": true
+  },
+  "selection": {
+    "method": "reuse_fixed_opencua_posttrain_sample",
+    "seed": 20260803,
+    "source_count": 189,
+    "selected_count": 10,
+    "domain_counts": {
+      "libreoffice_calc": 3,
+      "libreoffice_writer": 2,
+      "multi_apps": 2,
+      "os": 1,
+      "thunderbird": 1,
+      "vlc": 1
+    },
+    "draw_order_preserved": true
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "source_episode_id": "42b405e0cf76674488352722",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "308f2f80a213c35f71c3914f740536bf3e0888229fde4a84e3d4986b18c994ab",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 2,
+      "source_order": 70,
+      "domain": "libreoffice_calc",
+      "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+      "source_episode_id": "5d6611617ccb927bd54a1a40",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "8eaaaac40c1d789283acff5f8a9e262281620373350b0287960db6230830a3e5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 3,
+      "source_order": 283,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "source_episode_id": "adcb612932c73e8af6229d41",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "df4d0d962f652bbd209932425bac7bd3700948b418f65ca76e25aa7094a3a5bf",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 4,
+      "source_order": 170,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "source_episode_id": "930ef94d9512d8b0eaa87b1e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b6052c550d5b4be467df64efa97c54ef9cfc16a927bb8798eb1229c96b8c1c04",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 5,
+      "source_order": 179,
+      "domain": "multi_apps",
+      "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+      "source_episode_id": "3ba9cef5534bdc726b6f8fef",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e5be1d483c86d7fd2c8cac8282e77096c1c074be42a4203bcedab660d4f28765",
+      "execution_class": "golden"
+    },
+    {
+      "order": 6,
+      "source_order": 294,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "source_episode_id": "c10d9c18b7f9747fdde7a778",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "c09b9334518ae5f9049e9ee51383163073d0049c857ec91eedddf103a59d9641",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 7,
+      "source_order": 305,
+      "domain": "vlc",
+      "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+      "source_episode_id": "9da145b6640121e04a2bf496",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "162f16b72b0062548f2a10f8c479b1e9ce112e0915f9c0816830e856a438e644",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 8,
+      "source_order": 171,
+      "domain": "libreoffice_writer",
+      "task_id": "b21acd93-60fd-4127-8a43-2f5178f4a830",
+      "source_episode_id": "cc2f30473f8004b13a4acb50",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "cf8e1a6b4a411ede8120746a0fd2e5839b982864ff2690aaa466c65ee6331cd0",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 9,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "source_episode_id": "6713526f8ed37221d60ebd82",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3e24d356caf5f1fade549e59bf9e48e82e59bc4115204f3c4011037d22340336",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 10,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "source_episode_id": "ffbc6518951d1b42cb643766",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "ef2aa63e286baec7372f22c32ac5d6b9b4188a0aed593b3d117c3f2a3bdfba14",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

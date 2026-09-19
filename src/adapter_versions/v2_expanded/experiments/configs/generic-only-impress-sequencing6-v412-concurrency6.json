@@ -1,0 +1,183 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-impress-sequencing6-v412-concurrency6",
+  "status": "frozen",
+  "purpose": "Prior-outcome-selected causal validation of v412 strict compositional Impress sequencing and in-place presentation persistence on four affected tasks plus two unrelated Multi-Apps controls. This diagnostic is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-26T23:19:06.225111Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "prior_diagnostic_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-typed-handoff4-v411-concurrency4.json",
+    "prior_diagnostic_config_sha256": "c1b0d22546f0cfb4c47e0cbfb625c5f733bb201b84cfdb4e45b8bebf3d4aaf2b",
+    "prior_diagnostic_results": "adapter_versions/v2_expanded/experiments/generic-only-typed-handoff4-v411-concurrency4-run1/results.json",
+    "prior_diagnostic_results_sha256": "7c2724280c55cea522d6a1e63e96d46a65a5ef205c3e6d00af964b703c431bd8",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v412-strict-impress-sequencing/source-seal.json",
+    "source_seal_sha256": "aa958f8a0aa842d5448ab1d1dbe309539058920cff27c1a3f8f425a6790f81d1",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v412-strict-impress-sequencing/strict-tool-granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "21446e5f391dbba34837b27cd6c54b47bbd4062f82af9ebb7e241cdf0301c482",
+    "prior_smoke_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-clean-boundary-smoke2-v412-impress-sequencing-concurrency2.json",
+    "prior_smoke_config_sha256": "e4a6d00c898ea872434baf369d95c1a4343d1df47a25c31bab1d2923f2a3f267",
+    "prior_smoke_results": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v412-impress-sequencing-concurrency2-run1/results.json",
+    "prior_smoke_results_sha256": "14593842e26ba00ad7b5d324465a4042ce048a4d0f9f8b88aa1d9f4f45ee215c",
+    "prior_smoke_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v412-impress-sequencing-concurrency2-run1/workers/worker-01/strict-audit-v5.json",
+        "sha256": "ec0d2f66de0fe0e4ba8f4f7c97c5ad57d2fe74a7654371c3a83b1653949275f1"
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v412-impress-sequencing-concurrency2-run1/workers/worker-02/strict-audit-v5.json",
+        "sha256": "c98546006027feaaae28ef3cd5b6a1fc80280306a962005d41f27833a2af30d0"
+      }
+    ]
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v412-strict-impress-sequencing6",
+    "role": "diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-impress-sequencing6-v412-concurrency6-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": ["__pycache__", ".pytest_cache", ".ruff_cache", ".venv*", "*.pyc"],
+      "file_count": 835,
+      "total_bytes": 64306247,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "3862dde270763d39fc94c4d843237cc3637cf7b41e26f0d3ca939e44b0d62cb2"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v412_strict_impress_sequencing_experimental",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1", "http://192.168.0.138:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_search_in_place_document_identity_compositional_impress_sequencing_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "orders 55 and 61 exercise strict compositional Impress sequencing; orders 125 and 126 exercise in-place typed media handoff persistence; orders 90 and 132 are unrelated v409 passes used as controls",
+    "selected_count": 6,
+    "affected_orders": [55, 61, 125, 126],
+    "control_orders": [90, 132],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 55,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_order": 146
+    },
+    {
+      "order": 61,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "source_order": 152
+    },
+    {
+      "order": 90,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_order": 186
+    },
+    {
+      "order": 125,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "source_order": 251
+    },
+    {
+      "order": 126,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "source_order": 252
+    },
+    {
+      "order": 132,
+      "domain": "multi_apps",
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "source_order": 267
+    }
+  ]
+}

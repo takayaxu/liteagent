@@ -1,0 +1,303 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-random20-20260830-thinking-mode",
+  "status": "frozen",
+  "purpose": "Exploratory random-20 validation of Qwen3.5 binary thinking mode, optional Holo GUI grounding, unified Tool audit, and same-VM soft restart. Non-promotable; prior effort-labelled condition remains immutable.",
+  "freeze_timestamp": "2026-08-30T00:00:00Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_seed": "hybrid-qwen35-holo31-random20-20260830-v1",
+    "selection_rule": "sha256(seed + ':' + task_id), choose the 20 smallest digests among execution_class values beginning with generic_, then execute in source order",
+    "selection_digest": "a4c9927ebaae360b74ae2a41879f0e2fd62e299482e58b488d9417931e01ecf3",
+    "source_git_commit": "c940d47",
+    "source_worktree_sealed": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "c940d47-hybrid-qwen35-holo31-random20-thinking-mode",
+    "role": "exploration_hybrid_random20",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-random20-20260830-thinking-mode-run1",
+    "source_git_commit": "c940d47",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 413,
+      "total_bytes": 54428112,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "a1dfe6a2bc6335bc09ef0fbc23349e9f8b1952145748735abea4943a8c422d12"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": false,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_hybrid_qwen35_holo31",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "Hcompany/Holo-3.1-4B",
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch"
+    },
+    "reasoning_mode": "thinking"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "outcome-independent deterministic hash sample from the generic execution subset of the 189-task non-OAuth pool",
+    "seed": "hybrid-qwen35-holo31-random20-20260830-v1",
+    "eligible_execution_classes": [
+      "generic_api_only",
+      "generic_api_plus_gui",
+      "generic_api_plus_code"
+    ],
+    "selected_count": 20,
+    "source_order_preserved": true,
+    "uses_prior_outcome": false,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "gui_coverage": {
+      "generic_api_plus_gui_orders": [
+        63
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "order": 22,
+      "source_order": 101,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 23,
+      "source_order": 102,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 26,
+      "source_order": 105,
+      "domain": "libreoffice_calc",
+      "task_id": "1334ca3e-f9e3-4db8-9ca7-b4c653be7d17",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 28,
+      "source_order": 107,
+      "domain": "libreoffice_calc",
+      "task_id": "21ab7b40-77c2-4ae6-8321-e00d3a086c73",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 41,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 42,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 47,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 63,
+      "source_order": 154,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 138,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 142,
+      "source_order": 281,
+      "domain": "os",
+      "task_id": "23393935-50c7-4a86-aeea-2b78fd089c5c",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 144,
+      "source_order": 284,
+      "domain": "os",
+      "task_id": "5ced85fc-fa1a-4217-95fd-0fb530545ce2",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 180,
+      "source_order": 327,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 184,
+      "source_order": 331,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 186,
+      "source_order": 333,
+      "domain": "vs_code",
+      "task_id": "57242fad-77ca-454f-b71b-f187181a9f23",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 187,
+      "source_order": 334,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "execution_class": "generic_api_only"
+    }
+  ],
+  "diagnostic_gate": {
+    "pre_registered_before_result": true,
+    "expected_tasks": 20,
+    "runs": 1,
+    "promotion_eligible": false,
+    "success_criterion": "Complete all 20 task records without boundary or environment invalidation; report pass count, path classes, Holo grounding calls, audit completion, and same-VM soft-restart usage.",
+    "stop_condition": "If the explicit binary thinking request is rejected or the response contradicts it, persist invalid_configuration; if endpoint or VM saturation occurs, preserve partial evidence and stop without rerunning unchanged tasks."
+  }
+}

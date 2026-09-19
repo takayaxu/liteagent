@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order77-writer-sentence-separation-v39",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for order 77 after correcting generic Writer sentence-separation retrieval and replacing its opaque zero-based input with an explicit natural paragraph-number contract.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order77-v38.json",
+  "candidate_parent_config_sha256": "276ae6c476c478d1f193beedf3094c54d1ee3a32165482b11b1146840bb0f5af",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "249e9bace4cb214dfe83b3da2d4aca2789f201ab9196f82b61c19a889d3bef7a",
+  "change_scope": "Remove sentence terms from the unrelated split-tabstop retrieval vocabulary; add blank-line, sentence-separation, and readability terms to paragraph.separate_sentences; expose required one-based paragraph_number and convert it inside the Adapter. Leave model, Prompt, Runner, VM, evaluator, completion policy, and all other tools unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The unchanged v38 candidate omitted paragraph.separate_sentences from its initial top seven while the unrelated split-tabstop action owned sentence retrieval terms. Qwen used line-spacing mutations, accurately admitted the requested blank-line state was absent, then falsely terminated after only saving. Correct generic retrieval plus a direct natural ordinal should let Qwen select and parameterize the existing mutation itself.",
+    "tool_catalog_sha256": "128ab1250827f4cac3d577cda26b5e91eff31bdb1ccb70bbee73a26886e52d1c",
+    "writer_schema_sha256": "b952f7aac9779bfe40bda36b8bfaadaa2cf1f4a4165e5c5a02212d834ad4152c",
+    "writer_tool_manifest_sha256": "44dd6d837dc67807bec3536d58b201bbfd41b7e7c4ab9c005d3d9eef8e304654",
+    "writer_uno_worker_sha256": "3927d9d4c5360580c9d926d290ccdf4d3a2999a64c0e41d88cb4e96e776a743d",
+    "writer_schema_test_sha256": "ab6c0267a176330e4366d4bb91b0da12ed5acdeb0b66a22a3ee5440fbd0c97d9",
+    "writer_uno_worker_test_sha256": "45ccd539c72b175203eccc33e3cd6c6a1dd26a8f0ae79d7d7db17c140762da89",
+    "strict_manifest_test_sha256": "b0ba7956fd108cab8dc6864ddd6ef7ba3e57483235a85dbe9d9a03920f56e325",
+    "tool_catalog_test_sha256": "fcd301bde72ee397b2a25b4b03844aecfa47e38707c955f8ed5435152d41a5d5",
+    "runtime_test_sha256": "f16a864fc7844130d370ccedec9c59c70b7d94d9a9d2fbff7a4d9c1ac9925ebb",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_writer_catalog_runtime_manifest_tests": "518 passed",
+    "full_unit_tests": "1370 passed",
+    "counterfactual": "Retrieval tests use blank-line requests for paragraphs two through four with different wording. Dispatch tests prove the exact one-based paragraph_number selected by the model reaches the Adapter unchanged. A fake-UNO test separates three unrelated sentences in paragraph two and verifies one empty paragraph between sentences while paragraph one remains untouched. No task identity, source filename, document content, evaluator state, or fixed first-paragraph default appears in changed runtime or tests.",
+    "current_instruction_router_check": "paragraph.separate_sentences is third in the seven-action candidate list after document.inspect and document.save; paragraph.apply_split_tabstop is absent. The direct schema has only required paragraph_number and no params wrapper or default ordinal.",
+    "prior_v38_result_sha256": "7c867085b006a9034765b4ad5221e78801c51a2e251cb007fa6b7f81baed5724",
+    "prior_v38_audit_sha256": "71f7e6bef94635d9a735d3f0917ab2042ae02a0c348b74b9e0945e0d5f90d42e",
+    "prior_v38_audit_valid": true,
+    "prior_v38_model_selected_actions_and_arguments": true,
+    "prior_v38_outcome": "Original evaluator 0.0 after seven model turns. The top seven omitted paragraph.separate_sentences and included split-tabstop. Qwen inspected, changed line spacing twice, inspected, accurately admitted sentence separation was absent, saved, then terminated with a false completion claim. No sentence-separation mutation executed.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, document content, golden value, evaluator state, or fixed task answer appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_sentence_separation_v39_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 77,
+      "source_order": 168,
+      "domain": "libreoffice_writer",
+      "task_id": "88fe4b2d-3040-4c70-9a70-546a47764b48",
+      "source_episode_id": "3e25cfea4958d7e8e1f27ac5",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "aea6b14ab04719ca646dd787f8fcf9f48484a536e5b771fea6bc1930e44b73eb",
+      "execution_class": "task_specific",
+      "pool_order": 77
+    }
+  ]
+}

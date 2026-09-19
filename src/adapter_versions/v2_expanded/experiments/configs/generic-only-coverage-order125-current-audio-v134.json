@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order125-current-audio-v134",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 125 hypothesis 2: expose a reusable semantic action that extracts audio from the unique local media file currently playing in VLC without requiring the model to copy a discovered input path.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order125-media-audio-v133.json",
+  "candidate_parent_config_sha256": "5e8d0fc76439a883b359d8b91e85a66d9b18fe296589220de72eeed386c6c664",
+  "parent_attempt_result": "experiments/generic-only-coverage-order125-media-audio-v133-run1/results.json",
+  "parent_attempt_result_sha256": "cce8f391ea91f9a525fd19a7ef1b67e25bddc429e68a99bb434eac8e39d89402",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order125-media-audio-v133-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "fdcaf1228a54c60d6896546b6828fb1b620bcb0c67bbd3bb55d10763f049ee25",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "7192f18dfc9f39b76fa7ed5e8f27ad1b053d689f853515749389439d9f892b61",
+  "change_scope": "Add parameterized Multi-Apps action media.extract_current_audio. The model selects the action and supplies only an absolute or ~/ MP3/WAV output path. The Adapter reads live VLC playback state, resolves the reported basename through bounded filesystem.find, rejects zero or ambiguous matches, and forwards that exact resolved source with the model output path to generic VLC extraction. Rank the semantic action first for current-playing audio intent and return compact resolved-path completion evidence. No task identity, dataset order, fixed source/output name, instruction parser, expected audio, golden material, evaluator state, Runner argument rewrite, or task workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_current_audio_v134_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the remaining failure is current-media resolution, audio extraction, presentation insertion/save, completion, model decision, or environment. Try the final permitted generic hypothesis only when the trace identifies a materially different reusable fix with sufficient expected value; otherwise mark Order 125 task_blocked and immediately continue to Order 126.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "semantic_current_media_audio_extraction",
+    "failure_evidence": "The v133 hypothesis exposed direct inspection and extraction actions. Qwen correctly selected media.inspect_current and received the exact source path, but then called media.extract_audio twice with input_path ~/ instead of copying the returned path. The repeated-action guard stopped the cycle after nine steps and 41.06 Agent seconds; evaluator reward was 0.0 and strict audit valid=true.",
+    "counterfactual_tests": "Tests use unrelated Aurora, Harbor, Forest, Winter, Coastal, and Seasonal media, output, and presentation paths. They verify live VLC resolution, uniqueness rejection inherited from inspection, exact model output-path preservation, MP3/WAV validation, downstream input binding solely from current application state, direct Top-K/search routing, compact contexts, and rejection of model-supplied input_path on the semantic action.",
+    "focused_unit_suite": "254 passed",
+    "full_unit_suite": "1901 passed",
+    "static_verification": "Ruff check and modified-file format check, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "source_sha256": {
+      "multi_apps_adapter/media_contracts.py": "b88144a69e581a0be2547738f9270d6dc3f23519da39b05e0b433cbea818e2a5",
+      "multi_apps_adapter/tool_manifest.py": "b44401b7a3715924ebf89c42325b54bcd0a18366307703a3c836fe1b3457b25b",
+      "multi_apps_adapter/generic_actions.py": "616ad02b207a7b01f7e5e906047f0b684c475affc8fce21d733da8f709f82d0d",
+      "multi_apps_adapter/schema.py": "f1cd9d7324e7ff22cca432160ed0bb91377330332136a8469679b70f244ab91e",
+      "multi_apps_adapter/generic_schema.py": "01c170f0421937bc8730bf5ad5ed364318d213acbb8183662e2181bec2de4831",
+      "integrations/lite_agent/tool_catalog.py": "41f2ebb8020362fa3694ee468ce04128e3681c0320351a1a95a4274bfc02d90a",
+      "integrations/lite_agent/adapter_results.py": "5e2f1f739ca3ca500e63f4d4d6f6adbbd8e2d30341d6dbf93e192a812c379408",
+      "integrations/openapa_osworld/tool_catalog.py": "be70fce91382112cbd6008a661953fdcfdef8b44ba96e629829b3f8bd2fa4ba7"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 125 v133 argument-binding failure",
+    "selected_count": 1,
+    "prior_development_status": "generic_hypothesis_1_failed_preserved_in_generic-only-coverage-order125-media-audio-v133-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 125,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "source_episode_id": "dbaed1c93f81ec6acb2fa518",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "05145c76138ed6fb2b6554751726ab9ad6db33f243d37f2b56ad160a09356e35",
+      "execution_class": "task_specific",
+      "pool_order": 125
+    }
+  ]
+}

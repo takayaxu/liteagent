@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order178-keybinding-contract-v164",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 178 after the baseline exposed a mismatch between the flat model-visible keybinding schema and the nested guest Adapter contract.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order178-v163.json",
+  "candidate_parent_config_sha256": "382f6f0960c2b741b3cc2e12c92fb8523fa7a53481a4c2bcc8cc362f90ce2229",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "3bcaae2f472db03f49198bf9c2bd967f41553a421f0fa77e476d5c72c9d7a7af",
+  "change_scope": "Move keybinding representation conversion out of LiteAgent and into the VS Code Adapter. The public Adapter now accepts the exact flat key, command, when, disabled, and optional path contract shown to the model while preserving legacy nested calls. In explicit list/tree Find contexts it transparently accepts list.find or the common workbench.action.find alias, persists VS Code's negative-command form when disabled, and verifies the exact binding. No task identity, instruction parser, task answer, golden data, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_keybinding_contract_v164_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass after the flat Adapter contract is deployed, mark Order 178 task_blocked immediately and advance to Order 179. Do not add another task-local command alias, parser, prompt variant, fixed key, GUI sequence, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_adapter_owned_keybinding_representation",
+    "baseline_result": "experiments/generic-only-coverage-order178-v163-run1/results.json",
+    "baseline_result_sha256": "9766fd66753b456ed828882b80fec5d6726a59aea31a8ef09749ad13498cc182",
+    "baseline_audit": "experiments/generic-only-coverage-order178-v163-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "04e25704c1f6adef1adf785e00058835e4b4004035f681237a74dde98569261f",
+    "baseline_outcome": "failed_reward_0_all_keybindings_ensure_calls_rejected_because_model_sent_the_documented_flat_contract_but_guest_adapter_required_nested_binding",
+    "counterfactual_contracts": [
+      {
+        "params": {
+          "key": "ctrl+k",
+          "command": "workbench.action.find",
+          "when": "listFocus && listSupportsFind && explorerViewletVisible",
+          "disabled": true
+        },
+        "expected": "Adapter maps a different key and broader list context to a verified -list.find binding"
+      },
+      {
+        "params": {
+          "key": "ctrl+k",
+          "command": "workbench.action.focusActiveEditorGroup",
+          "when": "terminalFocus",
+          "disabled": false
+        },
+        "expected": "unrelated enabled terminal-to-editor binding is accepted unchanged"
+      },
+      {
+        "boundary": "LiteAgent normalize_adapter_arguments",
+        "expected": "model keybinding arguments remain byte-for-structure unchanged before Adapter transport"
+      }
+    ],
+    "focused_tests": "148 passed across keybinding, VS Code, manifest, Router, and runtime boundary tests",
+    "full_non_guest_tests": "2128 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/keybindings.py": "95167575481f8db61e1161a3a1d26305c9d51f08712b6a904beed426427f88f2",
+      "vscode_adapter/actions.py": "304c96df63de052dacc5d56b3b1aac18375d66f896196c3f985b7088e637d5d0",
+      "vscode_adapter/schema.py": "12d2795d7111255dcd751c6a2d9bc1d63bc34b167cdeed9ba5049bcf198dc78a",
+      "vscode_adapter/tool_manifest.py": "e2e15b6da6003545afa31046c71d26a7b557dcf07ad7d53edbdfd533930cd430",
+      "integrations/lite_agent/runtime.py": "bed6e8bbbb90eaa324c70cebf8b3e5a2ea3c08d40b5df2dc34ff0d7587cb668a",
+      "integrations/lite_agent/tool_catalog.py": "80cd0bf84e3721a974800857c540689ec069d9156b52573b576eec821e9517ee"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 178 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 178,
+      "source_order": 325,
+      "domain": "vs_code",
+      "task_id": "ea98c5d7-3cf9-4f9b-8ad3-366b58e0fcae",
+      "source_episode_id": "3f5b151bb2961956b992bfc7",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "127c9847c5ed3c1e7e7f9268822760404db38d3e8d9c81125e960d1985afa4c5",
+      "execution_class": "generic_api_only",
+      "pool_order": 178
+    }
+  ]
+}

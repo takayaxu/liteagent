@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order92-semantic-command-context-v56",
+  "status": "frozen",
+  "purpose": "Second bounded targeted A/B for coverage Order 92 using a compact semantic command execution context.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order92-command-provenance-v55.json",
+  "candidate_parent_config_sha256": "e38f10c3867130d0cd7a652f4decd110051ca4a842e5ac47e350c7f5f97128e1",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c019b357412049396c38006dc6e45da5d2f1806cd3828fd992efc4107c782d1b",
+  "change_scope": "Hypothesis 2/3: replace the model-visible optional shell-history boolean with required semantic provenance=none|shell_history and require an explicit absolute cwd on every generic command.run call. The Adapter converts provenance into exact shell-history recording; the model still owns provenance, cwd, argv, and every other argument unchanged.",
+  "implementation_evidence": {
+    "before_config_sha256": "e38f10c3867130d0cd7a652f4decd110051ca4a842e5ac47e350c7f5f97128e1",
+    "before_result_sha256": "7c17cb7ae3f7ddcded80baeea6deedc6338637f67a051a87518b6d9abf431635",
+    "before_audit_sha256": "6b95155aa6f7b524e40aa55ed6e5f4ce71c2e64a9ee1512f8024b3cd572e77bd",
+    "before_trajectory_manifest_sha256": "b49e3c38e78024023c15c140b8e21b0ead1f875a5a91e478b30300b3b52b5028",
+    "failure_class": "model_lost_working_directory_under_boolean_provenance_contract",
+    "hypothesis_index": 2,
+    "hypothesis_limit": 3,
+    "os_tool_manifest_sha256": "a8a88224aec5d031423bf15c588eec2e57a051e65ba363e15fbe5111a90011c7",
+    "os_schema_sha256": "4c9b2c5582ee872a25581cd908877dbefa5886f597dae9ff4751d4e2f1f9128a",
+    "os_actions_sha256": "3eb5d66ad6e32936e5f94e4c0653ff5e1032d1524b39ae8ca5b8b481641df22a",
+    "lite_agent_completion_policy_sha256": "1e2c271762763fc15866956ed577331b5d07aa0921ffb9591287b17fb37c6044",
+    "lite_agent_runtime_sha256": "e5e927badf2c73dc278257c497af07a53e0c431a261ff292951d0ccf0f52ba1b",
+    "lite_agent_tool_catalog_sha256": "326095f7183816fec1bbc9da89692642e937d62f1085c9025c763b25ebfdbf6b",
+    "openapa_tool_catalog_sha256": "861bfbee75ea68c305423807d198cd1a6758ff7545349d4f9857b20eeea77a81",
+    "lite_agent_runner_sha256": "b81ea162e6f73c2fa720902e77ab54ccb31c8397f1cd95297743150b6fc441af",
+    "lite_agent_supervisor_sha256": "bed048eb65925aebe2cc5f83bca77878a92738186f5613476047716971d4a5ce",
+    "counterfactuals": "A touch command with cwd=/tmp/without-history and provenance=none reaches the generic command action unchanged and is rejected only by the generic completion gate when its unrelated instruction requires provenance. A different printf command with cwd=/tmp/counterfactual-project and provenance=shell_history reaches the Adapter unchanged and records the exact shell-escaped argv. Runtime schema rejects relative cwd and unsupported provenance values.",
+    "focused_unit_tests": "594 passed",
+    "full_unit_tests": "1511 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_semantic_command_context_v56_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 92 after materially different generic hypothesis 2/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order92-command-provenance-v55-run1",
+    "rerun_reason": "The preserved valid v55 run proved that making record_shell_history required caused Qwen to select true, but it omitted cwd, listed the wrong directory, later emitted a literal unexpanded wildcard, and exhausted 30 steps. The semantic contract jointly requires the execution directory and a clearer provenance enum without deriving either from task identity or instruction parsing.",
+    "on_failure": "Preserve the result and evaluate one materially different final generic hypothesis 3/3. If that also fails, mark Order 92 task_blocked and advance to Order 93 without a fourth attempt.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_episode_id": "6a989c6dcfe9db0ca1cb348a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a3ab6ed27a3924f8988db5c5956b8186842e7e15db3f2b3d1d8585c6093eede6",
+      "execution_class": "task_specific",
+      "pool_order": 92
+    }
+  ]
+}

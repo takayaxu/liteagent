@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order108-layout-compaction-v98",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 108 hypothesis 1 after preserving and auditing the v97 baseline failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order108-v97.json",
+  "candidate_parent_config_sha256": "8b7b7126589ff9ae4331e09534b2414cb300b58a8028ded151f9d54ae7d94223",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "3a6b9c2df03c66be112161e7c558be0c434e7e2322ae3d2c79e5fd683248a7a4",
+  "change_scope": "Compact generic pdftotext layout output before per-file truncation by replacing runs of two or more horizontal spaces with tabs and collapsing repeated blank lines. Preserve row order, ordinary single spaces, explicit reading-order opt-out, and truthful raw versus compacted character counts.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_pdf_layout_whitespace_compaction",
+    "parent_result_sha256": "ffe8ec73274c53a64e613d4db755093b392d9d1d116380411729d34a0cb9dad2",
+    "parent_audit_sha256": "fbb15262b729eac69e03c55a433fb48d3013bf547b38804d1886670079f6581a",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_30_steps_and_330_317_agent_seconds",
+    "parent_diagnosis": "The model selected the correct generic PDF batch reader, but layout padding expanded nine PDFs to 72,000 returned characters. Every file was truncated at 8,000 characters and the shared 64K context exposed only 60,647 characters. Required table rows were absent from the visible 2019 and 2020 documents, after which the model fabricated repeated values and looped on invalid conversion commands.",
+    "counterfactual_scope": "An unrelated municipal transit table proves multi-space column gaps become tabs and repeated blank lines collapse without changing row order. A structurally different prose archive explicitly selects preserve_layout=false and proves repeated spaces and blank lines remain byte-for-byte unchanged.",
+    "model_choice_contract": "The model still selects pdf.extract_text_batch, directory, filename pattern, page range, character limit, and any explicit layout override. The Adapter applies a documented representation compaction only after the model-selected generic layout extraction. It does not inspect task identity, instruction text, filenames for routing, document values, evaluator state, golden data, years, institutions, or workbook cells.",
+    "os_actions_sha256": "9d903be5814fb1feb784bf1152e4a4053cc4547f262c5e64dd29e72ce5743039",
+    "adapter_results_sha256": "22c70a2b7c3fd1925f6216e85762e1b0727cda4f29a9aeb89138b4081273953f",
+    "os_actions_tests_sha256": "929f7309edbab4d752563a4a2b904aef8c2d2a69d86521d7ecc086f4af5799db",
+    "adapter_results_tests_sha256": "3451016331ab04eb6f94509750160d35645ba6a7aca5f9eab0d815526533b209",
+    "focused_tests": "65 passed",
+    "full_unit_tests": "1671 passed",
+    "ruff": "all active integrations, scripts, unit tests, and OS Adapter files passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_pdf_layout_compaction_v98_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-1 A/B, diagnose one materially different reusable hypothesis 2, and run at most one targeted A/B for it. Do not retry v98 unchanged. After hypothesis 3 fails, mark Order 108 task_blocked and immediately advance to Order 109.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 108,
+      "source_order": 217,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_episode_id": "1d126b98f6535502e57b40f1",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f32b4f130dc31487e94e0f0c776e3a0d973e472a283e02b59404f52ba3c3d69d",
+      "execution_class": "golden",
+      "pool_order": 108
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order91-v235-latest-mail-window",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for the eligible historical-pass regression at Order 91. Replace the ambiguous two-enum latest-mail selection surface with a reusable explicit latest-window facade while preserving the existing general query action. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order90-v234-contact-spreadsheet-facades.json",
+  "parent_config_sha256": "2da808b503b6607f48d020a49220e3af52520144f2330d5e1b5785f1575ccb3c",
+  "hypothesis": "The v210 run selected the correct mail and workbook tools and terminated cleanly, but interpreted 'latest 5 emails, from earliest to most recent' as select_from=earliest plus order=ascending. It therefore wrote the earliest five messages instead of the latest five. The eligible v54 historical pass eventually used select_from=latest plus order=ascending and passed, but only after 30 steps and 21 errors. If a bounded latest/newest-message request exposes a mail.query_latest_messages action whose public contract asks the model only for folder, count, and the direct arrangement earliest_to_latest or latest_to_earliest, Qwen will choose the correct time window without having to coordinate two easily confused enums.",
+  "change_scope": "A focused mail_window_semantics module detects only explicit bounded latest/newest/most-recent message windows and optionally stages a dependent spreadsheet.create_workbook action. The existing mail.query_messages action remains unchanged for arbitrary filters and earliest-window queries. The new public schema requires model-selected folder_name, limit, and arrangement, plus optional reusable filters. Multi-Apps deterministically maps the chosen action to Thunderbird messages.query with select_from=latest and maps arrangement to ascending or descending inside the explicit Adapter contract. Completion requires both the mail read and workbook creation when both are named. No folder, count, ordering value, output path, table data, task identity, or answer is selected or injected by the Runner.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-01/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247",
+    "v210_outcome": "Strict evidence-valid failure: reward 0.0, generic_api_only, 3 steps, zero tool errors, and Agent termination. Qwen called mail.query_messages with folder_name=daily, limit=5, select_from=earliest, order=ascending, then correctly created and saved report.xlsx from those five returned rows. The original evaluator failed because the requested window was latest, not earliest.",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order91-calc-create-new-v54-run1/results.json",
+    "historical_clean_pass_results_sha256": "8b825a0cc4eec0f23c6aa4406fcb31afb393681aaabfdcc25b65ec492ecdd2aa",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-091-generic-only-coverage-order91-calc-create-new-v54-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "981ce78292015003340c79341a19b79e76a82debf85564890cd680368088cfa1",
+    "historical_clean_pass_outcome": "Reward 1.0 and current strict re-audit valid, evidence-valid, and baseline-admissible with zero task/golden leakage and zero model/Runner argument mismatches. Qwen eventually called Thunderbird messages.query with select_from=latest and order=ascending and created the correct workbook, but used all 30 steps, produced 21 errors, and did not terminate through the Agent protocol.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "mail_window_semantics_sha256": "415be33c69b0dcf67331a028a2edb82a598970544f3dd59ee2d9964c724e7f40",
+    "instruction_semantics_sha256": "0350ffce19b98352174fe56c3fea72c70f137aa8d4bd7e990969aa48db99031c",
+    "action_selection_sha256": "f175324e34fa4fe7460d7c109cf00fb347e3c4d5513b3cb9462bf08c3b5cb546",
+    "semantic_requirements_sha256": "7db36241bc793aa0fb90b0a22e91f5a5f9b4bff5e1ed27592e07ffa7c97085c4",
+    "completion_policy_sha256": "1124c2bfbfec0f83b693536a195dc69f8a10ecd9f23bf22813b257f150c88b4e",
+    "lite_agent_tool_catalog_sha256": "04337f4b13bfcdc0d121f3c8af1a3fd3f37a6c4377280676371137edd5f294fc",
+    "openapa_tool_catalog_sha256": "c494bf10260aed70f036da10eabfb3175a78193e489af1ed771422ec12f4a0ec",
+    "mail_contracts_sha256": "3785da6372874aa3e80be878b223485797ce7b35e17299434f2be11f99f04cb7",
+    "multi_apps_tool_manifest_sha256": "0ff09752ec75d9a41f4d71cf6202b204bfb0a86fad4cf5e6f138d5900b0b804b",
+    "multi_apps_generic_schema_sha256": "f117325e448e6b6e4ea4026ccf2646a714f7715586f53ed6daa9c4a412a4abdd",
+    "multi_apps_schema_sha256": "7e579d1b35bad9ad8ed86b4f0e1224446ef0cc83539cfb855b7284eeebd916fc",
+    "multi_apps_generic_actions_sha256": "96a496744ee355fd2f707af463be68ea4ce8f97897105265bd0ac9eadfcdb845",
+    "multi_apps_actions_sha256": "93f4fb72ec14b9f20391d48c5ba9f7aec0a4a7a8f91c1de5158b36c02ecd2db2",
+    "mail_window_tests_sha256": "5e135ad466d738e71cbe62f8a95ec5c7b58409dcd34129752f0dd7ee596e049f",
+    "multi_apps_runtime_tests_sha256": "c267d786f1f6914818787af9ca92c1648d322febd367a92e62d2513583ae5857",
+    "multi_apps_catalog_tests_sha256": "585184bc7c8ad5e1f12537d6f4eca31620c584ffa29f40f70149dc62af578aaf",
+    "project_layout_sha256": "dacb98170666047659cfc1ffbc9989a3a3cdefa6673d6eeb13cd6016fdb3d583",
+    "runtime_module_tests_sha256": "5074caa43ee774115b9eb1cfecae9df38f7b57b0e60390461dc38397f1bf0009",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "lite_agent_supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "counterfactuals": "Different latest-window phrasings cover newest seven, three most recent, and latest five messages. Negative cases reject earliest-window requests, a subject containing the word latest, contact export, videos, and unbounded all-message reads. A structurally different Research/Alerts newest-three-to-ODS workflow proves the strict surface exposes only the latest-mail action first, then spreadsheet creation; both LiteAgent calls and all model-facing arguments reach the executor unchanged; completion requires both public steps; and the final surface is propose_done only. Schema and Adapter tests cover two unrelated folders, both arrangement directions, optional filters, and reject missing counts, boolean counts, downstream-only select_from, invalid arrangement values, and task_id.",
+    "focused_tests": "612 passed across latest-mail semantics, staged strict surface, completion requirements, Multi-Apps schema and forwarding, catalog behavior, strict schema-manifest validation, and runtime module ownership",
+    "unit_tests": "2554 passed",
+    "ruff": "passed for active source, scripts, tests, and Adapters",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_latest_mail_window_v235_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 actual requests with the current strict re-audit of the historical clean pass",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T01:37:41Z",
+  "tasks": [
+    {
+      "order": 91,
+      "pool_order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

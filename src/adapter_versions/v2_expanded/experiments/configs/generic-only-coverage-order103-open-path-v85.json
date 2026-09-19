@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order103-open-path-v85",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 103 after preserving and auditing the untouched v84 baseline.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order103-v84.json",
+  "candidate_parent_config_sha256": "a659ff7ca03037a46fab074470990cfec68ebdad95adb2ef34cf95394aa22ed4",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "f86ce7e15537d2cb473b0251be9bb2d3b18072fd84050762f5e4cc57dd4d64bc",
+  "change_scope": "One generic recovery change: when desktop.open_path reports a missing path, return bounded exact-basename file or directory candidates from the guest home tree and require the model to explicitly retry. Never rewrite or execute the retry automatically.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_bounded_desktop_open_path_recovery",
+    "parent_result_sha256": "9cb48d85d2670ced57365072e8e13990df06864311733f6a0d93dcc9b3c6af3f",
+    "parent_audit_sha256": "440b118649c22c54076fe61cc1ed8867310fc5139f804f0a651624137d6dbcf2",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_9_steps",
+    "parent_diagnosis": "The model repeatedly selected the correct desktop.open_path action but inferred home-root paths for a workbook stored on Desktop. It never chose filesystem.find, and the downstream missing-path error exposed no exact candidate. The no-progress window stopped the Agent loop after 55.579 seconds; evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "Tests use unrelated Workshop Notes documents in two synthetic directories plus a case-mismatched distractor. They require exact basename matching, bounded traversal, unchanged forwarding of the first model call, an explicit model retry, and no automatic candidate execution.",
+    "model_choice_contract": "The failed call is executed exactly as emitted by the model. Recovery returns candidate paths and retry_options only; the model must select and emit the next desktop.open_path call itself.",
+    "instruction_top_k": "unchanged public action selection and Top-K; no action or schema was added",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "path_recovery_sha256": "e04f2de4f9d226aee254871e0d0ef0e89f035078dcc045cfeb324cc46b778c16",
+    "multi_apps_generic_actions_sha256": "b1e20ce5ac0be793ffaef64ae9bf1ef6e9ff5bc8a96e071c71de4ea36d42b1c5",
+    "multi_apps_generic_runtime_tests_sha256": "02b62fd0e3cf4c1bb11ade7b306bf0259deb02a1a945d4adeb32f1d25292f306",
+    "tool_catalog_sha256": "e267662ee0847fd1d0d3b8efd60a28b77bfdc19e628c6cf7fe0580b83a0f792b",
+    "focused_tests": "99 passed",
+    "full_unit_tests": "1644 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_tree_sha256": "e0a92777d75e6542814a8639376a7f4bce58251280b3ce2fe5e7021b570e2cd2",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_open_path_recovery_v85_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 103,
+      "source_order": 212,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_episode_id": "fd18745d23fe287b5b4c3968",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ae790d67bf718d3d8fac1a2884341903a80ae9684dcb42ac6e58f28be351cb63",
+      "execution_class": "golden",
+      "pool_order": 103
+    }
+  ]
+}

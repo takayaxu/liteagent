@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v325-semantic-search-scope-concurrency4",
+  "status": "frozen",
+  "purpose": "Bounded Phase-2 validation that strict semantic tool search excludes unrelated mutations while preserving the accepted title and picture behaviors. This is not a baseline score, best-of selection, consolidated validation, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v324",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v324.json",
+    "candidate_manifest_sha256": "ad9541e83cd2ebba861dc9b0dcfb14d438c80b6ed3e69717b559d4fbe499183b",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ab-v324-impress-title-and-ordinal-routing.json",
+    "disposition_sha256": "b5232eab00c43884097a203908f7dbea3851dc0229222a537df995fd00f8d183",
+    "outcome": "Orders 45, 58, and 60 passed with Agent termination. Order 62 selected the correct singular formatting action only after an unrelated slide.move exposed by broad search had reordered the deck, so v324 was rejected as a complete candidate.",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v325",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v325.json",
+    "candidate_manifest_sha256": "dd2f2aec23b7fdddc1a83ce8c02956112e21e4c7f18b1f90e0c92f7030d684e7",
+    "active_runtime_and_test_tree_sha256": "60fe319fd2414c455889da068f0a87e5f2ce9afc3aedae3d9a58cf648b1ead84"
+  },
+  "hypothesis": {
+    "generic_cluster": "strict_semantic_search_safety",
+    "statement": "When strict semantics declare mutations, recovery search may expose those declared mutations and read-only observations but must not introduce unrelated mutations through broad lexical similarity.",
+    "runtime_answer_materialization": false,
+    "runner_selects_application_action_or_arguments": false,
+    "runner_argument_rewrite_or_injection": false,
+    "model_action_replay": false,
+    "task_identity_used": false
+  },
+  "sources": {
+    "hypothesis_record": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/hypothesis-v325-semantic-search-mutation-scope.json",
+    "hypothesis_record_sha256": "634060b91db2d450c69cf2338dd39345ca65a0a489c9586747baf9a4ba29275b",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ledger-v325-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "f953342358fa7404b749402150795a5eacb3957858547fa736c6866d7c38aeec",
+    "model_preflight": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/preflight-v325-semantic-search-scope-dgx1-dgx2.json",
+    "model_preflight_sha256": "60fe6cc229bfe69cf2f7e6cf45dde7a11bcbf5a17b3a600b8544c8ebe87e32ad",
+    "historical_search_replay": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/replay-v325-order62-semantic-search-scope.json",
+    "historical_search_replay_sha256": "f72456645f4c64542dbbb1b7d196bbbdfed597b47a31f20c80565b69ed91e9f8",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "task_pool_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "development_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "development_results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 62 is the causal target. Orders 58 and 60 are the immediately preceding accepted title and picture behaviors that must not regress, and Order 45 is a stable same-domain Phase-2 control. The four tasks remain in source order and are fixed before execution.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v325_semantic_search_scope_ab4_concurrency4_2026-08-14",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 4,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "runner_sha256": "3d6c1b396539f8951e4f7476c73a497232ffa5d445c4ff4bf47439fe5a10c0fd",
+    "audit": "scripts/audit_generic_only_run.py",
+    "audit_sha256": "5ae19e380f87acc6b8405a36a241895e255cbb09a2b33590404f79e44cf17868",
+    "trajectory_manifest": "scripts/openapa_trajectory.py",
+    "trajectory_manifest_sha256": "280d6d9c5dfa336526f8918aeacb968f7256b6e9bf18cd03c897ce5e7011b313",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "request_timeout_seconds": 180,
+    "minimum_free_disk_gib": 100,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Fixed source order [45, 58, 60, 62], one task per worker. Workers 1-2 use DGX1 and workers 3-4 use DGX2.",
+    "selected_count": 4,
+    "affected_orders": [
+      62
+    ],
+    "stable_control_orders": [
+      45,
+      58,
+      60
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 4
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "all_four_tasks_must_pass": true,
+    "all_four_tasks_must_terminate_by_agent_propose_done": true,
+    "order_58_must_select_all_explicit_title_properties": true,
+    "order_62_must_use_singular_document_order_facade": true,
+    "order_62_unrelated_mutations_allowed": 0,
+    "order_62_plural_visual_order_facade_allowed": false,
+    "order_60_must_preserve_picture_then_distinct_text_progression": true,
+    "affected_order_gui_actions_allowed": 0,
+    "environment_failures_allowed": 0,
+    "unexplained_control_regressions_allowed": 0,
+    "invalid_office_environment_recoveries_allowed": 0,
+    "argument_or_action_mismatches_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "automatic_model_action_replays_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "tasks": [
+    {
+      "order": 45,
+      "source_order": 133,
+      "domain": "libreoffice_impress",
+      "task_id": "2b94c692-6abb-48ae-ab0b-b3e8a19cb340",
+      "cohort_role": "accepted_phase2_control_worker1_dgx1",
+      "v252_status": "failed",
+      "v307_status": "failed",
+      "prior_targeted_status": "passed_v321",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "preserved_strict_title_completion_worker2_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "v323_status": "failed_incomplete_title_call",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "preserved_picture_progress_target_worker3_dgx2",
+      "v252_status": "environment_failure",
+      "v307_status": "failed",
+      "v323_status": "passed_agent_terminated",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "cohort_role": "affected_semantic_search_scope_worker4_dgx2",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "v323_status": "evaluator_passed_agent_stalled_wrong_facade",
+      "execution_class": "generic_api_only"
+    }
+  ],
+  "freeze_timestamp": "2026-08-14T02:19:11Z"
+}

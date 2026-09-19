@@ -1,0 +1,210 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-tool-router6-aeb259e-lexical-control-thinking4k-concurrency2",
+  "status": "frozen",
+  "purpose": "Prospectively frozen prior-outcome diagnostic pair for explicit tool-search routing. Affected tasks previously failed after one or more model-authored tools_search calls; controls previously passed while also using tools_search. Both conditions use identical source, task order, working-model reasoning, step/time budgets, VM, evaluator, and audit boundary. They differ only in tool_search_backend and the candidate's frozen Router configuration. This is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-27T22:52:45.525591+00:00",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "condition_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-architecture-recall-completion3-gita7f9b07-control-thinking4k-concurrency2.json",
+    "condition_template_sha256": "d3020e94e92d5267b740fed4718d123232372f4430849ffd0215b9594968532d",
+    "diagnostic_evidence_1": "adapter_versions/v2_expanded/experiments/preflight-tool-search-router-git8965a25-thinking4k-run1/summary.json",
+    "diagnostic_evidence_1_sha256": "3b0396c09b1ad4e5024ee653d8f8d0821062521a087bf9edaae042c39bda603d",
+    "diagnostic_evidence_2": "adapter_versions/v2_expanded/experiments/preflight-tool-search-router-git2033a64-thinking4k-run1/summary.json",
+    "diagnostic_evidence_2_sha256": "7c8b749832960c2c6059e5c89f0b0f13dba3d07ae1546627bebef1ea6c7b60c7",
+    "diagnostic_evidence_3": "adapter_versions/v2_expanded/experiments/preflight-tool-search-router-gite2d0ae4-thinking4k-run1/summary.json",
+    "diagnostic_evidence_3_sha256": "679599a3b03245722b39c524704059512508896882b3450e0e327cd97d049f24"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "git-aeb259e-lexical-tool-search-control-thinking4k",
+    "role": "diagnostic_control",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-tool-router6-aeb259e-lexical-control-thinking4k-concurrency2-run1",
+    "source_git_commit": "aeb259ebe0c111f6d6f5feb280d24e908670d782",
+    "source_dirty": false,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 862,
+      "total_bytes": 64603496,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "18ac7eb54c6a4c6ad76f5b3685be50a2254d73c1effbf6c769e7ef28793c18b3"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_git_aeb259e_lexical_control",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "thinking_4096_official_sampling_native_recent_v1",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "sampling_top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0,
+    "seed": 17,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "initial_work_state_observation_mode": "screenshot",
+    "model_tool_transport_mode": "complete_response",
+    "model_tool_transcript_mode": "native_recent_v1",
+    "native_tool_transcript_limit": 4,
+    "model_authored_state": false,
+    "causal_affordance_graph": false,
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": true,
+    "nonterminal_completion_recovery": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_lexical_search10_native_recent_v1_grounded_completion",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true,
+    "tool_search_backend": "lexical_v1"
+  },
+  "selection": {
+    "method": "prior-outcome affected/control diagnostic selection frozen before pair execution",
+    "affected_orders": [
+      93,
+      103,
+      108,
+      122
+    ],
+    "control_orders": [
+      92,
+      160
+    ],
+    "affected_criterion": "historical failure with at least one explicit model-authored tools_search",
+    "control_criterion": "historical pass in both v337 and v386 with at least one explicit model-authored tools_search",
+    "selection_uses_prior_outcome": true,
+    "pair_difference": "tool_search_backend and candidate Router configuration only"
+  },
+  "tasks": [
+    {
+      "order": 93,
+      "domain": "multi_apps",
+      "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+      "source_order": 190,
+      "cohort_role": "historical_search_failure_affected"
+    },
+    {
+      "order": 103,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_order": 212,
+      "cohort_role": "historical_search_failure_affected"
+    },
+    {
+      "order": 108,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_order": 217,
+      "cohort_role": "historical_search_failure_affected"
+    },
+    {
+      "order": 122,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_order": 243,
+      "cohort_role": "historical_search_failure_affected"
+    },
+    {
+      "order": 92,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_order": 189,
+      "cohort_role": "historical_search_pass_control"
+    },
+    {
+      "order": 160,
+      "domain": "thunderbird",
+      "task_id": "08c73485-7c6d-4681-999d-919f5c32dcfa",
+      "source_order": 302,
+      "cohort_role": "historical_search_pass_control"
+    }
+  ]
+}

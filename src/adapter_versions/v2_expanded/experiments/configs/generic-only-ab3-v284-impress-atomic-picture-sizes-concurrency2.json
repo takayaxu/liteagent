@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v284-impress-atomic-picture-sizes-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v284's reusable atomic multi-slide picture-size contract and strict target/value completion coverage. It runs the unresolved v252 failure and the same two controls as v283 exactly once. This is a new frozen source condition, not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v284",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v284.json",
+    "candidate_manifest_sha256": "1f3368ae9a606961fa23871e75effae6db757769093d67250d394b5fbd269463",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "710528a0b18bd08fa9dacf33a47d43c9d163f5e2afc0bdb7f7213b139ed91886"
+  },
+  "hypothesis": {
+    "generic_cluster": "multi_target_picture_size_atomic_execution_and_completion_coverage",
+    "statement": "The model previously selected and executed one correct picture-size mutation, then claimed a three-target instruction was complete. Requiring the model to select one explicit atomic batch and supply every ordered slide, role, value, and unit, while validating the unchanged call and Adapter-confirmed results before completion, should make the public request indivisible without materializing answers in the Runner.",
+    "v252_observation": "Order 55 changed one shape on slide 3 and then claimed all requested slides were complete. v283 resolved the correct live bitmap-filled picture and verified the first 20 cm mutation, but the model again stopped before slides 4 and 6; strict completion checked only that picture.set_size had occurred.",
+    "counterfactual_support": [
+      "Three unrelated foreground pictures on different slides accept different centimeter values in one atomic call.",
+      "Two unrelated cover pictures accept different inch values in one atomic call.",
+      "Single-target picture resizing remains on picture.set_size.",
+      "Incomplete, reordered, duplicated, extra, and wrong-valued model calls fail before execution without argument repair.",
+      "All live targets are resolved before mutation and apply failures restore captured original sizes.",
+      "Both DGX endpoints preserve raw model arguments exactly through Adapter validation."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v284-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "8f38fbd7c42d2d1a51f9936b0f15bccc0cdad7ded487f3ded7a9dc466a3cfd67",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "parent_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v283-impress-dominant-picture.json",
+    "parent_disposition_sha256": "0f984c4ba9bc56e68c6c8ded449a1f42291b270c4584a35940ed953b5dedbd32",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Reuse the exact v283 cohort. Order 55 exercises the new atomic multi-target contract; Order 60 is the same picture-size mechanism control that regressed in v283; Order 58 is the source-adjacent clean control.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v284_impress_atomic_picture_sizes_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Reuse the exact v283 cohort in fixed-189 source order for Orders 55, 58, and 60. Round-robin assignment gives Orders 55/60 to DGX1 and Order 58 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [55],
+    "same_mechanism_control_orders": [60],
+    "clean_control_orders": [58],
+    "domain_counts": {"libreoffice_impress": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "same_mechanism_controls_must_pass": 1,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "all_requested_picture_targets_must_be_adapter_confirmed": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T01:46:44Z",
+  "tasks": [
+    {
+      "order": 55,
+      "source_order": 146,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "cohort_role": "affected_atomic_multislide_picture_sizes_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_source_adjacent_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "same_picture_size_contract_control",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

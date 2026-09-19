@@ -1,0 +1,82 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-direct-write-smoke1-v4",
+  "status": "exploratory",
+  "purpose": "Non-promotable final affected-task attempt to exercise direct ASCII typing in a fresh OSWorld VM after the clipboard-backend failure.",
+  "hypothesis": {
+    "statement": "When Holo selects write, direct PyAutoGUI typing executes with returncode 0 and visibly changes the focused terminal instead of failing in pyperclip.",
+    "affected_task_order": 128,
+    "expected_observable": "At least one model-selected write is forwarded unchanged, receives returncode 0, and changes the next screenshot.",
+    "stop_condition": "Stop after one task attempt regardless of evaluator reward."
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop",
+    "holo_model_card": "https://huggingface.co/Hcompany/Holo-3.1-4B"
+  },
+  "condition": {
+    "stage": "exploration",
+    "baseline_candidate": false,
+    "promotable": false,
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Preserved interrupted trace showed repeated write calls on this task."
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "reasoning_effort": "medium",
+    "thinking": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "temperature": 0.8,
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "tools": "holo_native_gui_only",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "best_of": false,
+    "resume": false,
+    "preserve_every_attempt": true
+  },
+  "tasks": [
+    {
+      "order": 128,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_order": 260,
+      "role": "affected"
+    }
+  ]
+}

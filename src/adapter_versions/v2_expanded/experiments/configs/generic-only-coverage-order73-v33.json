@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order73-v33",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order72-v33.json",
+  "candidate_parent_config_sha256": "e5d2419c2d9fab96cb2abe2f3867e5ea2c1d982d126a4490b141fe943db1b290",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c1d0a58a534b9205b1f3d0471ea9770c8c67a847222a99576da3858e472bdf1c",
+  "change_scope": "No task-driven code change. Measure the unchanged v33 generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "candidate": "Unchanged v33 Writer table-schema candidate that passed order 71 with original evaluator 1.0 and a valid strict audit.",
+    "writer_tool_manifest_sha256": "8f9d0a1f5c30189cb47b039a9cf31a84faf1d55546dc22b87f541bcd3cf25248",
+    "writer_schema_sha256": "4380237e1ea307cde29d5f81b3da13e63e1ed0f75ec08e980ef1b960260bf378",
+    "writer_uno_worker_sha256": "9a12de19519cc259c9964b1692fae73e8f4358ad6ef3063c8c65782f69bdd66b",
+    "writer_pdf_export_sha256": "e62761e32acdab72ef02b43b1ef91eaed0835e69f7409ca6b9d053a9952398fa",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_schema_test_sha256": "7a3c84d847c8418a38c059669c0c77f70eace3f55c6599c6226d7a9dcfd159eb",
+    "tool_catalog_test_sha256": "288db83e91a0c767b1083e3e21a7cba60ef40c41355b14e09ddc402f2040dc1e",
+    "strict_manifest_test_sha256": "cd87969cbcb507dc187214f277f28bdee56ab9ef6a248f0922a8cc14b85bb255",
+    "runtime_test_sha256": "a9af0f78ff4ba8a63235c29a5ecba6d7a8687c8bc892e2cc386f24d4a41bfd32",
+    "writer_worker_test_sha256": "310258d28abf6c639960e1224f17fa047dd3bc7fe4d7fb48fbcf98b7d8abb77a",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "462 passed",
+    "full_unit_tests": "1312 passed",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "order71_result_sha256": "f85d9e104749f82140391776b71f931fa5598b2d691c64ddaa50319ce4eda57b",
+    "order71_audit_sha256": "943a7e24c4009bf2bc6c7bde2ee6b9ab2b3983801242ca6ff9bd891f13808c1d",
+    "order71_audit_valid": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_table_insert_schema_v33_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 73,
+      "source_order": 164,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_episode_id": "6cde5bf7f9fcd02fc266c72a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "43b4f1e8e456aa90e2c61107239249da2f23829100dc160aab4f1639518d3847",
+      "execution_class": "task_specific",
+      "pool_order": 73
+    }
+  ]
+}

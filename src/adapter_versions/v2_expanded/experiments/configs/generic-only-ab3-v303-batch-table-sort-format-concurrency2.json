@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v303-batch-table-sort-format-concurrency2",
+  "status": "frozen",
+  "purpose": "Targeted development A/B for observed batch cardinality, model-selected Multi-Apps table sorting, extension-matched spreadsheet persistence, and final structural read-back. This is not a baseline score, best-of selection, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v303",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v303.json",
+    "candidate_manifest_sha256": "2c869d27bc3c11eb14a70ec5e604c4fb5ce92f39418270eb37fbb5f7f5a145c4",
+    "active_runtime_and_test_tree_sha256": "50ef7815bf31a1c3142a2083ba88512ba495bf83172b2861cbcf3b755294b3a0"
+  },
+  "hypothesis": {
+    "generic_cluster": "batch_table_completeness_sort_and_spreadsheet_format",
+    "statement": "A public batch result's observed N, a model-selected table.sort lifecycle, and extension-matched LibreOffice persistence can produce a complete, explicitly sorted, structurally read-back table without supplying any answer value or rewriting any model argument.",
+    "runtime_answer_materialization": false,
+    "runner_selects_row_value_path_range_sort_key_or_direction": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "pre_edit_hypothesis": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/hypothesis-v303-spreadsheet-batch-completeness-sort-format.json",
+    "pre_edit_hypothesis_sha256": "c1771762a4ceed69e1aea4b35fa71fc30a48c20f1ac76ca89367e72b5327cf38",
+    "pre_ab_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v303-pre-ab.json",
+    "pre_ab_ledger_snapshot_sha256": "c8471a2b2633613c8a4e00d8f717c60391dd54a54b33a0cd89409f4c794b23c7",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 95 is the single affected v252 failure. Orders 90 and 91 are the same predeclared nearest earlier clean Multi-Apps spreadsheet controls used in v301 and v302, preserving the cohort while testing the third and final frozen hypothesis.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v303_batch_table_sort_format_ab3_concurrency2_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "The identical v301/v302 cohort: one affected failure plus the two predeclared nearest earlier source-order clean Multi-Apps spreadsheet controls, with source order preserved and round-robin endpoint assignment.",
+    "selected_count": 3,
+    "affected_failure_orders": [95],
+    "clean_control_orders": [90, 91],
+    "domain_counts": {"multi_apps": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "order_91_final_output_must_be_under_active_user_desktop": true,
+    "order_91_complete_create_must_retain_headers_and_rows": true,
+    "order_95_must_execute_pdf_extract_text_batch": true,
+    "order_95_final_data_row_count_must_equal_successful_batch_matched_count": true,
+    "order_95_must_execute_model_selected_table_sort": true,
+    "order_95_sort_arguments_must_match_complete_observed_table_and_instruction": true,
+    "order_95_must_execute_spreadsheet_save_after_final_mutation": true,
+    "order_95_saved_package_must_be_genuine_xlsx": true,
+    "order_95_must_structurally_read_back_complete_sorted_table_after_save": true,
+    "all_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "executed_gui_actions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-13T04:30:15Z",
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_control_distinct_spreadsheet_file_lifecycle_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "cohort_role": "clean_control_complete_table_creation_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 95,
+      "source_order": 196,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "cohort_role": "affected_batch_table_completeness_sort_and_xlsx_format_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

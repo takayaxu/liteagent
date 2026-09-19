@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order122-mail-retrieval-v128",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 122 hypothesis 1: expose first-class generic mailbox query and attachment-save tools backed by deterministic Thunderbird MIME extraction and verified local output.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order122-v127.json",
+  "candidate_parent_config_sha256": "bf8893e22d985a6792ff5d679f69b56408855afc003a5f3b47eaddda74404f83",
+  "parent_attempt_result": "experiments/generic-only-coverage-order122-v127-run1/results.json",
+  "parent_attempt_result_sha256": "3d3ddd5c3cb3176985cfad5ce14406cb96e4599c611b2cd963c8b05dabc43fc3",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order122-v127-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "6be5d8d8a0e81674f2de511c9bb827675c6d24cc158d3fa78933323e1cbed516",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a4d6d26767e0c64da966d27d18bdb760d26f2406a3b6b49e5165a713048dc33f",
+  "change_scope": "Add generic Thunderbird attachments.save selected only by message_id/mailbox_index and attachment_name/attachment_index returned from mailbox inspection; atomically write the model-selected output_path and verify size plus SHA-256. Add thin Multi-Apps mail.query_messages and mail.save_attachment facades, first-class strict schemas, retrieval terms, and compact truthful read-back. No task identity, evaluator state, answer value, month, source filename, target filename, workbook row, or Runner-injected argument is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_mail_retrieval_v128_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Never rerun it unchanged. Attempt another Order 122 run only after a materially different reusable generic hypothesis with focused and counterfactual evidence; stop early and mark task_blocked when evidence isolates a model-side failure or the bounded hypothesis budget is exhausted. A proven transient Runner or environment fault may be retried at most twice.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_mail_query_and_verified_attachment_retrieval",
+    "counterfactual_tests": "Two structurally different synthetic mailboxes use unrelated folders, senders, subjects, message selectors, attachment counts, attachment names, payloads, and output paths; contract tests cover missing selectors, relative paths, duplicates, ambiguity, existing output, and unchanged forwarding.",
+    "focused_unit_suite": "481 passed on the final candidate",
+    "full_unit_suite": "1869 passed on the final candidate",
+    "static_verification": "Full Ruff, compileall, project layout/leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "real_guest_validation": "A clean Docker+KVM guest deployed all current Adapters with zero Multi-Apps goldens; Thunderbird and Multi-Apps health passed. A bounded developer probe reached mail.query_messages successfully, while an over-specific AWS subject filter correctly returned zero because the real subject uses the full service name. No model or evaluator was run.",
+    "offline_mailbox_validation": "The cached local mailbox was extracted to a temporary directory; unfiltered parameterized query returned one attachment-bearing message and attachments.save wrote 23369 bytes to the unrelated temporary basename unrelated-output-name.pdf with a 64-hex SHA-256. The temporary directory was destroyed and no expected evaluator artifact was consulted.",
+    "thunderbird_profile_sha256": "f425c7d21ede804c1b19f3cd49e64f14ade4b34d8674ca9456bb0a8d07024fa8",
+    "thunderbird_tool_manifest_sha256": "e7b1e80c503125ce2e612a5ddea41d770fb61022a319f4c2066423f147f163a1",
+    "thunderbird_schema_sha256": "67753cb1912a53d9c67da1f02ad4c82754358f6e2853f270049879443053796f",
+    "thunderbird_actions_sha256": "7ab8b63a4d794cac093c5639454673d8c48dccbe43a003e15bfa13f9aae86d9b",
+    "thunderbird_worker_sha256": "ecec003eaf780d10ae1c2c1208ffefddeb30e0f83c29b44712213bc2bc4149a7",
+    "thunderbird_verifier_sha256": "da6c72380d876d24072e25eceba2e9f912ad074eee319ea3036ab9aeeb9ab7d4",
+    "multi_apps_mail_contract_sha256": "b8602f45a7c4f15a81d37a4bcf040653d4000a2b90576802509ec804cce4f594",
+    "multi_apps_tool_manifest_sha256": "a5dd1837711bc0f359ca1bf98540baccddde1d138dca88aaaf0396706c9a7865",
+    "multi_apps_generic_schema_sha256": "aa5c454c5211be9e6ac7b02c140ef9e0184538ba0be1fae62f0bc3b9c30cb889",
+    "multi_apps_generic_actions_sha256": "798de2403fd45b60fd3539bc91af536638ed53a54a6e10b32e736feab69294d1",
+    "lite_agent_tool_catalog_sha256": "6a1bfc1cdf4b6290c59cde97f05e24bcac45298a8b6f9cf641e2146f4d279529",
+    "lite_agent_adapter_results_sha256": "ad41b86ede5c8fe4648878223de4c75534284d3c906817114455f2e732182c62",
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the preserved Order 122 v127 untouched baseline failure",
+    "selected_count": 1,
+    "prior_development_status": "baseline_failed_preserved_in_generic-only-coverage-order122-v127-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 122,
+      "source_order": 243,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_episode_id": "d16263cae6d3c1419ed91ee9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "e583e6337b43803a2c963211366de82ab60893444c2571c6a8eb233043814c84",
+      "execution_class": "task_specific",
+      "pool_order": 122
+    }
+  ]
+}

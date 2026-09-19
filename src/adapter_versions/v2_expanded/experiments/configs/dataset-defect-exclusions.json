@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "confirmed",
+  "policy": "Exclude these tasks from future benchmark denominators only. Preserve all historical configurations, traces, artifacts, and evaluator outputs.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "evidence_document": "docs/dataset-defect-exclusions.md",
+  "tasks": [
+    {
+      "order": 132,
+      "source_order": 144,
+      "offline_order": 100,
+      "remaining_order": 64,
+      "domain": "libreoffice_impress",
+      "task_id": "b8adbc24-cef2-4b15-99d5-ecbe7ff445eb",
+      "classification": "dataset_gold_evaluator_mismatch",
+      "reason": "Gold changes an unrequested slide-1 title run structure, while compare_pptx_files ignores the task option examine_run_count=false and rejects unequal run counts."
+    },
+    {
+      "order": 144,
+      "source_order": 156,
+      "offline_order": 112,
+      "remaining_order": 74,
+      "domain": "libreoffice_impress",
+      "task_id": "0a211154-fda0-48d0-9274-eaac4ce5486d",
+      "classification": "instruction_gold_text_mismatch",
+      "reason": "Instruction requires ASCII apostrophe in Let's start, but Gold and exact text evaluator require curly apostrophe in Let\u2019s start."
+    }
+  ]
+}

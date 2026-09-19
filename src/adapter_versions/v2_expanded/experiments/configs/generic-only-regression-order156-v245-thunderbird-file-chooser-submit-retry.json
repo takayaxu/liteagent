@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order156-v245-thunderbird-file-chooser-submit-retry",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for the Order 156 regression observed in the final v244 cohort. Make the reusable Thunderbird compose attachment action retry a file-chooser submission only when attachment read-back fails and the chooser remains observable. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-repaired-cohort22-v244-concurrency6.json",
+  "parent_config_sha256": "dec6d1fd2061456f02bd774c0cd8aab9a583a109484129a1817a5b6cbce29706",
+  "hypothesis": "The v243 targeted pass and v244 cohort failure exposed the same model-selected compose.attach action and identical subject and attachment_path arguments. In v244 the native chooser was open after the Adapter returned, but the location field was empty, proving the one-shot Ctrl+L/path/Enter sequence could lose focus or keystrokes even after chooser-title readiness. If the Adapter uses short attachment postcondition windows and, only while the chooser remains open, reactivates it and resubmits the same expanded model-selected path within a shared deadline, the unchanged action should attach the file and terminate without GUI fallback.",
+  "change_scope": "Change only the reusable Thunderbird native file-chooser submission sequence behind compose.attach. Submit the expanded absolute model-selected path, wait up to five seconds for the attachment postcondition, and retry at most three times only if the Attach File window remains observable. If the chooser closes, wait for normal attachment processing rather than reopening it. Preserve one total operation deadline and return a truthful bounded error with attempt evidence on exhaustion. Add a counterfactual unit test with an unrelated subject, directory, filename, and a simulated lost first input. No Runner, Router, model schema, instruction parser, completion policy, model request, or evaluator behavior changes.",
+  "sources": {
+    "v244_cohort_results": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v244-concurrency6-run1/results.json",
+    "v244_cohort_results_sha256": "07b40e161ac09bf762700d334b295025816fecd9f1dc98895e8f849e41eaf0af",
+    "v244_order156_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v244-concurrency6-run1/workers/worker-03/results.json",
+    "v244_order156_worker_results_sha256": "3e325fbf27b8e3ab6b98154b2f93d74c508ed35a8797da9280e46ad8b13abb1b",
+    "v244_order156_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v244-concurrency6-run1/strict-audit-worker-03.json",
+    "v244_order156_strict_audit_sha256": "d26e18764a9a24f6b0f283764e215fed8bf539abe6218c88e9606490d03f3ada",
+    "v243_targeted_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order156-v243-thunderbird-file-chooser-readiness-run1/results.json",
+    "v243_targeted_results_sha256": "a6229dd3cb9f3dbe0144f155b0c4b54dbe76c06a90a81ff49f1ae81b5f96ea51",
+    "v243_targeted_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/targeted-audits/order-156-v243-thunderbird-file-chooser-readiness.json",
+    "v243_targeted_strict_audit_sha256": "45ed73d1bf6d9bb52857e74383780746788a9bd8a0d05b0916879a9c8b28d824",
+    "v244_outcome": "Reward 0.0 after eleven steps. Qwen selected compose.attach first with subject='New-month AWS Bill' and attachment_path='~/aws-bill.pdf' unchanged. The Adapter spent about 119.5 seconds waiting for attachment while the native chooser remained open with an empty location field. The Agent then used GUI fallback and stalled.",
+    "v243_outcome": "Reward 1.0 in two steps, generic_api_only. Qwen selected the same compose.attach action and arguments; the Adapter attached the file in 4.604 seconds and the Agent completed. Strict audit was valid, evidence-valid, and baseline-admissible with zero leakage, mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "active_runtime_and_test_tree_sha256": "2ddacb367a366e65beba76efb0fe85ce0e747fcf1a4f92ae240921cfbeea9790",
+    "active_runtime_and_test_tree_algorithm": "sha256 of sorted sha256sum records for all non-pyc files under active Adapter, integrations, deployment, scripts, and tests directories",
+    "thunderbird_ui_sha256": "5340d40da2d059b34f7033fb1a896cad826ff419748a92fa71b41b29354b8106",
+    "thunderbird_ui_tests_sha256": "5053d77e5e416372bb3cfd2f12bcb5b6e46af8f7802412b326f4cd995c29e081",
+    "thunderbird_actions_sha256": "d1d6fbb73bdf538ca9eddce1c45973561d0967e747d5cf7034bdf4b1101bc9e4",
+    "thunderbird_schema_sha256": "b566d8802e49d22a4d7b95bb9ceb7719f7b32341098ea93e035c1a72cd2027db",
+    "thunderbird_worker_sha256": "91f353507a06f9b4a01acfc2f79af9b5a7f2dd45ee90573cf6846ba2a9852d3d",
+    "thunderbird_verifier_sha256": "bdbdbc6f5f797f6e56ff02f15dbcc7b2846ac5bd8c05eaab1da311ecc15e750f",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "adapter_results_sha256": "08407d9f050014d4b43883cadec8fc8ab7a88dad7860e14032af0dd99b7c9047",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "strict_auditor_sha256": "c0ff52cfe538b5ab24c6deb4ec400c374400dfae58a805dc519c39ef660d1a24",
+    "counterfactuals": "The focused test uses subject 'Usage report' and a temporary alternate-usage-data.csv containing unrelated data. The first attachment read-back raises UI_STATE_NOT_FOUND while Attach File(s) remains observable; the second submission of the same expanded path succeeds. The test proves exactly two chooser activations, path writes, and Enter presses without any task identifier or answer value.",
+    "focused_tests": "8 passed",
+    "unit_tests": "2618 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed for all active source and tests",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_file_chooser_submit_retry_v245_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single previously repaired cohort item with a reproducible generic Adapter stability regression",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T05:12:24Z",
+  "tasks": [
+    {
+      "order": 156,
+      "pool_order": 156,
+      "source_order": 297,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

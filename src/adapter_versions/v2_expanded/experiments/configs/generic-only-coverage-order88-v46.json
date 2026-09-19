@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order88-v46",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order87-v46.json",
+  "candidate_parent_config_sha256": "b3a4f02d2340e409fde8623cc40a86f77eb6aee1e4128ea9069a4f773d284e1a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "2f0f7f5044849a7ad681faae16dfe72766d7e3109e1dd23ffd0f75901b587b40",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "before_result_sha256": "d6d8a0a5a4948167f288350d8519296768e7ccf564be62093e2cd62726705a08",
+    "before_audit_sha256": "28fe9cbbe9ba948c63147ae16d1b07cc804e2e36e88a4fd1b7f3dca21707f931",
+    "before_trajectory_manifest_sha256": "b85d93f222601fc27268055a81bafd47766a10b11de560d564da4413a2f74c8d",
+    "failure_class": "missing_generic_capability_and_tool_discovery",
+    "hypothesis_index": 1,
+    "hypothesis_limit": 3,
+    "vlc_schema_sha256": "8fdbabbca2a5c525aa523189c27b84e53f3ef0a1f07aab5e6815bfd68756bd38",
+    "vlc_actions_sha256": "7e1618e861cae9ee22a21e2ac4f78d4e85c01f43f183704bd254a44af2b96a2f",
+    "vlc_worker_sha256": "1a6da09d1b0cb3dc03c23077bbbb30108f2b865d70d48a802d382eaa32758ded",
+    "lite_agent_tool_catalog_sha256": "06c450a53c94f092892ad7ab6c30d25ed893749f0fb9f4bd4ca8f97df459cdeb",
+    "openapa_tool_catalog_sha256": "d54655d958b05a025de275ee0ad538c6effe8eb384ae07385a740f65da697a38",
+    "counterfactuals": "Different filenames, source/output extensions, start offsets, durations, frame rates, and video containers are covered; Multi-Apps wrapper forwarding is asserted unchanged.",
+    "focused_unit_tests": "328 passed",
+    "full_unit_tests": "1453 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_media_transcode_clip_v46_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 88,
+      "source_order": 180,
+      "domain": "multi_apps",
+      "task_id": "3680a5ee-6870-426a-a997-eba929a0d25c",
+      "source_episode_id": "bfdf9d80ee2f9393a222da6c",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "6fef6c5629552a3560a765b5d52ea2e1fd8989b92cb3a9e731b602f845505bda",
+      "execution_class": "task_specific",
+      "pool_order": 88
+    }
+  ]
+}

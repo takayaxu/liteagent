@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order96-spreadsheet-read-file-v71",
+  "status": "frozen",
+  "purpose": "Order 96 generic hypothesis 1/3: add a reusable read-only spreadsheet-file action that returns bounded LibreOffice display text, including number-format trailing zeros, and expose it through a flat Multi-Apps facade without task identity or argument rewriting.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order96-v70.json",
+  "candidate_parent_config_sha256": "a8c02421277ac04b810ab235d3b86c1ae44cf6b02dc8d02f7dab6ae02e0c1962",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "21d88f81d5cc36cb4aa773b220bf60db1feb88c62915bf84fea2d931a3889ea4",
+  "change_scope": "Add Calc workbook.read_file(path, optional sheet/range/bounds), a flat Multi-Apps spreadsheet.read_file facade, display-preserving bounded result context, semantic tool-search routing, and read-only classification. The model supplies every path and bound unchanged; runtime code has no task ID, instruction parser, golden, answer, evaluator access, or mutation workflow.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_spreadsheet_display_read",
+    "baseline_result_sha256": "afb4b16f4cf2ec6c40470f3347ea50f80f454b7fd5d08b4c6934a99a2b00fd22",
+    "baseline_audit_sha256": "c1ff03bc42b0e96cf442b6189d5bde2e0a54f9ed33d48d5ef9cf83538375a684",
+    "baseline_status": "interrupted_after_10_model_calls_and_8_completed_steps_due_to_repetitive_binary_xlsx_text_reads",
+    "baseline_diagnosis": "The model repeatedly selected file.read_text for an XLSX, searched for workbook reading but found only create/convert actions, and then tried the PDF reader. No action executed and no task state changed.",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "completion_policy_sha256": "67346f06209a5354e5edd20c02ff9b93915a386b529b9c99e6002fa4dfc39660",
+    "tool_catalog_sha256": "cffb345646fa3edb7de748108ed21b3016996b0385dca11ce7bfeaa1d65c5ac7",
+    "adapter_results_sha256": "fd4855d5de2f98aeeaaf32461542ef1ff57a11de68c28cba65ab2d9dd02647e2",
+    "calc_schema_sha256": "8837ca9293ad855832c11559415a8be08df9d9b0fc0b33c9c87fb1787aebdef1",
+    "calc_tool_manifest_sha256": "c95deb6e90911a9c823b3457ff3465ab98edcd4aaa28db449f0801da2bc6080c",
+    "calc_uno_worker_sha256": "f6741bef45613861e3b66a538d558cf64189e5fe139ab430356ffbfa1b693f5e",
+    "multi_apps_generic_actions_sha256": "1831043fb1be6584a0bffa983d88224b13a03ef3e2caf5022534435aa65ebac2",
+    "multi_apps_generic_schema_sha256": "e99840329003e24e5b8716d3df7bce83956841a78d480a9f7143dd11cc249d88",
+    "multi_apps_catalog_schema_sha256": "1c30aaa1f6aef0b80f9552250e3f62c3c03e19e90fd6d8e0c5d40d766c27c903",
+    "multi_apps_catalog_actions_sha256": "9ad3bcfcace765c032e1a606e7a29f8b11a60278ac40f49d2e831f71f3f60a00",
+    "openapa_tool_catalog_sha256": "c11eea6fb6fa1e3edacbce61a8b14981cc02514dee5f5fcf49ac66e5d4a44f04",
+    "full_unit_tests": "1557 passed",
+    "focused_tests": "201 passed; unrelated spreadsheet values, display precision, bounds, close lifecycle, facade forwarding, search deduplication, result context, and read-only cases",
+    "ruff": "active source and tests passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_spreadsheet_read_file_v71_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for Order 96 using generic hypothesis 1/3; the untouched v70 baseline remains immutable",
+    "selected_count": 1,
+    "prior_development_status": "interrupted",
+    "on_failure": "Preserve and classify this attempt. Stop early on a repetitive no-evidence loop. If spreadsheet reading succeeds but Writer insertion fails, use at most one materially different generic hypothesis 2/3; do not rerun v71 unchanged or add task-specific behavior.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 96,
+      "source_order": 197,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "source_episode_id": "503f3e9ef6f71c61a195f97f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "18261c9eaa71be94b95c03e542361ae34f4ead515366de7c2925203e31f6f36a",
+      "execution_class": "golden",
+      "pool_order": 96
+    }
+  ]
+}

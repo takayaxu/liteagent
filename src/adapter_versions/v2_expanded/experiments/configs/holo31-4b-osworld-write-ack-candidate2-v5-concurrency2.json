@@ -1,0 +1,146 @@
+{
+  "schema_version": 2,
+  "experiment_id": "holo31-4b-osworld-write-ack-candidate2-v5-concurrency2",
+  "status": "frozen",
+  "purpose": "Frozen affected/control candidate check for direct ASCII typing and truthful OSWorld desktop command acknowledgements. This is not an official OSWorld score or a baseline promotion.",
+  "freeze_timestamp": "2026-08-29T05:50:00+00:00",
+  "hypothesis": {
+    "statement": "The committed Holo Runner preserves successful direct typing on the affected task while retaining the stable VLC control pass.",
+    "affected_task_order": 128,
+    "stable_control_order": 165,
+    "expected_observable": "Order 128 contains at least one unchanged write with returncode 0; Order 165 passes; neither task contains a model-call-to-command mismatch.",
+    "stop_condition": "Run each task once. Do not promote the random-10 condition if the write behavior disappears, the control fails, or any execution mismatch occurs."
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "candidate_commit": "583973acd9ef78fea8706aa012323d0cea0544eb",
+    "holo_agent_loop": "https://hub.hcompany.ai/agent-loop",
+    "holo_model_card": "https://huggingface.co/Hcompany/Holo-3.1-4B"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "holo31-native-v5",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/holo31-4b-osworld-write-ack-candidate2-v5-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 394,
+      "total_bytes": 53899730,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "2c3d3498a7cf78e717d316b6b250ef67cc063281e2023babdcc5f01161c2e32c"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "holo3.1-4b",
+    "base_urls": [
+      "http://192.168.0.224:8002/v1"
+    ],
+    "served_root": "Hcompany/Holo-3.1-4B",
+    "revision": "8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+    "reasoning_effort": "medium",
+    "thinking": true,
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 1024,
+    "top_k": 7,
+    "temperature": 0.8,
+    "thinking": true,
+    "gui_enabled": true,
+    "reasoning_effort": "medium",
+    "image_history_limit": 3,
+    "coordinate_space": [
+      0,
+      1000
+    ],
+    "tool_choice": "required",
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_holo_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "holo_native_gui_only",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "tasks": [
+    {
+      "order": 128,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_order": 260,
+      "role": "affected"
+    },
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309,
+      "role": "stable_control"
+    }
+  ]
+}

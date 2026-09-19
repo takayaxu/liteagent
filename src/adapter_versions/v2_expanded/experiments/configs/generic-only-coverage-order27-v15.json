@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order27-v15",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order26-v15.json",
+  "candidate_parent_config_sha256": "d357d6d8ce9a4ca1b9f7f4fb0f9cacb834259de1e80c7a2f81bf6df4b11857d9",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "d37f65abd8e7096917919a85b733d5a250990cd305ebe4e1deb681d14f010ea8",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "calc_worker_sha256": "fce13134c1a0ccb41ab799dc1e11a6a921d3764c5a8c9cde496779dd663165a3",
+    "calc_tool_manifest_sha256": "3a0a77683e36603a7a5fd3204d3416b73adb4101f85532bc57b03f3b919c704b",
+    "calc_readme_sha256": "c44d43cb63dcaa9d947c818c1e59db098c20a9a8219a00a97b6f5565c993cb22",
+    "runtime_sha256": "3b40b199f17efe8b61af3226edc33b9a2d36ff0a241e028b50965c4ef2972fa0",
+    "tool_catalog_sha256": "431d083c746c30432890f9f667d2a51537c9dd29c2dbaa27b8ff22807513554b",
+    "calc_worker_test_sha256": "68788830ff6fccf374ada37ad4b499d4c3bc10ef5f27269c09488c2eeba29df3",
+    "runtime_test_sha256": "ca79f165a3f5ba5f394d69f80b174771aa6e4c8aad0d1427fd9977cd3033a751",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "focused_calc_schema_worker_and_dynamic_schema_tests": "83 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_schema_isolation_v15_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 27,
+      "source_order": 106,
+      "domain": "libreoffice_calc",
+      "task_id": "3a7c8185-25c1-4941-bd7b-96e823c9f21f",
+      "source_episode_id": "3549b94139c3e46d787335d2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "691d5b6c2f6a534a66e34a0e5eccbd1da5400f5c9c1afcaadd4effedc91d8288",
+      "execution_class": "generic_api_only",
+      "pool_order": 27
+    }
+  ]
+}

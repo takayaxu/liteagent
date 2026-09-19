@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order70-writer-pdf-fidelity-v31",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after adding reusable DOCX-to-PDF soft-wrap space preservation to Writer export.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order70-writer-pdf-schema-v30.json",
+  "candidate_parent_config_sha256": "26c490a2d242e79513d656797c4a246246b680d55f20fdb3825c0665fbe1e452",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "f3a118e65744cf1b2014bc52ca1b501a0a1247fe311e26fb2c0ce0bc60492dec",
+  "change_scope": "Keep the v30 direct Writer PDF export contract and make its default DOCX export preserve trailing spaces at layout soft wraps. Targets are derived from the active source document's OOXML body and header/footer relationships and matched to the exported PDF layout; no task identity, filename, instruction parser, golden, or evaluator state is used.",
+  "implementation_evidence": {
+    "hypothesis": "LibreOffice exported the correct document and the model selected the correct generic action in v30, but the OSWorld PDF text evaluator distinguishes trailing spaces at 17 source soft wraps. Deriving those spaces from arbitrary DOCX paragraph continuity and the actual PDF layout should preserve source text semantics for this task and structurally different documents.",
+    "writer_pdf_export_sha256": "e62761e32acdab72ef02b43b1ef91eaed0835e69f7409ca6b9d053a9952398fa",
+    "writer_schema_sha256": "072b2b6132062968b229dd2a7a07b2e25a635321c8c1802c50648640286eed5a",
+    "writer_tool_manifest_sha256": "a078aa71ecd6680f386458e8db7ad11a2f75c3559ce3b9c597e6789eddf1d1d9",
+    "writer_uno_worker_sha256": "3457fd069d358b8f271fd80385d18f02d8f2ab46facf93391e7cc7f5e64dcf58",
+    "writer_install_sha256": "68227b47247bcf378a3757d2b520d98c97ac98574f260cb9907663a1a8ddca7d",
+    "writer_deploy_host_sha256": "6b86fe45809f9dd34c4ffdd551effe646f4582575978b125a181e4b36c384795",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_verify_script_sha256": "0b68f0b14614abbcae22bd06511b7013b24c4bb25847e3cf61573600074ad32a",
+    "writer_pdf_export_test_sha256": "e06d17ca2c92eda8179ec705a9b70756e2eb1cc962225b11aa45476b7b721587",
+    "writer_schema_test_sha256": "8239e07138cb36e1e205856a17bfb26628468934567659e55f52920ea60240fb",
+    "writer_worker_test_sha256": "466df48744c0745c09446c77beddbfab0e0a23861eef823a5c1957c11b05d974",
+    "tool_catalog_test_sha256": "fc008d04cc47c0bcb3679d4cb9d9b6fe9d411c0bdc9e5b942e6b80e1856548f5",
+    "strict_manifest_test_sha256": "2ba1665ca67c2bad55942c904ff580e8e35f318aaa0beabbd80c9abb978fe4f7",
+    "runtime_test_sha256": "4ccf0e40b95adeaa09c016ea308c3724d917da0ae109b4d13d5e15e7922cef7e",
+    "audit_test_sha256": "08d833822c712c7b9e6c75341bb4074098e44c229858509f3fb36c7b53008aaa",
+    "writer_guest_integration_test_sha256": "25f797ae1eb6cf78d6b3bae45135736f9357f2a25cf1580690df4d326f59e131",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_audit_tests": "457 passed",
+    "full_unit_tests": "1303 passed",
+    "counterfactual": "Unit tests build a synthetic regional-forecast.docx with unrelated prose, different filenames, odd/even header relationships, an existing-space case, and a cross-paragraph boundary. They also cover explicit disabling, non-DOCX behavior, unsupported PDF operators, direct schema dispatch, and guest dependency reporting.",
+    "offline_layout_validation": "Applying the generic normalizer to a copy of the v30 export derived 17 targets, patched 17 trailing spaces, and made PyMuPDF text extraction exactly equal to the independently fetched evaluator reference. This is diagnostic evidence only; the v31 original evaluator remains authoritative.",
+    "prior_v30_result_sha256": "d786f3edd57a4b715b724226f0cbb8ee3a2d90b51f30cc6bec0122e11040193d",
+    "prior_v30_audit_sha256": "0e4cf5db7562ed51413c9cc8caabc16f2e14b1fce39bfda3005a2d7e5d35d6d8",
+    "prior_v30_audit_valid": true,
+    "prior_v30_outcome": "The model selected document.export_pdf on step 1 and created the expected same-basename PDF. Original evaluator reward was 0.9977414640627076 and binary failed because the exported text lacked trailing spaces at source soft wraps; subsequent no-op steps did not change the artifact.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, instruction, golden value, or evaluator expected state appears in the changed runtime, Adapter, deployment, verification, or focused test files.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_pdf_fidelity_v31_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 70,
+      "source_order": 161,
+      "domain": "libreoffice_writer",
+      "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+      "source_episode_id": "e5a608f2b450fa9d9719aa90",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "295a6ec97186999d97690ca1fc1f5dba4f473fde47984500fa47e15fa31226ae",
+      "execution_class": "task_specific",
+      "pool_order": 70
+    }
+  ]
+}

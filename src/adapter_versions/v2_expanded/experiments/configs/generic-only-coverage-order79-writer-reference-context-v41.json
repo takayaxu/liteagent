@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order79-writer-reference-context-v41",
+  "status": "frozen",
+  "purpose": "Targeted immutable A/B rerun of fixed-ledger order 79 after a reusable Writer reference-context and tool-routing fix.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order79-v40.json",
+  "candidate_parent_config_sha256": "249bc959c8f826e793a6524b80ca0a735f3819467bd9a185f2a348b0f4560744",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "8243e3c43e06b30ba1659cca00fc3de5646b42ddee62eee0f3aea42e2d322dc3",
+  "change_scope": "Expose compact marker and reference metadata derived from full Writer paragraphs before preview truncation, prefer those structured fields in LiteAgent context, clarify the generic numbered-reference schema, and disambiguate cross-reference from cross-out routing.",
+  "implementation_evidence": {
+    "hypothesis": "The v40 Adapter inspected full Writer paragraphs but returned only the first 500 characters of each. LiteAgent reconstructed marker metadata from those previews, so a valid placeholder after character 500 was invisible and Qwen guessed markers. A compact full-text-derived marker index plus an explicit reusable reference contract should make the existing generic operation discoverable without task identity, answer injection, or Runner-selected arguments.",
+    "tool_catalog_sha256": "ad9772ce9b279358f68c1d4fb0e7f26e9238a184773d42f67b99e0c5e1be7c1b",
+    "writer_schema_sha256": "04c7e3f04d947049c8dba0acc94d62fd42a307c972e664fef272581d17d1abcf",
+    "writer_tool_manifest_sha256": "c1f102f8f23acebeb580232500d72ea96bf81fed05dc1f83ea42ef6d9379d94e",
+    "writer_uno_worker_sha256": "4a5a0a7ab60da14cbf3a36ef09bda88cbdc8d6a5aa4e42a388de8f0b7fe425f1",
+    "adapter_results_sha256": "14e51e48bb332d77837370345e6f3428aff6b29de70904eaf9fd23b597db3a1f",
+    "writer_uno_worker_test_sha256": "fe56255ce7183d8eb3dbb955d2e0e7c2e27edaf3d2706f67260f83f5c0d490e5",
+    "adapter_results_test_sha256": "b9762cd284ff6b9f157a31e2934bdb872912182e1cfee0fc5d52608855486d32",
+    "tool_catalog_test_sha256": "6277f3826f28553e95440c82d552f36c7d416a7a7bb5d1fa9fd4b094a81e300b",
+    "strict_manifest_test_sha256": "9bbc2b332096f656737a3ccfe5e303534d9c315b5450491107d1371eeab4133e",
+    "runtime_test_sha256": "096a4cd213646145485149fa32f40f80a9ac52f056fb0c77c3e4e06ffe144646",
+    "runtime_sha256": "d820262d674c7cbbef3144e2544611c2a209a9a6bd43b806de38e058121bc866",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_writer_catalog_runtime_manifest_tests": "552 passed",
+    "full_unit_tests": "1401 passed",
+    "counterfactual": "Tests use an unrelated long paragraph containing <review later>, a different three-entry reference list, alternate markers such as <inspect later> and <verify section>, and unrelated citation text. They prove the 500-character preview stays bounded while structured markers remain visible, old Adapter responses retain fallback behavior, cross out still routes to paragraph formatting, and strict Runtime forwards model-selected numbered-reference arguments unchanged.",
+    "current_instruction_router_check": "For the exact instruction, the strict seven-action list is document.inspect, document.save, document.add_numbered_reference, paragraph.set_format, document.add_page_numbers, document.deduplicate_records, and paragraph.apply_split_tabstop. task.execute is absent.",
+    "prior_runtime_attempt": "experiments/generic-only-coverage-order79-v40-run1 is immutable: reward 0.0, 30 steps, no Agent termination, valid generic-only audit, and zero task/golden leakage or Runner argument rewrite/injection.",
+    "setup_cache_evidence": "The UUID-prefixed setup source remains pristine at SHA-256 245f3064d64dead11e37b341ca5ab42e4435c6ac63ad0fe14c3f7513a37e249a. The evaluator result destination uses a separate non-prefixed cache filename and is not used by OSWorld setup reset.",
+    "legacy_route_boundary": "writer_adapter/tasks.py remains only for explicit historical reproduction. Strict deployment removes installed copies and matching bytecode before the first model request; the public catalog and AdapterExecutor also reject task.execute.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes; an unrelated untracked .conda directory is ignored by the evaluator-tree audit",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, source filename, citation answer, marker literal, golden value, or evaluator expected state was added to production code or new counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_reference_context_v41_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted rerun of the first non-pass in the task-ID-deduplicated development coverage ledger after a reusable fix",
+    "selected_count": 1,
+    "prior_development_status": "failed_v40_preserved",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 79,
+      "source_order": 170,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "source_episode_id": "930ef94d9512d8b0eaa87b1e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b6052c550d5b4be467df64efa97c54ef9cfc16a927bb8798eb1229c96b8c1c04",
+      "execution_class": "task_specific",
+      "pool_order": 79
+    }
+  ]
+}

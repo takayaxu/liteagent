@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order116-code-tool-cohort-v121",
+  "status": "frozen",
+  "purpose": "Order 116 hypothesis-3 A/B: expose a coherent bounded source-code workflow cohort and clarify that command.capture_output persists requested stdout rather than returning temporary inspection output.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order116-code-output-routing-v120.json",
+  "candidate_parent_config_sha256": "babec8e0e2a2a79fd142fc0a9bd9fe81cf33efaf6721398e35d90ccc2101914c",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "cd5e8098d69325a704e05cf0a544186691a78fad692c8250439df977c0767f1b",
+  "change_scope": "Preserve v119 path recovery and v120 generic implicit-execution recognition. For source-mutation instructions that require a persisted result, rank the existing file read/edit/write, command.run, and command.capture_output actions as one coherent initial tool cohort; when a supporting Writer document is explicitly referenced, include the existing document reader. Clarify only the reusable capture-output contract: use it for a persistent stdout artifact, command.run for temporary inspection, home for absolute source paths, and provenance none unless terminal history is explicitly requested. The model still selects every action and supplies every argument unchanged. No workflow is auto-executed, and no task identity, dataset order, original task filename, answer value, golden content, evaluator state, Runner rerouting, or argument rewriting participates in this behavior.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_code_tool_cohort_v121_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-3 A/B. If it fails, Order 116 has exhausted its untouched baseline plus all three materially different generic hypotheses: mark it task_blocked, do not run a fourth hypothesis or unchanged retry, and immediately advance to Order 117.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_3_of_3",
+    "hypothesis_class": "coherent_source_workflow_tool_cohort_and_capture_semantics",
+    "parent_attempt_result": "experiments/generic-only-coverage-order116-code-output-routing-v120-run1/results.json",
+    "parent_attempt_result_sha256": "e611b7bacb324b57a1b0c4606e1f547c7da6a7fc17c2ffd4c9c0026073b94011",
+    "parent_attempt_audit_sha256": "6563338314dc472ce2e518865bc437fb75b58af730f0a16ae015fd6c0b2bdb5d",
+    "parent_attempt_trajectory_sha256": "50f8c3266b7b9c58c22765ac166d3ca5adf6fec6821a7b1f99b4c46ed286d764",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "v120 recovered and read the supporting document, then exposed command.capture_output but omitted both source reading and command.run from the actual initial Top-K because unrelated document-conversion and presentation actions outranked them. Qwen used capture_output to persist a directory listing, received only save metadata, and then repeated invalid active-terminal and explicit-directory variants instead of selecting the file readers returned by catalog search. The no-progress guard stopped steps 4-11 after 76.753 Agent seconds; the original evaluator returned 0.0.",
+    "production_file_sha256": {
+      "multi_apps_adapter/path_recovery.py": "3a06d90befb14c2476dbb5c10e34c2be8ccb9878b2acb0f7a5615a8915f2ccf6",
+      "integrations/lite_agent/tool_catalog.py": "16f073b1e382a798c0719723c3d16c2f533dd8d33063a26d9927e42a1b7a2a8d",
+      "multi_apps_adapter/tool_manifest.py": "baeaba5478969d60cb39e1377caaacef65dd668ce6a9b6f556ad5be6816ff9d7"
+    },
+    "candidate_bundle_sha256": "24ede90bef83e97cb83f08d0f8778ee04741ef0efc63dfddf1ddd1a55f647c47",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for multi_apps_adapter/path_recovery.py, integrations/lite_agent/tool_catalog.py, and multi_apps_adapter/tool_manifest.py.",
+    "focused_tests": "16 catalog-routing, command-contract, schema, and generic dispatch tests passed. The complete unit suite reported 1792 passed. Ruff lint and formatting, compileall, project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the frozen OSWorld commit/evaluator-tree check passed.",
+    "counterfactual": "A structurally unrelated inventory-cleaning project uses a different supporting document, source basename, function name, and log destination. Its exact initial Top-K contains source read, supporting-document read, literal edit, full write, command.run, command.capture_output, and adapter.call, while unrelated document conversion and presentation-note actions are absent. A separate forecasting task without a supporting document still receives both command actions, and an unrelated PDF-to-spreadsheet task remains unchanged. The capture schema states persistent-output, temporary-inspection, working-directory, and provenance semantics. The catalog test source SHA-256 is cf7a1591d6489f2d65335e3689b6d2bf25933bd5c3b03f864c395ae5ddc9bba8. No task ID, dataset order, original task basename, expected output content, golden artifact, or evaluator value appears in production code or counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "third and only targeted generic A/B for hypothesis 3 on Order 116",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 116,
+      "source_order": 233,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_episode_id": "2f84972964e369dae0c0b6a6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c9062c19c27b3143fa874e975e48e5f06e15e8ea711cdbf2702b3aa4921a7a99",
+      "execution_class": "golden",
+      "pool_order": 116
+    }
+  ]
+}

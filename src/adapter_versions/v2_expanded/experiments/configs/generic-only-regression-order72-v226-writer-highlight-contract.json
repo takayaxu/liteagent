@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order72-v226-writer-highlight-contract",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 72. Replace the legacy opaque params wrapper for Writer highlight removal with an Adapter-owned zero-argument public contract. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order62-v225-ordered-textbox-facade.json",
+  "parent_config_sha256": "7ef8ec635409529faa7d17361c8b9d09fb1f30895a4e46f0e1e1a67db88828f2",
+  "hypothesis": "The v210 model selected document.remove_highlighting immediately but the legacy model-visible schema described an opaque params object, so Qwen repeatedly supplied params as an empty string and no action executed. If Writer owns an explicit zero-argument direct schema, Qwen will call the same reusable action with an unchanged empty object, the existing deterministic UNO implementation will clear all character background highlighting, and the original evaluator will pass.",
+  "change_scope": "Writer now declares document.remove_highlighting as a reusable argument-free direct action. LiteAgent consumes that Adapter-owned schema through the existing generic direct-action path. The UNO implementation, Router, completion gate, Runner argument handling, evaluator, and task identity boundary are unchanged; the Runner does not inject, replace, or normalize model-facing arguments beyond representation-preserving validation.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-06/raw/run-1/72-libreoffice_writer-6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order72-v33-run1/results.json",
+    "historical_clean_pass_results_sha256": "3d44f07c5db5431aa13d5859865ddf5506b4915b5e87fabc76ffdc1b25b5e7fb",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-072-generic-only-coverage-order72-v33-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "0560b5557e0e72bcdfedf0366720491e46dd9adf72d063eeb17d6fde58d2c273",
+    "historical_route_limitation": "The historical pass was evidence-valid but unstable: Qwen reached one successful empty-parameter call only after eleven malformed attempts, then exhausted all 30 steps. The v226 contract removes the ambiguous wrapper rather than reproducing that trajectory.",
+    "schema_preflight": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/preflight-v226-document-remove-highlighting.json",
+    "schema_preflight_sha256": "136ca44b1bbe06730cc2ecd5e752c04f480491c53015269a28d272337b1c89a9",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "writer_tool_manifest_sha256": "02a7d126a9f3e0b92c82aa853fb8aa88efbd84c033dc61588505314a7a77ca89",
+    "tool_catalog_sha256": "c7a2c12ff0a02996d15667175b4ddf564eba1a048f3f03fea13744065d2dcc34",
+    "execution_engine_sha256": "0a46d3ad026fb8088e3e212b54fa5428e7c9bdef3d5aa6bb0c3346c4e2258711",
+    "semantic_requirements_sha256": "d310fc3433db34c2e1176abe54d1eaaaadb372ba0dc8e07a643370b7c70332c9",
+    "runtime_sha256": "d7521ecf3d040e3130731de128de94f492f7272a7a03c1adf2c60c1e26c3eaef",
+    "tool_catalog_tests_sha256": "41d1fb0a5bfa150df297cdb9a820ab370c2ec8be67cd4f571fd56fcc216b3a5a",
+    "strict_manifest_tests_sha256": "f190ed9af4f725ef19991f42b646df6160088a43e20dccacd7ad06938bde1862",
+    "schema_preflight_script_sha256": "43efe2ce5d6897607513e284a477c98530ca420e1c42d91362e6b934b1fb391b",
+    "focused_tests": "550 passed across Writer schema, strict manifest, routing, and tool-catalog cases",
+    "unit_tests": "2471 passed",
+    "ruff": "passed for active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "model_schema_preflight": "1/1 schema valid and 1/1 semantic match on a paraphrased argument-free Writer request",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_highlight_contract_v226_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed regression item, first evidence-backed reusable-schema hypothesis after v210 argument-validation failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T22:40:49Z",
+  "tasks": [
+    {
+      "order": 72,
+      "pool_order": 72,
+      "source_order": 163,
+      "domain": "libreoffice_writer",
+      "task_id": "6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

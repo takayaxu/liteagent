@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v281-impress-multislide-textboxes-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v281 reusable multi-slide document-order textbox-format batch contract. It runs the affected workflow failure and three already-passing controls exactly once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v280",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v280.json",
+    "candidate_manifest_sha256": "d1407ad6103029b8b01f80ec9e0a578ec3e0466a01c0c127fa816a82128f9b77",
+    "candidate_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v280-impress-alignment-verification.json",
+    "candidate_disposition_sha256": "2672373939df2a5e8536b8cd81f37172e1e5f90099522126963a104fe5fac320",
+    "retained_behavior": "v281 retains every accepted v253-v279 change and the v280 generic alignment read-back normalization."
+  },
+  "change_scope": "v281 adds slides.format_textboxes as an explicit multi-slide ordinal textbox batch contract, strict instruction-only staging, exact model-argument validation, and Adapter-confirmed completion. The Adapter maps the public one-based document-order position to live recursive UNO shapes and preflights every target before mutation. No Runner argument fill, rewrite, injection, task route, golden state, or evaluator state is added.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v281.json",
+    "candidate_manifest_sha256": "8090d171b7f19fa167373e3dea138f9e70bb20ce70ee7a4f6efd1be09732873b",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v281-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "f31b7a0c4f2e3ceabcfd6163adfd47ddc1156c8e8615a5c997b190a3a1433735",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "v280_results": "adapter_versions/v2_expanded/experiments/generic-only-ab5-v280-impress-alignment-verification-concurrency2-run1/results.json",
+    "v280_results_sha256": "e80083a4cfbdcaa92a5acf6e8f99facb3de302c8d2a71cc45bdb2dd4f4709dae",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 57 is the sole residual v280 workflow failure after all individual alignment mutations verified correctly. Orders 47, 52, and 53 passed v280 and are fixed successful controls for role text, verification normalization, and neighboring Impress behavior.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v281",
+    "active_runtime_and_test_tree_sha256": "18bba87869130a8c1fc8b3b5cb4aa62664c53fd44075bf117416b5addaac76f6",
+    "focused_tests": "627 passed",
+    "impress_adapter_acceptance": "203 passed",
+    "complete_unit_suite": "2976 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed; frozen v1 hashes valid and OSWorld tracked tree unchanged",
+    "model_schema_preflight": "Both DGX endpoints passed both final non-thinking counterfactual cases with schema-valid and semantically exact model-selected arguments.",
+    "model_schema_preflight_dgx1_sha256": "b8008c87e78e35c10b8906085708268207e3347d87f3d57c261ad93325e2d859",
+    "model_schema_preflight_dgx2_sha256": "f4218c5db991052d26662e40e67f7fbd31ad00f6dfc4fba525c71521c3536cd8",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v281_impress_multislide_textboxes_ab4_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed-189 source order for Orders 47, 52, 53, and 57. Round-robin assignment gives Orders 47/53 to DGX1 and Orders 52/57 to DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [57],
+    "retained_fix_control_orders": [47, 52],
+    "clean_control_orders": [53],
+    "domain_counts": {
+      "libreoffice_impress": 4
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "retained_fix_controls_must_pass": 2,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "affected_batch_action_must_execute_successfully": true,
+    "incomplete_model_batches_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T23:41:56Z",
+  "tasks": [
+    {
+      "order": 47,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "cohort_role": "retained_v280_role_text_alignment_fix",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v280_status": "passed",
+      "v280_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 52,
+      "source_order": 142,
+      "domain": "libreoffice_impress",
+      "task_id": "af2d657a-e6b3-4c6a-9f67-9e3ed015974c",
+      "cohort_role": "retained_v279_role_text_fix",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v280_status": "passed",
+      "v280_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "cohort_role": "clean_control_impress_text_and_formatting",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "v280_status": "passed",
+      "v280_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 57,
+      "source_order": 148,
+      "domain": "libreoffice_impress",
+      "task_id": "05dd4c1d-c489-4c85-8389-a7836c4f0567",
+      "cohort_role": "affected_multislide_textbox_workflow_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v280_status": "failed",
+      "v280_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

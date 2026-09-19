@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-exact-search-routing-v201",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM rerun of three Calc regressions after an explicit public action name in tools_search was made authoritative for the next model-visible tool surface. This diagnostic set uses prior outcomes and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-structured-completion-v200.json",
+  "parent_config_sha256": "2fd9f5af8a2cc244a77c6b40a5f395de0a3a095f4806f640be0c8bcc3f07fbd7",
+  "change_scope": "If the model explicitly names one or more public action identifiers in a tools_search query, expose only those exact returned actions on the next turn. Natural-language searches retain ranked alternatives. The rule uses only the model-selected query and public catalog; it does not generate, inject, or rewrite Adapter arguments.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-structured-completion-v200-run1/results.json",
+    "parent_results_sha256": "45351191d52fdb1fdbd4ac1ab8e7c83df2cb0570cf593d7c499c4ee091519f94",
+    "parent_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-structured-completion-v200-run1/strict-audit-worker-01.json",
+        "sha256": "51a29a9e0d40b591c5eb0efa9267a2490928c53334e6b24c1baaba0bb60ff861"
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-structured-completion-v200-run1/strict-audit-worker-02.json",
+        "sha256": "bbb5e346864320e6379c895ccc4b401eddcdf05b92616f1f295286d2261862e6"
+      }
+    ],
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "generic_routing_sha256": "ebcbd69e495ba8360fd8a16d96767718a0c21722982f5080ace551e515c55097",
+    "tool_surface_sha256": "ceb1705e57fdcf6fbb0f3f46793eaaace7a1571bfaa8fb1821f4bec145f1e400",
+    "execution_engine_sha256": "59b3e9c0298408b20038bed64038f0e94cb16fff029f92cc7e3d72f9f549df03",
+    "unit_tests": "2295 passed",
+    "focused_tests": "3 passed",
+    "ruff": "active source and tests passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_exact_search_routing_v201_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v200 Calc failures whose trace explicitly searched for the required public action",
+    "selected_count": 3,
+    "domain_counts": {
+      "libreoffice_calc": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T09:44:21Z",
+  "tasks": [
+    {
+      "order": 13,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 15,
+      "source_order": 92,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 24,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

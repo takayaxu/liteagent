@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order71-v32",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order70-writer-idempotent-save-v32.json",
+  "candidate_parent_config_sha256": "c694510ce36e739500c077b5616a6726474c63717ad1875ede7c43bce2660cc7",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "e1d42d24e72da7bdfd8dd06a9022a4632b3470ce7f3626b79a12c2ad42bc6103",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "hypothesis": "v31's first generic PDF export patched all 17 source-derived soft-wrap spaces. The model then called document.save on an unmodified document; unconditional UNO store() rewrote its DOCX header structure, so later exports could derive only 14 targets and the final evaluator artifact missed exactly three repeated header spaces. Treating save of an unmodified document as an idempotent verification should preserve the original source structure across repeated model actions.",
+    "writer_pdf_export_sha256": "e62761e32acdab72ef02b43b1ef91eaed0835e69f7409ca6b9d053a9952398fa",
+    "writer_schema_sha256": "072b2b6132062968b229dd2a7a07b2e25a635321c8c1802c50648640286eed5a",
+    "writer_tool_manifest_sha256": "a078aa71ecd6680f386458e8db7ad11a2f75c3559ce3b9c597e6789eddf1d1d9",
+    "writer_uno_worker_sha256": "9a12de19519cc259c9964b1692fae73e8f4358ad6ef3063c8c65782f69bdd66b",
+    "writer_install_sha256": "68227b47247bcf378a3757d2b520d98c97ac98574f260cb9907663a1a8ddca7d",
+    "writer_deploy_host_sha256": "6b86fe45809f9dd34c4ffdd551effe646f4582575978b125a181e4b36c384795",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_verify_script_sha256": "0b68f0b14614abbcae22bd06511b7013b24c4bb25847e3cf61573600074ad32a",
+    "writer_pdf_export_test_sha256": "e06d17ca2c92eda8179ec705a9b70756e2eb1cc962225b11aa45476b7b721587",
+    "writer_schema_test_sha256": "8239e07138cb36e1e205856a17bfb26628468934567659e55f52920ea60240fb",
+    "writer_worker_test_sha256": "310258d28abf6c639960e1224f17fa047dd3bc7fe4d7fb48fbcf98b7d8abb77a",
+    "tool_catalog_test_sha256": "fc008d04cc47c0bcb3679d4cb9d9b6fe9d411c0bdc9e5b942e6b80e1856548f5",
+    "strict_manifest_test_sha256": "2ba1665ca67c2bad55942c904ff580e8e35f318aaa0beabbd80c9abb978fe4f7",
+    "runtime_test_sha256": "4ccf0e40b95adeaa09c016ea308c3724d917da0ae109b4d13d5e15e7922cef7e",
+    "audit_test_sha256": "08d833822c712c7b9e6c75341bb4074098e44c229858509f3fb36c7b53008aaa",
+    "writer_guest_integration_test_sha256": "25f797ae1eb6cf78d6b3bae45135736f9357f2a25cf1580690df4d326f59e131",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_writer_and_runtime_tests": "463 passed",
+    "full_unit_tests": "1305 passed",
+    "counterfactual": "WriterSession tests use unrelated counterfactual-notes.docx and edited-agenda.docx packages. They prove an unmodified document receives zero store() calls and retains its byte hash, while a modified document receives exactly one store() call and is verified as valid.",
+    "prior_v31_result_sha256": "e0c1cfd17f2bd5a846a0cb550ecc449f83076758a707fac8bc695ba96608e495",
+    "prior_v31_audit_sha256": "d3c3004ea1430919561094341caea047d4c806aea4dadbaeeed28b51f804c3cb",
+    "prior_v31_audit_valid": true,
+    "prior_v31_outcome": "Original evaluator reward was 0.9996021747778809 and binary failed. The final result text was identical to the reference except for three missing spaces after a repeated page-header label. The first export patched 17 targets; after an unmodified save, subsequent exports patched only 14.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, instruction, header text, golden value, or evaluator expected state appears in the changed runtime or counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_idempotent_save_v32_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 71,
+      "source_order": 162,
+      "domain": "libreoffice_writer",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "source_episode_id": "1ad96a8d7733aafc283b53de",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "62a4ccc9a37170880a39dac31259e74c2aac9a82c33f8380e1d53e7f84050c78",
+      "execution_class": "task_specific",
+      "pool_order": 71
+    }
+  ]
+}

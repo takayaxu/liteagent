@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order114-presentation-context-v115",
+  "status": "frozen",
+  "purpose": "Order 114 hypothesis-2 A/B: test a bounded current-presentation context and an explicit visible-slide-text versus speaker-notes contract without changing execution arguments.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order114-presentation-writer-v114.json",
+  "candidate_parent_config_sha256": "aa3718237b6ee39899f9733e2ba179d07bd5e0de14fb20cf51f1815d69a70549",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "00b05ea37a2e7166f6e74be3fb7e500e396f75fee0484df893ab39286443d284",
+  "change_scope": "Preserve the v114 presentation-to-Writer implementation. Replace the model-facing result of presentation.inspect_current with exact identity plus bounded slide structure counts, excluding full shape and speaker-note text. Clarify that include_notes is false for visible slide text and may be true only when the instruction explicitly requests speaker or presenter notes. The Runner does not add, remove, or rewrite the model argument.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_presentation_context_v115_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. At most one further materially different generic hypothesis remains before marking Order 114 task_blocked and advancing.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3",
+    "hypothesis_class": "model_argument_semantics_and_context_compaction",
+    "parent_ab_result": "experiments/generic-only-coverage-order114-presentation-writer-v114-run1/results.json",
+    "parent_ab_result_sha256": "722cc64adf4e0f38ee329c60e915cd460c3a72ccb92b3fcffa7689e7c6e6d3cb",
+    "parent_ab_audit_sha256": "4832d2bcd3f9e85a9909d647eba337804ca039c02cb5ca51f2e284e4098bcd30",
+    "parent_ab_reward": 0.23252788104089217,
+    "parent_ab_diagnosis": "v114 correctly inspected the PPTX and created a verified DOCX, but the model explicitly passed include_notes=true. Offline evaluator-artifact analysis found 46 of 47 expected visible-text paragraphs as exact multiset matches plus one whitespace-only variant, while 71 extra speaker-note paragraphs reduced the original evaluator reward to 0.23252788104089217.",
+    "model_facing_actions": [
+      "presentation.inspect_current",
+      "document.create_from_presentation"
+    ],
+    "model_facing_argument_policy": "The model still selects include_notes. Its schema now defines speaker notes as separate metadata and says to omit the field or pass false for visible slide text unless the instruction explicitly requests notes. Captured model arguments continue to reach the Adapter unchanged.",
+    "context_policy": "The current-presentation result keeps exact URL, title, slide count, visible-text/table counts, per-slide structural counts, and whether notes exist. It omits note bodies and shape bodies from the next model turn while preserving the full raw Adapter response in immutable trace evidence.",
+    "candidate_bundle_sha256": "cfaccaab284f81d41b488732a3a4af259328f8b7c2b872619e46a57a4c606fc5",
+    "candidate_bundle_hash_method": "SHA-256 of the sorted newline-delimited sha256sum output for the 11 production modules inherited from and modified after v114.",
+    "focused_tests": "450 focused tests and the complete 1768-test unit suite passed. Ruff, compileall, project layout, deployment leakage, frozen-v1 SHA256SUMS, and OSWorld commit/evaluator-tree checks passed.",
+    "counterfactual": "A synthetic two-slide deck uses unrelated names, nested shapes, a table, and a 10000-character note sentinel. Tests prove exact URL and structural counts remain, note content is absent, context stays below 3000 characters, and the schema requires explicit note intent. No Order 114 identity, source text, expected output, golden data, or evaluator values enter runtime code.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "second targeted generic A/B for Order 114 in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 114,
+      "source_order": 230,
+      "domain": "multi_apps",
+      "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "source_episode_id": "2c349e590817f3ec59453a79",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "c12aa9e3be77882b4b46b4e878389dbd454147105939095f4d436eaf2076cda4",
+      "execution_class": "golden",
+      "pool_order": 114
+    }
+  ]
+}

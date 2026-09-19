@@ -1,0 +1,147 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-vlc-composition-validation2-v377-concurrency2",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v377",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-vlc-composition-validation2-v377-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 782,
+      "total_bytes": 63297043,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "14517d13cca431da53dd84c6a0de824022a7415f292fa2ead4b9af512e958a98"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "status": "frozen",
+  "purpose": "Prospectively frozen, outcome-informed diagnostic validation of the v377 VLC composition boundary. Order 161 requires separate OS file discovery and exact VLC playback; Order 162 is a previously passing VLC preference control. Selection and all conditions were frozen before any v377 OSWorld reward. This condition is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-20T14:05:20Z",
+  "adapter_version": "v2_expanded_generic_only_v377_vlc_composition",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one directly affected v377 VLC composition task plus one previously passing VLC preference control, selected before any v377 OSWorld reward",
+    "selected_count": 2,
+    "domain_counts": {
+      "vlc": 2
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 161,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+      "source_order": 303,
+      "selection_role": "explicit_find_then_exact_playback_target"
+    },
+    {
+      "order": 162,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89",
+      "source_order": 304,
+      "selection_role": "unaffected_vlc_preference_control"
+    }
+  ],
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v337-trusted-concurrency6-run1/results.json",
+    "selection_evidence_sha256": "c81c2d914ae68dca48ef4a0b2cf5077cd51970a5c698bfeba05a0fbf82d01098",
+    "granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v377-granularity-audit.json",
+    "granularity_audit_sha256": "0d52393420a153b0edb8518e4eb8c3c10d7eab4f73570dd7483cf4c8fec06e37",
+    "source_tree_seal": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v377-source-seal.json",
+    "source_tree_seal_sha256": "db994c4ce75db96342cbe0eacc942ac9bfe77baa6bed2c4d1d4f3fb5a08f693c"
+  }
+}

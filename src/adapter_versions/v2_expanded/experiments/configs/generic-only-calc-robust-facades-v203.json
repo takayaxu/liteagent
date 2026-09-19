@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-calc-robust-facades-v203",
+  "status": "frozen",
+  "purpose": "One scripted clean-VM diagnostic rerun of the three Calc historical-pass regressions still unresolved after v202. The set is selected from prior outcomes and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-calc-semantic-facades-v202.json",
+  "parent_config_sha256": "0fb28ad8a20324f2246b5b783cff0d00031c404736fb6650d364a7128eb872f3",
+  "change_scope": "Make three existing spreadsheet-semantic contracts robust to small-model argument errors without deriving answer values: append-summary source ranges are live-table anchors extended through contiguous rows; repeated-table charts detect blocks and use each block's first category column and last numeric column; merged headings use one text-plus-merge-plus-format action; stacked percentage pivots accept a flat model-selected field list. Every text, field, style, chart type, sheet, destination, and source anchor remains model selected and reaches the Adapter unchanged.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "historical_regression_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-historical-pass-regression17-v198.json",
+    "historical_regression_config_sha256": "1208faea18f94e3fd91a9bfeebb7ad72ec75fdca0f666cedfd079a0b10324bea",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-calc-semantic-facades-v202-run1/results.json",
+    "parent_results_sha256": "08da67a8d00befb144af1f909f1fa4a7bb23ee45e80a94eb092c9b7102fc60b4",
+    "parent_strict_audits_sha256": [
+      "079878b70f63418eec22ee04f90f1b5323e4bd864f9d4dd3768bceaa6dccbe4e",
+      "cc3b5f20682923dab1bd08618291dacdc0ba445e404aba42360c05f7dbcc9467"
+    ],
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "calc_semantic_tables_sha256": "cf357e3678b9ad18ff1eaf7005d9d264b1133225d8a7081c6b64f0a862246131",
+    "calc_schema_sha256": "51afc4edaaa457d3166ab83196f144cc6fde81ba8bd72dadd47f9a97cd999073",
+    "calc_tool_manifest_sha256": "9cd4bd1960bd37668a1bfece19e223255ec682c781814a27dcd1455600eff49a",
+    "calc_uno_worker_sha256": "d6797787b72f621ff18a600858051b02f3bf89ceaca1998a54b6bd27c2d9e069",
+    "calc_semantics_sha256": "cfa83790fd4bcf930387f54ac87bac6fb00b873a1bc4199acd9ce7c44dc86353",
+    "strict_contracts_sha256": "5a9bd58607c5a967271faf7a21fb137af23808038ff3cae26e4a367d94841b59",
+    "tool_catalog_sha256": "58a4f6b5a3081e30141dd6795223f2cc193db2aa2276f9e91a7e143ba7aaa44f",
+    "tool_surface_sha256": "d722341c583c07f7f8c0191dc652727569be1206e43766904178528714d336e0",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "state_core_sha256": "8c5fc32d5dd542265ae7fba430091eb6647b67b5abbe2dfd69d54d0e6eb0d742",
+    "semantic_requirements_sha256": "4c11213207287611f8bbad30aa0ab0a22e1252dfcb3cb38fb5a88752b5b00cc6",
+    "adapter_results_sha256": "99f58b1afd3b5d47f70ad01c5e54faa4a67639d2873909f31c9a7a550133d540",
+    "action_selection_sha256": "64267aea28543fd851bf6b0b1e3a03a0a6dbe5e84b845736982387c8983fbb22",
+    "state_calc_sha256": "064c4a34482a457a7edd5124f5d108ca5bce878b3eeaedd16ba4ce158ad5dfd9",
+    "openapa_tool_catalog_sha256": "093334a534cd9a76b864a4138addeac783b1a0f54ea4396595c68add98df12f7",
+    "semantic_table_tests_sha256": "513c10680ed6e992c0fc8e635c45ade32b314c6eae56c33c84173ccfe01f9f08",
+    "strict_manifest_tests_sha256": "a0d48e67b5fa57ee123dbc7e292650e9c0c10b9f3c3a9810f7dbcb2e9747da7a",
+    "unit_tests": "2347 passed",
+    "focused_tests": "813 passed",
+    "ruff": "changed active source and tests passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_calc_robust_facades_v203_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "the three v202 Calc failures from the frozen 17-task historical-pass regression set",
+    "selected_count": 3,
+    "domain_counts": {
+      "libreoffice_calc": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T11:07:02Z",
+  "tasks": [
+    {
+      "order": 13,
+      "source_order": 89,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 15,
+      "source_order": 92,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 24,
+      "source_order": 103,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

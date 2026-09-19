@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order79-v231-writer-reference-schema-completion",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for v210 Order 79. Repair the strict generic-only Writer numbered-reference path by applying public inspect-derived marker and number constraints to the actual model-visible schema and by activating the generic completion phase. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order73-v230-writer-image-completion-phase.json",
+  "parent_config_sha256": "340b25e02dd3a2bbe1d9e1c5866aa296615f7e711c4ae88c3fb13bd70f9bc7d6",
+  "hypothesis": "Both the v41 pass and v210 failure inspected the document first and observed next_reference_number 14. The v41 model selected 14, while v210 selected 12 because its actual strict request did not contain the dynamic marker or number enums: the existing constraint code was reachable only in the legacy tool-surface branch. After the wrong mutation consumed the marker, Qwen repeated the action and entered GUI/search loops. If strict mode requires document.inspect before this semantic action, applies the observed marker and next number to the actual model-visible schema, and recognizes a single numbered-reference request for proactive completion, Qwen will select the public action with unchanged constrained arguments, read back the result, terminate without GUI, and pass the original evaluator.",
+  "change_scope": "A focused writer_reference_semantics module recognizes only one bibliography/reference entry plus a numbered cross-reference at an explicit marker. A focused writer_reference_tooling module applies marker and next-reference-number enums from the latest public document.inspect result. Strict tool staging exposes document.inspect before the state-dependent mutation and uses the shared constraint helper for normal and recovery surfaces; the legacy branch reuses the same helper. instruction_semantics maps the reusable intent to document.add_numbered_reference so the existing strict completion state machine exposes read-back and then propose_done. No reference text, marker, number, task ID, answer, or model argument is parsed, created, replaced, or injected by the Runner.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-01/raw/run-1/79-libreoffice_writer-adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+    "v210_outcome": "Strict evidence-valid failure: reward 0.0, generic_api_plus_gui, 20 steps, no Agent termination, and agent_loop_time_budget_exhausted. The first mutation used model-selected number 12 despite document.inspect reporting next_reference_number 14; the actual second model request contained no enum constraint.",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order79-writer-reference-context-v41-run1/results.json",
+    "historical_clean_pass_results_sha256": "dc230c144cafa5c83e138ced7eb3990c6750f1d3cc8edca85cca9f563a7cf606",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-079-generic-only-coverage-order79-writer-reference-context-v41-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "8167beb0e9395e7004e94c6b535c827bdef4f518bded2635ae7092c6ba5f311d",
+    "historical_clean_pass_outcome": "Reward 1.0 and current strict re-audit valid, evidence-valid, and baseline-admissible with zero model/action mismatch, rewrite, injection, or Adapter trace mismatch. The model selected number 14 but did not terminate and reached the 30-step cap with GUI fallback.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "writer_reference_semantics_sha256": "2b138f5c29fb6aa4386ffbf4494159b399dd7b70065bf74454f88f7b00f7cbd0",
+    "writer_reference_tooling_sha256": "3fde4f676fb62835268fd0cf4bfda983d54525b8f6b53950f41afeb207f56e4e",
+    "instruction_semantics_sha256": "4b009c7726c288857ec157e347a0f9c97b846b4acf729466296b76262ed74808",
+    "tool_surface_sha256": "ed4ad86693942d5bbcdca008512cf65a14615c2fe841908e5ae02b7b8e3e761c",
+    "writer_reference_tests_sha256": "aec41de4262d2ed44097275a9169fa320f3e8c41eb8f429379b392d8a78de4bf",
+    "counterfactuals": "Three distinct single-reference paraphrases route to document.add_numbered_reference. Four negatives reject formatting, footnotes, plural references, and deletion. A structurally different synthetic document with marker <cite now>, six existing references, and next number 7 proves first-inspect staging, actual model-visible enums, exact unchanged execution arguments, inspect-only post-mutation exposure, and propose_done-only post-read-back exposure. A second document with next number 10 proves a stale model-selected 9 is rejected before Adapter execution.",
+    "focused_tests": "10 passed across Writer reference semantics, strict schema constraints, completion staging, and the existing Writer inspect constraint case",
+    "unit_tests": "2496 passed",
+    "ruff": "passed for active source, scripts, tests, and Adapters",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_reference_schema_completion_v231_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 actual request with the eligible historical clean pass",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T00:08:53Z",
+  "tasks": [
+    {
+      "order": 79,
+      "pool_order": 79,
+      "source_order": 170,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order84-v45",
+  "status": "frozen",
+  "purpose": "Targeted A/B for the first reusable generic hypothesis after the immutable order-84 v44 invalid-argument failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order84-v44.json",
+  "candidate_parent_config_sha256": "aa4b2749ec920596915533516b67c62f6b510e0f3158836fbe5246ac239aa938",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "0f8469fa8a32f8ab6370c07e7a3782652ef7c0795fe3185ffcba5e0d6b1eadfe",
+  "change_scope": "Expose the existing Writer settings.set_default_font action through an Adapter-owned direct font_name schema. Runtime, underlying Writer action semantics, task routing, prompt, evaluator, and model are unchanged.",
+  "implementation_evidence": {
+    "hypothesis_number": 1,
+    "hypothesis": "Qwen selected the correct existing action in v44 but the legacy opaque params wrapper elicited an empty string. A direct required font_name string should allow the model to supply its own requested family without Runner defaults, normalization, task identity, or answer injection.",
+    "preserved_v44_failure": "experiments/generic-only-coverage-order84-v44-run1 is immutable: evaluator 0.0, 30 steps, no successful Adapter call, repeated model selection of settings.set_default_font with an invalid params string, no Agent termination, and strict audit valid=true.",
+    "preserved_v44_result_sha256": "ff4c97d207193e8d4dc38969322c2f4b640cf933fa379fbf7724d0d2fbf0de76",
+    "preserved_v44_audit_sha256": "6d494cdc07e81e5c9023982cfef9b41fa0c18b3a88110d03812c74c527ad120b",
+    "preserved_v44_trajectory_manifest_sha256": "2d71bcbf81438a6ecccbd301ad4edd94277f2aa39e09eefd6e24277f2a7b2cb9",
+    "counterfactual": "Schema and retrieval tests use Liberation Serif, Noto Sans, and DejaVu Sans Mono rather than the evaluated task value. Strict Runtime testing proves a model-selected Liberation Serif argument reaches the Adapter unchanged. The manifest/runtime validator pair rejects missing, empty, opaque-wrapper, wrong-typed, and unexpected arguments.",
+    "writer_tool_manifest_sha256": "133ceaa429774363a2f573234c40f26ad3be0e2b219f6badc8602149b598b00c",
+    "writer_schema_sha256": "4cdd697519a2ba3e3caca5d82a60d3f85d2ff4409ead4fde3395e2ac41b94add",
+    "writer_uno_worker_sha256": "d3a140dcdf10f619e62641fdda6bb640ae808bc7d49fdda0a50a76bebc37254c",
+    "tool_catalog_sha256": "3bf5120bfba6b8b6447907cc342c593bb5ae2b9c7d255ceb12ea38750437eacd",
+    "writer_schema_test_sha256": "235f884b79ca701e6690f18575e77180604d566bbe255d33aed9f601a2fe556c",
+    "tool_catalog_test_sha256": "161fc8886c211a97fda91ba2ad37d59ebe6ea6703ca6cbf1b4d810e0fa249e44",
+    "strict_manifest_test_sha256": "4fcc35926469076f04ddf1ecbdf5907a50d832202956795d2eae9416b9042367",
+    "runtime_test_sha256": "ec3d90062200e63deff14d90724448b4e4a49e222434ab93fb0e36ac59be3f9e",
+    "runtime_sha256": "d820262d674c7cbbef3144e2544611c2a209a9a6bd43b806de38e058121bc866",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "focused_writer_catalog_runtime_manifest_tests": "562 passed",
+    "full_unit_tests": "1445 passed",
+    "ruff_changed_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No task UUID, source episode ID, task source filename, instruction fingerprint, golden artifact, evaluator expected state, or evaluated font-family constant was added to production code or counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_default_font_schema_v45_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B on the first non-pass task after one reusable schema change",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 84,
+      "source_order": 176,
+      "domain": "libreoffice_writer",
+      "task_id": "f178a4a9-d090-4b56-bc4c-4b72a61a035d",
+      "source_episode_id": "1ef0bc98c222b8e50992db1f",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "54f21ca04ff345f81d7de3b7430992e1ce7be5596ab01a0aa84b3773ae061bae",
+      "execution_class": "generic_api_only",
+      "pool_order": 84
+    }
+  ]
+}

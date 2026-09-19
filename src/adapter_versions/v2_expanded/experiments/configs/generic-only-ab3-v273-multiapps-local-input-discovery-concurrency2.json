@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v273-multiapps-local-input-discovery-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v273 generic unresolved-local-input discovery stage. It runs one affected v252 failure and the two immediately preceding same-domain clean controls once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v272",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v272-impress-navigation-routing.json",
+    "disposition_sha256": "588005a3bacf1cb42c6f9e20a71e4ad3b1a80e74fecb345da0d5d01d0693fb47",
+    "complete_candidate_accepted": true,
+    "retained_behavior": "All accepted v253-v272 generic contracts remain active, including semantic picture sizing, grouped-picture completion, and read-only navigation versus explicit slide-reorder filtering."
+  },
+  "change_scope": "v273 recognizes a single existing local input described by file type and standard user directory without an exact path. The initial strict Multi-Apps surface exposes only filesystem.find until a successful model-selected call; then the ordinary action surface returns with the exact observed path in truthful context. Explicit paths, batch inputs, output-only destinations, and current-application transfers do not enter the stage. No action, path, or argument is derived from task identity, golden data, evaluator state, or Runner injection.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v273.json",
+    "candidate_manifest_sha256": "cac9f7e05e1c49548754bb601b8faa4c8c75c0359b28880e0608b14103fe27b9",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v273-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "dcbbee8cd9b2eb5e3b69816eaa4096157db4bd21ac8f5c15d3edd901016299d5",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 115 is the v252 failure matching the generic unresolved-single-local-input cluster. Orders 113 and 114 are the immediately preceding same-domain v252 clean passes and consume current Calc and Impress state, so they must remain outside the new discovery stage.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v273",
+    "active_runtime_and_test_tree_sha256": "788aed8a5fe49f2878e778cd55a26ff41dfca7772112e7c68804d0ab17986b66",
+    "focused_tests": "130 passed",
+    "complete_unit_suite": "2859 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "Both DGX endpoints passed 4/4 semantic cases and 5/5 model requests against the exact frozen source; task identity was absent and model arguments matched execution arguments exactly.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v273_multiapps_local_input_discovery_ab3_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve source order for Orders 113, 114, and 115. Round-robin assignment puts Orders 113 and 115 on DGX1 and Order 114 on DGX2.",
+    "selected_count": 3,
+    "affected_orders": [115],
+    "clean_control_orders": [113, 114],
+    "domain_counts": {"multi_apps": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T15:57:14Z",
+  "tasks": [
+    {
+      "order": 113,
+      "source_order": 229,
+      "domain": "multi_apps",
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "cohort_role": "clean_control_current_spreadsheet_to_writer",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 114,
+      "source_order": 230,
+      "domain": "multi_apps",
+      "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "cohort_role": "clean_control_current_presentation_to_writer",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "cohort_role": "affected_unresolved_local_input_discovery",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

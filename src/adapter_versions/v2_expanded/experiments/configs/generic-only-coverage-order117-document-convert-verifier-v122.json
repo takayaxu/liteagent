@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order117-document-convert-verifier-v122",
+  "status": "frozen",
+  "purpose": "Order 117 hypothesis-1 A/B: verify each output from the existing generic document.convert_batch action so a successful conversion is reported truthfully instead of returning an empty-spec verification failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order117-v121.json",
+  "candidate_parent_config_sha256": "b95c26cf51d58526ea0a6df874c8baef335c7fc4a98554b5180a3531266778c2",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c5c5e6cb1f9e1d0080601d17bd4106c5268a70727c3f111e513db6dcea6009ff",
+  "change_scope": "Preserve the v121 model prompt, tool ranking, schemas, actions, arguments, and task-independent conversion implementation. Add only the missing OS Adapter default verification specs for document.convert_batch: derive one ordinary file-existence check from each converted path already returned by the generic action. No task identity, instruction fingerprint, filename constant, expected archive, golden content, evaluator state, Runner rerouting, or argument rewriting participates in verification.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_document_convert_verifier_v122_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-1 A/B, classify the new failure, and do not rerun it unchanged. Try at most two further materially different generic hypotheses with one targeted A/B each. If hypothesis 3 also fails, mark Order 117 task_blocked and immediately advance to Order 118.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3",
+    "hypothesis_class": "document_conversion_default_verification_contract",
+    "parent_attempt_result": "experiments/generic-only-coverage-order117-v121-run1/results.json",
+    "parent_attempt_result_sha256": "a7d03e501149cf1e205bc638e620cd2536065e01ddbad298ef6fe6441478f85e",
+    "parent_attempt_audit_sha256": "ec701f23a9f81d7310f24dffe5ac52875c2eb968fba17f25d87119e298f71b99",
+    "parent_attempt_trajectory_sha256": "ccaa5ec28991087052ac4f5e4e81042eada431947ca1e2b0c8810d8f453c977c",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "The baseline successfully created the requested source PDF multiple times, but OS Adapter _default_specs returned an empty list for document.convert_batch. verify_specs deliberately treats an empty check set as failed, so the truthful conversion result became VERIFICATION_FAILED. Qwen then alternated the same conversion with one repeated catalog query. The no-progress guard stopped steps 9-16 after 206.726 Agent seconds; no ZIP was created and the original evaluator returned 0.0.",
+    "production_file_sha256": {
+      "os_adapter/worker.py": "5c071280d798772aff9bbc087c55d754921837425c58670ec7cc6193ccbfc6ac"
+    },
+    "candidate_bundle_sha256": "1715463f6b40780646647533baeddee7e0253580d84d6b08d854d4368298b70a",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum line for the modified production module listed above.",
+    "focused_tests": "130 OS action, verifier, and Multi-Apps facade tests passed. The complete unit suite reported 1793 passed. Ruff lint on active source and tests passed; the modified files passed Ruff formatting and compileall. Project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the OSWorld commit/evaluator-tree check passed.",
+    "counterfactual": "A structurally unrelated two-document result uses regional-summary.pdf and technical-appendix.pdf. The test proves that both generic returned paths become independent file checks, that both initially verify, and that deleting the second output makes only its persisted-state check fail. The counterfactual test source SHA-256 is ab5eef473bc0aac918928627fbea702b1284fdb4512509acf8d05dfbefdbb42a. No task ID, task filename, requested archive, golden content, or evaluator value appears in production code or the counterfactual.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first and only targeted generic A/B for hypothesis 1 on Order 117",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 117,
+      "source_order": 234,
+      "domain": "multi_apps",
+      "task_id": "8df7e444-8e06-4f93-8a1a-c5c974269d82",
+      "source_episode_id": "8a7a585c2768a879154150c5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1c995c83fed1cbd942b52efc5477a525a455f20789ec7b8ce42a16f6c497db0",
+      "execution_class": "golden",
+      "pool_order": 117
+    }
+  ]
+}

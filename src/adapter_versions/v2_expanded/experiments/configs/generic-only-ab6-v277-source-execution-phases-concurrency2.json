@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab6-v277-source-execution-phases-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v277 grounded source-edit and persistent-output phase control. It runs both affected v252 failures, three v252 clean controls, and the retained v273 local-input discovery fix once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "restored_candidate": "v274",
+    "restored_candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v274.json",
+    "restored_candidate_manifest_sha256": "b5beae86ffdd17152c18c9e200f7705e6152b643e0ef0642638aa8a7abce4f0d",
+    "restored_candidate_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v274-local-input-command-output.json",
+    "restored_candidate_disposition_sha256": "51fd0163b6371b334d80581f2c77c1e494fb36dd52795a088c0c63ee5a06117b",
+    "rejected_v276_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v276-persistent-command-output-completion.json",
+    "rejected_v276_disposition_sha256": "becdc0c7db5537c4813bc9f63d086e4a48509e5cbb5329e3c047b22035af10d6",
+    "retained_behavior": "v277 starts from the exactly restored v274 tree, retains accepted v253-v273 behavior, and adds only the generic source-edit and persistent-output phase state machine."
+  },
+  "change_scope": "v277 recognizes an instruction-semantic source-edit-and-persisted-output workflow and derives the next phase from verified model-selected events. It optionally requires a named supporting Writer document, requires source mutation before capture, requires exact output read-back before completion, and makes the active phase outrank stale discovery. The Runner derives no action, path, content, parameter, or completion claim.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v277.json",
+    "candidate_manifest_sha256": "b8286676ca328c8b1cc384b64473af16056f69e47466b45f15d756a48ea11b43",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v277-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "7db2cdc8c14fd4615e27ddb90bcac97fbb150cd45e4d9091311ec29d77a82328",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Orders 94 and 116 are the only fixed-189 instructions matching the reusable source-edit-plus-persistent-output contract and both failed v252 after model-selected source work. Orders 90, 91, and 109 are v252 clean Multi-Apps controls. Order 115 protects the retained local-input discovery behavior.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v277",
+    "active_runtime_and_test_tree_sha256": "760dfbc086662361dceec9bfe894407a5879da774d7489ed9cb53d311774f1fc",
+    "focused_tests": "15 source-phase and model-preflight tests passed",
+    "complete_unit_suite": "2885 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed; frozen v1 hashes valid and OSWorld tracked tree unchanged",
+    "model_schema_preflight": "Both DGX endpoints passed six structurally distinct phase cases against the exact frozen source; task identity was absent and Adapter arguments matched execution exactly.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v277_source_execution_phases_ab6_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed-189 source order for Orders 90, 91, 94, 109, 115, and 116. Round-robin assignment gives Orders 90, 94, and 115 to DGX1 and Orders 91, 109, and 116 to DGX2.",
+    "selected_count": 6,
+    "affected_failure_orders": [94, 116],
+    "clean_control_orders": [90, 91, 109],
+    "retained_fix_control_orders": [115],
+    "domain_counts": {
+      "multi_apps": 6
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 2,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 3,
+    "retained_fix_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T20:45:44Z",
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_control_contacts_export_then_convert",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "cohort_role": "clean_control_mail_to_spreadsheet",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "cohort_role": "affected_failure_source_edit_then_capture_output",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "clean_control_open_json_to_writer",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "cohort_role": "retained_fix_control_positive_local_input_discovery",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v273_status": "passed",
+      "v273_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 116,
+      "source_order": 233,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "cohort_role": "affected_failure_reference_source_edit_then_capture_output",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

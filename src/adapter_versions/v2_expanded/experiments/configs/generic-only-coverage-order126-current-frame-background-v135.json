@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order126-current-frame-background-v135",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 126 hypothesis 1: expose reusable current-video frame extraction by timestamp and active-presentation background-image mutation as direct generic Multi-Apps actions.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order126-v134.json",
+  "candidate_parent_config_sha256": "670100e0fdc11fbf8aa00bcd7c4b9e01bff3747586ac2dde96d041c931d06a42",
+  "parent_attempt_result": "experiments/generic-only-coverage-order126-v134-run1/results.json",
+  "parent_attempt_result_sha256": "3e04f6c71281a7139831539ac565d25dd1a58ba401f74f2cebb1be8ec4ec6133",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order126-v134-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "4bb0071a098034634ae2e63ab9c0466c909015bd779c3649cf0af7ee3275f958",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "6d9b425bff6643af25b148e46bbd6ad2cf918c4956f16e22101301367da30de9",
+  "change_scope": "Add parameterized Multi-Apps actions media.extract_current_frame and presentation.set_background_image. The first accepts a model-selected numeric or MM:SS/HH:MM:SS timestamp and output path, resolves the unique local video from live VLC state, normalizes only the documented time representation, and calls generic VLC frame extraction. The second accepts a model-selected zero-based slide and image path, resolves the active Impress URL from live state, applies the image, saves the same file, and verifies bitmap background state. Extend generic VLC media.extract_frame with an explicit time_seconds selector already supported by its frame extractor. Rank this two-action cohort only for explicit video-frame/timestamp and presentation-background-image intent. No task identity, dataset order, fixed path, expected image, golden material, evaluator state, Runner argument rewrite, or task workflow is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_current_frame_background_v135_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify whether the remaining failure is action selection, timestamp/output binding, current-media resolution, frame extraction, background mutation/save, completion, or environment. Try at most two further materially different generic hypotheses only when the trace supports them; otherwise mark Order 126 task_blocked and immediately continue to Order 127.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "semantic_current_video_frame_and_active_presentation_background_facades",
+    "failure_evidence": "The untouched v134 baseline returned evaluator 0.0 after 30 steps and 473.278 total seconds. Qwen found nested vlc.media.extract_frame and libreoffice_impress.slide.set_background, but the frame contract exposed only frame_index/current_playback while the model repeatedly produced time 00:08. It extracted several current frames at the wrong moments, retried equivalent calls, guessed paths, and never invoked the discovered background action.",
+    "counterfactual_tests": "Tests use unrelated Observatory Survey media, timestamp 01:17.25, slide index 4, and Observatory Review presentation/image paths. They verify timestamp normalization, live VLC uniqueness resolution, exact model output-path preservation, explicit VLC time_seconds extraction, active-presentation URL reuse, same-file save, bitmap read-back, scoped Top-K/search routing, compact contexts, and rejection of invalid timestamps, paths, and slide indices.",
+    "focused_unit_suite": "331 passed",
+    "full_unit_suite": "1914 passed",
+    "static_verification": "Ruff check and modified-file format check, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. Direct host invocation of guest integration tests was unavailable because no standalone guest service was bound; the targeted clean-VM run performs real deployment and health checks before the model request.",
+    "source_sha256": {
+      "vlc_adapter/schema.py": "15758e57763e7d8364df4dd10657df31dfa0d60759fd3d1e96b2fc85c59fe2b2",
+      "vlc_adapter/actions.py": "b05c1ee0a3659aa522b9410418f69408e32f2225e33dfeeb7d9e4c1ee2d10e12",
+      "multi_apps_adapter/media_contracts.py": "9c11ec8323786f078ef95981f017da9d4b4e2239396ffbae30330a4397d66f07",
+      "multi_apps_adapter/schema.py": "451f0f5d21723778dd2258fcb75e930267a6977775e402ca480293aa2fa9a485",
+      "multi_apps_adapter/generic_schema.py": "f73532368181ab906aa6f00be6322bac9742e6476949f3a8a8934a36108222d0",
+      "multi_apps_adapter/tool_manifest.py": "6c9b226901b67496f094665e6c9aca45e7a3846e2fde102df2c5445505e5f5b6",
+      "multi_apps_adapter/generic_actions.py": "9b42ffdabda2ad1df15d8b1e4bd6d60633e99c59799a250d732de2480b45997a",
+      "integrations/lite_agent/tool_catalog.py": "0cbea55bb42f89b0f227128663eb23551b687d6ebaa8c4ded59cd897add61b7a",
+      "integrations/lite_agent/adapter_results.py": "565a237fbef60500951ab90f7a75de3353b1201b9da6a900f3cd7839fb095fc9",
+      "integrations/openapa_osworld/tool_catalog.py": "045bf03829752a54e9125dbaef046f3aa5884ffb6eac321ad082b49f7857ba48"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 126 v134 timestamp-contract and tool-discovery failure",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_preserved_in_generic-only-coverage-order126-v134-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 126,
+      "source_order": 252,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "source_episode_id": "ac71c2df71df07bca8ecfeee",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "58684aae255f4c278e57647ce8ec2e2f10acf657766cdb7676b27ef4dc46d6bf",
+      "execution_class": "task_specific",
+      "pool_order": 126
+    }
+  ]
+}

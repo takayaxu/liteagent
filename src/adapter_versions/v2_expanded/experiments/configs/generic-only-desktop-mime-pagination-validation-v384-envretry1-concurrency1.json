@@ -1,0 +1,156 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-desktop-mime-pagination-validation-v384-envretry1-concurrency1",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v384",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-desktop-mime-pagination-validation-v384-envretry1-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 779,
+      "total_bytes": 63325757,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "99e81eaee8c3fad50e7a1b193162c1c6740026768536fa39be7fd34f09fcd8b1"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "status": "frozen",
+  "purpose": "Bounded environment-recovery retry of the frozen v383 desktop MIME pagination validation. The immutable v383 run failed during Docker container creation before the first model request because the same OSWorld image required 89.51 seconds to create while the Docker Python client used a 60-second timeout. v384 changes only the generic Docker API timeout to a validated, configurable 180-second default. This is not a baseline candidate and is not a best-of retry.",
+  "freeze_timestamp": "2026-08-21T02:43:19Z",
+  "adapter_version": "v2_expanded_generic_only_v384_docker_api_timeout",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 0.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "retry": {
+    "kind": "environment_recovery",
+    "environment_retry_index": 1,
+    "maximum_environment_retries": 1,
+    "previous_condition": "generic-only-desktop-mime-pagination-validation-v383-concurrency1",
+    "previous_result": "adapter_versions/v2_expanded/experiments/generic-only-desktop-mime-pagination-validation-v383-concurrency1-run1/results.json",
+    "previous_status": "environment_failure",
+    "previous_model_request_count": 0,
+    "previous_evaluator_loaded": false,
+    "reason": "Docker create required 89.51 seconds on an independently named no-start probe, exceeding the prior 60-second client timeout before Agent setup.",
+    "further_unchanged_retry_allowed": false
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same single affected task and semantic condition as v383, retained only for one bounded environment-recovery retry after a proven pre-model Docker timeout",
+    "selected_count": 1,
+    "domain_counts": {
+      "multi_apps": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 89,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "source_order": 185,
+      "selection_role": "desktop_application_inspect_then_paged_exact_mime_association"
+    }
+  ],
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "semantic_selection_evidence": "adapter_versions/v2_expanded/experiments/generic-only-desktop-mime-retrieval-validation-v382-concurrency1-run1/results.json",
+    "semantic_selection_evidence_sha256": "93113701e8c00e53cd32deb4e76a8ba2f45bc9242cad710902d7971333376346",
+    "environment_failure_evidence": "adapter_versions/v2_expanded/experiments/generic-only-desktop-mime-pagination-validation-v383-concurrency1-run1/results.json",
+    "environment_failure_evidence_sha256": "ffccd979d6c8e8a53a8332fc652c10950f65ef2aa1d9844e34f72ef249ee570e",
+    "environment_failure_audit": "adapter_versions/v2_expanded/experiments/generic-only-desktop-mime-pagination-validation-v383-concurrency1-run1/workers/worker-01/strict-audit-v5.json",
+    "environment_failure_audit_sha256": "3087458771e5ca677d3b05a3bc364a299cfd4a35370363c146d4cb523f8fee72",
+    "granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v384-granularity-audit.json",
+    "granularity_audit_sha256": "bd727c45df89f848dd0a5353f71394077b76e8dd63cfa87f47e0405ba24b3bdd",
+    "source_tree_seal": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v384-source-seal.json",
+    "source_tree_seal_sha256": "09d46aa154d414172a22150c04ed9ad45286a525fcfd038fd0cf94ad56a30102"
+  }
+}

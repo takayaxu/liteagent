@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order76-writer-color-contract-v38",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for order 76 after replacing the existing Writer table-color action's opaque wrapper and hidden color defaults with an explicit reusable color contract.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order76-v37.json",
+  "candidate_parent_config_sha256": "31ed3e235460d3f36e60fdeff40edd76f6b8b0ef013079d1220f17bf95f331eb",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c04ceaf48d274857d0bd2691de9a434e77563dea077d96ae63d6a76eb156b7c6",
+  "change_scope": "Expose required vowel_color and other_color arguments for the existing generic table.color_words_by_initial action. Accept common color names, #RRGGBB, or RGB integers and convert them inside the Adapter. Remove red/blue defaults. Leave model, Prompt, retrieval, Runner, VM, evaluator, completion policy, and all other tools unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The unchanged v37 candidate exposed the correct existing table.color_words_by_initial action in its initial top seven. Qwen selected it 15 times but always filled the legacy opaque params wrapper with strings, so schema validation rejected every mutation. A direct typed contract should let Qwen explicitly select both requested colors while keeping generic classification and representation conversion inside the Adapter.",
+    "tool_catalog_sha256": "9ab8cecdfa6ca02978370f9e5ed469db76ec30f37b3ac1faa3d2e2294948b782",
+    "writer_schema_sha256": "c37096448702ccb7f0aa9f1789578f2d0b7e79f93fa23c883eb92e085e33f271",
+    "writer_tool_manifest_sha256": "16d48352beeca6cc2261fa0a5845f736596d0d3954254207191f48067a7ea9b1",
+    "writer_uno_worker_sha256": "b653bafafad6402b29269a49df1fbe47e52ce92cf9cc8137edda7212984abfb9",
+    "writer_schema_test_sha256": "5e73bbb76cfa3fc937ef24fa6ac245809412fd48a2712d105177f5c6acffa42e",
+    "writer_uno_worker_test_sha256": "0b581b9bc37c87d2ce90c48efe408cc45467fd664de7acf16f66b19b6098728c",
+    "strict_manifest_test_sha256": "b20390e2a8058306a82503c032a4b5455213734582f0ae1416537e19565e787b",
+    "tool_catalog_test_sha256": "eb79fe7e164a940fd04aa2070f6fcb9ebfeba111b2141528dbe84ab1185bb403",
+    "runtime_test_sha256": "154f2d151d9a2f053d7d463de8077f66ee1f2d7071f84899fecf35708404c3d8",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_writer_catalog_runtime_manifest_tests": "504 passed",
+    "full_unit_tests": "1356 passed",
+    "counterfactual": "Schema, model-dispatch, and fake-UNO tests use orange/purple, green/gray, and unrelated hex/integer pairs on different vocabulary-table descriptions and contents. They prove both colors are required model arguments, the exact strings reach the Adapter executor unchanged, named and numeric representations normalize deterministically inside the Adapter, and blank cells remain unchanged. No task identity, source filename, document content, evaluator state, or fixed red/blue answer pair appears in changed tests or implementation defaults.",
+    "current_instruction_router_check": "table.color_words_by_initial is fifth in the unchanged seven-action candidate list. Its model-visible schema has only required vowel_color and other_color fields and no params wrapper or default color.",
+    "prior_v37_result_sha256": "1edf094bf8a71a297481de82d9da58bcfb844fb6363ef65895a13993bafa40af",
+    "prior_v37_audit_sha256": "78eb85a40f4975afc7f53fb0e32fc4598fa515907de793af65785abaa04835d9",
+    "prior_v37_audit_valid": true,
+    "prior_v37_model_selected_actions_and_arguments": true,
+    "prior_v37_outcome": "Original evaluator 0.0 after 30 model turns. Qwen selected table.color_words_by_initial 15 times and tools_search 15 times, but every opaque params string failed model-visible schema validation before Adapter HTTP. No mutation executed and the Agent did not terminate.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, task filename, document content, golden value, evaluator state, or fixed task answer appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_color_contract_v38_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 76,
+      "source_order": 167,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_episode_id": "3fe16573f1ee098a7f4f9ed3",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "509b635c3fecef89eb1cba1ff0fd2dd56db5d3d0d86731c329368d17badfe1c7",
+      "execution_class": "task_specific",
+      "pool_order": 76
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order115-transfer-morphology-v118",
+  "status": "frozen",
+  "purpose": "Order 115 hypothesis-3 A/B: recognize inflected cross-application transfer verbs so the existing strongly typed image-to-Writer facade is exposed directly instead of relying on an ambiguous adapter.call route.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order115-image-document-v117.json",
+  "candidate_parent_config_sha256": "fff8fa4d11e35a33f42fcd8c0cd6421de06fa09a22c8a9b0822d302180669ec9",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "72f7ec9dc9eeb922ca9c08f2a46561e06dfc5b8edf3f7b9a95d40850f8a1fa7b",
+  "change_scope": "Preserve the v117 parameterized document.create_from_image implementation and all existing runtime behavior. Extend only generic transfer-intent recognition to common inflected forms such as copying, pasting, embedding, inserting, placing, and transferring. For image-to-Writer instructions, this makes the existing multi_apps.document.create_from_image facade a first-turn strongly typed tool ahead of generic adapter.call. The model still selects the action and supplies source_path, output_path, and overwrite unchanged. No Runner rerouting, argument rewriting, task identity, task filename, golden content, evaluator state, or answer constant participates in the behavior.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_transfer_morphology_v118_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-3 A/B, mark Order 115 task_blocked because its full baseline-plus-three-hypothesis budget is exhausted, and immediately advance to Order 116. Do not run a fourth hypothesis or an unchanged retry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_3_of_3",
+    "hypothesis_class": "cross_application_transfer_inflection_routing",
+    "parent_attempt_result": "experiments/generic-only-coverage-order115-image-document-v117-run1/results.json",
+    "parent_attempt_result_sha256": "ca93cab7bba9e6e9df09ab75a34e2b6b97d49bd1f55cae7a9c40cfcc335caf51",
+    "parent_attempt_audit_sha256": "9125fd339872cb67e7e87f29f586ac8797a1decd73d186484fa1d4d368409019",
+    "parent_attempt_trajectory_sha256": "033c73109ea624a42a1121c50c7af804bb22efdad175d426e0c0f6a9079297ff",
+    "parent_attempt_reward": 0.0,
+    "parent_attempt_diagnosis": "v117 found the exact XCF path, but its first-turn router missed document.create_from_image because the instruction used the inflected verbs copying and pasting. After catalog search returned the correct multi_apps facade, the model repeatedly invoked the same action against libreoffice_writer instead. The no-progress guard stopped the loop after nine steps and 68.069 Agent seconds; the original evaluator returned 0.0.",
+    "production_file_sha256": {
+      "multi_apps_adapter/image_document.py": "8e23b40bc7abe1d3de581eca1d1a325632d3d4612ca400edf56d0223bf7bc17a",
+      "multi_apps_adapter/generic_actions.py": "8e724925fda36f267f3aa563cbc18850fafab27ec489abfb629326e92e58365a",
+      "multi_apps_adapter/actions.py": "ff83137207a2900af12326943b03ca5a9330714d388a450ed757b666c5a1c33e",
+      "multi_apps_adapter/generic_schema.py": "bceb0d578c46ce5cbd0e96510a84ba328e1772188c686f40fec709a1ade6a411",
+      "multi_apps_adapter/schema.py": "d6e77134881fd698ecec79bd1af6f59c625535737f7bdb1f3d9e7c910a322545",
+      "multi_apps_adapter/tool_manifest.py": "e1a433ff37066ef90327023e2b2dc3d67b30ec98d4aea222a4c1e98836b7c710",
+      "writer_adapter/schema.py": "2e3a76990002ef75346d9fe40dc044f3d95f7f245a9fbc99842380b59676fe2a",
+      "writer_adapter/tool_manifest.py": "069b6944ae78f2255d1616e8383f8ad819785e54c75cccf182ee7bfb7a47f527",
+      "writer_adapter/uno_worker.py": "6bf82b1e15c78458832f01afe7c28d3384e4d702cf4cade038be9faac2902e32",
+      "integrations/lite_agent/tool_catalog.py": "bfad56b34e623be051747499b73397e7b621522e05a8458e38fa722c6f33a86d",
+      "integrations/lite_agent/adapter_results.py": "534b1c0c6ed6a88a6a26e40738192ba1cb93edc4bea95820edc2a1b4ae8815c0"
+    },
+    "candidate_bundle_sha256": "53a9752edb4d437db8cb5d0e7acae4e92875cf1df670ae75334a59382db4e657",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for the eleven modified production modules listed above.",
+    "focused_tests": "103 catalog and result-context tests passed, including distinct ORA, XCF, PSD, and SVG instructions with base and inflected transfer verbs. The complete unit suite reported 1789 passed. Ruff on active source and test directories, compileall, project layout and deployment leakage checks, frozen-v1 SHA256SUMS, and the tracked OSWorld evaluator-tree check passed.",
+    "counterfactual": "Different ORA, XCF, PSD, and SVG instructions use unrelated directories and output names plus copy, copying, pasting, embed, and placing forms. Every image-to-Writer instruction exposes adapter__document_create_from_image directly before adapter.call, while an unrelated image-review instruction still does not expose the create facade. The test source SHA-256 is 2c16f68fd945a82df5a8e61175da3e4f540682d312b06a2ed12d1098befca26b. No task ID, dataset order, original XCF basename, requested task output basename, golden content, or evaluator value appears in production code or counterfactual tests.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "third and only targeted generic A/B for hypothesis 3 on Order 115",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "source_episode_id": "71a7ff92a0db1b71995a58fb",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "1255b7ae73e513d97f84d422ede13d20ae7eeb9ae5b5aabb5ab9e67a44826a55",
+      "execution_class": "golden",
+      "pool_order": 115
+    }
+  ]
+}

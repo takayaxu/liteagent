@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order62-v225-ordered-textbox-facade",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 62. Replace the selector-dependent ordered-textbox path with one reusable Adapter-owned semantic action that resolves live textbox positions. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order53-v224-claim-only-recovery.json",
+  "parent_config_sha256": "fa0a040809701896cbd5b2f7b786d408b2649ef6e0b66ea88fc154cb0890bbdc",
+  "hypothesis": "The v210 model inspected the presentation but the compact observation omitted both target text boxes, leaving only selector-heavy shape.format_text and causing save/search repetition. If strict routing exposes one model-friendly slide.format_textboxes call whose one-based ordinal positions are resolved from the live document by the Adapter, Qwen will select the requested slide, document order, positions, and point sizes unchanged, persist the result, read it back, terminate, and pass the original evaluator.",
+  "change_scope": "Impress now owns a generic slide.format_textboxes contract with live document or visual ordering, one-based positions, deterministic formatting, and immediate UNO verification. LiteAgent adds task-identity-free parsing, retrieval, exact model-argument validation, and completion coverage in a focused module. The Runner does not choose selectors, inject arguments, rewrite calls, inspect evaluator state, or access golden artifacts.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-02/raw/run-1/62-libreoffice_impress-3161d64e-3120-47b4-aaad-6a764a92493b",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order62-v25-run1/results.json",
+    "historical_clean_pass_results_sha256": "2f11eb2ec521a9bd626ecc1d8a719d3012ff44bd90522c0c5616a6d7a8a8fc80",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-062-generic-only-coverage-order62-v25-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "54c018c25b0c2b9f8251f0ba91f70f1d40a7ad19e1848d1136033929e9a3b913",
+    "historical_route_limitation": "The historical model call matched execution, but its model-facing schema dynamically locked instruction- and observation-derived selectors and font sizes. That legacy mechanism is not reused by v225 and cannot justify a current generic-only implementation.",
+    "schema_preflight": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/preflight-v225-slide-format-textboxes.json",
+    "schema_preflight_sha256": "2ae5ae08ccbb07e33b714002a307a2e2ee0ba9b3538c593217ac81b811c067f6",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "impress_tool_manifest_sha256": "26bdc788bc42eac067779e0405db55a2a5a925891a1bbc4618dce1b3f37632f1",
+    "impress_schema_sha256": "f8ea0f15609c46cb8096054c76f892871bf9002c40e29610a91ae0ac899f9b3c",
+    "impress_uno_worker_sha256": "d66c308b4f416be0582899fda130a58f42eaed40ec3cc2dd51c0a76d90e0ac07",
+    "impress_textbox_formatting_sha256": "7877620b41c7d717c292bfaf95bb520d148b368c409238344980b055e8950f92",
+    "impress_semantics_sha256": "13c11976026f42b076bba93cb9e03c751eac9d1ff12f39e9bc3fe13348602ada",
+    "strict_contracts_sha256": "63aaf6322bb88e8e61f66a9097c1bd1257740489ac16d5e29564290b75832a5c",
+    "execution_engine_sha256": "0a46d3ad026fb8088e3e212b54fa5428e7c9bdef3d5aa6bb0c3346c4e2258711",
+    "semantic_requirements_sha256": "d310fc3433db34c2e1176abe54d1eaaaadb372ba0dc8e07a643370b7c70332c9",
+    "tool_catalog_sha256": "c7a2c12ff0a02996d15667175b4ddf564eba1a048f3f03fea13744065d2dcc34",
+    "adapter_schema_tests_sha256": "7e03bed06e3590bb321ad1743dd33a6c6a4efc4349f6ce673d188aa1ba96fe07",
+    "adapter_behavior_tests_sha256": "252763fdf1e68b12747ac0daea654ddf2dc7cea786a8678e2d4bf64497c11fb6",
+    "lite_agent_tests_sha256": "65b4d4a92b6811e1cccf0928e5314d22c0649a2aeb22861271360383e3462ce7",
+    "strict_manifest_tests_sha256": "ca118538c79f813b598bdbd8eb2b380fb7b585038dd64fe36e49a9a32f371e6d",
+    "focused_tests": "392 passed across Adapter schema, live textbox resolution, strict routing, exact argument execution, completion, and counterfactual cases",
+    "unit_tests": "2465 passed",
+    "ruff": "passed for active source and all changed tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "model_schema_preflight": "1/1 schema valid and 1/1 semantic match on a three-textbox counterfactual",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_ordered_textbox_facade_v225_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed regression item, first evidence-backed reusable-API hypothesis after v210 selector-observation failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T22:20:12Z",
+  "tasks": [
+    {
+      "order": 62,
+      "pool_order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

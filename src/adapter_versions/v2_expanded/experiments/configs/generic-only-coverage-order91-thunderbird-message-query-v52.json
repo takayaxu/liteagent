@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order91-thunderbird-message-query-v52",
+  "status": "frozen",
+  "purpose": "Bounded targeted A/B for coverage Order 91 after adding a generic Thunderbird message query API.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order91-v51.json",
+  "candidate_parent_config_sha256": "13760534f2609a18ddf581143ffa940c3b779e921d11cf4d24e35c5bd15fd5a1",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4abbd00d238da327f4ddfd8cce483521c164a033818dafb412917829c13fe0f9",
+  "change_scope": "Hypothesis 1/3: add parameterized Thunderbird messages.query(folder_name, limit, select_from, order, sender_contains, subject_contains, after, before, has_attachments). The API supports selecting the latest N messages and returning that selection in ascending time order. It is task-independent and contains no task identity, answer value, golden artifact, fixed destination, or Runner argument rewrite.",
+  "implementation_evidence": {
+    "before_result_sha256": "ac7d1c8b69c741d33fde264d2c21d917596b4a38f68e7c78b65752cc5044a122",
+    "before_audit_sha256": "bda994dbc3486e898cb07678a5cc5c8948adf0c3dde524af772fe9d731514995",
+    "before_trajectory_manifest_sha256": "9ade26fb528d6a713685d85412d4164df524602ac6c974fe655878a15e73e883",
+    "failure_class": "missing_generic_capability_plus_tool_discovery_loop",
+    "hypothesis_index": 1,
+    "hypothesis_limit": 3,
+    "thunderbird_profile_sha256": "aef3894f29815fe25d48206fe0367bd51654024a46e80eb1ce3db4fac915e73a",
+    "thunderbird_actions_sha256": "6fcd7639b7f4b2ef72f83a9e2159e052f6cac0aeb13202602261297404ec4ae9",
+    "thunderbird_schema_sha256": "5f073086f7599cc77dc6c9b0a71b4976bfd582e922a78ecc1281548727ace69b",
+    "thunderbird_tool_manifest_sha256": "4635e8bcd2dad3b15c727ad67d318168157dafc894b839750af108190207b880",
+    "openapa_tool_catalog_sha256": "76dddf1823f430635ae0a329dac6cdc75f73555ef2f5f8c93c99b5fffed328eb",
+    "lite_agent_tool_catalog_sha256": "fa2bc7dd3399db172312d7a1a7929b5e073c5c5c5953e07e5f2bfbc1de060992",
+    "lite_agent_runner_sha256": "b81ea162e6f73c2fa720902e77ab54ccb31c8397f1cd95297743150b6fc441af",
+    "lite_agent_supervisor_sha256": "bed048eb65925aebe2cc5f83bca77878a92738186f5613476047716971d4a5ce",
+    "counterfactuals": "Unit tests cover nested folders, sender and subject filters, date windows, attachment filtering, both chronological orders, and a structurally different synthetic mailbox. The model-facing catalog ranks messages.query for message-reading intents and forwards model-selected arguments unchanged.",
+    "focused_unit_tests": "256 passed",
+    "full_unit_tests": "1497 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_message_query_v52_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 91 after reusable generic hypothesis 1/3",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "prior_attempt": "experiments/generic-only-coverage-order91-v51-run1",
+    "rerun_reason": "The preserved valid v51 run searched repeatedly for a message-reading action, called nonexistent actions, and never created report.xlsx because the generic tool surface had no message query capability.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_episode_id": "1d8f32c422b527f3c458a150",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4bab5a876dbf50c88a2755c91433673e822fbb589249d291cd759e3d01a71e52",
+      "execution_class": "golden",
+      "pool_order": 91
+    }
+  ]
+}

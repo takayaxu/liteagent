@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order60-impress-properties-v23",
+  "status": "frozen",
+  "purpose": "Immutable targeted A/B of the preserved order-60 v22 failure after adding instruction-precision-aware idempotence for reusable Impress picture-height semantics.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order60-impress-properties-v22.json",
+  "candidate_parent_config_sha256": "7a6dd4a6bffa92cb148f241d9696abe182e08fe74ded9b552aa2a394ae9fc48f",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "3a4b6133da154fb0f994f1f8995434a41df1740ed6e12e0bf1cd355e724a5f89",
+  "change_scope": "Treat an observed picture height as already satisfying a requested measurement when it falls within half of the precision explicitly expressed by the instruction. Preserve the source geometry in that case while continuing to require exact mutation for more precise instructions and for values outside the interval. The decision uses only instruction text and presentation.inspect state, without task identity, answer material, evaluator state, or task-only constants.",
+  "implementation_evidence": {
+    "runtime_sha256": "7000e5321c76b033fa07bd8a34ba8d58cdf1ae0885d3b57449ccd92b1633344f",
+    "impress_semantics_sha256": "26b58666ede9f952d164e31356175bbf0a7ee1e8b8effb168e3e37ce19d2bf14",
+    "tool_catalog_sha256": "2adad66cb13cd498490350d47c3fe11e103a493527b7ce8cbe468ba893a69a92",
+    "impress_semantics_test_sha256": "45a117647f5cccc9c08ffeeb1b53d3c86e3d63809c34a12888c6614fdc549686",
+    "runtime_test_sha256": "46d87cdcfe24f29bc1fd752c6670da2210d7c3441fe3e859bf345a27a4e5f58a",
+    "tool_catalog_test_sha256": "c8a48346fbdd86bd0d77bfc4ffeb75a0a17caaeb1c7783c7af903ff64cbd979e",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "runner_test_sha256": "d3dbf1fbcafd001c909c64af3f11f3b8a6a1adba2f6c38e62c809a64655c03dc",
+    "focused_semantics_and_runtime_tests": "249 passed",
+    "full_unit_tests": "1245 passed",
+    "counterfactual": "A structurally different two-slide deck requests a 15 cm picture height and 19 pt text boxes. An observed 14.740 cm picture is preserved under integer-centimeter precision while the text is still mutated and read back. A separate 15.0 cm request rejects the same observed height and requires shape.set_geometry.",
+    "preserved_observation_replay": "The immutable v22 initial presentation observation resolves the 19.682 cm picture on zero-based slide 2 as within the 20 cm instruction precision, omits shape.set_geometry, and exposes only shape.format_text for the three dynamically observed text boxes on zero-based slide 5.",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_impress_measurement_precision_v23_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of the first failed task in the task-ID-deduplicated development coverage ledger after a reusable generic fix",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order60-impress-properties-v22-run1",
+    "rerun_reason": "v22 changed the picture from the source and golden 19.682 cm geometry to exactly 20.0 cm even though the instruction expressed only integer-centimeter precision; the original evaluator rejected that otherwise correct pure-API result.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "source_episode_id": "2dc366181491e4b92d281de6",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "66266f55751846f62a29bbdd785fd85d9faf2162b56799763c135d07341dbc94",
+      "execution_class": "generic_api_only",
+      "pool_order": 60
+    }
+  ]
+}

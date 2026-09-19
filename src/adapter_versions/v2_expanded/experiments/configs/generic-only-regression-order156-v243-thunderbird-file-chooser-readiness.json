@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order156-v243-thunderbird-file-chooser-readiness",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for Order 156. Make the reusable Thunderbird compose attachment action wait for the native file chooser before entering the model-selected path. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order147-v242-compact-permission-contract.json",
+  "parent_config_sha256": "b2b97a089ea4171be64128ecfb52c50dc9c41d6723e1f6767fa9e94495accc50",
+  "hypothesis": "v210 and the eligible historical run used the same model-selected compose.attach call with subject and attachment_path unchanged. The historical single-worker run attached the file, while v210 opened the native Attach File(s) chooser and then timed out with its location field still empty. The implementation used a fixed one-second sleep after requesting the chooser, so under load it could send Ctrl+L, the path, and Enter before the chooser existed, then wait until the outer 120-second timeout. If the Adapter explicitly observes and activates the native file chooser before entering the absolute path, the unchanged compose.attach call should execute, accessibility verification should confirm the attachment, and the Agent should terminate without GUI fallback.",
+  "change_scope": "Refactor only the reusable Thunderbird file-selection sequence used by compose.attach. Observe window-manager titles, wait for a title containing Attach File, activate that window, then focus and replace the location field with the expanded absolute model-selected path before pressing Enter. Use one operation deadline across compose discovery, chooser readiness, and attachment read-back. Add a delayed-file-chooser counterfactual unit test with an unrelated subject, filename, and directory. No Runner, Router, model schema, instruction parser, completion policy, or evaluator behavior changes.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "historical_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order156-v158-run1/results.json",
+    "historical_results_sha256": "b650ffbe61b5d133491b748be23bd23b04380341c8ae0ab7a46438c76210e82f",
+    "historical_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order156-v158-run1/workers/worker-01/results.json",
+    "historical_worker_results_sha256": "3b235ffe8843cef5282a0f11107f804242db9757b97f17f9801c86cf92d052d1",
+    "historical_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-156-generic-only-coverage-order156-v158-run1.json",
+    "historical_current_strict_audit_sha256": "52afd750c3a101ceabae5b3f477d2c593166ba2cd04c2bfca678ee0419ba72ed",
+    "v210_outcome": "Reward 0.0, gui_only, eleven steps, stalled. Qwen selected compose.attach first with subject='New-month AWS Bill' and attachment_path='~/aws-bill.pdf'. The Adapter timed out after 120 seconds with the Attach File(s) chooser visible and its location field empty. The Agent then typed the path through GUI and repeatedly clicked the wrong coordinate before the no-progress stop.",
+    "historical_outcome": "Reward 1.0 in three steps. Qwen selected the same compose.attach action and arguments; the first call executed successfully, the redundant second call was blocked, and the Agent completed. Current strict re-audit is valid, evidence-valid, and baseline-admissible with zero leakage, action mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "thunderbird_ui_sha256": "5e602a6ec114f4729278110d7acabb51d102593d792057652cf34aa237520f8d",
+    "thunderbird_actions_sha256": "d1d6fbb73bdf538ca9eddce1c45973561d0967e747d5cf7034bdf4b1101bc9e4",
+    "thunderbird_schema_sha256": "b566d8802e49d22a4d7b95bb9ceb7719f7b32341098ea93e035c1a72cd2027db",
+    "thunderbird_worker_sha256": "91f353507a06f9b4a01acfc2f79af9b5a7f2dd45ee90573cf6846ba2a9852d3d",
+    "thunderbird_verifier_sha256": "bdbdbc6f5f797f6e56ff02f15dbcc7b2846ac5bd8c05eaab1da311ecc15e750f",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "adapter_results_sha256": "08407d9f050014d4b43883cadec8fc8ab7a88dad7860e14032af0dd99b7c9047",
+    "completion_sha256": "76154760190ac40268120dc5bd7e5cbf6c12c9afb408e293183f742b24283e9e",
+    "thunderbird_ui_tests_sha256": "c690fc0e32026044a1bf1b6359753263c979f1c9db418710b33037b6f3b59874",
+    "thunderbird_schema_tests_sha256": "d191314bea8a8f5e4d4ec08ed366f6164150ea222bfc0cc09ca5c155babf7ba6",
+    "thunderbird_verifier_tests_sha256": "df4d20a75cb53bd389fae40a54090625a75942c55ed8140f3c9da26985dcbfb5",
+    "lite_agent_runtime_tests_sha256": "b684af702f9a57f5861b1840e01e41908c27fa62535fa1f9f2851167adba7f8f",
+    "counterfactuals": "A focused unit test uses an unrelated compose subject and temporary counterfactual-report.pdf path. The simulated file chooser appears only after an initial empty window-manager observation, and the test proves that the Adapter requests the chooser, observes and activates it, and only then writes the expanded absolute path. Existing recipient, schema, verifier, and completion tests remain unchanged.",
+    "focused_tests": "96 passed, 268 deselected",
+    "unit_tests": "2617 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_file_chooser_readiness_v243_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next fixed eligible regression item and first evidence-backed reusable hypothesis",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T04:17:27Z",
+  "tasks": [
+    {
+      "order": 156,
+      "pool_order": 156,
+      "source_order": 297,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

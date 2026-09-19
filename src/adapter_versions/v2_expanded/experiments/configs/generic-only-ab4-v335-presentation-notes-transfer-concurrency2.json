@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v335-presentation-notes-transfer-concurrency2",
+  "status": "frozen",
+  "purpose": "Bounded Phase-4 validation of semantic Impress NotesShape handling and a reusable document-to-missing-presentation-notes facade, with one v307 clean speaker-note mutation control and the nearest preceding and following v307 clean Multi-Apps controls. This is not a baseline score, best-of selection, phase consolidation, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v307",
+    "measurement": "adapter_versions/v2_expanded/experiments/analysis-v307-full189-development/manifest.json",
+    "measurement_sha256": "88b6ee966464845d2a56b53c9e61f3a0ad84ea971a44149da0cead67baea894d",
+    "outcome": "Complete audited diagnostic development measurement: 146/189 passed with 43 residual failures; not a promoted baseline.",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v335",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v335.json",
+    "candidate_manifest_sha256": "014a9fbe91c894cf6666c543e57d88a4c1b0fbf4f677d130597b0a4ea85a6f37",
+    "active_runtime_and_test_tree_sha256": "5642779b7bfa49e15ceea1ad0c9a2f7621635536a0c7e698fb264bfdcf43f3d9"
+  },
+  "hypothesis": {
+    "generic_cluster": "document_sections_to_missing_presentation_notes",
+    "statement": "Reading and writing only the semantic Impress NotesShape, preserving exact whitespace-only prefixes, and focusing the external-notes-document fill-remaining workflow on presentation.fill_missing_notes_from_document lets the model complete missing notes without mistaking page-number placeholders for content or falling back to arbitrary low-level note writes.",
+    "runtime_answer_materialization": false,
+    "runner_selects_application_action_or_arguments": false,
+    "runner_argument_rewrite_or_injection": false,
+    "model_action_replay": false,
+    "task_identity_used": false
+  },
+  "sources": {
+    "hypothesis_record": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/hypothesis-v335-presentation-notes-body-semantics.json",
+    "hypothesis_record_sha256": "0a43632f3542a552117e7a14b3fd00c4432c4ab270506215b3705534cb0f567d",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ledger-v335-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "7cfa42c22771c457b3f776f6ccab617d0ccf0cc7e13ca20b7c4cf1dfaa6b69d4",
+    "model_preflight_disposition": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/preflight-disposition-v335-presentation-notes-transfer.json",
+    "model_preflight_disposition_sha256": "647e675b1724a8ba88c40211a4056fd5d17f22c41d624f8857b2c1e690f69fae",
+    "model_preflight_dgx1": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/preflight-v335-presentation-notes-transfer-dgx1.json",
+    "model_preflight_dgx1_sha256": "bf8429a73b722a15bd80bf8e594dacba79a693b59a0dd67ee2e4007535fa3f02",
+    "model_preflight_dgx2": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/preflight-v335-presentation-notes-transfer-dgx2.json",
+    "model_preflight_dgx2_sha256": "e7be1a4c58e40daefef41c74b71a56488314d120ccf8b4ab463085f792750e6a",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "task_pool_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "development_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "development_results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 97 is the diagnosed target. Order 44 is the nearest lower fixed-order v307 clean task that executed a speaker-note mutation. Orders 94 and 109 are the nearest preceding and following fixed-order v307 clean Multi-Apps tasks around Order 97. The target-first order [97, 44, 94, 109] and this rule were frozen before execution.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v335_presentation_notes_transfer_ab4_concurrency2_2026-08-14",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "worker_endpoint_allocation": "worker 1 DGX1 with Orders 97 then 94; worker 2 DGX2 with Orders 44 then 109",
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "audit": "scripts/audit_generic_only_run.py",
+    "trajectory_manifest": "scripts/openapa_trajectory.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "request_timeout_seconds": 180,
+    "minimum_free_disk_gib": 100,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner internal setup, post-episode evaluator, and internal trace only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Target-first fixed diagnostic order [97, 44, 94, 109], round-robin into two workers. Worker 1 uses DGX1 for Orders 97 then 94; worker 2 uses DGX2 for Orders 44 then 109.",
+    "selected_count": 4,
+    "affected_orders": [97],
+    "clean_control_orders": [44, 94, 109],
+    "domain_counts": {
+      "libreoffice_impress": 1,
+      "multi_apps": 3
+    },
+    "source_order_preserved": false,
+    "diagnostic_target_first_order_frozen": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "all_four_tasks_must_pass": true,
+    "order_97_must_terminate_by_agent_propose_done": true,
+    "order_97_must_select_presentation_fill_missing_notes_from_document": true,
+    "order_97_model_arguments_must_reach_execution_and_adapter_unchanged": true,
+    "order_97_notes_path_heading_prefix_and_case_choice_must_be_model_selected": true,
+    "order_97_facade_must_report_updated_slides_preserved_slides_save_and_verification": true,
+    "order_44_speaker_note_mutation_control_must_remain_an_evaluator_pass": true,
+    "orders_94_and_109_must_remain_evaluator_passes": true,
+    "order_97_model_selected_low_level_slide_set_notes_or_adapter_call_allowed": 0,
+    "order_97_forwarded_gui_actions_allowed": 0,
+    "environment_failures_allowed": 0,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_or_action_mismatches_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "automatic_model_action_replays_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "tasks": [
+    {
+      "order": 97,
+      "source_order": 202,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "cohort_role": "affected_presentation_notes_transfer_worker1_dgx1",
+      "v252_status": "failed",
+      "v307_status": "failed",
+      "v307_first_causal_failure": "Automatic slide-number placeholder text was misclassified as speaker-note content, making the high-level facade a verified no-op; later low-level writes targeted arbitrary notes-page text shapes and the Agent exhausted its budget.",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "cohort_role": "nearest_lower_v307_clean_speaker_note_mutation_control_worker2_dgx2",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "cohort_role": "nearest_preceding_v307_clean_multi_apps_control_worker1_dgx1_after_target",
+      "v252_status": "failed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "nearest_following_v307_clean_multi_apps_control_worker2_dgx2_after_note_control",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    }
+  ],
+  "freeze_timestamp": "2026-08-14T08:20:26Z"
+}

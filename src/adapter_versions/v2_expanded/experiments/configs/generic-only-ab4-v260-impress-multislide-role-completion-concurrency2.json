@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v260-impress-multislide-role-completion-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v260 generic Impress multi-slide semantic-role format contract and completion equivalence. It contains one affected v252 failure, one v259 clean-pass secondary validation, and two v252 clean controls using the same public role API. This is not a baseline score, a best-of rerun, or a promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_fix": {
+    "candidate": "v259",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v259-impress-textbox-completion-routing.json",
+    "disposition_sha256": "8de5371eca52bb4855405453241357bdcaa5c46f36ecbaa784b0aef27ebb6163",
+    "accepted": true
+  },
+  "change_scope": "v260 extends the reusable slide.format_text_roles Adapter contract from one slide to exactly one of a model-selected slide or slides list, preflights every target before mutation, and bases strict completion on Adapter-confirmed semantic-role coverage. It also declares the existing explicitly discovered batch-textbox action as a completion equivalent for all-textbox underlining. The model still selects every action and argument; the Runner validates but neither injects nor rewrites arguments.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v260.json",
+    "candidate_manifest_sha256": "0ba2ba1044dfa0e02487be74b456f5293dd87a4999c0353e946584346869c572",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v260-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "f0698feaef228b3531558fcf2c9373b7cf888029b1f6cea405605e82e444287a",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 59 is the v252 partial multi-slide title-format failure directly exercising the changed contract. Order 61 validates the role-action completion equivalence observed in v259. Orders 41 and 53 are v252 clean controls that already use slide.format_text_roles with different semantic-role/property combinations.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v260",
+    "active_runtime_and_test_tree_sha256": "02ee5170f4b024dfcc120753ad33267692a21a39d2071a0743251e74e40e76e8",
+    "complete_unit_suite": "2726 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "passed on both DGX endpoints: retained single-slide and new multi-slide role-format calls were each schema-valid and semantically matched",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v260_impress_multislide_role_completion_ab4_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Use fixed source order for Orders 41, 53, 59, and 61. Round-robin assignment puts Orders 41/59 on DGX1 and Orders 53/61 on DGX2.",
+    "selected_count": 4,
+    "affected_orders": [59],
+    "secondary_validation_orders": [61],
+    "clean_control_orders": [41, 53],
+    "domain_counts": {"libreoffice_impress": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "secondary_validation_must_pass": 1,
+    "affected_environment_failures_allowed": 0,
+    "failed_precondition_mutations_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T07:00:21Z",
+  "tasks": [
+    {
+      "order": 41,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "cohort_role": "clean_control_existing_role_formatting",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "cohort_role": "clean_control_existing_role_formatting",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 59,
+      "source_order": 150,
+      "domain": "libreoffice_impress",
+      "task_id": "4ed5abd0-8b5d-47bd-839f-cacfa15ca37a",
+      "cohort_role": "affected_multislide_title_color_and_underline",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 61,
+      "source_order": 152,
+      "domain": "libreoffice_impress",
+      "task_id": "ed43c15f-00cb-4054-9c95-62c880865d68",
+      "cohort_role": "secondary_v259_role_completion_equivalence",
+      "v259_status": "passed",
+      "v259_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-validation-16-v188-model-friendly-contracts",
+  "status": "frozen",
+  "purpose": "Fixed 16-task generic-only validation of the cumulative reusable Git, VLC, Calc chart, first-turn routing, strict save, completion, and schema-consistent search changes developed after v184.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-targeted-calc-v187-chart-source-orientation.json",
+  "parent_config_sha256": "e2a866a76a99b895cd470d8543e6a542efc8aa9aa664fbb00f0b47bdfb947b49",
+  "change_scope": "Run the unchanged v184 fixed 16-task slice with current generic-only code. Cumulative changes use reusable application semantics: focused first-turn facade routing, a compact Git transaction contract, semantic VLC operations, argument-free Calc save-in-place, state-derived Calc chart orientation, and tools_search signatures identical to strict execution schemas. No task identity, answer, golden/evaluator state, Runner argument injection, or task-specific branch is exposed to the Agent.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_parent": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v184-routing-completion.json",
+    "selection_parent_sha256": "35817cce2456924e97ac22fd41418636292cfac422c69345561978acc8fc51a5",
+    "historical_execution_class_or_outcome_used": false,
+    "prior_fixed16_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v184-routing-completion-run1/worker-01-strict-audit.json",
+        "sha256": "b6fe98ff3a7294963d60930baf8f28cd3c6bc3bfd355b6f116ee027e76202415",
+        "valid": true
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v184-routing-completion-run1/worker-02-strict-audit.json",
+        "sha256": "65a9698e61437a470ab954485a60b1152670b60eaddb9b7227b754c7db7e8624",
+        "valid": true
+      }
+    ],
+    "latest_targeted_audit": {
+      "path": "adapter_versions/v2_expanded/experiments/generic-only-targeted-calc-v187-chart-source-orientation-run1/strict-audit-worker-01.json",
+      "sha256": "be7274abfaf7cb2f1fa2904ec6d51e04ea51adeecddbc895e858979f17072ce3",
+      "valid": true
+    }
+  },
+  "implementation_evidence": {
+    "runtime_sha256": "fad8ce79cbcdd7fe6af6f1315f1e975c168e25b5d78c84cfa2676dbe24470eaa",
+    "generic_routing_sha256": "40e496a8b7ab4b92cad8b5bd5b48153569871f881272b32d3bd3c9dc19c5928f",
+    "lite_agent_tool_catalog_sha256": "083f3d5e76826eb07e41d6e6aeca52fb82a7f1ac16e54ee1e9cdd7d331865694",
+    "completion_policy_sha256": "789c8aadc4c301f0ceb6416657332445843a5dd44772cc2ad2b21f0e76fc6cd1",
+    "completion_recovery_sha256": "42f5ff68aadaceae3e2be6fb03c4fc19a33f8fcb20d551b3595cc155fecd18d0",
+    "calc_uno_worker_sha256": "41d22a2a0c1973b8da33c2bc519dfdfc59677f05e5be4725a1b4ecba053d10d5",
+    "calc_schema_sha256": "dfc809371d905dd4da6d856e7c4232aaec843412a8d271ac654bda40dead9a91",
+    "openapa_tool_catalog_sha256": "3e40f5ec82a74aaf805575c7d5d68e46408a3e09c67c08a4daff0cc64825ff8c",
+    "git_workflow_sha256": "5346e5c2e4cafc52997ac94da26021ed07b23209def3060926a64be52f46af30",
+    "vlc_actions_sha256": "aa353caffd0daf4c97642968fb74cb2464e9d8dacb983a9ff4ce26f33dbf3470",
+    "vlc_schema_sha256": "dfd114d78bc035f049c63fb28bf4d17ee4b6a4430798d9cc0b053794b5756b39",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "2232 passed",
+    "ruff": "source-scope lint and changed-file format checks passed",
+    "project_layout": "passed",
+    "v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "clean",
+    "targeted_results": "Git 1/1 under v186; VLC 2/2 under v185; Calc chart 1/1 under v187; all associated strict audits valid"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_model_friendly_contracts_v188_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "model_visible_schema_enforcement",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first_two_tasks_per_domain_in_fixed_189_source_order",
+    "selected_count": 16,
+    "domain_count": 8,
+    "per_domain": 2,
+    "source_order_preserved_within_domain": true,
+    "replace_after_run": false,
+    "domain_counts": {
+      "libreoffice_calc": 2,
+      "libreoffice_impress": 2,
+      "libreoffice_writer": 2,
+      "multi_apps": 2,
+      "os": 2,
+      "thunderbird": 2,
+      "vlc": 2,
+      "vs_code": 2
+    },
+    "candidate_condition": "v188 cumulative generic semantic contracts and schema-consistent search; no mid-run changes"
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "pool_order": 1,
+      "source_order": 66,
+      "domain": "libreoffice_calc",
+      "task_id": "3aaa4e37-dc91-482e-99af-132a612d40f3"
+    },
+    {
+      "order": 2,
+      "pool_order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371"
+    },
+    {
+      "order": 3,
+      "pool_order": 29,
+      "source_order": 108,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e"
+    },
+    {
+      "order": 4,
+      "pool_order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07"
+    },
+    {
+      "order": 5,
+      "pool_order": 64,
+      "source_order": 155,
+      "domain": "libreoffice_writer",
+      "task_id": "0810415c-bde4-4443-9047-d5f70165a697"
+    },
+    {
+      "order": 6,
+      "pool_order": 65,
+      "source_order": 156,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c"
+    },
+    {
+      "order": 7,
+      "pool_order": 85,
+      "source_order": 177,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908"
+    },
+    {
+      "order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 9,
+      "pool_order": 133,
+      "source_order": 271,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d"
+    },
+    {
+      "order": 10,
+      "pool_order": 134,
+      "source_order": 272,
+      "domain": "os",
+      "task_id": "ec4e3f68-9ea4-4c18-a5c9-69f89d1178b3"
+    },
+    {
+      "order": 11,
+      "pool_order": 149,
+      "source_order": 289,
+      "domain": "thunderbird",
+      "task_id": "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397"
+    },
+    {
+      "order": 12,
+      "pool_order": 150,
+      "source_order": 290,
+      "domain": "thunderbird",
+      "task_id": "15c3b339-88f7-4a86-ab16-e71c58dcb01e"
+    },
+    {
+      "order": 13,
+      "pool_order": 161,
+      "source_order": 303,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967"
+    },
+    {
+      "order": 14,
+      "pool_order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89"
+    },
+    {
+      "order": 15,
+      "pool_order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951"
+    },
+    {
+      "order": 16,
+      "pool_order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb"
+    }
+  ],
+  "freeze_timestamp": "2026-08-09T02:56:37+00:00"
+}

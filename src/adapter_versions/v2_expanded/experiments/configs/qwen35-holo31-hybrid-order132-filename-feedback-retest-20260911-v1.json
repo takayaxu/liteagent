@@ -1,0 +1,161 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-order132-filename-feedback-retest-20260911-v1",
+  "status": "frozen",
+  "purpose": "Affected-only Order 132 after correcting the ambiguous answer_sheet substring redaction of ordinary user-document filenames. Metadata fields remain hidden; existing task identity, forbidden-route and evaluator boundaries remain intact. Model independently reads documents and selects every scoring value and spreadsheet action.",
+  "freeze_timestamp": "2026-09-11T13:46:41Z",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-order132-filename-feedback-retest-20260911-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 489,
+      "total_bytes": 80849572,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "c70be5c2f5ce8c32722539822eddb601392da6c3b40760db809d935f04c6d5fe"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "immutable_result_directory": true,
+    "repair_hypothesis": {
+      "description": "The preserved failure exposes eleven real supporting paths in raw Adapter output but masks ten student filenames in model context because an ordinary filename substring is treated as internal metadata. Restrict that ambiguous marker to the existing structured metadata-key filters so real paths survive both sanitizers and the final surface boundary.",
+      "affected_orders": [
+        132
+      ],
+      "expected_observable_change": "Model-visible file discovery contains distinct intact student paths. The model selects the existing document reader, compares the supplied contents itself, and writes/saves its own detailed scoring values to the opened workbook. Only the original post-episode evaluator decides PASS.",
+      "stop_signal": "One fresh guest, one affected-only attempt, terminal outcome or existing 100-step/50-local-step, one soft restart, 1800-second Agent, transport/environment/source-integrity, no-progress, or 30-GiB stop. No unchanged retry, regression cohort or full-189 run.",
+      "prior_attempt_disposition": "The Aug31 reference ended after three successful actions and a deadline, with all student paths redacted in the fourth request. The later Sep2 hybrid also hit its deadline; no independent hybrid PASS exists. Preserve both. This new-source condition uses ordinary document readers and does not restore assessment grading macros."
+    }
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python",
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "expected_model_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180
+    },
+    "minimum_free_disk_gib": 30
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "One affected-only Order 132 verification of the reproduced filename feedback repair on a fresh VM; no control or regression.",
+    "seed": null,
+    "selected_count": 1,
+    "domain_counts": {
+      "multi_apps": 1
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": []
+  },
+  "tasks": [
+    {
+      "order": 132,
+      "domain": "multi_apps",
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "source_order": 267
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab6-v278-vscode-semantic-configuration-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v278 reusable VS Code semantic configuration contracts. It runs both affected v252 failures and four v252 clean controls once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "accepted_candidate": "v277",
+    "accepted_candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v277.json",
+    "accepted_candidate_manifest_sha256": "b8286676ca328c8b1cc384b64473af16056f69e47466b45f15d756a48ea11b43",
+    "accepted_candidate_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v277-source-execution-phases.json",
+    "accepted_candidate_disposition_sha256": "7488b051896ce2ac2f7a4d092081a9d44306fbd910738830474d176cd42ef9ad",
+    "retained_behavior": "v278 retains every accepted v253-v277 change and adds only generic VS Code semantic configuration contracts and instruction-only action staging."
+  },
+  "change_scope": "v278 adds reusable semantic configuration actions for editor and file-persistence behavior, reuses existing debugging, diagnostics, and Explorer contracts, and stages the relevant action from public instruction semantics. The model selects every field unchanged; deterministic application-key translation and read-back remain behind the explicit Adapter contract.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v278.json",
+    "candidate_manifest_sha256": "12867ac177f314123d957a1e5b2ddf31c45fe2d7b0abd9472312e7b8698ae359",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v278-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "f6c6470d111722098cf1bca341cb7dbb5f029da2d973251903861545449bbdce",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Orders 177 and 181 are the two v252 failures caused by natural-language VS Code configuration routed through guessed raw setting identifiers. Orders 176, 180, 185, and 187 are the four nearest clean VS Code configuration controls spanning diagnostics, editor layout, file persistence, and Explorer exclusion.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v278",
+    "active_runtime_and_test_tree_sha256": "c5b77582847986cd35c848492b8a7ebbc1721e80691daf54c88030a14d5e7a3b",
+    "focused_tests": "279 passed",
+    "related_tests": "865 passed",
+    "model_preflight_tests": "19 passed",
+    "complete_unit_suite": "2930 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed; frozen v1 hashes valid and OSWorld tracked tree unchanged",
+    "model_schema_preflight": "Both DGX endpoints passed six structurally distinct synthetic semantic-configuration cases against the exact frozen source; task identity was absent and Adapter arguments matched execution exactly.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v278_vscode_semantic_configuration_ab6_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed-189 source order for Orders 176, 177, 180, 181, 185, and 187. Round-robin assignment gives Orders 176, 180, and 185 to DGX1 and Orders 177, 181, and 187 to DGX2. Both endpoints passed the identical frozen six-case model preflight before selection was frozen.",
+    "selected_count": 6,
+    "affected_failure_orders": [177, 181],
+    "clean_control_orders": [176, 180, 185, 187],
+    "domain_counts": {
+      "vs_code": 6
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 2,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 4,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T21:47:32Z",
+  "tasks": [
+    {
+      "order": 176,
+      "source_order": 323,
+      "domain": "vs_code",
+      "task_id": "e2b5e914-ffe1-44d2-8e92-58f8c5d92bb2",
+      "cohort_role": "clean_control_python_diagnostics",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 177,
+      "source_order": 324,
+      "domain": "vs_code",
+      "task_id": "9439a27b-18ae-42d8-9778-5f68f891805e",
+      "cohort_role": "affected_failure_debugging_configuration",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 180,
+      "source_order": 327,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "cohort_role": "clean_control_editor_layout",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 181,
+      "source_order": 328,
+      "domain": "vs_code",
+      "task_id": "9d425400-e9b2-4424-9a4b-d4c7abac4140",
+      "cohort_role": "affected_failure_editor_configuration",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 185,
+      "source_order": 332,
+      "domain": "vs_code",
+      "task_id": "70745df8-f2f5-42bd-8074-fbc10334fcc5",
+      "cohort_role": "clean_control_file_persistence",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 187,
+      "source_order": 334,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "cohort_role": "clean_control_explorer_exclusion",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

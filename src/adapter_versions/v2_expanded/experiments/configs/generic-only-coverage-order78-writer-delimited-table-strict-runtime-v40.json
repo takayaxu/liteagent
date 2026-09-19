@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order78-writer-delimited-table-strict-runtime-v40",
+  "status": "frozen",
+  "purpose": "First immutable measurement of unseen order 78 after replacing a dataset-shaped Writer delimited-text contract and hard-separating strict model-owned tool calls from the legacy LiteAgent orchestration path.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order77-writer-sentence-separation-v39.json",
+  "candidate_parent_config_sha256": "6bd1cf31eec55b282f12dfb0bac53974b18c7f71b0e04db6a05328081d6c8559",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "31d1b697a3771f50eb275e9c681af6518d9fe1cc4cbaeae087bae0b973cb05ee",
+  "change_scope": "Writer table.from_delimited_text now requires the model to choose auto_detect=true or explicit one-based paragraph_numbers and no longer accepts answer rows, a fixed paragraph index, or clear-index cleanup. Strict LiteAgent ignores internal task hints, exposes only generic instruction-ranked Top-K plus model search expansions, does not run dynamic task-stage schemas or stateful argument injection, and fails closed if executed arguments differ from the captured model JSON. Model, Prompt, VM, evaluator, max steps, and run count remain unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "Preflight found that the previous public table.from_delimited_text contract defaulted to the fifth paragraph and required callers to provide the complete answer matrix. That could create a false generic pass even without a task ID. A source-driven auto-detection contract should let Qwen independently select the action and delimiter while the Adapter derives only the unique rectangular block from the current document. Separately, strict Runtime must make model ownership true by construction rather than merely detecting argument injection after a run.",
+    "tool_catalog_sha256": "128ab1250827f4cac3d577cda26b5e91eff31bdb1ccb70bbee73a26886e52d1c",
+    "writer_schema_sha256": "04c7e3f04d947049c8dba0acc94d62fd42a307c972e664fef272581d17d1abcf",
+    "writer_tool_manifest_sha256": "b683c9d33aacddb33bb778dc21ab696578fd96374fde6d9592296f40228039b3",
+    "writer_uno_worker_sha256": "84e4736fe88c1801db363337ea992bef05185d3c5f4d5ebb68baad5b7f32c9f4",
+    "legacy_writer_tasks_sha256": "ccc5813e89c001c48b1b142ff78c21033744fb783555e934ecebfeb3e90297bc",
+    "writer_schema_test_sha256": "aff0ac1c60c0c0084f6ab25ee15ecf25ea1d8cb7912d7d438d2656335a3d5f9c",
+    "writer_uno_worker_test_sha256": "91eeca845fb294f25a7a8018c7030c6255cb3bb23d923dc535174fce57564ac8",
+    "writer_worker_runner_test_sha256": "f7ecb6d5c07cc3522d03eb359671953d70552ac067918654a60f9990958b766f",
+    "strict_manifest_test_sha256": "0e84ba7b651043ac2ac7f9e822b424676b6af610a108b3bc3e7d7a5c15eb2445",
+    "tool_catalog_test_sha256": "119eaedda62b2bc6014cab67f0f7b1631ace675f02e620e95f18066a913934cd",
+    "runtime_test_sha256": "35d0110ee3352acf18c2a39c0633bebc8d17921b6cc09cc60d894cf4aa4131cc",
+    "runtime_sha256": "d820262d674c7cbbef3144e2544611c2a209a9a6bd43b806de38e058121bc866",
+    "generic_only_audit_sha256": "440afe9b20177f87d296b0e7cadb70e966a26ea7ac3efdc83bce2fec5a146a24",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_writer_catalog_runtime_manifest_tests": "546 passed",
+    "full_unit_tests": "1390 passed",
+    "counterfactual": "Writer tests convert unrelated semicolon, pipe, tab, quoted-comma, and differently positioned rectangular blocks; reject ambiguous multiple blocks, nonconsecutive explicit paragraphs, legacy rows, paragraph_index, and clear_indices; and preserve unrelated paragraphs. Strict Runtime tests prove identical tools for different task IDs and conflicting internal hints, retain the full public Adapter schema instead of a no-argument injected schema, and show former normalization cases reach a fake Adapter byte-for-byte as model JSON.",
+    "current_instruction_router_check": "For the exact instruction, the strict seven-action list is document.inspect, document.save, table.from_delimited_text, document.export_pdf, document.set_font, image.insert_at_cursor, and paragraph.set_format. table.from_delimited_text exposes delimiter plus exactly one of auto_detect or paragraph_numbers; task.execute is absent.",
+    "source_document_offline_preflight": "Development-only inspection found exactly one contiguous rectangular comma-delimited block. Its location and contents are not packaged in the Runtime, prompt, tool schema, generic Adapter files, or model request.",
+    "prior_runtime_attempt": "none; the candidate was not run after preflight detected the fixed-paragraph and answer-matrix contract",
+    "legacy_route_boundary": "writer_adapter/tasks.py still contains archived task-ID routes for explicit historical reproduction. Strict deployment deletes both installed copies and matching bytecode before the first model request; the public catalog and AdapterExecutor also reject task.execute. The guest inventory and request audit must prove this for the episode.",
+    "ruff_all_active_code": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, source filename, document content, golden value, evaluator state, fixed paragraph, or answer matrix appears in the strict Runtime, public tool catalog, Writer manifest/schema/UNO implementation, or their generic counterfactual tests. The separately identified legacy tasks.py route is forbidden from the strict Guest inventory.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_delimited_table_strict_runtime_v40_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 78,
+      "source_order": 169,
+      "domain": "libreoffice_writer",
+      "task_id": "936321ce-5236-426a-9a20-e0e3c5dc536f",
+      "source_episode_id": "4d2deb7306463e5f129530e9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b4583416eb95dd526a68f4fcc543c0fac5f3096896285f8d3d6198a12c057e5c",
+      "execution_class": "task_specific",
+      "pool_order": 78
+    }
+  ]
+}

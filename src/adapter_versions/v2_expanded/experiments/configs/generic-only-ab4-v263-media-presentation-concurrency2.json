@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v263-media-presentation-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v263 generic current-media to active-presentation action staging, strict completion, and complete audio-path validation. It contains two affected v252 failures and two previously clean Multi-Apps controls. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v262",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v262-impress-text-routing.json",
+    "disposition_sha256": "45021017031b01189fccc64cf8aaf53a914acdef7b8458bf4011c7df40bd3855",
+    "accepted": true
+  },
+  "change_scope": "v263 recognizes only explicit current-media to active-presentation audio/frame transfers, stages the two public actions by successful event state, and requires presentation.insert_audio.path to be a complete supported audio filename. It never parses, derives, stores, replaces, or injects model arguments.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v263.json",
+    "candidate_manifest_sha256": "7d50595878982de1087b0fc52ae25f4dd311ea8e61a29fc02645dba9a36a7252",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v263-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "a203d1f699e058deee2d1eca204a1f6af5c4a1c8208c8c54aec93bdd1839337e",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Orders 125 and 126 are the only frozen instructions matched by the new reusable semantics and directly exercise its audio and frame branches. Orders 121 and 128 are the nearest previously clean Multi-Apps controls surrounding the affected source-order region and do not match the new semantics.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v263",
+    "active_runtime_and_test_tree_sha256": "52e2ffcd20fb26c4ffa5e935d85773bbdf54d0afac93727c3df624be186af93b",
+    "focused_tests": "363 passed",
+    "complete_unit_suite": "2755 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "both DGX endpoints passed 4/4 schema-valid and 4/4 semantic-match with raw arguments identical to normalized arguments",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v263_media_presentation_ab4_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed source order for Orders 121, 125, 126, and 128. Round-robin assignment sends Orders 121/126 to DGX1 and Orders 125/128 to DGX2.",
+    "selected_count": 4,
+    "affected_orders": [125, 126],
+    "clean_control_orders": [121, 128],
+    "domain_counts": {"multi_apps": 4},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 2,
+    "affected_environment_failures_allowed": 0,
+    "failed_precondition_mutations_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T08:57:57Z",
+  "tasks": [
+    {
+      "order": 121,
+      "source_order": 241,
+      "domain": "multi_apps",
+      "task_id": "f5c13cdd-205c-4719-a562-348ae5cd1d91",
+      "cohort_role": "clean_control_unrelated_multi_apps_workflow",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 125,
+      "source_order": 251,
+      "domain": "multi_apps",
+      "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+      "cohort_role": "affected_current_audio_to_presentation",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 126,
+      "source_order": 252,
+      "domain": "multi_apps",
+      "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+      "cohort_role": "affected_current_frame_to_slide_background",
+      "v252_status": "failed",
+      "v252_reward": 0.8042889575503194,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "cohort_role": "clean_control_unrelated_multi_apps_workflow",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

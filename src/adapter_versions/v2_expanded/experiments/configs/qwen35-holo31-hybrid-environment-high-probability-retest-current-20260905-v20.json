@@ -1,0 +1,246 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-environment-high-probability-retest-current-20260905-v20",
+  "status": "frozen",
+  "purpose": "Non-promotable diagnostic rerun of ten prior failures with the highest probability of improvement after contract and recovery fixes.",
+  "freeze_timestamp": "2026-09-05T10:00:00Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "selection_seed": null,
+    "selection_rule": "Ten prior failed orders selected for contract, path, output, selector, or repeated-request fixes; source order preserved.",
+    "selection_digest": "aab59daab6722ade3d8dce5facd5376920bdd9e3c2910b1fbaa029e4d7b10a80",
+    "selection_digest_method": "sha256(concat task_id values in ascending source order)",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_worktree_sealed": false,
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-fixed189-20260831-thinking-mode.json",
+    "parent_condition_sha256": "5da128f399afb55f47f38a1532980cd09f5af10046a5b164651c638e1d7964a4",
+    "parent_result": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-environment-full-retest-e429808-20260904-run1/results.json",
+    "parent_result_sha256": "7745445fea6ba2fc3aadd3a6870daa6787c7380fa7be8b916fd000835d17a1c4",
+    "selection_uses_prior_outcome": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "current-high-probability-retest-20260905-v20",
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-environment-high-probability-retest-current-20260905-v20-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 450,
+      "total_bytes": 54610188,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "245e145bac26bc51a718051794319033b4a6ad23a586b7c56fa68b8305a01d42"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_hybrid_qwen35_holo_e429808_environment_cohort30",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/opt/anaconda3/bin/python3.13",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 60.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "Hcompany/Holo-3.1-4B",
+      "expected_model_root": "Hcompany/Holo-3.1-4B",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180.0
+    }
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "current-source serial rerun prioritizing deployment-repaired and historically high-probability tasks",
+    "seed": null,
+    "selected_count": 10,
+    "domain_counts": {
+      "libreoffice_calc": 1,
+      "libreoffice_impress": 2,
+      "libreoffice_writer": 1,
+      "multi_apps": 4,
+      "os": 1,
+      "vlc": 1
+    },
+    "source_order_preserved": false,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": [],
+    "historical_environment_orders": [
+      5,
+      6,
+      105,
+      110,
+      112,
+      119,
+      129,
+      149
+    ]
+  },
+  "promotion_gate": null,
+  "tasks": [
+    {
+      "order": 142,
+      "domain": "os",
+      "task_id": "23393935-50c7-4a86-aeea-2b78fd089c5c",
+      "source_order": 281
+    },
+    {
+      "order": 112,
+      "domain": "multi_apps",
+      "task_id": "2373b66a-092d-44cb-bfd7-82e86e7a3b4d",
+      "source_order": 228,
+      "environment_history": "historical_environment_failure"
+    },
+    {
+      "order": 163,
+      "domain": "vlc",
+      "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+      "source_order": 305
+    },
+    {
+      "order": 63,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "source_order": 154
+    },
+    {
+      "order": 29,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "source_order": 108
+    },
+    {
+      "order": 105,
+      "domain": "multi_apps",
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "source_order": 214,
+      "environment_history": "historical_environment_failure"
+    },
+    {
+      "order": 23,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "source_order": 102
+    },
+    {
+      "order": 76,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_order": 167
+    },
+    {
+      "order": 94,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_order": 192
+    },
+    {
+      "order": 119,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "source_order": 237,
+      "environment_history": "historical_environment_failure"
+    }
+  ]
+}
+
+

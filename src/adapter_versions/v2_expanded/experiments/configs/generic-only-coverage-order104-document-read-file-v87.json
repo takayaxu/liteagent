@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order104-document-read-file-v87",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 104 after preserving and auditing the untouched v86 baseline.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order104-v86.json",
+  "candidate_parent_config_sha256": "65b61c0cc5f3f8a38b00feebe90bf31247845e668d07396fef2c16d889b317ab",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "9759e4f9d0b60f38e14050f3ed11e40edb81445e081f5de579ba65af98b80d18",
+  "change_scope": "One generic document-reading facade: document.read_file opens only the model-selected local Writer path and inspects that same document URL. It does not discover or select files, derive content, mutate a document, or access task identity, golden data, or evaluator state.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_document_read_file_v87_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_model_selected_writer_document_read_facade",
+    "parent_result_sha256": "87f00f43b06f892d06a022cb978353a6e076a9f5167768929e8dbd8b0ad013a0",
+    "parent_audit_sha256": "c797489a58d3c9d4690bc9861c66660fae5cb8057d462ab20e67237c9264391f",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_17_steps",
+    "parent_diagnosis": "The model opened the answer document and found all five DOCX paths, but repeatedly called the nonexistent Writer document.open action. It never selected document.inspect and never read any source document content. The eight-event no-progress window stopped the Agent after 124.417 Agent seconds; original evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "Tests use unrelated ODT and RTF paths and unrelated paragraph values. They prove the model-selected path reaches the Multi-Apps boundary unchanged, the facade performs only desktop.open_path followed by Writer document.inspect selected by that same URL, unsupported formats and extra answer-shaped fields fail closed, document.read_file ranks first for a generic Writer-document reading search, and the duplicate downstream document.inspect route is suppressed.",
+    "model_choice_contract": "The model must explicitly select document.read_file and supply the exact local path. The Runner does not replace or inject the path. The Adapter opens that path and reads only the Writer document whose URL is derived from the same path; it never chooses a file or content.",
+    "instruction_top_k": "document.read_file is fourth in the unchanged Order-104 instruction Top-K and is directly exposed before the generic adapter.call escape hatch",
+    "exact_search_top_k": "document.read_file ranks first for read open docx word document paragraphs; duplicate downstream Writer document.inspect is suppressed",
+    "multi_apps_generic_schema_sha256": "4e76f5a91308ed06c255304a58ca0df61083ab1ce46c47a58f0cd6e24700ae13",
+    "multi_apps_runtime_schema_sha256": "335003a5c5d1bbc29b096ea81bd4aba5fdfe1a1d33a24eb6e44401fe3af854bd",
+    "multi_apps_generic_actions_sha256": "86100e21e34962c9e55abcb901ea20f0ac4d640748ba0a6090ceba43b1949dc2",
+    "tool_catalog_sha256": "56ef55baaad78273eba09ae215b74084432b3a637fff6d87e7907c1121d0bf28",
+    "multi_apps_generic_runtime_tests_sha256": "7b013196e8f859a62671715f5d91ddadd0975b6603bc4e9457c2eeff645430b9",
+    "lite_agent_multi_apps_catalog_tests_sha256": "ff931a97e644a8ddf59e6ebd6363e96a139014ba7038fac21f18ec50ab12e1c0",
+    "focused_tests": "95 passed",
+    "full_unit_tests": "1659 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_tree_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 104,
+      "source_order": 213,
+      "domain": "multi_apps",
+      "task_id": "1f18aa87-af6f-41ef-9853-cdb8f32ebdea",
+      "source_episode_id": "d35c3f74747b28257b6915e9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ec0f04cad4ade48c1e3bea3e4fd4f9cf3b540e5d969f63053bcfb9fa33f5a681",
+      "execution_class": "golden",
+      "pool_order": 104
+    }
+  ]
+}

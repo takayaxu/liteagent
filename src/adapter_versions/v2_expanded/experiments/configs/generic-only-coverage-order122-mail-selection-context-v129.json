@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order122-mail-selection-context-v129",
+  "status": "frozen",
+  "purpose": "Final targeted A/B for Order 122 hypothesis 2: preserve the generic mailbox_index selection handle in LiteAgent's compact message-query context when a message has no Message-ID.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order122-mail-retrieval-v128.json",
+  "candidate_parent_config_sha256": "f783b504c4712860f635884fb83a519d516eac8a4f7a440f31ac12b42906332d",
+  "parent_attempt_result": "experiments/generic-only-coverage-order122-mail-retrieval-v128-run1/results.json",
+  "parent_attempt_result_sha256": "eb1d3715e2a0c49d4b4bed99ab579db8f4deeb002cbc589add7df9c129808fcd",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order122-mail-retrieval-v128-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "6e35a0a9f4f866482bd1a2f8a0ae1ce4962532ddb718a57308e3708e0a6f062a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a4d6d26767e0c64da966d27d18bdb760d26f2406a3b6b49e5165a713048dc33f",
+  "change_scope": "Preserve each observed mailbox_index in the bounded LiteAgent context returned for generic Thunderbird message queries. This makes the exact selector already returned by the Adapter model-visible, including when message_id is empty. No selector is guessed, no action argument is rewritten, and no task identity, evaluator state, answer value, sender, subject, date, attachment name, destination, or workbook content is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_mail_selection_context_v129_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this final Order 122 targeted A/B, mark the task task_blocked, and immediately continue in source order. Do not run another Order 122 attempt under the current evidence. A proven transient Runner or environment fault may be retried at most twice.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "generic_mail_query_selection_handle_context",
+    "failure_evidence": "The v128 query returned mailbox_index=0 and an empty message_id, but the model-visible compact context omitted mailbox_index. Qwen copied the invoice number from the subject into message_id and repeated the same deterministic MESSAGE_NOT_FOUND failure.",
+    "counterfactual_tests": "The compact-context test now covers 23 unrelated synthetic messages with nonsequential mailbox indexes; the first deliberately has an empty message_id and still preserves mailbox_index. Existing bounded-size, truncation, attachment-name, and body-exclusion assertions remain active.",
+    "focused_unit_suite": "35 passed after the final counterfactual assertion; a broader LiteAgent focused set passed 372 tests before that assertion-only refinement.",
+    "full_unit_suite": "1869 passed on the final candidate",
+    "static_verification": "Ruff check on the changed files, compileall, project layout/leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "parent_v128_strict_audit": "valid=true; 9 request artifacts, one guest inventory, zero task/golden leakage, model/action mismatch, argument rewrite, or argument injection.",
+    "lite_agent_adapter_results_sha256": "3a4f3c6f5abf0850adfaf75f5f6a014de0684a1e3b74f924cf5107a114d13dfa",
+    "lite_agent_adapter_results_test_sha256": "c5c338166d720b300fb3474504339f7a030e7b8757a21bee50668e171fb6360f",
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "final targeted A/B for the preserved Order 122 v128 generic mail-selection failure",
+    "selected_count": 1,
+    "prior_development_status": "hypothesis_1_failed_preserved_in_generic-only-coverage-order122-mail-retrieval-v128-run1",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 122,
+      "source_order": 243,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_episode_id": "d16263cae6d3c1419ed91ee9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "e583e6337b43803a2c963211366de82ab60893444c2571c6a8eb233043814c84",
+      "execution_class": "task_specific",
+      "pool_order": 122
+    }
+  ]
+}

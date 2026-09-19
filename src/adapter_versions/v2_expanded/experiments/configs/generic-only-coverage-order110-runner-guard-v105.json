@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order110-runner-guard-v105",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 110 hypothesis 2 after preserving and strictly auditing the v104 clipboard-state success that the Runner converted into evaluator failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order110-clipboard-v104.json",
+  "candidate_parent_config_sha256": "010d0910659a58cc43e8ef11fffcc332d17b5aaab053622af0892e6dfad40664",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b06dbeeb0e2ea65802797f1c179e582150157850678f7c8d3da74fee85374c96",
+  "change_scope": "Preserve the v104 generic clipboard capability and correct the generic Runner terminal-action mapping: only explicit Agent completion or failure emits OSWorld DONE or FAIL; internal stall and time guards end the loop without overriding evaluation of the actual guest state.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_runner_guard_v105_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-2 A/B. Classify the new trace before editing, do not rerun v105 unchanged, and test at most one further materially different generic hypothesis. If it fails, mark Order 110 task_blocked and immediately advance to Order 111.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_runner_guard_terminal_semantics",
+    "parent_result_sha256": "9feedf6b39726849bbd65f08ead91816930c20fb39b5468b2bcd586ed51090d9",
+    "parent_audit_sha256": "fe5169d954c74a9ef7efee1382e79da8e1180cc2717f44004f56d5fc1389beb2",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_10_steps_and_55_446_agent_seconds",
+    "parent_diagnosis": "The model selected filesystem.find and clipboard.set with the exact correct path; clipboard.set passed strict read-back and the final guest xsel command returned the expected path. The Runner then mapped its own no-progress guard to OSWorld FAIL, causing OSWorld to return 0 before executing the state metric.",
+    "counterfactual_scope": "Parameterized tests cover Agent done, Agent failed, internal no-progress, internal time-budget exhaustion, and max-step exhaustion. Only explicit Agent decisions map to OSWorld terminal actions; the rule is independent of task identity, instruction, application, action, expected state, golden data, and evaluator implementation details.",
+    "model_choice_contract": "The model still selects filesystem.find and clipboard.set and supplies all arguments unchanged. The Runner does not infer completion, alter state, or consult the evaluator; it only stops misrepresenting an internal guard as the model's explicit fail_task decision.",
+    "runner_sha256": "a1730b14fa425f6ad44a24453e5da066d763a0ecac786c488a080d65fc2264f9",
+    "runner_tests_sha256": "2ff5927af4a0ff35203bf821a96f993e06058121dd2b56dfca7bffbf0f26d3d8",
+    "focused_tests": "24 passed",
+    "full_unit_tests": "1722 passed",
+    "ruff": "changed Runner and test file passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1": "SHA256SUMS validation passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B on the preserved v104 failure for the first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 110,
+      "source_order": 223,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "source_episode_id": "9b9e40dc46d0fc01363a5ce9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "f696f3545734014420f833fd5fd617c95079a25dbb581bf7dbb9de518a3a4ba5",
+      "execution_class": "task_specific",
+      "pool_order": 110
+    }
+  ]
+}

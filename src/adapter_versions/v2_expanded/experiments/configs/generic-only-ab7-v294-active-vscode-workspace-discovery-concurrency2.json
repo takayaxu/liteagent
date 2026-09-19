@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab7-v294-active-vscode-workspace-discovery-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for retained generic command-line spreadsheet conversion plus active VS Code workspace file discovery. This historical-outcome-selected cohort is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v294",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v294.json",
+    "candidate_manifest_sha256": "3acaf212176ea99bfe232f1823f34013d5e8f8bb79325a69669a40e8633698d9",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "5543928416cce8363df0b057336c7979e7ae51c8f34a1f9adc2ad52a5cd88445"
+  },
+  "hypothesis": {
+    "generic_cluster": "libreoffice_running_instance_conversion_and_active_vscode_workspace_file_discovery",
+    "statement": "Retain v293's isolated-profile command-line spreadsheet conversion while resolving current VS Code workspace file consumers through a model-selected reusable workspace.find_files Adapter that fails closed on ambiguous live workspace state.",
+    "counterfactual_support": [
+      "Four structurally different workspace file types and output documents passed on both DGX endpoints.",
+      "All eight requests per endpoint were schema valid and raw model arguments equaled executed Adapter arguments.",
+      "Synthetic single-root, multi-root, bounded title fallback, and ambiguity cases passed.",
+      "Unrelated selected-project, PDF, image, and VS Code project-open workflows retain their prior route eligibility.",
+      "The existing command-line spreadsheet conversion and explicit filesystem root contracts remain unchanged."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v294-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "31a810ba966d4ce3ddbf738d19ab5199a968e974f26d5bc6c597fd1747a3f7ea",
+    "accepted_parent_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v292-terminal-output-eligibility.json",
+    "accepted_parent_disposition_sha256": "5098bdd1b980e6a2d1278861168aad86c5af70330b35a3961a3de6562a87acdf",
+    "rejected_predecessor_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v293-command-line-spreadsheet-conversion.json",
+    "rejected_predecessor_disposition_sha256": "912eb4f730e8fbf8641235bcaf6c287bfcbf542b09a6804ffb7de27dfebea154",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 92 is the retained affected failure. Order 130 is the v252 clean pass regressed by v293. Orders 90, 109, and 128 cover the shared conversion and filesystem contracts. Orders 174 and 175 are v252 clean VS Code controls covering existing file semantics and a project-open instruction that must not activate workspace file consumption.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v294_active_vscode_workspace_discovery_ab7_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "One affected failure, its previously regressed clean control, three shared Multi-Apps controls, and two clean VS Code controls in fixed source order. Round-robin assigns Orders 90/109/130/175 to DGX1 and Orders 92/128/174 to DGX2.",
+    "selected_count": 7,
+    "affected_failure_orders": [92],
+    "regression_recovery_orders": [130],
+    "clean_control_orders": [90, 109, 128, 130, 174, 175],
+    "same_domain_controls": true,
+    "domain_counts": {"multi_apps": 5, "vs_code": 2},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 6,
+    "unexplained_control_regressions_allowed": 0,
+    "order_92_must_execute_document_convert_batch": true,
+    "order_92_conversion_requires_shell_history_provenance": true,
+    "order_130_must_execute_workspace_find_files": true,
+    "order_130_workspace_arguments_must_be_model_selected": true,
+    "order_175_must_not_execute_workspace_find_files": true,
+    "filesystem_find_calls_require_model_selected_roots": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T11:08:58Z",
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_ordinary_spreadsheet_conversion_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "cohort_role": "affected_command_line_ods_to_csv_while_libreoffice_running_dgx2",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "clean_home_recursive_file_discovery_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "cohort_role": "clean_image_file_discovery_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 130,
+      "source_order": 263,
+      "domain": "multi_apps",
+      "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+      "cohort_role": "regression_recovery_active_workspace_text_file_discovery_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "cohort_role": "clean_vscode_file_replace_and_read_control_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb",
+      "cohort_role": "clean_vscode_open_project_non_file_consumption_control_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

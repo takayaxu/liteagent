@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order117-archive-create-context-v124",
+  "status": "frozen",
+  "purpose": "Order 117 hypothesis-2 environment-recovery A/B: run the same reusable ZIP and post-conversion-context candidate after removing an invalid cross-install Python import discovered before the first model request.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order117-archive-create-context-v123.json",
+  "candidate_parent_config_sha256": "1109267496cf9150619faf2906e97b927d92f6f51b0322e443e8de4895ed9cc1",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c5c5e6cb1f9e1d0080601d17bd4106c5268a70727c3f111e513db6dcea6009ff",
+  "change_scope": "Keep the complete v123 hypothesis-2 semantics, prompt, model, tool contract, runtime limits, evaluator, VM, and model-owned arguments unchanged. Replace only the Multi-Apps schema dependency on a separately installed os_adapter Python package with a package-local shared validator that enforces the same archive mode and path contract. This permits the independently installed generic Multi-Apps service to start. No task identity, instruction fingerprint, filename constant, answer, golden content, evaluator state, Runner rerouting, or argument rewriting participates.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_archive_create_context_v124_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this hypothesis-2 A/B, classify the new failure, and do not rerun it unchanged. Try at most one further materially different generic hypothesis with one targeted A/B. If hypothesis 3 also fails, mark Order 117 task_blocked and immediately advance to Order 118.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3_environment_recovery_1_of_2",
+    "hypothesis_class": "generic_zip_archive_and_post_conversion_context",
+    "model_parent_attempt_result": "experiments/generic-only-coverage-order117-document-convert-verifier-v122-run1/results.json",
+    "model_parent_attempt_result_sha256": "fa44aeaf1f84eeaaf0a8722019d30edf9e6133522fcb21ce617e01ebbbd8ee1e",
+    "model_parent_attempt_reward": 0.0,
+    "environment_parent_result": "experiments/generic-only-coverage-order117-archive-create-context-v123-run1/results.json",
+    "environment_parent_result_sha256": "f16c6e1d73be5fdd760c2f94231e40226427de5ccec301d9d2efb1b4589a86ed",
+    "environment_parent_runner_log_sha256": "dea9b32f9cf937e902000a5257e08bcdd6a73c1dc17921eef52805e34566e0ab",
+    "environment_parent_trajectory_sha256": "a029c901139e49e9e4fb04abf428e9a202bc665563e8f10fe31c5419e5ff89df",
+    "environment_parent_counts": {
+      "steps": 0,
+      "llm_calls": 0,
+      "adapter_calls": 0,
+      "screenshots": 0
+    },
+    "environment_parent_diagnosis": "The v123 guest OS Adapter deployed the archive module, but the independently installed generic Multi-Apps service crashed at import time because generic_schema imported os_adapter.schema and that separate install directory is not on the service PYTHONPATH. Multi-Apps health timed out with ModuleNotFoundError before setup completed. The run was stopped after the first confirmed deploy failure instead of waiting through identical retries; it is preserved as interrupted, with zero steps and zero model or Adapter calls, so it does not consume a generic hypothesis A/B slot.",
+    "production_file_sha256": {
+      "os_adapter/archive.py": "8d702e2dd20039b6c959f1f279983b2839a9d3b75b9d9231d507b9b8086cb743",
+      "os_adapter/actions.py": "fb5e33f15e74173d704e4178c34ecc75cac61ae7a0a56b25c8b0ad380ebd39d2",
+      "os_adapter/schema.py": "aa10da40969b750682f3b55e4b24e910657d5aa7c5d9b96d7acac9affa5103ee",
+      "os_adapter/tool_manifest.py": "72f42e1279c5c4ef41896e188a7936da77ae95e13b8024d32738986b153160a8",
+      "os_adapter/verifier.py": "c806288b1b7ce8bcf1c01689562a3b7d9179488b47cb58c3fc52849c1144bb68",
+      "os_adapter/worker.py": "6189bb10d2fb4fe60666b972c45323c1dca17dd4482a2b5c812d022227999461",
+      "multi_apps_adapter/os_contracts.py": "9f6acbfb4ce0c34886afce8750704ebc61d5d7741fa4f81d454dc516eff78ed5",
+      "multi_apps_adapter/generic_actions.py": "7f6c9dd6d0619bd875060f078c953e2d769ce2b934ec399ef9184dddb1ff5ae7",
+      "multi_apps_adapter/generic_schema.py": "63f016fafc780dd913a3639773d12619ab570c6b5762be949c52c227e8820b63",
+      "multi_apps_adapter/actions.py": "49902c73bb6b3f36eadeba4ce88f6118b0d21b20c27715264ae9bafecb4d11b5",
+      "multi_apps_adapter/schema.py": "e0daf3e16827815c08fa3f5ef54699d6d5e1dcb2f9a4aacf2adafe5f946c679e",
+      "multi_apps_adapter/tool_manifest.py": "edece49ec825565bed9b016d5a3a2d3994cbd3362c6fc78fa2e0c8a0b4ccee6b",
+      "integrations/lite_agent/tool_catalog.py": "e2e98f57fb84c3d7aedd0736c9610e43a8d81a0a5035b67ff3c3512c15f651be",
+      "integrations/lite_agent/adapter_results.py": "ad3a05041a389a21b65a1e8b119a5b78d4fc9fa05e44a17a79932a52a87c7701"
+    },
+    "candidate_bundle_sha256": "f75613adc21524834b252c7f42636ac2ca9a25b43e6dd77f5683d55347fa5f9c",
+    "candidate_bundle_hash_method": "SHA-256 of the ordered sha256sum lines for the 14 modified production modules listed above.",
+    "focused_tests": "297 Multi-Apps generic runtime, legacy schema, and strict manifest tests passed after the install-boundary correction; the complete unit suite reported 1807 passed. An isolated temporary install containing only multi_apps_adapter loaded the deployed generic schema and parsed archive.create_extract without os_adapter on PYTHONPATH. Ruff, changed-file format, compileall, project layout, generic deployment leakage, frozen-v1 hashes, and OSWorld commit/evaluator-tree checks passed.",
+    "counterfactual": "The reusable archive behavior and structurally unrelated ZIP safety tests remain unchanged from v123. Four additional invalid create/extract combinations prove that the package-local facade validator rejects missing input_paths, relative extraction targets, non-ZIP outputs, and cross-mode base_directory use. The ordered six-file counterfactual test bundle SHA-256 is f589c84bf35e5ce33aea27e409257ceb54759df80a860feb762247e2b2b11ba0.",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first bounded environment recovery for hypothesis 2 after a zero-request guest import failure",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 117,
+      "source_order": 234,
+      "domain": "multi_apps",
+      "task_id": "8df7e444-8e06-4f93-8a1a-c5c974269d82",
+      "source_episode_id": "8a7a585c2768a879154150c5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1c995c83fed1cbd942b52efc5477a525a455f20789ec7b8ce42a16f6c497db0",
+      "execution_class": "golden",
+      "pool_order": 117
+    }
+  ]
+}

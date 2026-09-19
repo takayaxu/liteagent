@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v308-calc-observed-sort-concurrency2",
+  "status": "frozen",
+  "purpose": "Targeted development A/B for the reusable Calc observed-table sort contract. This is not a baseline score, best-of selection, consolidated validation, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v307",
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "config_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v308",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v308.json",
+    "candidate_manifest_sha256": "5e7cc5ab81e638292d9430215a0a9d38b6ea24e796c8288e0306b6135546ec47",
+    "active_runtime_and_test_tree_sha256": "4ab4c8473ff4bc03004c8550a28a892c3ced4f173c4c9df5eb7649aa8fe59edb"
+  },
+  "hypothesis": {
+    "generic_cluster": "calc_observed_table_sort_contract",
+    "statement": "A model-selected, single-key table.sort can safely execute after workbook.inspect establishes the complete live table bounds, without requiring a pre-sort header read, while save plus post-save monotonic readback preserves deterministic completion.",
+    "runtime_answer_materialization": false,
+    "runner_selects_sheet_range_column_direction_or_type": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "hypothesis_record": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/hypothesis-v308-calc-observed-sort.json",
+    "hypothesis_record_sha256": "e4fe03ed437318bb51c5da0a63962a937341101302f0ea9f36f90ac1a6fc746e",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ledger-v308-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "88f019378512519449cbce250515d9bdfcc871e4943a39c7ee8a707dcbeb06f9",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "task_pool_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "development_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "development_results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 10 is the first fixed Phase-1 historical regression. Orders 9 and 11 are the immediately adjacent source-order v307 clean Calc controls and exercise the same inspect, persist, and completion substrate. Selection was frozen before observing v308 outcomes.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v308_calc_observed_sort_ab3_concurrency2_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Select Phase-1 affected Order 10 plus the immediately adjacent v307 clean Calc controls 9 and 11, preserving fixed-189 source order. Round-robin assignment sends Orders 9 and 11 to DGX1 and Order 10 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [10],
+    "clean_control_orders": [9, 11],
+    "domain_counts": {"libreoffice_calc": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "order_10_must_execute_workbook_inspect": true,
+    "order_10_must_execute_table_sort": true,
+    "order_10_table_sort_column_must_be_model_selected": true,
+    "order_10_must_execute_save_after_sort": true,
+    "order_10_must_execute_post_save_structural_readback": true,
+    "order_10_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "executed_gui_actions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-13T15:11:11Z",
+  "tasks": [
+    {
+      "order": 9,
+      "source_order": 83,
+      "domain": "libreoffice_calc",
+      "task_id": "aa3a8974-2e85-438b-b29e-a64df44deb4b",
+      "cohort_role": "clean_control_immediately_preceding_calc_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 10,
+      "source_order": 84,
+      "domain": "libreoffice_calc",
+      "task_id": "51b11269-2ca8-4b2a-9163-f21758420e78",
+      "cohort_role": "affected_observed_table_sort_regression_dgx2",
+      "v252_status": "passed",
+      "v307_status": "failed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 11,
+      "source_order": 87,
+      "domain": "libreoffice_calc",
+      "task_id": "8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14",
+      "cohort_role": "clean_control_immediately_following_calc_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

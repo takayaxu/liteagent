@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order103-write-range-v86",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 103 after preserving and auditing the v84 baseline and v85 path-recovery attempt.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order103-open-path-v85.json",
+  "candidate_parent_config_sha256": "cc28ec57c352b32aa9848f070188f240a0b679428d33ebcf212dcd7cd8998a9b",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "f86ce7e15537d2cb473b0251be9bb2d3b18072fd84050762f5e4cc57dd4d64bc",
+  "change_scope": "One generic model-adaptation change: expose spreadsheet.write_range with model-selected sheet, range, and plain scalar values. The Adapter performs only deterministic scalar-to-typed-cell representation conversion and forwards the resulting matrix to Calc range.write.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_plain_scalar_spreadsheet_write_facade",
+    "parent_result_sha256": "ef8353acef8f29ab4b2278207b8e8588118c4558d1e1b23d045e79ddd366169a",
+    "parent_audit_sha256": "440b118649c22c54076fe61cc1ed8867310fc5139f804f0a651624137d6dbcf2",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_16_steps",
+    "parent_diagnosis": "The model recovered the exact Desktop path, opened and read the workbook, but then selected spreadsheet.insert_matching_rows_into_document as a Calc mutation tool. Its search for spreadsheet insertion did not expose a plain Calc writer and the Agent entered a repeated rejected-action loop.",
+    "counterfactual_scope": "Tests use unrelated inventory worksheets, ranges, values, booleans, nulls, and a formula-looking literal string. They prove model arguments reach the Multi-Apps boundary unchanged, only scalar representation is converted, strings remain literal, matrices remain rectangular, ambiguous mixed shapes fail closed, and no task values or target cells are inferred.",
+    "model_choice_contract": "The model must explicitly select spreadsheet.write_range and supply sheet, range, and values. The Runner does not replace or inject arguments; the Adapter converts only null, boolean, number, and string cells into Calc typed-cell objects.",
+    "instruction_top_k": "spreadsheet.write_range is second in the unchanged Order-103 instruction Top-K, behind the read-only spreadsheet reader",
+    "exact_search_top_k": "spreadsheet.write_range ranks first for the generic query spreadsheet insert row or cell; the Writer row-transfer facade ranks second and duplicate downstream Calc range.write is suppressed",
+    "multi_apps_generic_schema_sha256": "39edd938e68a50abe2cd08e7ccb2bbb0e27bc3262b75935c802933bde64a99dc",
+    "multi_apps_runtime_schema_sha256": "ba032423e0860b4332d0a47085287b6fc3465f171e90eeb9ce0153c014f6e82a",
+    "multi_apps_generic_actions_sha256": "73d39b0e3b4c08b4d027d30915f11cd800465563d543ca81c1ef876e1cbaf21d",
+    "tool_catalog_sha256": "dad0323f881dce0adb18afe9409c2c3f9ea4b7d3c06fca1961639dcb5d9d0aec",
+    "multi_apps_generic_runtime_tests_sha256": "4d032375ae8a3212ddfb7f921a874076764f5440255a197cad5c0b57e84f5bde",
+    "lite_agent_multi_apps_catalog_tests_sha256": "647badfae03715f7f09ea28948eff5b0cf701c78e60ab110783a2cfdc88df5a1",
+    "focused_tests": "89 passed",
+    "full_unit_tests": "1653 passed",
+    "ruff": "all active integrations, scripts, tests, and Adapter packages passed",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_tree_sha256": "e0a92777d75e6542814a8639376a7f4bce58251280b3ce2fe5e7021b570e2cd2",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_plain_spreadsheet_write_v86_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this targeted A/B. If the model still fails to select or correctly use the generic writer, mark Order 103 task_blocked without trying a third hypothesis and immediately advance to Order 104.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same Order-103 task as the preserved v84 baseline and v85 first-hypothesis attempt",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 103,
+      "source_order": 212,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_episode_id": "fd18745d23fe287b5b4c3968",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ae790d67bf718d3d8fac1a2884341903a80ae9684dcb42ac6e58f28be351cb63",
+      "execution_class": "golden",
+      "pool_order": 103
+    }
+  ]
+}

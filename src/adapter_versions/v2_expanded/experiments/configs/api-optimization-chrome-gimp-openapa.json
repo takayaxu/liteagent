@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "experiment_id": "api-optimization-chrome-gimp-openapa-gpt-5.6-sol-medium",
+  "status": "planned",
+  "source_config": "small-round-10-openapa.json",
+  "selection": "Chrome and GIMP tasks that exposed Adapter failures in the 10-task pilot",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "openapa_commit": "147b98491f0ea0af0bad88f43ce4565ac20b52d6",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "actual_model_preflight": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "main_and_grounding_same_model": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "oauth_excluded": true
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "pilot_order": 5,
+      "domain": "chrome",
+      "task_id": "af630914-714e-4a24-a7bb-f9af687d3b91",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 2,
+      "pilot_order": 8,
+      "domain": "gimp",
+      "task_id": "7a4deb26-d57d-4ea9-9a73-630f66a7b568",
+      "execution_class": "generic_atomic_api"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v283-impress-dominant-picture-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v283's reusable Impress picture-container semantics. It runs the unresolved v252 multi-slide picture-height failure and the same two controls as the falsified v282 carry-forward exactly once. This is a new frozen source condition, not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v283",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v283.json",
+    "candidate_manifest_sha256": "3f5855c85d4f7e6f673d294130e227136287ce0f877b04bb2d4a8d38e4232a7c",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "e492b6a8600974f0bded4f5aacb40371dd18fbff4c5baf9a716c76277f78712a"
+  },
+  "hypothesis": {
+    "generic_cluster": "picture_filled_shape_and_dominant_foreground_resolution",
+    "statement": "The model already selects picture.set_size, the correct slide, foreground_content, and the requested physical value. The failure occurs because the Adapter omits bitmap-filled CustomShapes and sees only several tiny icons. Recognizing live picture-filled shapes and resolving a foreground candidate only when its area exceeds the combined remainder should let the unchanged model call reach the intended dominant visual while preserving fail-closed behavior for comparable multi-picture layouts.",
+    "v252_observation": "Order 55 changed one shape on slide 3 with shape.set_geometry and then claimed all requested slides were complete. In the v282 carry-forward, it selected picture.set_size correctly, but the Adapter omitted the large picture-filled CustomShape, reported seven tiny icons as ambiguous, and the episode stalled.",
+    "counterfactual_support": [
+      "A bitmap-filled freeform with unrelated dimensions is selected over several small icons and resized from a different centimeter value.",
+      "Two similarly sized foreground portraits plus a supporting image still reject before mutation.",
+      "Direct graphics, recursively grouped graphics, and explicit slide covers retain their existing behavior.",
+      "Both DGX endpoints select the unchanged foreground role and physical measurement for a structurally different synthetic dominant-picture instruction."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v283-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "48154f24d089d7686cd51429b52136a09f27fe2ad68940a30540c0194c462193",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "same_mechanism_control_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-ab3-v272-impress-navigation-routing-concurrency2.json",
+    "same_mechanism_control_config_sha256": "0ece599ab130d540af9f5eec247b66ddda00d77c57606a5e1ac8d38c1915186b",
+    "same_mechanism_control_results": "adapter_versions/v2_expanded/experiments/generic-only-ab3-v272-impress-navigation-routing-concurrency2-run1/results.json",
+    "same_mechanism_control_results_sha256": "9ef4de02fbc68c7e0816f9464440711adfe90925f8230f818a5e56376fe44502",
+    "falsified_carry_forward_disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v282-carry-forward-order55.json",
+    "falsified_carry_forward_disposition_sha256": "083c0c57104c6e31d069bb3a5d5c3aebb20de74066695bc9c954a05d901a79b1",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 55 is the only affected failure in the falsified v282 carry-forward and directly exercises bitmap-filled dominant-picture resolution. Order 60 remains the same picture-size contract control, while source-adjacent Order 58 remains the clean control. Reusing the exact cohort isolates the v283 source change.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v283_impress_dominant_picture_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Reuse the exact v282 carry-forward cohort in fixed-189 source order for Orders 55, 58, and 60. Round-robin assignment gives Orders 55/60 to DGX1 and Order 58 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [
+      55
+    ],
+    "same_mechanism_control_orders": [
+      60
+    ],
+    "clean_control_orders": [
+      58
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 3
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "same_mechanism_controls_must_pass": 1,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "all_requested_picture_targets_must_be_adapter_confirmed": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T00:50:51Z",
+  "tasks": [
+    {
+      "order": 55,
+      "source_order": 146,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "cohort_role": "affected_dominant_picture_container_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_source_adjacent_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "same_picture_size_contract_control",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "v272_status": "passed",
+      "v272_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-observed_selector3-c49cfeb-candidate-thinking4k-concurrency2",
+  "status": "frozen",
+  "purpose": "Prospectively frozen, prior-outcome affected/control diagnostic for the observed_selector architecture hypothesis. Control and candidate use identical source, task order, Qwen thinking-4096 sampling, lexical tool search, VM reset, evaluator, and strict audit boundary. The pair differs only in its named experimental protocol switch. This is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-28T02:15:09.852908+00:00",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "condition_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-tool-router6-aeb259e-lexical-control-thinking4k-concurrency2.json",
+    "condition_template_sha256": "fbcb178db4dbf059e2d0740fb80a1f1927c7937eed9e4166b4fcd653223b73d7",
+    "selector_negative_preflight": "adapter_versions/v2_expanded/experiments/analysis-architecture-recall/attachment-selector-preflight-238f18d-dgx1.json",
+    "selector_negative_preflight_sha256": "cf39b2fa917e2d956755952c2507ad72d8d8ab8e8a49fb8c1c5e91186440f2aa",
+    "selector_positive_preflight": "adapter_versions/v2_expanded/experiments/analysis-architecture-recall/attachment-selector-preflight-3ff0cc7-dgx1.json",
+    "selector_positive_preflight_sha256": "9d5e84b17399eb6921d7236f70ab319d80635a25449ef6e8d25073a7d9ba8b39",
+    "context_budget_preflight": "adapter_versions/v2_expanded/experiments/analysis-architecture-recall/context-budget-preflight-e7ba19f-dgx1.json",
+    "context_budget_preflight_sha256": "c3a0bed8f8fafcc22130c77973060e767911057603816cdad770e76efe42a0b2"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "git-c49cfeb-observed_selector-candidate-thinking4k",
+    "role": "diagnostic_candidate",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-observed_selector3-c49cfeb-candidate-thinking4k-concurrency2-run1",
+    "source_git_commit": "c49cfeb2730fceccbf81355eddaf8445c73a8f97",
+    "source_dirty": false,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 872,
+      "total_bytes": 64743103,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "ae7023f5f4f9a08ba4c0756c49ec07a021c7e851bb2b02b6f4efca9b962e0461"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_git_c49cfeb_observed_selector_candidate",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "thinking_4096_official_sampling_native_recent_v1",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "sampling_top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0,
+    "seed": 17,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "initial_work_state_observation_mode": "screenshot",
+    "model_tool_transport_mode": "complete_response",
+    "model_tool_transcript_mode": "native_recent_v1",
+    "native_tool_transcript_limit": 4,
+    "model_authored_state": false,
+    "causal_affordance_graph": false,
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": true,
+    "nonterminal_completion_recovery": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_lexical_search10_native_recent_v1_grounded_completion_observed_selector",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true,
+    "tool_search_backend": "lexical_v1",
+    "observed_attachment_selectors": true,
+    "context_budget_mode": "disabled"
+  },
+  "selection": {
+    "method": "prior-outcome affected/control diagnostic selection frozen before pair execution",
+    "affected_orders": [
+      122
+    ],
+    "control_orders": [
+      92,
+      160
+    ],
+    "affected_criterion": "historical failure with direct evidence for observed_selector",
+    "control_criterion": "historical pass under the same Qwen thinking-4096 policy condition",
+    "selection_uses_prior_outcome": true,
+    "pair_difference": "observed_selector protocol switch only"
+  },
+  "tasks": [
+    {
+      "order": 122,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "source_order": 243,
+      "cohort_role": "historical_observed_selector_failure_affected"
+    },
+    {
+      "order": 92,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_order": 189,
+      "cohort_role": "historical_thinking4k_pass_control"
+    },
+    {
+      "order": 160,
+      "domain": "thunderbird",
+      "task_id": "08c73485-7c6d-4681-999d-919f5c32dcfa",
+      "source_order": 302,
+      "cohort_role": "historical_thinking4k_pass_control"
+    }
+  ]
+}

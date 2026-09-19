@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order176-diagnostics-v162",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 176 after the baseline model selected the generic settings writer but repeatedly invented unrelated Python setting identifiers.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order176-v161.json",
+  "candidate_parent_config_sha256": "0681220507b1be564f378fdac66e840e98f05954624da8549eb93a99d6fc0e71",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a9ca5c1732bc3cecd3d9c00c72102ab24bbca4a153d25347430042e196d2bda4",
+  "change_scope": "Add a reusable VS Code diagnostics.configure action with model-selected language, diagnostic category, and severity. The Adapter maps these public semantic parameters to VS Code/Pylance setting identifiers and verifies the persisted JSON. The contract covers eight Python diagnostic categories and four severities, preserves unrelated overrides, and has structurally different counterfactual tests. No task identity, instruction parser, fixed task answer, golden data, evaluator access, Runner argument rewrite, or argument injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_semantic_diagnostics_v162_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass after diagnostics.configure is clearly exposed, mark Order 176 task_blocked immediately and advance to Order 177. Do not try another task-local parser, schema constraint, prompt variant, exact setting default, GUI sequence, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_semantic_diagnostic_configuration",
+    "baseline_result": "experiments/generic-only-coverage-order176-v161-run1/results.json",
+    "baseline_result_sha256": "7b1b66a3f11516f30f3379e6dc83d5aca38115453e5f9ae97441c27b12e8122c",
+    "baseline_audit": "experiments/generic-only-coverage-order176-v161-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "2c3905e0ad77f8780f74756047187809729c6cd0d143f076322efe22d69a0b33",
+    "baseline_outcome": "failed_reward_0_model_selected_settings_update_but_wrote_autoSearchPaths_noImplicitAny_and_disableImplicitImports_instead_of_a_diagnostic_severity_override_then_looped",
+    "counterfactual_contracts": [
+      {
+        "params": {
+          "language": "python",
+          "diagnostic": "undefined_variables",
+          "severity": "error"
+        },
+        "expected": "maps to reportUndefinedVariable while preserving an existing reportUnusedImport override"
+      },
+      {
+        "params": {
+          "language": "python",
+          "diagnostic": "missing_module_source",
+          "severity": "information"
+        },
+        "expected": "worker writes and verifies reportMissingModuleSource without an evaluator or instruction parser"
+      },
+      {
+        "instruction": "Treat unused Python imports as warnings.",
+        "expected": "initial generic action selection includes diagnostics.configure"
+      }
+    ],
+    "focused_tests": "363 passed across VS Code schema/actions, strict manifest, and LiteAgent catalog unit files",
+    "full_non_guest_tests": "2110 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/diagnostics.py": "02902608e2f6e96e784b7a3ca2aaf1cc2a0c6b2d9cec985f0514c720c70dc89c",
+      "vscode_adapter/actions.py": "897ea5cbdf897c12cde6b089bd3fde90b321e8119d4fe4426451fa651e12ac61",
+      "vscode_adapter/schema.py": "7b3e2a86b7aa732b1ec8bb7a4153b0482cf7f008d79b62c31cffdd159caf9838",
+      "vscode_adapter/worker.py": "3a3d8c85f09bc8f4d1ffe467c6610b6f75020842cacc080f1908625bc8122af7",
+      "vscode_adapter/tool_manifest.py": "0a570d5a7111dcb6827d64bedcc056fd102e8c293dc1163efd191837e60b44e7",
+      "integrations/lite_agent/tool_catalog.py": "31e2801a793a413bde935efc31fdf7a581ee236dbf4bb19079c2c1d9254cd219"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 176 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 176,
+      "source_order": 323,
+      "domain": "vs_code",
+      "task_id": "e2b5e914-ffe1-44d2-8e92-58f8c5d92bb2",
+      "source_episode_id": "07c8933f2a1bd11464b4d432",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "10b875ec622f17a34088906fb9b367a9415ec0aa75cb1171baf32df7c3257b4b",
+      "execution_class": "generic_api_only",
+      "pool_order": 176
+    }
+  ]
+}

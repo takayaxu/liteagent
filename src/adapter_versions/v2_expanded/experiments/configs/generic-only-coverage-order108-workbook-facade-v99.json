@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order108-workbook-facade-v99",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 108 hypothesis 2 after preserving and auditing the v98 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order108-layout-compaction-v98.json",
+  "candidate_parent_config_sha256": "83ce50c8ebf01711175e5dba90e0fcffa4b9bca35b70b81a0b0eca225cc51ae2",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "f464e1c4a6447047853ed0a4d5cfbce834750875afa4ccb4dd3f3b5ee912d4dc",
+  "change_scope": "Carry forward generic PDF layout compaction and expose the existing Calc workbook.create_new capability as a direct Multi-Apps spreadsheet.create_workbook facade. The model must provide the output path, optional sheet name, headers, every row, and overwrite choice. Complete the existing artifact.verify schema so the new facade does not displace verification on unrelated Top-K instructions.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_direct_new_workbook_facade",
+    "parent_result_sha256": "b93ed8cc241045dd25db55b7ffdff286e39fc2a41e9975b24039af0ed5c1991e",
+    "parent_audit_sha256": "cf7ab8b3ecb81b6b733e7ddc119d401e5c1d6b6687073364510e137396ec5d95",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_13_steps_and_194_988_agent_seconds",
+    "parent_diagnosis": "v98 reduced nine layout PDFs from 72,000 to 41,350 characters and exposed every document without source or model-context truncation. Qwen then derived a five-row result table, but repeatedly tried to read the nonexistent destination, selected a Writer table action, and searched for document conversion. The already-proven Calc workbook.create_new action was hidden behind generic adapter.call and never selected.",
+    "counterfactual_scope": "An unrelated weather-observation task proves the direct facade is selected in a bounded Top-7, accepts a different workbook path and table structure, forwards every model argument unchanged through the LiteAgent boundary, and maps to Calc workbook.create_new. A coastal-survey schema test rejects relative paths, non-spreadsheet suffixes, missing paired headers/rows, and inconsistent row widths.",
+    "model_choice_contract": "The model selects spreadsheet.create_workbook and supplies output_path, sheet_name, headers, rows, and overwrite. Multi-Apps forwards those parameters unchanged to the existing deterministic Calc action, which creates, saves, and structurally reads back the workbook. No instruction parser, task identity, filename lookup table, evaluator state, golden data, answer values, years, institutions, or fixed cells are used.",
+    "original_instruction_top_k": [
+      "spreadsheet.insert_matching_rows_into_document",
+      "spreadsheet.read_file",
+      "spreadsheet.create_workbook",
+      "document.insert_table_after_text",
+      "pdf.extract_text_batch",
+      "spreadsheet.write_range",
+      "adapter.call"
+    ],
+    "multi_apps_generic_schema_sha256": "23c93e3afd812a06a029b4661a989706b28f2cfdd767c4bc71a3213ffdd9ed85",
+    "multi_apps_generic_actions_sha256": "37796e0137d255605d3b207dea50153e5426aeafde6dcb0c5a766a60cf349d26",
+    "multi_apps_host_schema_sha256": "29abd42406ec983df2b3e0280e55ed09a13be935baf363dcd7a0cf718ad74a33",
+    "openapa_tool_catalog_sha256": "e00663c5ee94399031e544cc437cbb717f826d289fae0bbd9c0fd698bba4c8bc",
+    "lite_agent_tool_catalog_sha256": "d9052d332881c046338a9d94c52894c7400f572d768fe11513f9f214a984f221",
+    "generic_runtime_tests_sha256": "bc949ad8751af92608eb5cb9e591ce8230cf5c5ea747814978a3fd49aecd38b3",
+    "catalog_tests_sha256": "7fd063e25d77cebe66db7167f22784bf9731810fdd41e6a5deb25f520da0eac9",
+    "focused_tests": "311 passed; two targeted Top-K and leakage-surface regression guards passed",
+    "full_unit_tests": "1675 passed",
+    "ruff": "all active integrations, scripts, unit tests, OS Adapter, and Multi-Apps Adapter files passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_workbook_facade_v99_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-2 A/B. Try at most one materially different reusable hypothesis 3 with one targeted A/B. If hypothesis 3 fails, mark Order 108 task_blocked and immediately advance to Order 109; do not retry v99 unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 108,
+      "source_order": 217,
+      "domain": "multi_apps",
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "source_episode_id": "1d126b98f6535502e57b40f1",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f32b4f130dc31487e94e0f0c776e3a0d973e472a283e02b59404f52ba3c3d69d",
+      "execution_class": "golden",
+      "pool_order": 108
+    }
+  ]
+}

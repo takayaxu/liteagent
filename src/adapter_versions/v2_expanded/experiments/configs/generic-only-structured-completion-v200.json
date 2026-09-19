@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-structured-completion-v200",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM rerun of five Calc regressions after strict completion began checking explicit multi-instance and structured subgoals against successful model-selected Adapter arguments. This diagnostic set uses prior outcomes and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-visible-tool-authority-v199.json",
+  "parent_config_sha256": "949eb92ef4075687659dcd21651c5bed75795e32ec3ea1364028e221f51d3ac7",
+  "change_scope": "Add application-semantic completion checks for chart and pivot counts, named summary rows, merged-region targets/text/formatting, and sheet rename/copy lifecycles. Checks use only the instruction and successful model-selected calls. Also expose public pivot.create when pivot tables are explicitly requested. No arguments are generated, injected, or rewritten.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-visible-tool-authority-v199-run1/results.json",
+    "parent_results_sha256": "d728e252ba4ea93337585e8cacf426dfe48dc24aabb8112472854d9452d66f17",
+    "parent_audits": [
+      {"path": "adapter_versions/v2_expanded/experiments/generic-only-visible-tool-authority-v199-run1/strict-audit-worker-01.json", "sha256": "b94145e4b52a6d57f39be418dd0b436795f55746573f847d76e90720591132cd"},
+      {"path": "adapter_versions/v2_expanded/experiments/generic-only-visible-tool-authority-v199-run1/strict-audit-worker-02.json", "sha256": "790cc3f4a16d702cdeeccf6cdfdabe8b10f15b6fad6e053b6aaae914f3b96c31"}
+    ],
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "semantic_requirements_sha256": "aa103ea82b4a2be246282dd17d2695aa0fb631016aa27dc63503140f2fb07db2",
+    "generic_completion_sha256": "e9fad02cc088d461d33c7593083f6f35466a4e1ae38a91f0091893a9d41eaf3f",
+    "completion_sha256": "54c29510e542b5e27f13c5d488ff75b8af7e4581fa7c907de8b145572f848183",
+    "instruction_semantics_sha256": "3469e69755afa5a0acfabf0a9f89b38ad24def1cf703bec1bededd23800aa431",
+    "execution_engine_sha256": "59b3e9c0298408b20038bed64038f0e94cb16fff029f92cc7e3d72f9f549df03",
+    "unit_tests": "2293 passed",
+    "focused_tests": "11 passed",
+    "ruff": "active source and tests passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_structured_completion_v200_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1", "http://192.168.0.138:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v198/v199 Calc failures with explicit repeated or structured instruction clauses",
+    "selected_count": 5,
+    "domain_counts": {"libreoffice_calc": 5},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T09:25:19Z",
+  "tasks": [
+    {"order": 13, "source_order": 89, "domain": "libreoffice_calc", "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7", "execution_class": "generic_api_only"},
+    {"order": 15, "source_order": 92, "domain": "libreoffice_calc", "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff", "execution_class": "generic_api_only"},
+    {"order": 16, "source_order": 94, "domain": "libreoffice_calc", "task_id": "0cecd4f3-74de-457b-ba94-29ad6b5dafb6", "execution_class": "generic_api_only"},
+    {"order": 17, "source_order": 95, "domain": "libreoffice_calc", "task_id": "1d17d234-e39d-4ed7-b46f-4417922a4e7c", "execution_class": "generic_api_only"},
+    {"order": 24, "source_order": 103, "domain": "libreoffice_calc", "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a", "execution_class": "generic_api_only"}
+  ]
+}

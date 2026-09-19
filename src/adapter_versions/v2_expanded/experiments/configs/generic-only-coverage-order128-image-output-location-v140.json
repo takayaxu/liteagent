@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order128-image-output-location-v140",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 128 generic hypothesis 2: make the model-facing image output-path contract explicit when an instruction supplies only a basename.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order128-image-sections-v139.json",
+  "candidate_parent_config_sha256": "576541876a325a481bd35e6571c59b12a0e49cbf4f61c2dfe9d5024099f9f988",
+  "parent_attempt_result": "experiments/generic-only-coverage-order128-image-sections-v139-run1/results.json",
+  "parent_attempt_result_sha256": "7551fef516c3589bea3677b98798047babb99e1788d4b90b02def25b1ca32632",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order128-image-sections-v139-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "d5330fe7c7e7ac35319152da0698db686441ebddf438e2d5223a87bdc35f80df",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order128-image-sections-v139-run1/workers/worker-01/raw/run-1/128-multi_apps-d68204bf-11c1-4b13-b48b-d303c73d4bf6/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "ad3a2cb5d07875d561950ca42c94ef97c8c05699cdf881edd1b29558cafd00a3",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "052c630b07119a815ea135b6fb26c94a1f726ba4b6672d0d7719486f0fbdb9b7",
+  "change_scope": "Retain the reusable image.rearrange_equal_sections implementation and clarify only its generic model-facing output-path semantics: when an instruction gives an output basename without a destination directory, select a path beside input_path instead of defaulting to the process working directory or home. The model still selects and sends the complete output_path unchanged; the Runner and Adapter do not infer, rewrite, or inject it. No Desktop constant, task filename, task ID, dataset order, answer value, golden material, or evaluator state is used.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_image_output_location_v140_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify any remaining failure before editing. At most one additional materially different generic hypothesis remains for Order 128, and stop early when evidence isolates a low-value model-side failure. Never exceed 600 Agent seconds or eight no-progress events in this attempt; when the per-task budget is exhausted, mark task_blocked and immediately continue to Order 129.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "generic_relative_output_basename_semantics",
+    "failure_evidence": "The v139 semantic image action executed successfully with the exact model-selected arguments, correctly reordered vertical thirds as [2, 1, 0], and verified pixel preservation. The evaluator still returned 0.0 because Qwen selected /home/user/rearranged.png after the instruction requested only rearranged.png, while the input asset and evaluator output location were /home/user/Desktop. The Agent then repeated the same successful call and stopped under the eight-event no-progress guard.",
+    "counterfactual_tests": "Catalog tests use unrelated image names and directories, verify the generic input-parent rule without any Desktop constant, and preserve non-image routing exclusions. Existing image-section tests use different section counts, both axes, semantic and explicit ordering, unrelated paths, and invalid permutations.",
+    "focused_unit_suite": "235 passed",
+    "full_unit_suite": "1953 passed",
+    "static_verification": "Ruff lint on the complete active source tree and format on changed files, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. The broader active tree contains pre-existing Ruff format drift outside this change.",
+    "implementation_bundle_sha256": "6c15ad1018b8d03176734e8cc06b48cc97bb2535b372d18c9957dd1a9eef470f",
+    "implementation_bundle_algorithm": "sha256 of sorted sha256sum lines for the retained implementation and focused-test files",
+    "source_sha256": {
+      "gimp_adapter/section_reorder.py": "9e8e5a997e00f9574d718a65a59c4fb91b481fba74c0f3d5f6bed9fc883592fb",
+      "gimp_adapter/schema.py": "74a4447e7ada8932222cbb41ef9a8a6b6aa11ce7c3b1d7c4d423af69ef2d369b",
+      "gimp_adapter/tool_manifest.py": "05a504b98d2a407d4374e25156ee57511bef9272d3104426dc0563b4a15f1522",
+      "gimp_adapter/worker.py": "f1f54466022c9219a2ca6d7f266d7ea722b2d61f4a1801b7c47e0a4fabe280d3",
+      "multi_apps_adapter/schema.py": "04b37efcd0736423c1f368097d9385bd18c1ae9c734d25a8e4eec2dc039ba477",
+      "multi_apps_adapter/generic_schema.py": "ee6b0ac1fbfaa371df52cf4bce74b34e281aff34fb56bbfdf95fe47c75b3aa2c",
+      "multi_apps_adapter/actions.py": "fe2407b39557af72e7b25177d4c36a8818d42fc3f6469b7f8c95f8c08032c03e",
+      "multi_apps_adapter/generic_actions.py": "96920136edd87c47c1d7bcca8955c1d511e48d76c072692b38e7c2ca942e4f4e",
+      "multi_apps_adapter/tool_manifest.py": "8e0591341c839adf3f7e0040d6b3354c5e75878c992251fab022c547168ff769",
+      "integrations/openapa_osworld/tool_catalog.py": "37e3f270b8463b51efffd8e5858870237771bd75c0ee69a61627a41391496cba",
+      "integrations/lite_agent/tool_catalog.py": "d7ce372f1fd3eb9174f6560305df3ef91f5c1654dc933f5473460ec94ddaf790",
+      "tests/unit/test_gimp_section_reorder.py": "b8e8dbe49084447a2b1607c534b1b8346745d5e585f77784e290a737e1d74964",
+      "tests/unit/test_gimp_schema.py": "017bdcfb84c10dc726889387dbe96573dcdd98433f9edcfaa41dcef230d00fe3",
+      "tests/unit/test_multi_apps_generic_runtime.py": "84f9a4ec4b34aa078f3ab6feaa53c931fe73382d69f4a96ee22297d3144069eb",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py": "79aba8a456dadedd72ca5a13b2ed91de714f84355dd75b7c776ec41fbb8d8ec5"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 128 v139 output-location failure",
+    "selected_count": 1,
+    "prior_development_status": "generic_hypothesis_1_failed_with_strict_valid_evidence",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_episode_id": "503c38f5889bd11baa8d1cc9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "7555740f67459d14ef12fc7771776053f4eed4b9acfcc92accd182ea4814d692",
+      "execution_class": "golden",
+      "pool_order": 128
+    }
+  ]
+}

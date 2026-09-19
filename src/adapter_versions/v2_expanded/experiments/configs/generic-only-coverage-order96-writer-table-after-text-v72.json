@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order96-writer-table-after-text-v72",
+  "status": "frozen",
+  "purpose": "Order 96 generic hypothesis 2/3: expose a reusable Writer action that locates one model-supplied paragraph and inserts a model-supplied populated rectangular table immediately after it, plus a generic Runner no-progress/time budget that can only terminate failures earlier.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order96-spreadsheet-read-file-v71.json",
+  "candidate_parent_config_sha256": "fbd7b6747795abdc4bae00ee66fdd646ce4ec190653b11195556e3234c90f78a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "e24be76076cc043cdfe3c63b088d03d19dc674391de42418f662fae27edc1fcf",
+  "change_scope": "Add Writer table.insert_after_text(anchor_text, rows, optional match controls), a flat Multi-Apps document.insert_table_after_text facade, direct model schema/search routing, compact action read-back, and generic eight-event/600-second Runner stop conditions. The model supplies the anchor, every cell, and all optional controls unchanged; runtime code has no task ID, instruction parser, golden, answer, evaluator access, or fixed workflow.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_writer_structured_table_insertion",
+    "parent_result_sha256": "d42568b02d371bd4a2df9dd3d5c89cd7b7ba4a545b4c13e867a3ea5bbcc2852b",
+    "parent_audit_sha256": "d956d42f3103d00876c86ea94b47045753669fd4fa780df7dcc956d9c5834efe",
+    "parent_status": "interrupted_after_25_model_calls_and_24_recorded_events_due_to_repetitive_writer_discovery_loop",
+    "parent_diagnosis": "The model immediately used spreadsheet.read_file and received the exact A1:L3 displayed text, proving hypothesis 1. It then hallucinated document.find, searched and observed table.insert_at_cursor, ignored that route, and alternated blocked calls with repeated searches without mutating Writer.",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "stall_policy_sha256": "e1e97498e52cf53194805177193585625e256914cdbb4e77988b9c2f4b24a1a9",
+    "tool_catalog_sha256": "603d5e33b970b957576ef93d11a53474d0c281d94156af7d91503cee5382a433",
+    "adapter_results_sha256": "276e7daae1e6a9744bfdc1a445a5f39673d3957d94a64aa369478f3e52e73913",
+    "writer_schema_sha256": "c34aa92a96a881c2e25ffc6df9056071ecf99b0c7456ed73946ca818f9802b35",
+    "writer_tool_manifest_sha256": "12aa876fd48cecab7c54d6e5d0e668aa555578a4ed69764a4bbdd64dd5853c01",
+    "writer_uno_worker_sha256": "377bdb81624442730d02e67afe41f78297f1570fc754a219fa08554e8df5ea8f",
+    "multi_apps_generic_actions_sha256": "d11a7e5499f42aa46d6557165dec08bc93dfda3745b90d6afa7918ad841ef72e",
+    "multi_apps_generic_schema_sha256": "bb8b8cb44f6bacff696efbf465383e2fdff0cfb9a4fa6d75bf2f37aa357a98f1",
+    "multi_apps_catalog_schema_sha256": "26ae00c8bc18f005ead217359d99809d552464fb0b0d97ce4417e8fca76c6437",
+    "multi_apps_catalog_actions_sha256": "9e15358d2143dd55fec8e18da31eb42c4b3a05f09d22a13daf21693075f8ab94",
+    "runner_sha256": "e13b95f88d4909ee7dcac756a64b80f1c3c39477b6dfedf26ed8b6cbf546ee08",
+    "trajectory_builder_sha256": "dec7e6623f824db35ae20efba0f076bd771fa76c90cdf601ffcc474054c4bbb3",
+    "full_unit_tests": "1573 passed",
+    "focused_tests": "373 passed; rectangular scalar matrices, exact display strings, unique and ambiguous anchors, facade forwarding, search deduplication, compact results, and no-progress reset/termination cases",
+    "ruff": "active source and tests passed; immutable experiment artifacts excluded",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_table_after_text_v72_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for Order 96 using generic hypothesis 2/3; v70 and v71 remain immutable",
+    "selected_count": 1,
+    "prior_development_status": "interrupted",
+    "on_failure": "Preserve and classify this attempt. The Runner stops repeated no-progress loops automatically. Use at most one materially different generic hypothesis 3/3; after that failure mark Order 96 task_blocked and immediately continue to Order 97.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 96,
+      "source_order": 197,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "source_episode_id": "503f3e9ef6f71c61a195f97f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "18261c9eaa71be94b95c03e542361ae34f4ead515366de7c2925203e31f6f36a",
+      "execution_class": "golden",
+      "pool_order": 96
+    }
+  ]
+}

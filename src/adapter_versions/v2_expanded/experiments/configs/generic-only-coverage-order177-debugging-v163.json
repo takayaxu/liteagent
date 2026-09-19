@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order177-debugging-v163",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 177 after the baseline repeatedly selected settings.update with a plausible but nonexistent debug-console focus setting.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order177-v162.json",
+  "candidate_parent_config_sha256": "4cb3663ed9fc5aa60b3ef6d404a19eae180068cd18a5c2658f79a983118d9701",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "1dac4639ea4cf58af7d16c3980b52cb7564027632b119234cfbf85d5e5508834",
+  "change_scope": "Add a reusable VS Code debugging.configure action with six optional semantic debugger preferences and require the model to select at least one field. The Adapter deterministically maps the selected public parameters to standard VS Code setting identifiers and verifies persisted JSON. Counterfactuals cover inline values, internal-console opening, and breakpoint overview display. No task identity, instruction parser, task answer, golden data, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_semantic_debugging_v163_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass after debugging.configure is exposed, mark Order 177 task_blocked immediately and advance to Order 178. Do not try another task-local schema, exact-setting hint, instruction parser, prompt variant, GUI sequence, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_semantic_debugger_configuration",
+    "baseline_result": "experiments/generic-only-coverage-order177-v162-run1/results.json",
+    "baseline_result_sha256": "5797a78f82bd58d6e2d9463fdc6b1f82918b62b778ff1200dd81a81c05fa4b7b",
+    "baseline_audit": "experiments/generic-only-coverage-order177-v162-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "0f551c2d51bd293a99890bb1a2dffebb45782187474c14abe6edf13af638d531",
+    "baseline_outcome": "failed_reward_0_model_repeatedly_wrote_debug_console_focusEditorOnTermination_false_and_stalled_after_nine_steps",
+    "counterfactual_contracts": [
+      {
+        "params": {
+          "inline_values": "on",
+          "internal_console": "neverOpen",
+          "show_breakpoints_in_overview_ruler": true
+        },
+        "expected": "maps three different debugger behaviors and preserves an unrelated editor setting"
+      },
+      {
+        "instruction": "Always show inline variable values while debugging.",
+        "expected": "initial generic action selection contains debugging.configure"
+      },
+      {
+        "query": "keep debug console cursor focus on break",
+        "expected": "public catalog ranks debugging.configure first"
+      }
+    ],
+    "focused_tests": "375 passed across VS Code schema/actions, strict manifest, and LiteAgent catalog unit files",
+    "full_non_guest_tests": "2122 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/debugging.py": "d3f4bde702fc0bea1357d6f9789a7074ced96d2915dd9157707201e7331cd223",
+      "vscode_adapter/diagnostics.py": "02902608e2f6e96e784b7a3ca2aaf1cc2a0c6b2d9cec985f0514c720c70dc89c",
+      "vscode_adapter/actions.py": "95be307227c9c52ae64b636ca91d30e53ea35c9a81da5b464d056068369a5f70",
+      "vscode_adapter/schema.py": "614532c4313dc9ec13c48b53d2e61184f31ac36870c5beb4b6995e36b75e2124",
+      "vscode_adapter/worker.py": "8cb765178c1203e7174ed657a142d49d5ae1e007f48811925c6172e64025e758",
+      "vscode_adapter/tool_manifest.py": "18e5579ca32122f61bbe7caad1b3699b7093024057d0a0e7b0d42cc6887637af",
+      "integrations/lite_agent/tool_catalog.py": "08e1effc20abd88e71629cac7e23a95ea0c52ca923b3ee5769ee240e0ddb5b98"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 177 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 177,
+      "source_order": 324,
+      "domain": "vs_code",
+      "task_id": "9439a27b-18ae-42d8-9778-5f68f891805e",
+      "source_episode_id": "7c609a3b73c2c1f90cbf9ac0",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "7c22f97b167234ab55cf3a40f418c631d21c6dc32086a542a96b84cdf9621e87",
+      "execution_class": "generic_api_only",
+      "pool_order": 177
+    }
+  ]
+}

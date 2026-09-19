@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order12-v211-decimal-separator",
+  "status": "frozen",
+  "purpose": "Single-run A/B for v210 Order 12 after replacing expert LibreOffice number-format guessing with a reusable model-selected decimal-separator Adapter contract. This prior-outcome-selected run is diagnostic, not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v210-concurrency6.json",
+  "parent_config_sha256": "3cb21e971630405e8167e3f7d4bc285f0413fa27cf618a2a41310c608649576d",
+  "change_scope": "Add range.set_decimal_separator with model-selected sheet, range, and comma-or-dot semantics; route explicit decimal-separator instructions to that public contract in strict mode. The Adapter preserves live values, formulas, and per-cell visible precision and skips text/date cells. No task identity, expected state, golden artifact, fixed range, or Runner argument rewrite is used.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "calc_schema_sha256": "8c0a83fdd9e06045bd96d27c98cb2146d097909b18bb5407493e9f13bb0504b4",
+    "calc_tool_manifest_sha256": "11768c5977aff001c803c17d57f7eb409e50c8d789c641059767b2d68456b9ba",
+    "calc_uno_worker_sha256": "e39e5704fd4cc53419d695d0cf39f62c22f8243fdc96419d1904c84e73a4b88c",
+    "instruction_semantics_sha256": "390a13663b5bbc1cad795d5c72fe587fdf88258c94ccf997495a8907641af5de",
+    "strict_contracts_sha256": "7aaac8c281028dd79f8391a6f2e1eb8b816827d2a415c7bab24449253cb525ce",
+    "tool_catalog_sha256": "e3abffc11b11a125a36f8f7e9e664600fe7abdce5360ffe60c1479e9145d5264",
+    "unit_tests": "2374 passed",
+    "focused_tests": "541 passed including comma/dot counterfactuals and a structurally different two-dimensional mixed range",
+    "ruff": "active integrations, scripts, unit/integration tests, and Adapter sources passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_decimal_separator_v211_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v210 failure with a prior strict-admissible clean pass, processed first by fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T17:09:19Z",
+  "tasks": [
+    {
+      "order": 12,
+      "pool_order": 12,
+      "source_order": 88,
+      "domain": "libreoffice_calc",
+      "task_id": "a01fbce3-2793-461f-ab86-43680ccbae25",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

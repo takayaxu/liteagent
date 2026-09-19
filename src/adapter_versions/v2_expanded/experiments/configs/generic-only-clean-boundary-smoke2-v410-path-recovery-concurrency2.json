@@ -1,0 +1,159 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-clean-boundary-smoke2-v410-path-recovery-concurrency2",
+  "status": "frozen",
+  "purpose": "Two clean-VM protocol controls before testing the v410 route-owned missing-path recovery contract. This prior-outcome-selected smoke is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-26T20:46:15.215655Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "prior_diagnostic_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-remaining27-v409-workflow-archive-contract-concurrency6.json",
+    "prior_diagnostic_config_sha256": "ab5d1628338d79377ffb5bdbceb55d5467b80f4d3f895816b1f6d76d670a9ee1",
+    "prior_diagnostic_results": "adapter_versions/v2_expanded/experiments/generic-only-remaining27-v409-workflow-archive-contract-concurrency6-run1/results.json",
+    "prior_diagnostic_results_sha256": "26ecb6666ca33697a41fb04bb376614dd85688884cda5f814c3870026b3211b0",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v410-path-recovery/source-seal.json",
+    "source_seal_sha256": "3872f1f631955b25dea66ee118ae29c08f055febb4257971ac49766b0e418e15",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v410-path-recovery/strict-tool-granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "15d84548f42dd139425bd7136825a3bfa6075ac93cf080d399529a7e9d79f824",
+    "prior_smoke_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-clean-boundary-smoke2-v409-workflow-archive-contract-concurrency2.json",
+    "prior_smoke_config_sha256": "30b6b461c541a8e2332180a5784eb500b19a3908f908c73aa6802e143620aada",
+    "prior_smoke_results": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v409-workflow-archive-contract-concurrency2-run1/results.json",
+    "prior_smoke_results_sha256": "34b779577bdee97d61df3460bd561dceff940a74d9d1452326efb987f991662d"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v410-path-recovery-smoke2",
+    "role": "smoke",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-clean-boundary-smoke2-v410-path-recovery-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 831,
+      "total_bytes": 64240397,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "9819f3c6d6fcc4ec55c4c384e337121a592776fd7d59d471e6c09b9c7d52e94b"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v410-path-recovery_experimental",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_actions_plus_search_image_preview_semantic_workflow_dominance_directory_archive_contract_route_owned_missing_path_recovery_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same two clean-VM protocol controls used by v409",
+    "selected_count": 2,
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 100,
+      "domain": "multi_apps",
+      "task_id": "82e3c869-49f6-4305-a7ce-f3e64a0618e7",
+      "source_order": 208
+    },
+    {
+      "order": 143,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "source_order": 283
+    }
+  ]
+}

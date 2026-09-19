@@ -1,0 +1,162 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-gui-numeric-string-ab124-148-20260831-thinking-mode",
+  "status": "frozen",
+  "purpose": "Frozen exploratory A/B for generic GUI numeric-string argument handling: affected order 124 and stable direct-GUI control order 148. Qwen3.5-4B is the sole model. Non-promotable.",
+  "freeze_timestamp": "2026-08-31T13:45:36Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "parent_result": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v337-trusted-concurrency6-run1/results.json",
+    "source_git_commit": "c940d470a44fbd0266fd64326fbbe8c1279b0665",
+    "source_worktree_sealed": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "c940d47-gui-numeric-string-ab124-148-thinking-mode",
+    "role": "gui_numeric_string_affected_control_exploration",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-gui-numeric-string-ab124-148-20260831-thinking-mode-run1",
+    "source_git_commit": "c940d470a44fbd0266fd64326fbbe8c1279b0665",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 418,
+      "total_bytes": 54456486,
+      "algorithm": "sha256 of relative_path\u0000size\u0000file_sha256\n records",
+      "sha256": "a948660fe52c3bb1a4b305187353e3214bd500a8cfe290d3eec4ec35c2004171"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": false,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_gui_numeric_string_exploration",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_direct_gui_fallback_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "resume": false,
+    "non_promotable": true,
+    "reasoning_mode": "thinking"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "two preserved tasks selected before live attempt: affected order 124 and stable direct-GUI control order 148",
+    "selected_count": 2,
+    "orders": [
+      124,
+      148
+    ],
+    "uses_prior_outcome": false,
+    "source_order_preserved": true,
+    "baseline_candidate": false,
+    "non_promotable": true
+  },
+  "tasks": [
+    {
+      "order": 124,
+      "source_order": 247,
+      "domain": "multi_apps",
+      "task_id": "ce2b64a2-ddc1-4f91-8c7d-a88be7121aac",
+      "execution_class": "generic_api_plus_gui"
+    },
+    {
+      "order": 148,
+      "source_order": 288,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "execution_class": "generic_api_plus_gui"
+    }
+  ],
+  "diagnostic_gate": {
+    "pre_registered_before_result": true,
+    "expected_tasks": 2,
+    "runs": 1,
+    "promotion_eligible": false,
+    "hypothesis": "Accepting model-emitted numeric strings for GUI numeric fields will remove the direct-GUI validation failure on affected order 124 without regressing a stable direct-GUI control.",
+    "success_criterion": "Order 124 becomes an evaluator pass and order 148 remains passed; every executed GUI event preserves model-selected arguments with no Runner rewrite or injection.",
+    "stop_condition": "Stop after one run of these two tasks. If order 124 does not add a pass or order 148 regresses, reject this hypothesis and do not expand the condition."
+  }
+}

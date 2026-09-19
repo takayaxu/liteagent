@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order129-image-crop-v141",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 129 generic hypothesis 1: expose deterministic four-edge raster cropping with percent or pixel units and intent-scoped discovery.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order129-v140.json",
+  "candidate_parent_config_sha256": "b53f93e5ced302289c0688042a70721d35c908da9e5e5c19ef9d94d9bee39071",
+  "parent_attempt_result": "experiments/generic-only-coverage-order129-v140-run1/results.json",
+  "parent_attempt_result_sha256": "19310d338a0997bb34872005309916902bb48eb3b6fc878b7d25df99c3b01a47",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order129-v140-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "655e20afebfba087b7b75ec0c45af6f407b05de60ffb98a029f4f42471d1ce92",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order129-v140-run1/workers/worker-01/raw/run-1/129-multi_apps-91190194-f406-4cd6-b3f9-c43fac942b22/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "626e97c819b8a46ff136d61e2c50660fc6ee6ebb07b52e7a4d4cb9fe4256b4a2",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4874219c2e8df42570b49cf074d28758da065cdbfc05d1f9730de6d1d955ada4",
+  "change_scope": "Add reusable image.crop to the GIMP Adapter and a flat Multi-Apps facade. The model selects input_path, output_path, percent or pixel units, any combination of top/right/bottom/left amounts, and overwrite policy. The Adapter validates that opposing removals preserve positive dimensions, converts percentages against the corresponding image dimension, writes atomically, reads back dimensions and pixels, and returns crop-box and hash evidence. A basename output resolves beside the selected input image. LiteAgent ranks image.crop, filesystem.find, and command.run only for explicit image-crop intent; command.run documentation clarifies terminal=true for long-running GUI applications. No task ID, dataset order, task filename, fixed edge, fixed percentage, Desktop constant, answer pixels, golden material, evaluator state, instruction parser, or Runner argument injection is used.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_image_crop_v141_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify any remaining failure before editing. At most two additional materially different generic hypotheses remain for Order 129, and stop early when evidence isolates a low-value model-side failure. Never exceed 600 Agent seconds or eight no-progress events in this attempt; when the selected per-task budget is exhausted, mark task_blocked and immediately continue to Order 130.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_percent_or_pixel_four_edge_raster_crop",
+    "failure_evidence": "The untouched v140 baseline returned evaluator reward 0.0 and stopped after eight steps and 533.66 Agent seconds. Qwen twice requested an unavailable GIMP open action with an unobserved home path, then launched GIMP four times without terminal=true using the same missing home path. Each GUI process waited until the Adapter timeout. Two catalog searches returned command tools but no deterministic crop action, and no successful mutation occurred.",
+    "counterfactual_tests": "Tests use unrelated source and output names, 30x20 percentage cropping on two edges, 19x17 four-edge pixel cropping into TIFF, exhausted-width rejection, explicit overwrite behavior, unchanged Multi-Apps forwarding, strict direct schemas, intent-scoped routing, and unrelated image instructions. They verify dimension-specific conversion, input-parent basename resolution, crop boxes, pixel read-back hashes, route ordering, and absence of task identity.",
+    "offline_semantic_check": "A local non-runtime image check applied top=20 percent to the cached public input and produced the same 1233x1024 dimensions and exact RGBA pixels as the evaluator reference. The reference is not deployed, exposed to the model, read by runtime code, or used to choose arguments.",
+    "focused_unit_suite": "509 passed",
+    "full_unit_suite": "1967 passed",
+    "static_verification": "Ruff lint on changed and active source files, Ruff format on changed files, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. Broader task regression remains deferred by user instruction.",
+    "implementation_bundle_sha256": "593263687756bb2686ab9e03300a2838dd8314fe7e21900f204567107e8c94fd",
+    "implementation_bundle_algorithm": "sha256 of sorted sha256sum lines for the changed implementation and focused-test files",
+    "source_sha256": {
+      "gimp_adapter/crop.py": "fc5e0d0ba272eb87762fa6c2228b69f7ea3a2f82d642565ad746ed0f99c28a17",
+      "gimp_adapter/schema.py": "6dcdebf228be1f3e6e730a094e6802f094250b32542ff80ecd329c8747176a94",
+      "gimp_adapter/tool_manifest.py": "9ee6e8e0231ab45517aaf44934dd9712ae7286ca8607d2500769f756a759061e",
+      "gimp_adapter/worker.py": "90549fa00b0540732f070c15a7bb81c9406d7eb4c8f04dcde4ee38a330439dd1",
+      "multi_apps_adapter/schema.py": "a81877398f2ec55eb69a0ccc0206f9fbd74fbb595ef1c4807bff759e068b82a5",
+      "multi_apps_adapter/generic_schema.py": "cb1eb8381d2caa4ef07f7671940dba4a6661bcb2edb15cc994c351c1c2900496",
+      "multi_apps_adapter/actions.py": "3eae6e208a963b62bb318fa40b80a7c0f6e722f890b2af989754a87f4ecb9fad",
+      "multi_apps_adapter/generic_actions.py": "4b7fc4e2cac2b56a58a423b432245ccda3947f214783e5694ab40133feed42e9",
+      "multi_apps_adapter/tool_manifest.py": "f59ea2eb947ed076646c0414dba702f5e557540f60b52cc7340756949c9603de",
+      "integrations/openapa_osworld/tool_catalog.py": "7b889de886e6afdbbda0d47b43146202a5e63054950db1d282f8ff93375b4e18",
+      "integrations/lite_agent/tool_catalog.py": "276d03d07021d68536474277ec27bc4234fdd8e56a77b63419daf96aea446df5",
+      "os_adapter/tool_manifest.py": "5a691d3eade35196491eda903e7a35cc6141593ef134604296eb2bc9e3e1a75f",
+      "tests/unit/test_gimp_crop.py": "6cda96944d44a25ed589dbed2b9580a3393714220d5f0484f60371efea335687",
+      "tests/unit/test_gimp_schema.py": "1ae1d2d061c60601cfc8cff2cb3695e8243ca20fb0d2431ae221ad924b42c5ed",
+      "tests/unit/test_multi_apps_generic_runtime.py": "9b727fa27c2ae9c4c853d79c7a6eddc107fdec3d8ee28e79b529c75b6b993950",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py": "3a1e9fe43afbcbd2a7bb2a0d8a4b2559ee498f173c5502700cba33c18c390fbf"
+    },
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 129 v140 command and missing-image-capability loop",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_with_strict_valid_evidence",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 129,
+      "source_order": 261,
+      "domain": "multi_apps",
+      "task_id": "91190194-f406-4cd6-b3f9-c43fac942b22",
+      "source_episode_id": "5479d91af9546f5b9cc02aeb",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "e1200e6b57c13c6fe08492f96ad0a300bcb946f5b53790a54cabae0771518c25",
+      "execution_class": "golden",
+      "pool_order": 129
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order66-writer-subscript-schema-v27",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after replacing the Writer subscript action's opaque params wrapper with an Adapter-owned direct schema.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order66-v26.json",
+  "candidate_parent_config_sha256": "2c8a2eae4bc32a1eab6e0de2f341a5760ce13608e78c469e0885e0efc8a353b0",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4ea7e778a014f90f21a36e239e173c54de246adfc30afc085336e91989838c39",
+  "change_scope": "Expose text.set_subscript_matches through a reusable direct text and zero-based character_index contract, validate that the index is inside the literal, and leave model, prompt, routing, VM, evaluator, and all other tool behavior unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The model already selects text.set_subscript_matches, but the legacy opaque params wrapper causes it to emit an invalid string. A direct typed schema should let the same model supply the literal and character position without an application-specific parser.",
+    "writer_schema_sha256": "0004e86919e503485714471be23a5b724524dc9fc4b12313fb883989009c175f",
+    "writer_tool_manifest_sha256": "b1960dfe915ad70d7bd5d4079962ea163a2724c3800c2d376078e1abb385ccd5",
+    "writer_uno_worker_sha256": "ea8f81244f22323ef6971b39dd0f1be0363d41a583eacf47654cdbf54570be8c",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "writer_schema_test_sha256": "38152d24e7b3866e28e959f0dcb04be9f9b7cf0de48c5ace7f3af27fdb943084",
+    "tool_catalog_test_sha256": "d431b0b008dbaa855c29c0bb8a1f90c34728cbd69bc12311ccafe66b5cbdd0f0",
+    "strict_manifest_test_sha256": "44187fee1e7f29847650b125422dc45956fc96bf6e308c899e918fe2927db266",
+    "runtime_test_sha256": "83c22c9a1150fffa9ef314c5f907d97db95a337501c880264a9f1017c82b7fd3",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "194 passed",
+    "full_unit_tests": "1272 passed",
+    "counterfactual": "Contracts and LiteAgent execution use unrelated literals including release v7 beta, CO2 emissions, C12H22O11, and 7x release at zero and nonzero indices. Tests prove direct top-level arguments, first-character support, out-of-range rejection, and rejection of the old empty params wrapper.",
+    "changed_source_leakage_scan": "No current task UUID, episode ID, or task literal appears in the changed runtime or test sources.",
+    "prior_v26_result_sha256": "1fec74dc46e5a41ae6b8b679524f5a2a9049cd7af32b305b45ff5217f9d7aa34",
+    "prior_v26_audit_sha256": "fa4ac8188652f211910512dea9b452215cca07d28744f37ea58ceb252192b0d8",
+    "prior_v26_audit_valid": true,
+    "prior_v26_outcome": "evaluator 0.0 after 30 steps; the model repeatedly selected the correct action but emitted an empty string in the legacy params wrapper, so every mutation was rejected before Adapter HTTP execution",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_subscript_direct_schema_v27_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 66,
+      "source_order": 157,
+      "domain": "libreoffice_writer",
+      "task_id": "0b17a146-2934-46c7-8727-73ff6b6483e8",
+      "source_episode_id": "09f095d68bc57fb9a4db98dc",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2f977722c51e7d4de8d6c3b9eadbd5454246d61a962228ae0453a92260e9942a",
+      "execution_class": "task_specific",
+      "pool_order": 66
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order105-text-file-path-v89",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 105 after preserving and auditing the untouched v88 baseline.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order105-v88.json",
+  "candidate_parent_config_sha256": "d0d5a932e42ad678d8f07e6b0fabcf2c5d6d282b3e84c2ce42ce7ce351b13682",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "72fb792bc917e4f380caf4c539eae3e206966713a446d9e2082d4790e4b0f532",
+  "change_scope": "One generic recovery change: when file.read_text reports a missing path, return bounded case-sensitive exact-basename file candidates from the guest home tree and require the model to explicitly retry. Never select, rewrite, or execute a candidate automatically.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_bounded_text_file_path_recovery",
+    "parent_result_sha256": "9f74ee4c194d43aa6ba2f16868293ec52465e8f8bb4ff56978773ed2460dcd59",
+    "parent_audit_sha256": "dc1f0804940da9e7f230170461e1b291cdb5b19b21cf19bb3dc6bcc3e8c57729",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_10_steps",
+    "parent_diagnosis": "The model repeatedly selected file.read_text with a guessed /home/user/SNAKE/snake.py path while the source was under /home/user/Desktop/snake/. The downstream missing-file response exposed no candidate, so the model never read or changed the source and the no-progress window stopped the loop after 119.39 Agent seconds. Evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "Tests use unrelated transform.py files in multiple synthetic directories, a same-named directory, a case-mismatched file, and an unrelated basename. They require exact case-sensitive basename matching, files only, bounded traversal, unchanged forwarding of the model's first call, explicit model retry, and no automatic candidate execution.",
+    "model_choice_contract": "The failed call is executed exactly as emitted by the model. Recovery returns candidate paths and retry_options only; the model must select and emit the next file.read_text call itself.",
+    "instruction_top_k": "unchanged public action selection and Top-K; no action or schema was added",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "path_recovery_sha256": "da14893f2aed185849fcaf64aa51e174a453162d3ff960a21a610c098132d085",
+    "multi_apps_generic_actions_sha256": "4fbefa02a3a95f4c22bfc78a042d6022bffdff74cced7ec0e3e2a65f101fac11",
+    "multi_apps_generic_runtime_tests_sha256": "a48c7f2594fdcbaa892b092aae60b7901dd1b0eed7eed3dd0026bb54671a2f1a",
+    "tool_catalog_sha256": "56ef55baaad78273eba09ae215b74084432b3a637fff6d87e7907c1121d0bf28",
+    "focused_tests": "4 passed",
+    "full_unit_tests": "1661 passed",
+    "ruff": "all active source, scripts, and tests passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_text_file_path_recovery_v89_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 105,
+      "source_order": 214,
+      "domain": "multi_apps",
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "source_episode_id": "0a52fccb2779dbd008a4c7e9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "dd9e6292448f40ed602b1a951566bcd2594ed26f75480d7179170d8b35e74708",
+      "execution_class": "task_specific",
+      "pool_order": 105
+    }
+  ]
+}

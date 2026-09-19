@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v288-impress-image-insertion-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the reusable Impress physical image-insertion contract. It runs one v252 failure and two source-order-preserving clean controls exactly once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v288",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v288.json",
+    "candidate_manifest_sha256": "7ac85a55160203c514212b7ac44105843ca130c0b7f7763d9010e99981d59b68",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "fc8232bd6934e1652550d82a0e2fe7665216e8544a3f1609cfb7e643710aa33d"
+  },
+  "hypothesis": {
+    "number": 1,
+    "generic_cluster": "explicit_physical_image_path_and_measurement_contract",
+    "statement": "The v252 model selected shape.insert_image but a valid file URL was rejected and bare numeric geometry led it to encode 1 cm as 10 LibreOffice internal units. Requiring a model-selected path and explicit physical measurement objects, with deterministic Adapter-side conversion and post-save structural verification, should resolve the failure without runtime answer extraction or argument modification.",
+    "counterfactual_support": [
+      "The same contract supports PNG, JPEG, and WebP local paths and encoded file URLs.",
+      "Millimetres, centimetres, inches, and mixed-unit pairs are converted only behind the Adapter contract.",
+      "Zero-based slide and human-facing slide_number references remain explicit and mutually exclusive.",
+      "Missing dimensions, invalid units, unsupported paths, and mixed legacy/physical geometry are rejected without mutation.",
+      "Completion requires Adapter-confirmed unchanged inputs, save, and structural geometry read-back.",
+      "Both DGX endpoints preserve raw model arguments exactly."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v288-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "532a29b8b9a2709b3868c7372f8c764fc99035eae5adab28d66009ab3737c393",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 48 is the affected physical image-insertion failure. No v252 clean pass executes shape.insert_image, so Order 31 checks local-media insertion and Order 46 checks adjacent Impress mutation/save/completion behavior. Source order is preserved.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v288_impress_image_insertion_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Source-order-preserving cohort. Round-robin gives Orders 31 and 48 to DGX1 and Order 46 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [48],
+    "clean_control_orders": [31, 46],
+    "same_action_clean_control_available": false,
+    "domain_counts": {"libreoffice_impress": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "image_row_must_be_adapter_confirmed": true,
+    "post_save_image_name_path_and_resolved_geometry_readback_required": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T05:35:40Z",
+  "tasks": [
+    {
+      "order": 31,
+      "source_order": 112,
+      "domain": "libreoffice_impress",
+      "task_id": "c59742c0-4323-4b9d-8a02-723c251deaa0",
+      "cohort_role": "clean_local_media_insertion_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 46,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "cohort_role": "clean_impress_mutation_save_completion_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 48,
+      "source_order": 137,
+      "domain": "libreoffice_impress",
+      "task_id": "c82632a4-56b6-4db4-9dd1-3820ee3388e4",
+      "cohort_role": "affected_physical_image_insertion_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

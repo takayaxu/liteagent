@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order128-image-sections-v139",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 128 generic hypothesis 1: expose a deterministic semantic image-section rearrangement capability selected and parameterized by the model.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order128-v138.json",
+  "candidate_parent_config_sha256": "68578faadc7c8b8633624a361812c36349a4a7f127291dd47afe175e4a4562ca",
+  "parent_attempt_result": "experiments/generic-only-coverage-order128-v138-run1/results.json",
+  "parent_attempt_result_sha256": "a77ce5a09097c81469fe54413392cf23e3a07e9fb88a4cd7656d656e7e5863ef",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order128-v138-run1/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "074a676f79f89169a62f28a4034741cae89c46558ffacf434cb62ce01b7b4f7f",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order128-v138-run1/workers/worker-01/raw/run-1/128-multi_apps-d68204bf-11c1-4b13-b48b-d303c73d4bf6/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "13160060fdd580ec5f440187f9ab43e31c612ebfe3ceb85ab00e61bda2f885ec",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "052c630b07119a815ea135b6fb26c94a1f726ba4b6672d0d7719486f0fbdb9b7",
+  "change_scope": "Add reusable image.rearrange_equal_sections to the GIMP Adapter and a flat Multi-Apps facade. The model selects input_path, output_path, vertical or horizontal axis, section_count, warmth or explicit ordering, explicit permutation when applicable, and overwrite. The Adapter derives deterministic near-equal boundaries, computes mean red minus mean blue for semantic warmth sorting, moves whole sections, writes a lossless PNG atomically, and verifies pixel preservation. LiteAgent ranks this action and filesystem.find only for explicit image split-and-reorder intent. No task ID, dataset order, task filename, fixed section count, fixed permutation, fixed path, answer value, golden material, evaluator state, or Runner argument injection is used.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_image_sections_v139_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. Classify any remaining failure before editing. At most two additional materially different generic hypotheses remain for Order 128, and stop early when evidence isolates a low-value model-side failure. Never exceed 600 Agent seconds or eight no-progress events in this attempt; when the per-task budget is exhausted, mark task_blocked and immediately continue to Order 129.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "generic_semantic_equal_image_section_rearrangement",
+    "failure_evidence": "The untouched v138 baseline returned evaluator reward 0.0 and stopped after eight steps and 56.07 Agent seconds. Qwen repeatedly selected OS command.run with unavailable ImageMagick commands identify and which convert, performed two tool searches, returned to the same unavailable command, made no successful mutation, and never created rearranged.png.",
+    "counterfactual_tests": "Tests use an uneven-width four-section image sorted by warmth, an uneven-height three-section WebP with an explicit non-reverse permutation, coolest-to-warmest sorting, a different five-section Multi-Apps forwarding contract, invalid permutations, existing-output rejection, and unrelated wallpaper, Writer extraction, and resize instructions. They verify deterministic boundaries, pixel-color preservation, typed model arguments, unchanged facade forwarding, and intent-scoped discovery.",
+    "focused_unit_suite": "547 passed",
+    "full_unit_suite": "1953 passed",
+    "static_verification": "Ruff lint on the complete active source tree and format on changed files, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed. The broader active tree contains pre-existing Ruff format drift outside this change.",
+    "implementation_bundle_sha256": "3b357551e4db3378fadbc998f65459e251c397ddb18c9ba655602f3d450e8060",
+    "implementation_bundle_algorithm": "sha256 of sorted sha256sum lines for the changed implementation and focused-test files",
+    "source_sha256": {
+      "gimp_adapter/section_reorder.py": "9e8e5a997e00f9574d718a65a59c4fb91b481fba74c0f3d5f6bed9fc883592fb",
+      "gimp_adapter/schema.py": "74a4447e7ada8932222cbb41ef9a8a6b6aa11ce7c3b1d7c4d423af69ef2d369b",
+      "gimp_adapter/tool_manifest.py": "4ef728a324c827fb734b9f6eb1f871aa0015d1071e7dbc608d3f2d1e90e34866",
+      "gimp_adapter/worker.py": "f1f54466022c9219a2ca6d7f266d7ea722b2d61f4a1801b7c47e0a4fabe280d3",
+      "multi_apps_adapter/schema.py": "04b37efcd0736423c1f368097d9385bd18c1ae9c734d25a8e4eec2dc039ba477",
+      "multi_apps_adapter/generic_schema.py": "ee6b0ac1fbfaa371df52cf4bce74b34e281aff34fb56bbfdf95fe47c75b3aa2c",
+      "multi_apps_adapter/actions.py": "fe2407b39557af72e7b25177d4c36a8818d42fc3f6469b7f8c95f8c08032c03e",
+      "multi_apps_adapter/generic_actions.py": "96920136edd87c47c1d7bcca8955c1d511e48d76c072692b38e7c2ca942e4f4e",
+      "multi_apps_adapter/tool_manifest.py": "8e0591341c839adf3f7e0040d6b3354c5e75878c992251fab022c547168ff769",
+      "integrations/openapa_osworld/tool_catalog.py": "ae414ba97735c59064f3943de42f1e235fdeff1924ab188e1fff8e2bec6f4945",
+      "integrations/lite_agent/tool_catalog.py": "d7ce372f1fd3eb9174f6560305df3ef91f5c1654dc933f5473460ec94ddaf790",
+      "tests/unit/test_gimp_section_reorder.py": "b8e8dbe49084447a2b1607c534b1b8346745d5e585f77784e290a737e1d74964",
+      "tests/unit/test_gimp_schema.py": "017bdcfb84c10dc726889387dbe96573dcdd98433f9edcfaa41dcef230d00fe3",
+      "tests/unit/test_multi_apps_generic_runtime.py": "84f9a4ec4b34aa078f3ab6feaa53c931fe73382d69f4a96ee22297d3144069eb",
+      "tests/unit/test_lite_agent_multi_apps_catalog.py": "e5460863679056d0dfb04eb1500f1c2a3bc88d567bed8d489c91d56ddca61983"
+    },
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 128 v138 command-tool loop and missing semantic image capability",
+    "selected_count": 1,
+    "prior_development_status": "untouched_baseline_failed_with_strict_valid_evidence",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 128,
+      "source_order": 260,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "source_episode_id": "503c38f5889bd11baa8d1cc9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "7555740f67459d14ef12fc7771776053f4eed4b9acfcc92accd182ea4814d692",
+      "execution_class": "golden",
+      "pool_order": 128
+    }
+  ]
+}

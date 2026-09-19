@@ -1,0 +1,194 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-holo31-hybrid-scroll-contract-retest-20260909-v1",
+  "status": "frozen",
+  "purpose": "Affected/control live validation of removing the Holo-only scroll magnitude bound; no new API, gate, description variant, full-189 evaluation or promotion.",
+  "freeze_timestamp": "2026-09-09T20:38:30Z",
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "role": "individual_failure_retest",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-holo31-hybrid-scroll-contract-retest-20260909-v1-run1",
+    "source_git_commit": "93d391af26637dbd761b006a810b1f536e77490a",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 489,
+      "total_bytes": 80837506,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "51ced7c5135ec4ca1638e1d9f3f120c3aba7bf7680e44aea731e5e58fa7c4a5b"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "immutable_result_directory": true,
+    "repair_hypothesis": {
+      "description": "The completed DOCX retest left Order 104 in GUI navigation loops after Holo scroll(amount=-30) was rejected by its extra [-20,20] schema. That limit is now removed to match the existing signed-integer GUI/native wheel contract; no amount, sign, coordinates, tool description, execution code or task-specific behavior is substituted. Verify the affected task with this one production-schema change.",
+      "affected_orders": [
+        104
+      ],
+      "control_orders": [
+        110
+      ],
+      "expected_observable_change": "A model-selected signed wheel count beyond the former Holo limit reaches the executor unchanged and the next screenshot can reveal later document content. The affected objective remains complete source reading, model-authored answers saved in the user document and original evaluator reward 1, not merely valid scroll dispatch. Control 110 retains exact-path discovery and clipboard success; it controls shared setup/discovery/API handling, not Holo scroll semantics.",
+      "stop_signal": "One fresh guest and one attempt per task, two workers, 100 global steps, 50 local steps, one same-VM soft restart, 1800 Agent seconds and 30-GiB disk stop. Preserve all results and keep runtime/tests unchanged through worker and supervisor exit. This is the second consecutive affected-104 episode; review and stop the series at its terminal result rather than append an unchanged retry. No full-189 run or promotion is authorized.",
+      "prior_attempt_disposition": "Keep the previous DOCX pair immutable: 104 exhausted its Agent deadline after 57 recorded events, while 110 passed in 6. Two isolated description probes returned schema-valid but wrong-direction scrolls and were not adopted. The change is supported by 41 Holo tests and capture-only replay of both preserved -30 calls, not yet by a live changed-contract task result.",
+      "focused_verification": "Both new signed-wheel regression cases failed under the old constraints; all 41 Holo tests and Ruff passed after removing only minimum/maximum from amount. The entire delegated tool list matches the preserved list after exactly those two constraints are removed. Real grounder/gateway offline replay preserves both raw -30 calls at a capture-only executor without network or GUI execution.",
+      "decoding": "Retain the split Qwen3.5-4B and Holo3.1-4B endpoints, binary thinking, temperatures 0/0.8, 4096/1024 output caps, Qwen complete-call stop and all current runtime budgets."
+    },
+    "selection": {
+      "method": "Order 104 affected Holo scroll-bound failure plus consecutively passing Order 110 local-file discovery/clipboard control, one fresh guest per task in source order."
+    },
+    "source_config": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/qwen35-holo31-hybrid-scroll-contract-retest-20260909-v1.json",
+    "status": "frozen",
+    "non_promotable": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "max_local_steps": 50,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 2,
+    "workers_per_endpoint": 2,
+    "worker_start_delay_seconds": 5,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "python": "/home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python",
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "fixed_task_order": true,
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "expected_model_root": "/root/.cache/huggingface/hub/models--Hcompany--Holo-3.1-4B/snapshots/8c88265a5a159bfd1492db9243733dd2e6e04a6e",
+      "accepted_actual_models": [
+        "holo3.1-4b"
+      ],
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180
+    },
+    "minimum_free_disk_gib": 30,
+    "tool_call_stop_sequence": "\n</function>\n</tool_call>"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Order 104 affected Holo scroll-bound failure plus consecutively passing Order 110 local-file discovery/clipboard control, one fresh guest per task in source order.",
+    "seed": null,
+    "selected_count": 2,
+    "domain_counts": {
+      "multi_apps": 2
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true,
+    "required_holo_delegation_orders": []
+  },
+  "tasks": [
+    {
+      "order": 104,
+      "domain": "multi_apps",
+      "task_id": "1f18aa87-af6f-41ef-9853-cdb8f32ebdea",
+      "source_order": 213
+    },
+    {
+      "order": 110,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "source_order": 223
+    }
+  ],
+  "repair_hypothesis": {
+    "description": "The completed DOCX retest left Order 104 in GUI navigation loops after Holo scroll(amount=-30) was rejected by its extra [-20,20] schema. That limit is now removed to match the existing signed-integer GUI/native wheel contract; no amount, sign, coordinates, tool description, execution code or task-specific behavior is substituted. Verify the affected task with this one production-schema change.",
+    "affected_orders": [
+      104
+    ],
+    "control_orders": [
+      110
+    ],
+    "expected_observable_change": "A model-selected signed wheel count beyond the former Holo limit reaches the executor unchanged and the next screenshot can reveal later document content. The affected objective remains complete source reading, model-authored answers saved in the user document and original evaluator reward 1, not merely valid scroll dispatch. Control 110 retains exact-path discovery and clipboard success; it controls shared setup/discovery/API handling, not Holo scroll semantics.",
+    "stop_signal": "One fresh guest and one attempt per task, two workers, 100 global steps, 50 local steps, one same-VM soft restart, 1800 Agent seconds and 30-GiB disk stop. Preserve all results and keep runtime/tests unchanged through worker and supervisor exit. This is the second consecutive affected-104 episode; review and stop the series at its terminal result rather than append an unchanged retry. No full-189 run or promotion is authorized.",
+    "prior_attempt_disposition": "Keep the previous DOCX pair immutable: 104 exhausted its Agent deadline after 57 recorded events, while 110 passed in 6. Two isolated description probes returned schema-valid but wrong-direction scrolls and were not adopted. The change is supported by 41 Holo tests and capture-only replay of both preserved -30 calls, not yet by a live changed-contract task result.",
+    "focused_verification": "Both new signed-wheel regression cases failed under the old constraints; all 41 Holo tests and Ruff passed after removing only minimum/maximum from amount. The entire delegated tool list matches the preserved list after exactly those two constraints are removed. Real grounder/gateway offline replay preserves both raw -30 calls at a capture-only executor without network or GUI execution.",
+    "decoding": "Retain the split Qwen3.5-4B and Holo3.1-4B endpoints, binary thinking, temperatures 0/0.8, 4096/1024 output caps, Qwen complete-call stop and all current runtime budgets."
+  }
+}

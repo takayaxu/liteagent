@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "experiment_id": "offline-smoke-12-openapa-gpt-5.6-sol-medium",
+  "status": "planned",
+  "purpose": "Validate the no-guest-proxy VM, screenshot/tool loop, Adapter deployment, and original evaluator on a fixed cross-domain offline smoke set. This is infrastructure validation, not an OSWorld leaderboard estimate.",
+  "source_config": "adapter_versions/v2_expanded/experiments/configs/offline-non-oauth-261.json",
+  "source_config_sha256": "cafd43a080f5b6085dfa3387973fd6ba7c241464821d5096b343239a0d536323",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 100,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "openapa_gui_code_plus_v2_adapter_call",
+    "original_evaluator": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "external_web_excluded": true,
+    "purpose_boundary": "smoke_only_no_leaderboard_claim"
+  },
+  "selection": {
+    "single_app_domains": [
+      "chrome",
+      "gimp",
+      "libreoffice_calc",
+      "libreoffice_impress",
+      "libreoffice_writer",
+      "os",
+      "thunderbird",
+      "vlc",
+      "vs_code"
+    ],
+    "multi_apps_count": 3,
+    "rule": "earliest offline_order per single-app domain plus earliest three Multi-Apps tasks"
+  },
+  "smoke_task_ids": [
+    "bb5e4c0d-f964-439c-97b6-bdb9747de3f4",
+    "7a4deb26-d57d-4ea9-9a73-630f66a7b568",
+    "357ef137-7eeb-4c80-a3bb-0951f26a8aff",
+    "5d901039-a89c-4bfb-967b-bf66f4df075e",
+    "0810415c-bde4-4443-9047-d5f70165a697",
+    "bedcedc4-4d72-425e-ad62-21960b11fe0d",
+    "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397",
+    "59f21cfb-0120-4326-b255-a5b827b38967",
+    "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+    "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+    "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5",
+    "2fe4b718-3bd7-46ec-bdce-b184f5653624"
+  ],
+  "tasks": [
+    {
+      "order": 1,
+      "offline_order": 1,
+      "source_order": 1,
+      "domain": "chrome",
+      "task_id": "bb5e4c0d-f964-439c-97b6-bdb9747de3f4",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 2,
+      "offline_order": 13,
+      "source_order": 47,
+      "domain": "gimp",
+      "task_id": "7a4deb26-d57d-4ea9-9a73-630f66a7b568",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 3,
+      "offline_order": 30,
+      "source_order": 73,
+      "domain": "libreoffice_calc",
+      "task_id": "357ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 4,
+      "offline_order": 76,
+      "source_order": 120,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 5,
+      "offline_order": 123,
+      "source_order": 167,
+      "domain": "libreoffice_writer",
+      "task_id": "0810415c-bde4-4443-9047-d5f70165a697",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 6,
+      "offline_order": 199,
+      "source_order": 292,
+      "domain": "os",
+      "task_id": "bedcedc4-4d72-425e-ad62-21960b11fe0d",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 7,
+      "offline_order": 217,
+      "source_order": 315,
+      "domain": "thunderbird",
+      "task_id": "dfac9ee8-9bc4-4cdc-b465-4a4bfcd2f397",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 8,
+      "offline_order": 231,
+      "source_order": 330,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 9,
+      "offline_order": 245,
+      "source_order": 347,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 10,
+      "offline_order": 145,
+      "source_order": 190,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 11,
+      "offline_order": 146,
+      "source_order": 191,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 12,
+      "offline_order": 147,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+      "execution_class": "golden_materialization"
+    }
+  ],
+  "result_paths": {
+    "raw": "experiments/offline-smoke-12/raw",
+    "results": "experiments/offline-smoke-12/results.json",
+    "report": "experiments/offline-smoke-12/report.md"
+  }
+}

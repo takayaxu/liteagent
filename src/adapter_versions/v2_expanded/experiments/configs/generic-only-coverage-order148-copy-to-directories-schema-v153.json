@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order148-copy-to-directories-schema-v153",
+  "status": "frozen",
+  "purpose": "Targeted A/B for the first generic hypothesis after the preserved order-148 baseline found the existing filesystem.copy_to_directories action only at the stop boundary and received an opaque params wrapper.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order148-v152.json",
+  "candidate_parent_config_sha256": "275dab572f82aba82f367227e9ab6e7f24033f6b1a5e0bd8e7d57531763a7f94",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4c129d0dec73139c9a32eb1cd3fc39eac4e5aec9f8cab8ff2edd845254f84e6f",
+  "change_scope": "Expose the existing reusable filesystem.copy_to_directories action through an Adapter-owned strict source plus destinations schema and generic one-file-to-many-directories vocabulary. The model still selects every path; no task identity, fixed basename, fixed destination, answer, workflow, or Runner argument rewriting is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_copy_to_directories_schema_v153_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this hypothesis once. If the existing action is selected with model-originated paths but fails because the model cannot bind the active directory, classify that distinct failure before considering another generic hypothesis. Do not retry this schema unchanged; stop early and mark task_blocked when further local variants have low expected value.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1",
+    "hypothesis_class": "existing_copy_to_directories_strict_schema_and_vocabulary",
+    "baseline_result": "experiments/generic-only-coverage-order148-v152-run1/results.json",
+    "baseline_result_sha256": "0973c08999d8cf0a9cd5f42d0e59c8e2d2b383af4f03f34c233e0c8dd65e2a83",
+    "baseline_audit": "experiments/generic-only-coverage-order148-v152-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "fac90f92cb1cad8d152635f47db5620dce57efbb896345ed71dce74a6f5e4b6f",
+    "counterfactual_values": {
+      "source": "/srv/counterfactual-drop/payload.dat",
+      "destinations": [
+        "/srv/counterfactual-drop/reviewed",
+        "/srv/counterfactual-drop/approved",
+        "/srv/counterfactual-drop/published"
+      ]
+    },
+    "focused_tests": "440 passed",
+    "full_unit_tests": "2052 passed",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 148 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 148,
+      "source_order": 288,
+      "domain": "os",
+      "task_id": "6f56bf42-85b8-4fbb-8e06-6c44960184ba",
+      "source_episode_id": "96f6a63353abeb04707ee6b7",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "983cd049ad2b66e83ab54452c82f241bf4de8b47edb992e3c0322e897f338f8a",
+      "execution_class": "task_specific",
+      "pool_order": 148
+    }
+  ]
+}

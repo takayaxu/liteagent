@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-smoke-2-v1",
+  "status": "frozen",
+  "purpose": "Validate the strict LiteAgent model request, guest deployment, Adapter policy, screenshot loop, and original evaluator before any generic-only baseline run.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189.json",
+    "task_pool_sha256": "4acc28da4b1fce59d196bd181deaefc3b59e565bda98cabc11aa41927d499f2a",
+    "selection_rule": "One simple OS task followed by one setup-free Multi-Apps task; both non-OAuth and non-proxy. Historical routes and outcomes are not reused."
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_worktree_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "replace_after_run": false,
+    "task_count": 2,
+    "fixed_order": true
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "smoke_role": "strict_single_adapter_request_and_evaluator"
+    },
+    {
+      "order": 2,
+      "source_order": 185,
+      "domain": "multi_apps",
+      "task_id": "937087b6-f668-4ba6-9110-60682ee33441",
+      "smoke_role": "strict_full_stack_generic_overlay_and_evaluator"
+    }
+  ]
+}

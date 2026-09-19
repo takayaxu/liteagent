@@ -1,0 +1,177 @@
+{
+  "schema_version": 2,
+  "experiment_id": "qwen35-save-as-completion-ab34-42-20260831",
+  "status": "frozen",
+  "purpose": "Exploratory affected/control replay of destination-changing Save As completion evidence; non-promotable and separate from v337.",
+  "freeze_timestamp": "2026-08-31T19:22:09Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v337-trusted-concurrency6.json",
+    "task_pool_sha256": "ffabd418691e6cb20367fd9f58711bac9910db8ce4cd0bf6544a3537100fd02b",
+    "selection_seed": null,
+    "selection_rule": "one preserved destination-changing save completion failure (order 34) and one stable same-domain mutation/save control (order 42), selected before the live attempt",
+    "selection_digest": "82e9083fe7e62179a366419ce1ad2adf77ebeb935183f5cac406a81297ad87fb",
+    "selection_digest_method": "sha256(concat task_id values in ascending source order)",
+    "source_git_commit": "c940d47",
+    "source_worktree_sealed": true,
+    "parent_condition": "adapter_versions/v2_expanded/experiments/configs/qwen35-completion-event-evidence-ab34-42-20260831.json",
+    "parent_result": "adapter_versions/v2_expanded/experiments/qwen35-completion-event-evidence-ab34-42-20260831-run1/results.json",
+    "selection_uses_prior_outcome": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "save-as-completion-ab34-42",
+    "role": "destination_changing_save_completion_exploration",
+    "result_directory": "adapter_versions/v2_expanded/experiments/qwen35-save-as-completion-ab34-42-20260831-run1",
+    "source_git_commit": "c940d47",
+    "source_dirty": true,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 423,
+      "total_bytes": 54503656,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "c78aca834cb032b38608a295f1ec94bf1eb20a58dbcc9ac47c0cfd492c6797f4"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_destination_changing_save_completion_exploration",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "record_actual_model_id": true,
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "qwen_text_orchestration_plus_holo31_visual_gui_request_and_unified_tool_audit",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "resume": false,
+    "non_promotable": true,
+    "gui_model": {
+      "provider": "holo",
+      "requested": "holo3.1-4b",
+      "model": "holo3.1-4b",
+      "base_url": "http://192.168.0.224:8002/v1",
+      "served_root": "Hcompany/Holo-3.1-4B",
+      "reasoning_mode": "thinking",
+      "reasoning_profile": "binary_thinking_switch",
+      "max_output_tokens": 1024,
+      "temperature": 0.8,
+      "request_timeout_seconds": 180.0
+    },
+    "reasoning_mode": "thinking"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one affected destination-changing Save As task and one stable same-domain mutation/save control",
+    "seed": null,
+    "selected_count": 2,
+    "domain_counts": {
+      "libreoffice_impress": 2
+    },
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "non_promotable": true
+  },
+  "tasks": [
+    {
+      "order": 34,
+      "domain": "libreoffice_impress",
+      "task_id": "a097acff-6266-4291-9fbd-137af7ecd439",
+      "source_order": 118
+    },
+    {
+      "order": 42,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "source_order": 128
+    }
+  ],
+  "diagnostic_gate": {
+    "pre_registered_before_result": true,
+    "expected_tasks": 2,
+    "runs": 1,
+    "promotion_eligible": false,
+    "hypothesis": "Treating only a ledger-proven destination-changing canonical save as task-changing will let a pure Save As task pass the existing post-save read-back gate without allowing same-target saves to substitute for real mutations.",
+    "success_criterion": "Order34 uses a model-selected explicit URL that matches the successful Adapter URL/positive size, performs a post-save inspect, reaches agent_done, and receives evaluator pass. Stable order42 remains passed. Same-target save, result mismatch, or missing identity evidence remains fail closed; no argument rewrite/injection or task/evaluator state is permitted.",
+    "stop_condition": "Run each task once. If order34 adds no evaluator pass, does not reach completion after post-save read-back, or order42 regresses, reject the hypothesis and do not expand. If either task fails before its first model request because of VM or Adapter deployment, record no conclusion."
+  }
+}

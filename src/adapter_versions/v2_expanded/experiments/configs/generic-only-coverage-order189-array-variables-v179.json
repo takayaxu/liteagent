@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order189-array-variables-v179",
+  "status": "frozen",
+  "purpose": "One targeted A/B for the first generic hypothesis on failed Order 189: expose the existing reusable VS Code array-variable visualization contract to the model and semantic tool search.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order189-v178.json",
+  "candidate_parent_config_sha256": "87c3ce30a356266f667e73ca001d90b875a34649f6cc7aa8df93905e48c67ff1",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c21ec895068c45e39035238a1d00e832926b1ef0622851894aa9d3314df245aa",
+  "change_scope": "Expose ui.show_array_variables through the Adapter-owned strict schema, add semantic VS Code tool-search terms for NumPy array visualization, and document the same public contract in the OpenAPA catalog. The model must choose the action and absolute source path unchanged. The optional variable-name list may be omitted so the Adapter derives assignment targets from the selected current source file. No task ID, expected variable name, evaluator state, or golden value enters runtime code or prompts.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_array_variables_v179_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. By default try one materially different, high-value generic hypothesis with one targeted A/B. A second or third hypothesis is exceptional and requires concrete new evidence plus clear cross-task reuse; three remains the absolute ceiling. After multiple attempts still fail, or once another task-local variant has low expected value, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_1_default",
+    "hypothesis_class": "generic_vscode_array_variable_contract_and_retrieval",
+    "parent_task_implementation_evidence_inherited": false,
+    "baseline_evidence": {
+      "config": "experiments/configs/generic-only-coverage-order189-v178.json",
+      "result": "experiments/generic-only-coverage-order189-v178-run1/results.json",
+      "audit": "experiments/generic-only-coverage-order189-v178-run1/generic-only-audit.json",
+      "reward": 0.0,
+      "failure": "The model could only retrieve debugging.configure for array visualization queries, repeatedly enabled inline debugger values, and terminated under the generic no-progress guard."
+    },
+    "generic_contract": {
+      "action": "ui.show_array_variables",
+      "required_model_arguments": [
+        "path"
+      ],
+      "optional_model_arguments": [
+        "names"
+      ],
+      "adapter_conversion": "When names is omitted, discover assignment targets from the model-selected Python source file and verify the visible VS Code VARIABLES section.",
+      "counterfactual_test": "simulation.py with temperature_grid, valid_mask, and confidence_band; no Order-189 expected variable names are supplied."
+    },
+    "focused_tests": "688 passed",
+    "full_non_guest_tests": "2178 passed",
+    "ruff": "passed",
+    "format_changed_files": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/tool_manifest.py": "4f674de6ff818f717429111b9cf3d12c83716f95fd8bb9c15cea0a0d08af4f09",
+      "integrations/lite_agent/tool_catalog.py": "3e16c5ea8216f7e8559003bcba757458a2808e4ced3bcd7b09bed4474618ea1e",
+      "integrations/openapa_osworld/tool_catalog.py": "791ace143e230a50075ca65096daca1f9d667ea908fdb817ab0d158f0717e476",
+      "tests/unit/test_lite_agent_tool_catalog.py": "fcfc787157ff5b298c2deef1f7d2ef68b877a14006328394a9f3ff76f61fa093",
+      "tests/unit/test_lite_agent_strict_schema_manifest.py": "b5f0309bed14087223acebd48dd502f8a2210700dbd9702f8eb2e1fc7e2ff1eb",
+      "tests/unit/test_vscode_files.py": "5d029b11afdc88bcde9dcb16ba46cad6e23ae10c53473124b2939fa1fc751061"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 189,
+      "source_order": 336,
+      "domain": "vs_code",
+      "task_id": "7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
+      "source_episode_id": "ed3ddb3c14242dc6fbd5d5f3",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "aaf1c3babae32996e9cb2bc599985ac9abbc48cee432bbec1ae899a932aba18f",
+      "execution_class": "generic_api_only",
+      "source_execution_class": "generic_api_only",
+      "pool_order": 189
+    }
+  ]
+}

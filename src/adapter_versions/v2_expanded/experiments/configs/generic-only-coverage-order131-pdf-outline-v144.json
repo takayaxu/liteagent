@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order131-pdf-outline-v144",
+  "status": "frozen",
+  "purpose": "Single targeted Order 131 A/B for a parameterized OS action that splits a model-selected PDF at its own outline boundaries, names outputs by a model-selected generic style, preserves the source, and verifies every output.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order131-v143.json",
+  "candidate_parent_config_sha256": "868076dee8d6f2bc5fd2dcf06f647ba6a8f88abcc73ba14404a5188784ab8f75",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "93085d9877e059ff3fab943eefbcaae6b97fa5bc43a54f64de48e5b5a36fb08e",
+  "blocked_backlog": "experiments/generic-only-task-blocked-backlog.json",
+  "blocked_backlog_sha256": "ef4885946fde6630b88f71d79cb259d2b25c2cba7d632205bb5e21ceee42deab",
+  "baseline_result": "experiments/generic-only-coverage-order131-v143-run1/results.json",
+  "baseline_result_sha256": "226f9b191159b68e8b77d5350ef5ab2f86e3532e94b410744d36a145618d24ac",
+  "baseline_audit": "experiments/generic-only-coverage-order131-v143-run1/generic-only-audit.json",
+  "baseline_audit_sha256": "9540c10fb604ea2d0bdac4edbb1c8242cf96425669c04697eaf0610525db6e09",
+  "baseline_trajectory": "experiments/generic-only-coverage-order131-v143-run1/workers/worker-01/raw/run-1/131-multi_apps-5df7b33a-9f77-4101-823e-02f863e1c1ae/trajectory_manifest.json",
+  "baseline_trajectory_sha256": "92d342065d3cda1e09bbe5b771447b6aa2fe1ad56f43c10489624f6d69e7539d",
+  "change_scope": "Add generic pdf.split_by_outline to the OS Adapter and its flat Multi-Apps facade. The model supplies input_path and may select output_directory, outline_level, filename_style, start_index, include_prefix_pages, and overwrite. The Adapter derives all page boundaries and titles only from the selected PDF's live outline, preserves the source, verifies page counts and extracted-text hashes, and contains no task ID, dataset order, book title, chapter title, page boundary, golden value, evaluator access, or instruction parser. LiteAgent and OpenAPA expose the same typed contract; routing uses only semantic instruction tokens.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_pdf_outline_split_v144_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this one targeted A/B. The missing generic capability is now directly exposed and has passed real clean-guest execution, so do not add another Order-131-local wrapper or repeat an unchanged run. If the model still does not complete the task, mark Order 131 task_blocked and immediately continue to Order 132. Only a proven transient environment fault may receive a bounded retry under the shared environment allowance.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_of_3",
+    "hypothesis_class": "parameterized_pdf_outline_split",
+    "failure_evidence": "The untouched v143 baseline completed no mutation, repeatedly requested nonexistent Writer split_document and incompatible document.export_pdf actions, and stopped after 14 steps with stalled_no_progress. The original evaluator reward was 0.0 and the strict generic-only audit was valid.",
+    "contract": {
+      "action": "pdf.split_by_outline",
+      "model_supplied": [
+        "input_path",
+        "output_directory_optional",
+        "outline_level_optional",
+        "filename_style_optional",
+        "start_index_optional",
+        "include_prefix_pages_optional",
+        "overwrite_optional"
+      ],
+      "adapter_boundary_source": "selected_pdf_live_outline_only",
+      "adapter_internal_task_identity_or_golden_dependency": false,
+      "runtime_fixed_titles_or_page_boundaries": false
+    },
+    "counterfactual_tests": "Tests cover unrelated PDF titles, page counts, top-level and nested outlines, three naming styles, a non-default start index, prefix-page inclusion, existing-output reuse, semantically equal re-export text normalization, conflicting-output rejection, overwrite behavior, missing outline levels, unchanged facade arguments, semantic routing, compact completion evidence, and offline deployment payloads.",
+    "focused_unit_suite": "644 passed",
+    "full_unit_suite": "2010 passed",
+    "static_verification": "Full Ruff lint, compileall, project layout and generic deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and unchanged evaluator tree passed. The user-deferred fixed-16 OSWorld regression was not run.",
+    "real_guest_smoke": "experiments/generic-only-pdf-outline-split-clean-guest-v144-smoke.json",
+    "real_guest_smoke_sha256": "5fa5dc766be84cf21032d1b055b7f5d274e4b8fa2563e743e5e5eacc5248a03c",
+    "source_sha256": {
+      "os_adapter/pdf_tools.py": "af27c1124cba3f9ec4646064ba23e8ac808b5a6ae632c8e9750e9a7124697ab1",
+      "os_adapter/schema.py": "29280b4931f9deba0f635e305c3f957efb55f220b147d8dbe13e08810f36fef0",
+      "os_adapter/tool_manifest.py": "634cf25565fb77fb7f1375660493f50d1a9dca1c5bd94449806a7ef91b6a25d7",
+      "os_adapter/actions.py": "130f3da607d24039816510e273c908ca4929cb366995fab5f7e51fcf1e44de30",
+      "os_adapter/worker.py": "f7141bc7631990a8dd6a73ebb3080553ef64abbf665d82eb56af1ae1ad709814",
+      "os_adapter/deploy/install.sh": "575232829ecb911f190cdbea80868bdb4225b73472ab7c8a05f0f58cdad8d31c",
+      "os_adapter/vendor/pypdf-6.14.2-py3-none-any.whl": "3f07891af76dc002657e04993ab9b4de81de29f9013b9761d0b7968bff12e946",
+      "os_adapter/vendor/typing_extensions-4.15.0-py3-none-any.whl": "f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548",
+      "multi_apps_adapter/os_contracts.py": "fc890cd202e71bc01401f17ecfca9e87c7256b7966290d50f15ee05f48594d0b",
+      "multi_apps_adapter/generic_schema.py": "2a60fd16754e4fb9c2d2bcc483a5c766432b9458b47c0e2dcb0a264b13443b2f",
+      "multi_apps_adapter/tool_manifest.py": "53bdfcc6c58b2d955aeb30bbc3b9529723700f7cd4230fffd0c4a5153f8aa72a",
+      "multi_apps_adapter/generic_actions.py": "15547705ba14b37b695e5f10a54c058546c062157857c1473798c8c0a0fc6be3",
+      "integrations/lite_agent/tool_catalog.py": "49b4f080f351492afebd17138b4536ed270c13f5c63812b8eb63013f89b39898",
+      "integrations/lite_agent/adapter_results.py": "af2b1327f7fe84cddf469f9b4c1bbfeea367a68bf6317bce4f2f6b0b9f4552f0",
+      "integrations/openapa_osworld/tool_catalog.py": "9f0875380dcbf671cbe78274732dbbf68b908ae8e517be51f333ad5328fba340",
+      "GOAL.md": "4936a2c57f647a68a9f9a7c2f76bcb4f0cb6b6bed90c7ca4b7686c123a5d7619"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "source_episode_id": "4c74fe351d0f71a3011bb1e6",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "4234dd2401149635bc444e41b0ed27296fd6e38402fea0fef36d8de5073c784a",
+      "execution_class": "golden",
+      "pool_order": 131
+    }
+  ]
+}

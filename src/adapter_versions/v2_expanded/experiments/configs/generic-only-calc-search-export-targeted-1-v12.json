@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-calc-search-export-targeted-1-v12",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B for the preserved order-9 failure after tools_search found workbook.export but the next model request incorrectly omitted that searched action.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-calc-fit-export-targeted-1-v11.json",
+  "parent_config_sha256": "6627e4c95018bf4ec931e27b1fe837fa0335dab614d488f313b536cc3156c8b8",
+  "source_failure_results": "adapter_versions/v2_expanded/experiments/generic-only-calc-fit-export-targeted-1-v11-run1/results.json",
+  "source_failure_results_sha256": "792ad243c06e4ca9c34f6aa72c14a375642ac1a7d1981ee0742891b8bc5cda00",
+  "change_scope": "Keep public actions explicitly selected through tools_search eligible after a different save action succeeds. This prevents an in-place workbook.save from suppressing a separately requested export while retaining action-specific duplicate suppression. The behavior is cross-action and counterfactually tested with unrelated workbook and sheet names; no task identity, dataset order, golden, evaluator state, answer value, or task-specific route is used.",
+  "implementation_evidence": {
+    "runtime_sha256": "3b40b199f17efe8b61af3226edc33b9a2d36ff0a241e028b50965c4ef2972fa0",
+    "runtime_test_sha256": "b8bc1d3c03dc57127ed00cd0075b48714b7c235d777d7ab369699498919b61eb",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "focused_runtime_tests": "7 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_calc_search_export_v12_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single preserved failure affected by a reusable tools_search exposure fix; no regression controls",
+    "selected_count": 1,
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 9,
+      "pool_order": 9,
+      "source_order": 83,
+      "domain": "libreoffice_calc",
+      "task_id": "aa3a8974-2e85-438b-b29e-a64df44deb4b"
+    }
+  ]
+}

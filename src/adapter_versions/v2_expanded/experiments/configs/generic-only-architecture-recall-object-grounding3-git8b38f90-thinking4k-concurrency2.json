@@ -1,0 +1,181 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-architecture-recall-object-grounding3-git8b38f90-thinking4k-concurrency2",
+  "status": "frozen",
+  "purpose": "Prior-outcome causal A/B of live multi-candidate presentation object grounding against the immediately preceding native-transcript condition on the exact same three-task cohort. Order 119 is the affected embedded-raster handoff task; Orders 7 and 55 are recent clean-pass regression controls. The only intended source change requires a model-selected shape.query before export, exposes exact live candidate paths and geometry in the subsequent schema, rejects stale or unobserved paths, and forwards the model-selected export arguments unchanged. This is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-27T20:15:20Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "immediately_preceding_condition": "adapter_versions/v2_expanded/experiments/configs/generic-only-architecture-recall-native-transcript3-git5c46d85-thinking4k-concurrency2.json",
+    "immediately_preceding_condition_sha256": "41e023e1f8f043819a6e4926042c91db8114d2392b0e9cbef1ae438ae82bb25e",
+    "immediately_preceding_results": "adapter_versions/v2_expanded/experiments/generic-only-architecture-recall-native-transcript3-git5c46d85-thinking4k-concurrency2-run1/results.json",
+    "immediately_preceding_results_sha256": "9b81284cd6cefc1d957428e0fd47f852025bcc00cbc45df226be66516bad46ec"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "git-8b38f90-live-object-grounding-thinking4k",
+    "role": "diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-architecture-recall-object-grounding3-git8b38f90-thinking4k-concurrency2-run1",
+    "source_git_commit": "8b38f903a9b6bd4145b4fa66882d459669a3c919",
+    "source_dirty": false,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 854,
+      "total_bytes": 64501572,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "062efe30e2408fad5b134bf572b1505c765ae68cfd0898399bf52002e55bfd4d"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_git_8b38f90_live_object_grounding_native_recent_v1_thinking4k",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "thinking_4096_official_sampling_native_recent_v1",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 4096,
+    "top_k": 7,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "sampling_top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0,
+    "seed": 17,
+    "thinking": true,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "initial_work_state_observation_mode": "screenshot",
+    "model_tool_transport_mode": "complete_response",
+    "model_tool_transcript_mode": "native_recent_v1",
+    "native_tool_transcript_limit": 4,
+    "model_authored_state": false,
+    "causal_affordance_graph": false,
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_search10_with_model_visible_non_terminal_completion",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Exact reuse of the immediately preceding three-task cohort, preserving source order, with roles declared before candidate execution.",
+    "selected_count": 3,
+    "affected_orders": [
+      119
+    ],
+    "control_orders": [
+      7,
+      55
+    ],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 7,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "source_order": 75,
+      "cohort_role": "recent_clean_pass_regression_control"
+    },
+    {
+      "order": 55,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_order": 146,
+      "cohort_role": "native_transcript_recovered_regression_control"
+    },
+    {
+      "order": 119,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "source_order": 237,
+      "cohort_role": "live_multi_candidate_object_grounding_affected"
+    }
+  ]
+}

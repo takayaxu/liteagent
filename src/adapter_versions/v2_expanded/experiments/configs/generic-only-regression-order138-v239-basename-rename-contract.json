@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order138-v239-basename-rename-contract",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for the eligible historical-pass regression at Order 138. Preserve filesystem.rename while accepting the model's common basename representation and returning explicit verified completion evidence. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order131-v238-local-path-representations.json",
+  "parent_config_sha256": "fc69e03b54a0b25babca80e57db89d622d9197958707d4a7ab4b72b5789fbbac",
+  "hypothesis": "The v210 trajectory selected filesystem.rename immediately and supplied the instruction-derived source and destination basenames, but the OS Adapter interpreted the source as a process-relative path and failed before mutation. The eligible historical trajectory eventually selected the existing source_query/new_name representation and passed the evaluator, then spent eleven more steps searching for the old basename and stalled. If the reusable rename contract accepts either exact paths or basenames, resolves a basename uniquely within explicit or bounded default roots, fails closed on ambiguity, and returns verified completion guidance, the unchanged model-selected call can complete without GUI fallback or post-success search loops.",
+  "change_scope": "Extend the existing OS filesystem.rename Adapter contract so source/destination may be exact absolute paths or basenames. Basename source resolution reuses the public deterministic query resolver with optional search_roots and Desktop/home defaults; a basename destination stays beside the uniquely resolved source. Absolute missing paths are not guessed, relative subpaths are rejected, and ambiguous matches fail closed. Keep source_query/new_name compatibility. Move model-facing rename result projection into a focused filesystem_contexts module and include worker verification plus generic completion guidance. The Runner does not alter actions or arguments, and no task identity, answer, task filename constant, golden, evaluator value, or task-specific route is introduced.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-06/results.json",
+    "v210_worker_results_sha256": "97beaa7eb34e71adbb482b1d8e970dcdaa24eef57a855929d8d3e26e24d6fc2e",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-06/raw/run-1/138-os-e0df059f-28a6-4169-924f-b9623e7184cc",
+    "v210_outcome": "Strict evidence-valid failure: reward 0.0, gui_only, fifteen steps, four failed or blocked rename calls, repeated catalog searches and GUI actions, then stalled_no_progress. The first model-selected rename call used source and destination basenames and failed with PATH_NOT_FOUND before mutation.",
+    "historical_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-coverage-order138-v146.json",
+    "historical_config_sha256": "f2edcfe191c80547de090221bd6f565f39435edb15dded76298c508e409d9fea",
+    "historical_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order138-v146-run1/results.json",
+    "historical_results_sha256": "0f488c3dd545cf72470f9a103b1d263937315ac32b90f0540cbd1a6d65e1ff9a",
+    "historical_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order138-v146-run1/workers/worker-01/results.json",
+    "historical_worker_results_sha256": "b1b5fc73a84108f337668425c92eba6664fb8b94a399abe318edcb73c0f0dbd0",
+    "historical_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-138-generic-only-coverage-order138-v146-run1.json",
+    "historical_current_strict_audit_sha256": "cfea081555f23b70dc8e8d68f956a4068d24c30c92f961f7f09ff618bea574f0",
+    "historical_outcome": "Reward 1.0 and generic_api_only with current strict re-audit valid, evidence-valid, and baseline-admissible. The model selected source_query/new_name itself and the Runner recorded zero action mismatches, argument rewrites, or injections, but the Agent did not terminate and stalled after nineteen steps.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "os_actions_sha256": "8e53eb66662ff565b8e08a3052df5106056711441f970672ac5f7dedc8e6cf35",
+    "os_schema_sha256": "705efb769242caa913205b51d8573a828aa5bbf7f5e8b76070df801d3909424d",
+    "lite_agent_tool_catalog_sha256": "23391ee9c8c224ab6e749cc1bac0d1f16c34f96e292d815d1fd2b1fca61d8b41",
+    "filesystem_contexts_sha256": "f7803accd7d307742d98177fa377252e89e73e50d13fed57b5d51eee3e7d57ac",
+    "adapter_results_sha256": "f487aa1c5735b81166e04c1e615642af32c498989b5ee3cfa65495462a2a5111",
+    "os_actions_tests_sha256": "d078b39f56e08fb08a2e1655eb7c821f82ed973acd3514dfe7034394e2111e57",
+    "os_schema_tests_sha256": "4663b445efe11c59e8a0eb9349c9f8bde7af590925e4f730ccce932e369d4484",
+    "adapter_results_tests_sha256": "aea4889c304c120d964f2204a5982ba0e49f6c51f8f893945884444b4e6d7eed",
+    "runtime_tests_sha256": "b684af702f9a57f5861b1840e01e41908c27fa62535fa1f9f2851167adba7f8f",
+    "runtime_sha256": "d7521ecf3d040e3130731de128de94f492f7272a7a03c1adf2c60c1e26c3eaef",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "lite_agent_supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "project_layout_sha256": "46d3f3237585d44f13019b48298448116d8ae1dae1c64621b1d2e79fe509a8ec",
+    "counterfactuals": "Synthetic tests rename draft_exports to published_exports under a temporary Desktop using the same basename representation, reject nested relative source/destination paths, preserve exact absolute-path behavior, and fail closed when two unrelated weekly_notes directories match explicit roots. Result-projection tests use unrelated report paths and require worker verification plus completion guidance.",
+    "focused_tests": "486 passed across OS actions/schema and LiteAgent result/runtime contracts",
+    "unit_tests": "2586 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_basename_rename_contract_v239_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 and current strict historical-pass trajectories",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T03:15:52Z",
+  "tasks": [
+    {
+      "order": 138,
+      "pool_order": 138,
+      "source_order": 276,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

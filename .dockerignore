@@ -1,0 +1,12 @@
+.venv/
+**/.venv-*/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+experiments/
+third_party/OSWorld/cache/
+third_party/OSWorld/docker_vm_data/
+third_party/OSWorld/.conda/
+*.qcow2
+*.qcow2.zip
+*.pyc

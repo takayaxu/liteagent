@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order95-v65",
+  "status": "frozen",
+  "purpose": "Untouched baseline for the first actionable task in the fixed 189-task development ledger after Order 94 exhausted its bounded budget.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order94-read-loop-circuit-breaker-v64.json",
+  "candidate_parent_config_sha256": "ec30ca7938c736700e66e6ead533ad491aa9f69995bff52f9902901606cb4fe7",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "462d51097f583316c917513d696ad94894115e00110af3dd3023c645dfad72a2",
+  "change_scope": "No task-driven code change. Measure the unchanged v64 generic candidate on the first actionable ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "parent_result_sha256": "4bcaee6204c462d13ac653fa511d25f511c27f436c9c1d578c9c56a0a4789e7f",
+    "parent_audit_sha256": "e3ccca04549229bf286df8f803cfc8bbfa32a68c4254be56422736856482abaf",
+    "parent_status": "order94_task_blocked_after_baseline_and_three_generic_hypotheses",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "completion_policy_sha256": "0d0fbbf5f70a6b1ad759e23332911c068026299301805d4303f6b0649e39ba3b",
+    "tool_catalog_sha256": "ba7a3db4a2647b8ee812e0988963bf6f1387e0a6430dcbff2e5a797d65f802bb",
+    "full_unit_tests": "1535 passed",
+    "focused_tests": "91 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_read_loop_circuit_breaker_v64_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first actionable non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "on_failure": "Preserve the baseline and classify it before any edit. Try at most three materially different generic hypotheses with one targeted A/B each; then mark task_blocked and immediately advance.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 95,
+      "source_order": 196,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "source_episode_id": "a257bf8cd547615701592fe0",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "5c35ef727754eb6874153205858551456165b1f9156e798636800033d2fac67f",
+      "execution_class": "golden",
+      "pool_order": 95
+    }
+  ]
+}

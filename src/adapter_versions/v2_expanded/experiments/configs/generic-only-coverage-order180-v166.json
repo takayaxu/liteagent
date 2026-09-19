@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order180-v166",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of Order 180 under the current generic candidate after freezing the reusable completion-evidence fix exposed by the already-passed Order 179 run.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order179-semantic-keybinding-v165.json",
+  "candidate_parent_config_sha256": "03445f3227298bc9aca7d65b17df7fe3da7b1179aa344070545d760ba083fc2c",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "09207f92e1e37f0d71b903cccafaba6ebbc2c5464e347cae1387ae5124d44891",
+  "change_scope": "No Order-180-driven code change. Relative to v165, add generic keybinding relevance terms and require explicit command-line execution language before terminal provenance is demanded. This lets verifier-passed shortcut mutations count as completion evidence while terminal UI settings and focus contexts remain ordinary application operations. No task identity, answer value, evaluator state, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_completion_relevance_v166_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. By default try one materially different, high-value generic hypothesis with one targeted A/B. A second or third hypothesis is exceptional and requires concrete new evidence plus clear cross-task reuse; three remains the absolute ceiling. After multiple attempts still fail, or once another task-local variant has low expected value, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "untouched_baseline",
+    "hypothesis_class": "none_unchanged_candidate",
+    "parent_task_implementation_evidence_inherited": false,
+    "shared_candidate_delta": {
+      "source_task": "Order 179 clean pass; the mutation succeeded on model step 1 but propose_done was rejected as unrelated",
+      "source_result": "experiments/generic-only-coverage-order179-semantic-keybinding-v165-run1/results.json",
+      "source_result_sha256": "013b8e954d37b50d2a0d024e95f24507c4f4c82726f7b07922ca917ac8b0dbc4",
+      "source_audit": "experiments/generic-only-coverage-order179-semantic-keybinding-v165-run1/generic-only-audit.json",
+      "source_audit_sha256": "10949b1ba7d860904638c765d6b6d4274753131a1bd3ce0a03253bf11a510ebb",
+      "counterfactuals": [
+        "A verified shortcut moving focus from terminal to editor is instruction-relevant completion evidence.",
+        "An unrelated keybinding is not completion evidence for a text-replacement instruction.",
+        "A terminal focus context or terminal preference does not imply shell-history provenance.",
+        "Explicit requests to run from the command line, use the terminal, or use a shell command still require provenance."
+      ],
+      "focused_tests": "8 passed",
+      "full_non_guest_tests": "2136 passed",
+      "ruff_format_compile_layout_leakage_v1_evaluator_tree": "passed",
+      "source_sha256": {
+        "integrations/lite_agent/completion_policy.py": "476483a5697c7ccd6e52a873331303faef8e35d895c819590c392353ac027cf1",
+        "integrations/lite_agent/tool_catalog.py": "221a7180ca04a23d546ce9a34dc6b33e7287414628b861040a4732d0272f20b7",
+        "tests/unit/test_lite_agent_completion_policy.py": "8f7a7620814212a79f837d821d6eae457d591fd0f0fe52f87bac4854845c29ab",
+        "tests/unit/test_lite_agent_tool_catalog.py": "6ca945f5560173a457c3b5f9abd4d26e69d75e7d482befdf7e97ad204b81a2c7",
+        "tests/unit/test_lite_agent_runtime.py": "f22809823df1b9380edc32c166dafc6a039ee8c49e5fa849d08b891e3049706d"
+      }
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 180,
+      "source_order": 327,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "source_episode_id": "8d94566029f0a55a8e5aeaad",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "417dea5e9b0c969bd6c3849ab8b3c56f30eb06b46b887df71d75c6c8b344c498",
+      "execution_class": "generic_api_only",
+      "pool_order": 180
+    }
+  ]
+}

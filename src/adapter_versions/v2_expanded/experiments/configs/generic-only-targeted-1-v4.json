@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-targeted-1-v4",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM validation of the only v3 evaluator failure after tightening generic contradictory completion-claim rejection.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v3.json",
+  "change_scope": "Reject a proposed success claim when it explicitly says a logical, required, or necessary next step still needs to be performed. No task IDs, command constants, golden routes, evaluator access, answer constants, or task substitutions.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v3.json",
+    "selection_fields_used": [
+      "order",
+      "pool_order",
+      "source_order",
+      "domain",
+      "task_id"
+    ],
+    "historical_execution_class_or_outcome_used": true,
+    "selection_reason": "Preserved v3 order 8 is the only evaluator failure. Its trace explicitly claimed completion while naming required future work. This diagnostic set is not a score denominator."
+  },
+  "parent_evidence": {
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v3.json",
+    "config_sha256": "ac90d94ed28431f364f27215bc5045ee584f13d80f172a3a0a343e23f545a771",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v3-run1/results.json",
+    "results_sha256": "bb5e33afbb816799de0a0c2d969007f425beb837510a8bcdb9e2f477e1bfcc99",
+    "audit": "adapter_versions/v2_expanded/experiments/generic-only-validation-16-v3-audit.json",
+    "audit_sha256": "8ed7b0e609890dd537f698b2bddb1caddd42cf8ff26e83b445435def62a3dfa5",
+    "required_valid": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_targeted_v4_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "initial_concurrency": 1,
+    "repeat_concurrency_max": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v3_only_evaluator_failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "score_denominator": false,
+    "parent_orders": [
+      8
+    ],
+    "domain_counts": {
+      "multi_apps": 1
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "parent_order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    }
+  ]
+}

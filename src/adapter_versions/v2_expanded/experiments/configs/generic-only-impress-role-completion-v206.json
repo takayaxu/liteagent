@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-impress-role-completion-v206",
+  "status": "frozen",
+  "purpose": "One clean-VM retry of historical-regression Order 41 after adding a generic instruction-to-model-call completion coverage check for public Impress role formatting. Selection uses prior outcomes and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-impress-role-text-save-v205.json",
+  "parent_config_sha256": "0d93e166ad06dc9c52dd6deef9bad9fa1a0cd758dee6ff996f3dae80d2526517",
+  "change_scope": "The strict completion gate now rejects done when successful model-selected slide.format_text_roles calls do not cover every explicit shared and role-only formatting clause. It neither executes an action nor creates, injects, or rewrites tool arguments.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "historical_regression_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-historical-pass-regression17-v198.json",
+    "historical_regression_config_sha256": "1208faea18f94e3fd91a9bfeebb7ad72ec75fdca0f666cedfd079a0b10324bea",
+    "parent_results": "adapter_versions/v2_expanded/experiments/generic-only-impress-role-text-save-v205-run1/results.json",
+    "parent_results_sha256": "3c6acb9fc928ddfc706954121d07f0453664704b5455a41b448516a65f1d305c",
+    "parent_strict_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-impress-role-text-save-v205-run1/strict-audit-worker-01.json",
+        "sha256": "596f408bc0366afdadf0b4fb734a9e1f18fc27cb45e6884fc3b74ad3fca05b19"
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-impress-role-text-save-v205-run1/strict-audit-worker-02.json",
+        "sha256": "21288c53581e8c2e8460c9046cc8c78b20c55116e49fac8bba6d99c22a0e2f09"
+      }
+    ],
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "semantic_requirements_sha256": "68c925231f1fb66703de7bc3e420c66638d06e4efcf65cc04306bf8fee3929a6",
+    "impress_tool_manifest_sha256": "6e3ff5a3ad2ee415de2d8a0b6fcdd8a99b435719197524569c21373d37b870ed",
+    "semantic_requirement_tests_sha256": "444e0e3c27a37889e3b002c5f50bbadb112feb5bb6d887ab80d5f5b39357ae2e",
+    "impress_text_roles_sha256": "6fe28ce6df9a223fce9cb2df964e59389f276f04d7858f1cf844f086261ee776",
+    "impress_uno_worker_sha256": "4aec0bf983f46984f5d71db9775b42c8daa9cab3709146b593b84f9a56fd27f6",
+    "impress_schema_sha256": "8702ad1939509e00b7551aaaf01bdd837d5b2e51c9a6c4129cc75ed57b3cbb87",
+    "strict_contracts_sha256": "d5257d2d80fce31842b7df11274ca0eb890ca83a9b594b83ac321e1027997f8a",
+    "instruction_semantics_sha256": "2f771bcd67d141bfab15834ec2ee6d8c2e43de4a04df377c24545072272c4ac8",
+    "tool_catalog_sha256": "3ea9c95910b9bb9345566f7a8cae1028622298d73e578b67d9e34c8eb13a3bdb",
+    "unit_tests": "2363 passed",
+    "focused_tests": "798 passed",
+    "semantic_requirement_tests": "8 passed with counterfactual slide indices and formatting values",
+    "ruff": "changed active source and tests passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_impress_role_completion_v206_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "the only v205 failure in the frozen 17-task historical-pass regression set",
+    "selected_count": 1,
+    "domain_counts": {
+      "libreoffice_impress": 1
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T12:06:05Z",
+  "tasks": [
+    {
+      "order": 41,
+      "source_order": 127,
+      "domain": "libreoffice_impress",
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

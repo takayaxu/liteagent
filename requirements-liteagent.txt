@@ -1,0 +1,22 @@
+# Runtime dependencies for the LiteAgent controller. OSWorld's optional model
+# integrations and GPU packages are intentionally not included in this small list.
+requests>=2.31
+httpx>=0.27
+openai>=1.40
+jsonschema>=4.20
+psutil>=5.9
+filelock>=3.13
+Pillow>=10.0
+docker>=7.0
+python-dotenv>=1.0
+numpy>=1.26
+gymnasium>=0.28
+pandas>=2.2
+flask>=3.0
+lxml>=5.0
+openpyxl>=3.1
+python-docx>=1.1
+python-pptx>=1.0
+pypdf>=5.0
+PyMuPDF>=1.24
+PyYAML>=6.0

@@ -1,0 +1,506 @@
+{
+  "schema_version": 1,
+  "experiment_id": "qwen35-lite-agent-fixed-60-seed-20260804",
+  "status": "frozen",
+  "purpose": "Extend the fixed-30 LiteAgent baseline to 60 offline non-OAuth tasks while preserving the first 30 tasks and selecting a domain-stratified expansion.",
+  "sources": {
+    "fixed_30_prefix": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-30-seed-20260803.json",
+    "fixed_30_sha256": "a37f2e7f8be227f1db1853cbb6f5f7e488f5c121d6f5884aba167010d3f96b05",
+    "offline_pool": "/home/liuhao/computer_use/adapter_versions/v2_expanded/experiments/configs/offline-non-oauth-261.json",
+    "offline_pool_sha256": "cafd43a080f5b6085dfa3387973fd6ba7c241464821d5096b343239a0d536323"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_url": "http://192.168.0.224:8001/v1",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_native_tool_calls_plus_v2_adapter_and_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": true,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "preserve_previous_results": true
+  },
+  "selection": {
+    "method": "fixed30_prefix_plus_domain_stratified_shuffle_without_replacement",
+    "seed": 20260804,
+    "selected_count": 60,
+    "prefix_count": 30,
+    "new_task_count": 30,
+    "new_domain_quotas": {
+      "chrome": 1,
+      "gimp": 2,
+      "libreoffice_calc": 5,
+      "libreoffice_impress": 5,
+      "libreoffice_writer": 3,
+      "multi_apps": 6,
+      "os": 2,
+      "thunderbird": 2,
+      "vlc": 2,
+      "vs_code": 2
+    },
+    "total_domain_counts": {
+      "chrome": 2,
+      "gimp": 3,
+      "libreoffice_calc": 12,
+      "libreoffice_impress": 10,
+      "libreoffice_writer": 6,
+      "multi_apps": 12,
+      "os": 4,
+      "thunderbird": 4,
+      "vlc": 4,
+      "vs_code": 3
+    }
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 2,
+      "domain": "libreoffice_calc",
+      "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 3,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 4,
+      "domain": "libreoffice_writer",
+      "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 5,
+      "domain": "multi_apps",
+      "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+      "execution_class": "golden"
+    },
+    {
+      "order": 6,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 7,
+      "domain": "vlc",
+      "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 8,
+      "domain": "libreoffice_writer",
+      "task_id": "b21acd93-60fd-4127-8a43-2f5178f4a830",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 9,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "execution_class": "task_specific"
+    },
+    {
+      "order": 10,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 11,
+      "source_sample_order": 1,
+      "domain": "libreoffice_calc",
+      "task_id": "4e6fcf72-daf3-439f-a232-c434ce416af6",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 12,
+      "source_sample_order": 2,
+      "domain": "vlc",
+      "task_id": "efcf0d81-0835-4880-b2fd-d866e8bc2294",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 13,
+      "source_sample_order": 3,
+      "domain": "libreoffice_impress",
+      "task_id": "9ec204e4-f0a3-42f8-8458-b772a6797cab",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 14,
+      "source_sample_order": 4,
+      "domain": "libreoffice_impress",
+      "task_id": "f23acfd2-c485-4b7c-a1e7-d4303ddfe864",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 15,
+      "source_sample_order": 5,
+      "domain": "libreoffice_calc",
+      "task_id": "0a2e43bf-b26c-4631-a966-af9dfa12c9e5",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 16,
+      "source_sample_order": 6,
+      "domain": "libreoffice_impress",
+      "task_id": "550ce7e7-747b-495f-b122-acdc4d0b8e54",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 17,
+      "source_sample_order": 7,
+      "domain": "multi_apps",
+      "task_id": "bc2b57f3-686d-4ec9-87ce-edf850b7e442",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 18,
+      "source_sample_order": 8,
+      "domain": "libreoffice_writer",
+      "task_id": "ecc2413d-8a48-416e-a3a2-d30106ca36cb",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 19,
+      "source_sample_order": 9,
+      "domain": "thunderbird",
+      "task_id": "9b7bc335-06b5-4cd3-9119-1a649c478509",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 20,
+      "source_sample_order": 10,
+      "domain": "os",
+      "task_id": "5812b315-e7bd-4265-b51f-863c02174c28",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 21,
+      "source_sample_order": 11,
+      "domain": "multi_apps",
+      "task_id": "e8172110-ec08-421b-a6f5-842e6451911f",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 22,
+      "source_sample_order": 12,
+      "domain": "libreoffice_impress",
+      "task_id": "841b50aa-df53-47bd-a73a-22d3a9f73160",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 23,
+      "source_sample_order": 13,
+      "domain": "multi_apps",
+      "task_id": "510f64c8-9bcc-4be1-8d30-638705850618",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 24,
+      "source_sample_order": 14,
+      "domain": "multi_apps",
+      "task_id": "a503b07f-9119-456b-b75d-f5146737d24f",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 25,
+      "source_sample_order": 15,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 26,
+      "source_sample_order": 16,
+      "domain": "libreoffice_calc",
+      "task_id": "4172ea6e-6b77-4edb-a9cc-c0014bd1603b",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 27,
+      "source_sample_order": 17,
+      "domain": "libreoffice_calc",
+      "task_id": "1e8df695-bd1b-45b3-b557-e7d599cf7597",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 28,
+      "source_sample_order": 21,
+      "domain": "vs_code",
+      "task_id": "c6bf789c-ba3a-4209-971d-b63abf0ab733",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 29,
+      "source_sample_order": 23,
+      "domain": "chrome",
+      "task_id": "2ae9ba84-3a0d-4d4c-8338-3a1478dc5fe3",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 30,
+      "source_sample_order": 24,
+      "domain": "gimp",
+      "task_id": "d16c99dc-2a1e-46f2-b350-d97c86c85c15",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 31,
+      "source_pool_order": 165,
+      "source_order": 177,
+      "domain": "libreoffice_writer",
+      "task_id": "6f81754e-285d-4ce0-b59e-af7edb02d108",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 32,
+      "source_pool_order": 83,
+      "source_order": 95,
+      "domain": "libreoffice_calc",
+      "task_id": "aa3a8974-2e85-438b-b29e-a64df44deb4b",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 33,
+      "source_pool_order": 17,
+      "source_order": 19,
+      "domain": "chrome",
+      "task_id": "9656a811-9b5b-4ddf-99c7-5117bcef0626",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 34,
+      "source_pool_order": 304,
+      "source_order": 331,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 35,
+      "source_pool_order": 318,
+      "source_order": 347,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 36,
+      "source_pool_order": 290,
+      "source_order": 316,
+      "domain": "thunderbird",
+      "task_id": "15c3b339-88f7-4a86-ab16-e71c58dcb01e",
+      "execution_class": "gui_fallback"
+    },
+    {
+      "order": 37,
+      "source_pool_order": 245,
+      "source_order": 265,
+      "domain": "multi_apps",
+      "task_id": "9f3bb592-209d-43bc-bb47-d77d9df56504",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 38,
+      "source_pool_order": 98,
+      "source_order": 110,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 39,
+      "source_pool_order": 161,
+      "source_order": 173,
+      "domain": "libreoffice_writer",
+      "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 40,
+      "source_pool_order": 110,
+      "source_order": 122,
+      "domain": "libreoffice_impress",
+      "task_id": "455d3c66-7dc6-4537-a39a-36d3e9119df7",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 41,
+      "source_pool_order": 139,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "ac1b39ff-ee4d-4483-abce-c117e98942f0",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 42,
+      "source_pool_order": 327,
+      "source_order": 356,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 43,
+      "source_pool_order": 117,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "3b27600c-3668-4abd-8f84-7bcdebbccbdb",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 44,
+      "source_pool_order": 223,
+      "source_order": 243,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 45,
+      "source_pool_order": 132,
+      "source_order": 144,
+      "domain": "libreoffice_impress",
+      "task_id": "b8adbc24-cef2-4b15-99d5-ecbe7ff445eb",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 46,
+      "source_pool_order": 167,
+      "source_order": 179,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 47,
+      "source_pool_order": 197,
+      "source_order": 216,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 48,
+      "source_pool_order": 313,
+      "source_order": 340,
+      "domain": "vlc",
+      "task_id": "d06f0d4d-2cd5-4ede-8de9-598629438c6e",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 49,
+      "source_pool_order": 196,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "execution_class": "golden_materialization"
+    },
+    {
+      "order": 50,
+      "source_pool_order": 292,
+      "source_order": 318,
+      "domain": "thunderbird",
+      "task_id": "9bc3cc16-074a-45ac-9bdc-b2a362e1daf3",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 51,
+      "source_pool_order": 52,
+      "source_order": 54,
+      "domain": "gimp",
+      "task_id": "a746add2-cab0-4740-ac36-c3769d9bfb46",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 52,
+      "source_pool_order": 276,
+      "source_order": 298,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 53,
+      "source_pool_order": 75,
+      "source_order": 87,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 54,
+      "source_pool_order": 102,
+      "source_order": 114,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 55,
+      "source_pool_order": 262,
+      "source_order": 282,
+      "domain": "multi_apps",
+      "task_id": "7f35355e-02a6-45b5-b140-f0be698bcf85",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 56,
+      "source_pool_order": 49,
+      "source_order": 51,
+      "domain": "gimp",
+      "task_id": "d52d6308-ec58-42b7-a2c9-de80e4837b2b",
+      "execution_class": "task_specific_workflow"
+    },
+    {
+      "order": 57,
+      "source_pool_order": 278,
+      "source_order": 301,
+      "domain": "os",
+      "task_id": "3ce045a0-877b-42aa-8d2c-b4a863336ab8",
+      "execution_class": "generic_atomic_api"
+    },
+    {
+      "order": 58,
+      "source_pool_order": 128,
+      "source_order": 140,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "execution_class": "unknown"
+    },
+    {
+      "order": 59,
+      "source_pool_order": 103,
+      "source_order": 115,
+      "domain": "libreoffice_calc",
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "execution_class": "generic_composite_api"
+    },
+    {
+      "order": 60,
+      "source_pool_order": 260,
+      "source_order": 280,
+      "domain": "multi_apps",
+      "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+      "execution_class": "golden_materialization"
+    }
+  ]
+}

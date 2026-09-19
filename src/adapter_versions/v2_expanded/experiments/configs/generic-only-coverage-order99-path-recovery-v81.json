@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order99-path-recovery-v81",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 99 hypothesis 2 of 3: return bounded, actionable path recovery when a model-selected active terminal is unavailable, and treat a valid zero-match filesystem search as a successful read-only query.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order99-file-move-v80.json",
+  "candidate_parent_config_sha256": "fa6de6e95ff24126bbdb0f34d0c9bc042dab6698047130c321a01cb6944acaa0",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "ef42b0bdfdbf64043fa5d93f44eb2b8822a2cc163ac6d3947b587d5844443136",
+  "change_scope": "Preserve v80 generic filesystem.move. For document conversion, PDF extraction, and image OCR only, catch a missing active terminal inside the OS Adapter, scan the user home with the exact model-selected basename glob under fixed depth/result limits, and return candidate directories plus an explicit retry contract. Do not rewrite or retry the model call. Also verify zero-match filesystem.find results as completed read-only queries and explain that find cannot create a directory while filesystem.move creates missing destination parents. No task identity, supplied filename, discrepancy rule, answer path, golden artifact, or evaluator state is available at runtime.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_actionable_batch_path_recovery",
+    "parent_result_sha256": "636c727f476169c189be41cb0336e325197e2950dbbe64227bbae1cb994470e4",
+    "parent_audit_sha256": "49117db3bbfe70d9c86b133cf257c980f2d82497ad4ae948a90ba7e64799112a",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_23_steps",
+    "parent_diagnosis": "v80 exposed filesystem.move at initial Top-K rank 1, but Qwen repeatedly selected active_terminal for PDF, OCR, and document batch readers although no shell existed. The Adapter returned an unactionable TERMINAL_UNAVAILABLE error, then valid searches for a nonexistent destination directory were incorrectly reported as verifier failures. No read or mutation route completed before the no-progress stop.",
+    "counterfactual_scope": "Tests use orchard research PDFs, ceramic-label images, field-note documents, an empty unrelated search root, and different directory structures. They verify bounded suffix-aware candidate selection, exact explicit-retry arguments, zero-match query integrity, and read-only mutation guidance without any Order 99 task ID, supplied filename, discrepancy value, destination name, answer path, golden artifact, or evaluator state.",
+    "os_actions_sha256": "5f65e389b6652501265fcc17f76c255cef814983c2a06cb05673bf64ff0ebd5f",
+    "os_worker_sha256": "bab6c0e4646e9e6d4358368eccc8a016e4e43f47aa573871b40624553214e248",
+    "os_verifier_sha256": "6a46d35721ea5e4e982fbb1ab76407859d60dec6e2f68a4be25f1d277de56c9c",
+    "adapter_results_sha256": "71a574d3145fe4b3526c2e8d934c9a3471363b2ee8711addfe8d8a7b06ca44d5",
+    "focused_tests": "62 passed; covers three batch readers, unrelated nested directories and suffixes, exact recovery arguments, zero-match filesystem verification, and compact model-visible guidance.",
+    "full_unit_tests": "1628 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_path_recovery_v81_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-2 A/B and do not rerun it unchanged. Diagnose the trace, then use at most one final materially different generic hypothesis with one targeted A/B. If hypothesis 3 also fails, mark Order 99 task_blocked and immediately advance to Order 100.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 99,
+      "source_order": 207,
+      "domain": "multi_apps",
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "source_episode_id": "78e0011f09a65ed2a286336f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a00f1de5712d6ed12efa773f8cc9b7952e3bcc55e3181054d5311f99bdc215fe",
+      "execution_class": "golden",
+      "pool_order": 99
+    }
+  ]
+}

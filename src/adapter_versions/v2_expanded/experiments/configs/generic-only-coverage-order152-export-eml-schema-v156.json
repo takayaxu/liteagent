@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order152-export-eml-schema-v156",
+  "status": "frozen",
+  "purpose": "Single targeted A/B after the preserved order-152 baseline selected the existing public messages.export_eml action but could only see its opaque params wrapper and repeatedly emitted an invalid empty string.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order152-v155.json",
+  "candidate_parent_config_sha256": "5aef0b9d1b72ebefc838435f0bd078a7c425c72fbf4c9ea6fc9b859ccda2a576",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "2409cb32ff3dbb4fb3e65f5b7148791e685c654f3b1290a61753d59af427280f",
+  "change_scope": "Expose the existing public Thunderbird messages.export_eml action through an Adapter-owned folder_name/output_dir schema. Resolve visible folder names against the current profile inside the Adapter while preserving the legacy source/destination contract. No task identity, answer value, fixed folder, fixed destination, task route, prompt injection, golden data, evaluator access, or Runner argument rewrite is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_export_eml_schema_v156_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it fails without a new shared high-value defect, mark order 152 task_blocked immediately and advance; do not add another local schema, prompt, GUI coordinate, or task-shaped workflow.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_final_local_attempt",
+    "hypothesis_class": "existing_public_action_strict_schema_and_semantic_folder_resolution",
+    "baseline_result": "experiments/generic-only-coverage-order152-v155-run1/results.json",
+    "baseline_result_sha256": "beaaca7d45a4741e78de02c672b71d1122cbf6ecdf06857219d7bf53d7973c80",
+    "baseline_audit": "experiments/generic-only-coverage-order152-v155-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "7bb57fbe6427807ee949fa72891e04384e711c6939c3fd898b929d52cc917ef7",
+    "baseline_outcome": "failed_reward_0_generic_api_only_stalled_no_progress_after_9_steps_valid_audit",
+    "counterfactual_contract": {
+      "folder_name": "Research/Invoices",
+      "output_dir": "/home/user/Documents/counterfactual-eml-backup"
+    },
+    "focused_tests": "651 passed",
+    "full_unit_tests": "2069 passed",
+    "ruff_and_touched_file_format": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_with_only_preexisting_untracked_.conda",
+    "source_sha256": {
+      "thunderbird_adapter/tool_manifest.py": "dae1a31b5869a063e85245d38295b56fe9888c8dcff85a2ebac3cbdd1f53e205",
+      "thunderbird_adapter/schema.py": "14132751a25c7d00b5e5da9ad33b430b56076d983366af13aba33763bbe76cb9",
+      "thunderbird_adapter/profile.py": "a1c5caa2cde12a3bf4670297ebbdc18b527ebec3e942b6a0ea8e7e73614e55bd",
+      "thunderbird_adapter/actions.py": "e6b87626f9b1c44836743734332b592397af0cf9d699d2f9c4573f88f6a00b90",
+      "thunderbird_adapter/worker.py": "29160ed190b0c54855312077cc1c74ff814786757131e4cb661b20c8c493ed63"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 152 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 152,
+      "source_order": 292,
+      "domain": "thunderbird",
+      "task_id": "9bc3cc16-074a-45ac-9bdc-b2a362e1daf3",
+      "source_episode_id": "536313a84d78f966a586a6cc",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "2871bf2756529b5428c014e078330a2b3b8b19509a0e1ea4066779c72dca1fd9",
+      "execution_class": "task_specific",
+      "pool_order": 152
+    }
+  ]
+}

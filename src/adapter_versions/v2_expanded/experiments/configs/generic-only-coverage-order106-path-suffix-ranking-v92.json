@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order106-path-suffix-ranking-v92",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 106 hypothesis 1 after preserving and auditing the untouched v91 baseline failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order106-v91.json",
+  "candidate_parent_config_sha256": "2f614b18380a6f1b2fcbbf47309b942c33ed72eabc13019691e2d66c59882e56",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "94f7260902ac5b69db435f3c43a6d99601023eed9d0640f19691afdfd59b9baa",
+  "change_scope": "One generic path-recovery change: exact-basename candidates are ranked by the count of consecutive case-insensitive path components matching from the basename upward. A singular candidate is exposed only when it is the only candidate or has a unique parent-or-deeper suffix match. Every candidate remains visible and the model must explicitly choose and retry.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_path_suffix_candidate_ranking",
+    "parent_result_sha256": "a8dfb82817f3abd370afd780afd4c26f63b13a4a1c2560c63ff684865e77acca",
+    "parent_audit_sha256": "486696375c2370ee238436ffd34de4b2bbbbe1d3a9e77131c894b6de0b593d28",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_8_steps",
+    "parent_diagnosis": "The untouched v91 baseline requested /home/user/TETRIS/main.py. Exact-basename recovery returned both /home/user/server/main.py and /home/user/Desktop/tetris/main.py, but the singular candidate was null. Qwen ignored both retry options and repeated the nonexistent path until the eight-event no-progress window stopped it after 36.442 Agent seconds. Evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "A structurally different reporting/assemble.py test creates candidates under Desktop/reporting and server. It proves the unique case-insensitive parent match ranks first and is exposed without executing a retry; the existing equal-score transform.py test proves ambiguous candidates still have no singular preference.",
+    "model_choice_contract": "The Adapter compares only path components already present in the model's requested path and discovered exact-basename candidates. It does not read candidate contents, consult task identity or instruction text, hide alternatives, rewrite the model request, select an action, or execute a retry.",
+    "instruction_top_k": "unchanged public action selection and Top-K; no action or schema was added",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "path_recovery_sha256": "63cc871d01f0d7b8baa0f5c726562cb3f81e5411daa0a73155fd0ec2d0ce72d7",
+    "path_recovery_tests_sha256": "083ff48adeb7fb25cc3ad242446b7477eb5d40e56e6138deb3204acb4d1683b9",
+    "tool_catalog_sha256": "56ef55baaad78273eba09ae215b74084432b3a637fff6d87e7907c1121d0bf28",
+    "focused_tests": "72 passed",
+    "full_unit_tests": "1664 passed",
+    "ruff": "all active source, scripts, and tests passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_path_suffix_ranking_v92_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-1 A/B, classify the new failure, and do not rerun it unchanged. At most two additional materially different generic hypotheses remain before marking Order 106 task_blocked and advancing.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 106,
+      "source_order": 215,
+      "domain": "multi_apps",
+      "task_id": "9219480b-3aed-47fc-8bac-d2cffc5849f7",
+      "source_episode_id": "6713526f8ed37221d60ebd82",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "3e24d356caf5f1fade549e59bf9e48e82e59bc4115204f3c4011037d22340336",
+      "execution_class": "task_specific",
+      "pool_order": 106
+    }
+  ]
+}

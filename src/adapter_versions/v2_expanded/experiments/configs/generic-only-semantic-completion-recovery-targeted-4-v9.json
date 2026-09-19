@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-semantic-completion-recovery-targeted-4-v9",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B for semantic completion recovery after the full v8 slice exposed a Git workflow regression, plus three completion-recovery stress controls.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v8-completion-recovery.json",
+  "parent_config_sha256": "7ef5d464008fea5ab8e0c45968a948ed5a3f88c6fedf9bb56a1acc256cbfbde0",
+  "change_scope": "Reserve claim_only for malformed, unparsable, or truncated completion calls. When the model's completion text says required work remains, recover to task_state and re-expose generic task actions. No task identity, answer, golden, evaluator, application-specific, or task-specific branch.",
+  "implementation_evidence": {
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "lite_agent_tool_catalog_sha256": "0cca524d81aad6662b969ab851b3011452c185fda026fcaf5bf01e906a63b896",
+    "runtime_sha256": "e5edfcee3ab6ff4bd02c29dcaf6d94ceb0b6e487a441ab13f6a3a69ecfc48965",
+    "tool_validation_sha256": "ffd0db8cd6ce3101b53ebb42a908e05a191172a6081a58b579d3e871c015fadd",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "1199 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "clean"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_semantic_completion_recovery_v9_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v8 semantic-recovery regression plus the prior Impress and VS Code completion-recovery stress cases",
+    "selected_count": 4,
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 4,
+      "pool_order": 30,
+      "source_order": 111,
+      "domain": "libreoffice_impress",
+      "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07"
+    },
+    {
+      "order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 15,
+      "pool_order": 174,
+      "source_order": 318,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951"
+    },
+    {
+      "order": 16,
+      "pool_order": 175,
+      "source_order": 319,
+      "domain": "vs_code",
+      "task_id": "53ad5833-3455-407b-bbc6-45b4c79ab8fb"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order27-sort-contract-v16",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B for the first non-pass task after adding a generic Calc single-column sort contract driven by instruction semantics and observed table state.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order27-v15.json",
+  "candidate_parent_config_sha256": "79c3cec53ac5133876ed29787a933e72a440474126e33e6f7395c90d2e50ec9a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "6f9a375860ec792b0eb2e8606113205b8d6d77a5b2ad45877354b2dfd4a42969",
+  "source_failure_results": "experiments/generic-only-coverage-order27-v15-run1/results.json",
+  "source_failure_results_sha256": "2585b40a8a3ecf1b0df42e5b65ba0a98a95ba761e0664e46f5ef7a353e9cd9bc",
+  "source_failure_audit": "experiments/generic-only-coverage-order27-v15-run1/worker-01-audit.json",
+  "source_failure_audit_sha256": "e5321de457210bbd3d06e503ed78fc43795794bb252fa0b8a76299363d47924f",
+  "change_scope": "Recognize explicit Calc sort clauses as required actions, resolve the key and direction from instruction plus observed headers/table bounds, stage sorting before later mutations, constrain the model-visible schema, and require post-save monotonic readback. No task identity, expected state, golden artifact, or evaluator value enters runtime behavior.",
+  "implementation_evidence": {
+    "calc_worker_sha256": "fce13134c1a0ccb41ab799dc1e11a6a921d3764c5a8c9cde496779dd663165a3",
+    "calc_tool_manifest_sha256": "3a0a77683e36603a7a5fd3204d3416b73adb4101f85532bc57b03f3b919c704b",
+    "calc_readme_sha256": "c44d43cb63dcaa9d947c818c1e59db098c20a9a8219a00a97b6f5565c993cb22",
+    "calc_semantics_sha256": "e38e69400b976e1bd00908d33a5f82c334a8c8db8d17b75da2c4a49490f63802",
+    "runtime_sha256": "b099bda4cff2ce63cc85ba3b6c65b75287b9421a4ad778afc8a2ddb37c923d37",
+    "tool_catalog_sha256": "431d083c746c30432890f9f667d2a51537c9dd29c2dbaa27b8ff22807513554b",
+    "calc_worker_test_sha256": "68788830ff6fccf374ada37ad4b499d4c3bc10ef5f27269c09488c2eeba29df3",
+    "runtime_test_sha256": "d61a9c9f406ac2db55b0e8202b8185a1905b490fe3f6c61623d5a88c0dba7dab",
+    "completion_policy_sha256": "d8e10fdaf1edd3b8e290df4c42a10b51053c611417436efe30877128058ecf7e",
+    "completion_recovery_sha256": "2ee75946f10875257edba9d2f056348a96205496f5ab892340908402b5334522",
+    "runner_sha256": "8b20d615688e0b8f6587a88cd63d21b35d2de28c4bd4371845e6071ddbab9a7d",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "lite_agent_runtime_and_strict_schema_tests": "357 passed",
+    "leakage_runner_and_freeze_tests": "21 passed",
+    "counterfactual": "A structurally different table starting at B2 with an observed SKU header and descending string values passed schema, argument, mutation, post-save monotonic-readback, and completion checks.",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_calc_sort_contract_v16_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 27,
+      "source_order": 106,
+      "domain": "libreoffice_calc",
+      "task_id": "3a7c8185-25c1-4941-bd7b-96e823c9f21f",
+      "source_episode_id": "3549b94139c3e46d787335d2",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "691d5b6c2f6a534a66e34a0e5eccbd1da5400f5c9c1afcaadd4effedc91d8288",
+      "execution_class": "generic_api_only",
+      "pool_order": 27
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order74-writer-deduplicate-v35",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after making generic Writer record deduplication discoverable and directly typed.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order74-v34.json",
+  "candidate_parent_config_sha256": "c9451787aaca2a35b71bdaaec933c669771c3918f03d26beff57266d7e53634e",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "4cad8ba2b9b8e11ddf70a6b3db826d28147ec53b3f7513ffe9ddd1777bfb1e81",
+  "change_scope": "Expose document.deduplicate_records through an Adapter-owned direct delimiter and zero-based key-column schema, and add generic duplicate/distinct/unique/record retrieval terms. Leave the existing UNO operation, model, Prompt, VM, evaluator, and all other tools unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The existing generic deduplication action was absent from the model's top-k, so Qwen could not select it and looped over unrelated formatting actions. Generic duplicate/distinct/unique/ID/record retrieval plus direct delimiter and key_column arguments should expose the reusable capability without a task route or preset answer.",
+    "writer_tool_manifest_sha256": "8153f07ce6656995cf0a6cf58d4974d5b75e668b1dadefe8e68215c958c8c40b",
+    "writer_schema_sha256": "4380237e1ea307cde29d5f81b3da13e63e1ed0f75ec08e980ef1b960260bf378",
+    "writer_uno_worker_sha256": "9a12de19519cc259c9964b1692fae73e8f4358ad6ef3063c8c65782f69bdd66b",
+    "tool_catalog_sha256": "34039011badafc7e7add68c5b91c21a1f7e4724414666d72034d202be65a67e4",
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "generic_only_audit_sha256": "03c31089e8c04c27e617d063475d387e7a9dbb3f26cbcc40168ab1f35188848c",
+    "writer_schema_test_sha256": "570b146a73b1831eec0ce498b4eae375b8c899ee11364fa00d76dc6ec96ec362",
+    "tool_catalog_test_sha256": "2628d3553a1916955f65340f749ebc43ace9468c3ed0a58357befe70c7800f52",
+    "strict_manifest_test_sha256": "ce29ce2f927f60f443a4668f6e107f4b2c1136d3672e3b0e78731ed5696398aa",
+    "runtime_test_sha256": "1069a4af8e682a4a9378e5f48837d689c76ac21e0a0545a5a2aa29dc9a37989c",
+    "writer_worker_test_sha256": "f9b81d4dd3e70ebe04d9b7ef8b07c97b73ebb74d7643e0c1b2796b1b8c285c34",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "481 passed",
+    "full_unit_tests": "1331 passed",
+    "counterfactual": "Routing tests use customer, device, and account records. Direct dispatch and real deduplication tests use pipe- and semicolon-delimited data, zero-based key columns 0 and 2, different record structures, and different duplicate values. They verify first-record source-order preservation and rejection of the old empty params wrapper.",
+    "current_instruction_router_check": "document.deduplicate_records is third in the seven-action candidate list after document.inspect and document.save.",
+    "prior_v34_result_sha256": "ce2ac3b86cdb0ec18d40047acedb9ff3589703ea93eaf9460c79477fcf34e44b",
+    "prior_v34_audit_sha256": "55451e430557dc9b1437d96d22e5884962936df7785304b589e5d77698532e5b",
+    "prior_v34_audit_valid": true,
+    "prior_v34_outcome": "Original evaluator 0.0 after 30 steps. The initial candidate list omitted document.deduplicate_records, and Qwen alternated unrelated font changes, inspection, and saves without performing any deduplication.",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "changed_source_leakage_scan": "No current task UUID, source episode ID, instruction text, task filename, golden value, or evaluator expected state appears in changed runtime or test sources.",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_deduplicate_schema_routing_v35_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 74,
+      "source_order": 165,
+      "domain": "libreoffice_writer",
+      "task_id": "6f81754e-285d-4ce0-b59e-af7edb02d108",
+      "source_episode_id": "53021bc09347180be7d88f78",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "7b3da4dbc4eda52a40a6afc8c74d852179bdd61d622fb8674c5d8c269479578c",
+      "execution_class": "task_specific",
+      "pool_order": 74
+    }
+  ]
+}

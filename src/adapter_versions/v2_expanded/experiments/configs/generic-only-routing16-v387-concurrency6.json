@@ -1,0 +1,270 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-routing16-v387-concurrency6",
+  "status": "frozen",
+  "purpose": "Prospective outcome-informed development validation for the isolated v387 strict generic routing change. It combines the frozen 10-task routing-regression subset with all six frozen stable controls, is not an unseen result, and cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-21T08:38:52Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "reference_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-development-gate30-v386-reference-concurrency6.json",
+    "reference_config_sha256": "0184cda4c0a60d1eb3bac24db149ace432021c89b221745fb5183c3e36b8b7d3",
+    "v386_fixed189_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v386-diagnostic-concurrency6.json",
+    "v386_fixed189_config_sha256": "39719c480643f0f996b72860b9c526076062985a241bff5e1c8e30ab50880cca",
+    "v386_fixed189_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v386-diagnostic-concurrency6-run1/results.json",
+    "v386_fixed189_results_sha256": "3bc7f6186802a7e3edfdeb4342538c008587f823610683a4e041102a583b4758",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v387",
+    "role": "development_routing_validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-routing16-v387-concurrency6-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 775,
+      "total_bytes": 63296378,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "8c1148534af4d16b9ef503f0c98c57e8a6415a0ac1d56247ab2d0dc7dbafb183"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v387_routing_2026-08-21",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "union of the prospectively frozen routing_regression and stable_pass_control subsets from the v386-derived 30-task development gate",
+    "selected_count": 16,
+    "failed_target_count": 10,
+    "stable_pass_control_count": 6,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "subsets": {
+      "routing_regression": [
+        7,
+        23,
+        40,
+        47,
+        65,
+        91,
+        115,
+        141,
+        144,
+        180
+      ],
+      "stable_pass_control": [
+        22,
+        29,
+        73,
+        85,
+        137,
+        174
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "order": 7,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "source_order": 75,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 22,
+      "domain": "libreoffice_calc",
+      "task_id": "7a4e4bc8-922c-4c84-865c-25ba34136be1",
+      "source_order": 101,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 23,
+      "domain": "libreoffice_calc",
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "source_order": 102,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 29,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "source_order": 108,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 40,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "source_order": 126,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 47,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "source_order": 135,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 65,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+      "source_order": 156,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 73,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "source_order": 164,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 85,
+      "domain": "multi_apps",
+      "task_id": "2b9493d7-49b8-493a-a71b-56cd1f4d6908",
+      "source_order": 177,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 91,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "source_order": 187,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 115,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "source_order": 231,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 137,
+      "domain": "os",
+      "task_id": "5ea617a3-0e86-4ba6-aab2-dac9aa2e8d57",
+      "source_order": 275,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 141,
+      "domain": "os",
+      "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+      "source_order": 280,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 144,
+      "domain": "os",
+      "task_id": "5ced85fc-fa1a-4217-95fd-0fb530545ce2",
+      "source_order": 284,
+      "development_stratum": "routing_regression"
+    },
+    {
+      "order": 174,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "source_order": 318,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 180,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "source_order": 327,
+      "development_stratum": "routing_regression"
+    }
+  ]
+}

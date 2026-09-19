@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v272-impress-navigation-routing-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v272 generic separation of read-only slide navigation from whole-slide deck reordering, retaining the v271 semantic picture-size repair. It repeats the affected v271 outcome and both same-domain controls once in a new condition. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v271",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v271-impress-semantic-picture-size.json",
+    "disposition_sha256": "6c0a4d876fd20cd9ae223a0d4fede9fdd8cdbde24c3f06754e363bec55a9fb43",
+    "complete_candidate_accepted": false,
+    "retained_behavior": "All accepted v253-v266 changes and v267-v271 generic Impress contracts remain active, including semantic picture.set_size, unique live role resolution, grouped picture completion read-back, and exact model argument forwarding."
+  },
+  "change_scope": "v272 filters slide.move from tools_search when the model query expresses read-only navigation and neither query nor instruction explicitly requests whole-slide reordering. Explicit before/after/first/last/index/position and exact slide.move requests remain available. Model, VM, evaluator boundary, task selection, tool schemas, Adapter contracts, and Runner argument forwarding are unchanged from v271.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v272.json",
+    "candidate_manifest_sha256": "6edb5f8558e9f68ae54b327b92e65ef8e03761ff32583611b1929eae13fd185c",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v272-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "33e7e79d8f629970540f6d5e7db900990fcccdebc6b3d049993e6a41c30aeb23",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 60 verifies the retained v271 semantic picture-size repair, Order 62 is the preserved v271 navigation-versus-reorder control regression, and Order 58 remains an unchanged same-domain clean control.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v272",
+    "active_runtime_and_test_tree_sha256": "db5d1fc13d239a737354f7918cfdf6384f19382a9b5b8a3c17cf6c9ec3f57b6b",
+    "focused_tests": "168 passed",
+    "complete_unit_suite": "2847 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "Both DGX endpoints passed 3/3 route-guard, schema-valid, and semantic-match navigation/reorder cases against the exact frozen source.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v272_impress_navigation_routing_ab3_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Repeat the exact v271 fixed source order for Orders 58, 60, and 62. Round-robin assignment puts Orders 58 and 62 on DGX1 and Order 60 on DGX2.",
+    "selected_count": 3,
+    "affected_orders": [60],
+    "clean_control_orders": [58, 62],
+    "domain_counts": {"libreoffice_impress": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T15:00:00Z",
+  "tasks": [
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_control_before",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "affected_semantic_picture_size_with_navigation_route_guard",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "cohort_role": "clean_control_after",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

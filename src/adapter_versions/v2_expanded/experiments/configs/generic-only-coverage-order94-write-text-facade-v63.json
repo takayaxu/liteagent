@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order94-write-text-facade-v63",
+  "status": "frozen",
+  "purpose": "Sole targeted A/B for coverage Order 94 generic hypothesis 2: expose the model-requested file.write_text operation as a flat deterministic Multi-Apps facade.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order94-text-file-read-verifier-v62.json",
+  "candidate_parent_config_sha256": "7dda7413566daf71c4b78e1617cd9ab896af483c42dd0b2057e48289699db550",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b7d7cd06008d1d917884e02add76c77a8e386a6db3ff00f10fb53ecf3b6cc4ff",
+  "change_scope": "Hypothesis 2/3: add file.write_text(path, content) as a flat Multi-Apps facade backed by VS Code file.create with atomic overwrite=true and open=false, and rank file.read_text, file.replace_literal, and file.write_text directly in tool search. The path and complete content must be supplied by the model. No task identity, instruction fingerprint, source literal, expected output, fixed path, workflow, or completion decision is embedded. Model, prompt, Runner, VM, evaluator, top_k, and step budget are unchanged.",
+  "implementation_evidence": {
+    "prior_config_sha256": "7dda7413566daf71c4b78e1617cd9ab896af483c42dd0b2057e48289699db550",
+    "prior_result_sha256": "f8d53e8a5ac666637276f779829e034fcec70476b4ed5c237be699699dcaedda",
+    "prior_worker_result_sha256": "b9d40e488a7881b5a130c735eedb5fe35f0b5a2cbf4d3e8966e1691b504fcae5",
+    "prior_audit_sha256": "02eada0e5dfe58bc33ec449fbde1119dbc1aa687916b0c5c326070c50486e113",
+    "prior_status": "interrupted_after_21_complete_model_steps_to_stop_a_repetitive_no-mutation_loop",
+    "prior_failure": "After file.read_text returned the correct source, the model repeatedly searched for file.write_text and file.write_text log.txt but received only the nested adapter.call contract, then repeatedly executed the unchanged script. No source mutation occurred.",
+    "hypothesis_index": 2,
+    "hypothesis_limit": 3,
+    "multi_apps_generic_schema_sha256": "36ba836ca873702d20ffae4e322e7c730a09bc6c05a32dafbd3dedd507956d9d",
+    "multi_apps_schema_sha256": "3853eca2a857c9f89815e1a8ea1f475f8f70b05decef61a52bde30d6ba0e5eee",
+    "multi_apps_generic_actions_sha256": "3a304865db075538f703edb0d51c890803894ac1b1db68b4f8108beb1adf2e7a",
+    "multi_apps_actions_sha256": "b2380654f7768203b5c6c1899319147d4ea090c1c7d6a58c5a43dc770aec6e79",
+    "openapa_catalog_sha256": "baa81e2e512e36a954a4a0c62d9545a15c6aee0828728bfe95e22556dbcfd4d6",
+    "lite_agent_catalog_sha256": "c5b5959e7fcd87b74d94cfd198a00a1250edd125397f88c5c4a20d4d181a5535",
+    "counterfactuals": "Tests write different temporary paths and unrelated text content, verify overwrite behavior, reject missing content, and prove search returns the same flat facades for non-benchmark queries.",
+    "focused_tests": "125 passed",
+    "full_unit_tests": "1533 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_multi_apps_write_text_facade_v63_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for generic hypothesis 2 of coverage Order 94",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order94-text-file-read-verifier-v62-run1",
+    "rerun_reason": "The preserved v62 trace provides new, repeated model evidence for the missing flat file.write_text facade. This v63 run is the only A/B for hypothesis 2 and does not repeat hypothesis 1.",
+    "on_failure": "Preserve the result and stop early if the model again enters a no-mutation loop. Use at most one materially different hypothesis 3; do not repeat v63 unchanged. If hypothesis 3 fails, mark Order 94 task_blocked and immediately advance to Order 95.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_episode_id": "0035a61317f6aca92dbe0138",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f150db7c95f1cc5f1003febdb398849c1482bda566e646d2ae6b5df3f9528900",
+      "execution_class": "golden",
+      "pool_order": 94
+    }
+  ]
+}

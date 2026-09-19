@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order104-writer-find-guidance-v88",
+  "status": "frozen",
+  "purpose": "Order 104 generic hypothesis 2/3: make filesystem.find results explicitly route Writer document paths to document.read_file and discourage rereading an already-read path.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order104-document-read-file-v87.json",
+  "candidate_parent_config_sha256": "11761f1730c028f2c82865e50b2c0b06c0a79ba17ad95418fae988ead5d2c962",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "a41a1b5b558eb57e5cea22226e0cca8e7d5546809e311a149f36686f0621b383",
+  "change_scope": "Generic filesystem.find result guidance only. When returned files include DOC, DOCX, ODT, or RTF, suggest document.read_file and tell the model to read each distinct relevant returned path once. The result preserves returned paths and does not select a path, track task identity, derive document contents, mutate files, or consult golden/evaluator state.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_find_guidance_v88_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this sole hypothesis-2 A/B. Do not rerun it unchanged. Use at most one materially different generic hypothesis 3/3 if it has clear reusable value; otherwise mark Order 104 task_blocked and immediately advance to Order 105.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_writer_document_find_result_guidance",
+    "parent_result_sha256": "fb68a0ef8e94e781854ef07f26c9c32625af532e0f403648b1bcb5d0af8540df",
+    "parent_audit_sha256": "7396661b54b10f27221f32106a033b9c0e88331d32a977b68772c2765b9c7c9b",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_13_steps",
+    "parent_diagnosis": "The model successfully used document.read_file to inspect Answer.docx and filesystem.find returned five exact DOCX paths, but the generic find context suggested only desktop.open_path. It repeatedly reread Answer.docx rather than selecting each source document path, and the eight-event window stopped the run after 73.506 Agent seconds.",
+    "counterfactual_scope": "Tests use unrelated DOC, DOCX, ODT, and RTF paths and values. They verify that filesystem.find preserves every returned path, suggests document.read_file, gives format-specific distinct-path guidance, and remains bounded without selecting or executing any path.",
+    "model_choice_contract": "The model must explicitly select document.read_file and supply every path. The Runner only exposes truthful filesystem.find results and generic recovery guidance; it does not remember or choose source files, inject tool calls, or rewrite arguments.",
+    "adapter_results_sha256": "ba981b5665d6ec6f4175210b62ea0d499ca3d685364b674abc7331aacd427dd3",
+    "adapter_results_tests_sha256": "606925b0c1d3e143e2bfc2f53f6c0d0932588d6a6486ad607c1f161039b6d27a",
+    "focused_tests": "70 passed",
+    "full_unit_tests": "1660 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_tree_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "second targeted generic A/B for the first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 104,
+      "source_order": 213,
+      "domain": "multi_apps",
+      "task_id": "1f18aa87-af6f-41ef-9853-cdb8f32ebdea",
+      "source_episode_id": "d35c3f74747b28257b6915e9",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "ec0f04cad4ade48c1e3bea3e4fd4f9cf3b540e5d969f63053bcfb9fa33f5a681",
+      "execution_class": "golden",
+      "pool_order": 104
+    }
+  ]
+}

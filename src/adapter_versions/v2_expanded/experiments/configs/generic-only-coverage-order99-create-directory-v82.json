@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order99-create-directory-v82",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 99 hypothesis 3 of 3: expose an idempotent filesystem.create_directory action matching the model's repeated explicit tool intent.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order99-path-recovery-v81.json",
+  "candidate_parent_config_sha256": "290a55d2beacf69185e90d952ebead21176ead5369b800b7a5f1b4f83c711c64",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "ef42b0bdfdbf64043fa5d93f44eb2b8822a2cc163ac6d3947b587d5844443136",
+  "change_scope": "Preserve v80 generic filesystem.move and v81 actionable batch-path recovery. Add one reusable filesystem.create_directory(path, parents=true) action in the OS Adapter and a flat Multi-Apps facade. The action idempotently creates only the exact absolute or ~/ path supplied by the model, verifies the directory, and reports whether it was new. It does not select files, infer a task destination, or move content. No task identity, supplied filename, discrepancy rule, answer path, golden artifact, or evaluator state is available at runtime.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3",
+    "hypothesis_class": "generic_explicit_directory_creation",
+    "parent_result_sha256": "c60a43b086126f04a934ebd3638c5300e566fbb358a4d219d039ee55b068f140",
+    "parent_audit_sha256": "18a9484a69e87518f243580c8327030234b294bbb128c76721c8113d8de9a428",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_15_steps",
+    "parent_diagnosis": "v81 path recovery worked: Qwen followed the candidate directory, switched from active_terminal to explicit /home/user/Desktop, and read all four PDFs. It then performed one verified zero-match search for the requested output folder and repeatedly searched the catalog for filesystem.create_directory. Search returned filesystem.move first, but Qwen continued requesting directory creation and never mutated a file before the no-progress stop.",
+    "counterfactual_scope": "Tests create unrelated quarterly-review directories under temporary roots, repeat creation idempotently, reject regular-file conflicts, relative paths, type errors, extra fields and forbidden task metadata, verify unchanged Multi-Apps forwarding, strict model schemas, exact tool search ranking, route deduplication, and compact read-back. No Order 99 task ID, supplied filename, output folder name, discrepancy value, answer path, golden artifact, or evaluator state appears in active runtime code or tests.",
+    "instruction_top_k": "filesystem.move rank 1; filesystem.create_directory rank 4 of 7 for a paraphrased invoice-comparison workflow",
+    "exact_search_top_k": "filesystem.create_directory rank 1; flat Multi-Apps facade retained and duplicate OS route suppressed",
+    "os_actions_sha256": "e2255b3832ef3dd0cb1146fe5c3d0b9082c7c3a962ea0fef26a14f83618fabf4",
+    "os_schema_sha256": "a0d013bf04873d9ca7e810432f620586aab07f41bc3db6af33ac37b429dfc639",
+    "os_tool_manifest_sha256": "77baa246c5350505438e7675255cdbc3cf90f8ff104c5d4aca9b10fb041b6590",
+    "os_worker_sha256": "ae3b82a2db7bc7f7a430edd54f8b78f1a032518e28c8ec0337f3213a2b6bbe17",
+    "multi_apps_generic_actions_sha256": "6346c8b4463652a2c1349a65d60a7f464abcf48b165395df30ab32d071d37bbf",
+    "multi_apps_generic_schema_sha256": "fae8e85ee338737d73a21acc4415d6309a71965ffa7866fd2aef30fffb0945cd",
+    "multi_apps_catalog_actions_sha256": "45ed3e3eccbad8e7a1e056677fe38fdbf8999a2417c271becde35c39e1c4621c",
+    "multi_apps_catalog_schema_sha256": "07651ff4bb8ca4e82dd0ae23cf89e8d32335674fe1fdccb02df9856ae5304e9b",
+    "tool_catalog_sha256": "e267662ee0847fd1d0d3b8efd60a28b77bfdc19e628c6cf7fe0580b83a0f792b",
+    "adapter_results_sha256": "eb436351ac6474d8614151d1127970e938b3d9f166c6995ceb61643a2e7462c6",
+    "openapa_catalog_sha256": "d2255fd452728f4159bdfe77eaaa3166d957a7f32815f4f628e5a7841de919b7",
+    "focused_tests": "385 passed; covers OS action/schema/verifier, generic facade validation/forwarding, strict direct schemas, exact tool search, duplicate-route suppression, and model-visible result context.",
+    "full_unit_tests": "1638 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_create_directory_v82_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-3 A/B. If it fails, do not add a fourth hypothesis or rerun it unchanged: mark Order 99 task_blocked with all four attempts, update the failure backlog and ledger, and immediately advance to Order 100. If it passes, record clean_pass and immediately advance to Order 100.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 99,
+      "source_order": 207,
+      "domain": "multi_apps",
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "source_episode_id": "78e0011f09a65ed2a286336f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "a00f1de5712d6ed12efa773f8cc9b7952e3bcc55e3181054d5311f99bdc215fe",
+      "execution_class": "golden",
+      "pool_order": 99
+    }
+  ]
+}

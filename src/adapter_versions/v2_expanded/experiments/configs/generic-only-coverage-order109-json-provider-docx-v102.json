@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order109-json-provider-docx-v102",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 109 hypothesis 2 after preserving and auditing the failed v101 provider-selection and DOCX-compatibility attempt.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order109-json-writer-v101.json",
+  "candidate_parent_config_sha256": "754b41ad9610476bcf1ad5c6866fce66c3b2b0686d541dc9f0041ffb551fe4e7",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "183604d3057c088a5689e9c053d0c4c3468c820554f35f54a9fa66b0b76747c3",
+  "change_scope": "Refine the reusable JSON-provider-to-Writer contract so the model selects the instruction-named provider_name rather than a generic nested answer/text field, optionally selects response_field for object-valued providers, and copies JSON strings verbatim by default. Generate a LibreOffice-compatible OOXML package with standard default namespaces and document relationships while retaining atomic creation, structural verification, highlighting, and optional opening.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "2_of_3",
+    "hypothesis_class": "generic_json_provider_semantics_and_libreoffice_ooxml_compatibility",
+    "parent_result_sha256": "0d12bcc6c10741141ce1336f8975a96518f114c83d56f64c1023ce032b75c943",
+    "parent_audit_sha256": "46733bf2ab84850875c0d9f4c88ba49e16d8ecfbd8a0427059ec56e5eeb65650",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_14_steps_and_101_462_agent_seconds",
+    "parent_diagnosis": "Qwen discovered and selected document.create_from_json_values, but supplied value_key=answer and decoded representation. That selected the wrong response family, produced 23 paragraphs, and the three-member minimal DOCX triggered a LibreOffice General input/output error. The model then entered a repeated GUI-click and catalog-search loop.",
+    "counterfactual_scope": "Unrelated MODEL_Z and ENGINE_X fixtures use different provider labels, nested shapes, response fields, values, paths, control characters, and case behavior. They prove provider-name selection, explicit object response-field recovery, verbatim JSON representation, paragraph separation, highlighting, deterministic package members, and invalid-input rejection without task identity or answers.",
+    "model_choice_contract": "The model selects document.create_from_json_values and supplies source_path, output_path, provider_name, optional response_field, representation override, paragraph separation, highlight terms, case behavior, overwrite, and opening behavior. Runtime and Adapter do not consult task identity, dataset order, instruction fingerprints, evaluator state, golden files, fixed provider labels, fixed terms, answer strings, or fixed paths.",
+    "original_instruction_top_k": [
+      "document.create_from_json_values",
+      "presentation.fill_missing_notes_from_document",
+      "spreadsheet.insert_matching_rows_into_document",
+      "document.read_file",
+      "image.extract_text_batch",
+      "document.convert_batch",
+      "adapter.call"
+    ],
+    "json_document_sha256": "aacfdb85f02b4d3670f7e0b4f35c3286cb0a948abd2073d676de7f5c21a7d6de",
+    "multi_apps_generic_schema_sha256": "e90bdfa8a7393675079b180518d538104060c4f7576ff9aca30124d7b0e97f77",
+    "multi_apps_generic_actions_sha256": "5d80a558b72101cfc542e902c2978ac9a9a2fc2bbcf929ad685b8e83d5aa4230",
+    "multi_apps_host_schema_sha256": "a34a6100d432fd7900d2cb678d8ed2c9e2d29636e88814e11a367d131bc8aec5",
+    "multi_apps_host_actions_sha256": "2e1d49063bcb0f6d1a7dca1bc43ac6e26b5830b6096c2d2adf7b98b413336a3c",
+    "lite_agent_tool_catalog_sha256": "a1afc0aa0aa733f1604ad5b2718654d8ab7985c81d24361bc5ee578caed74a71",
+    "openapa_tool_catalog_sha256": "add4e5a797a40f7b57c6697fe9f3d4e6fde0b2b9847ab28f5fd273ff46e781b8",
+    "generic_runtime_tests_sha256": "7c47826696c567ef72d024e61e326913b0238de89823a3d177da60f015f8bb7f",
+    "catalog_tests_sha256": "05d399bf65fc39d784818f1e21592f9364251ca2e4b2484960a250857cd5463b",
+    "focused_tests": "122 passed across Multi-Apps generic runtime and LiteAgent catalog routing",
+    "full_unit_tests": "1687 passed",
+    "ruff": "all changed files passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "clean_guest_libreoffice_probe": "A structurally unrelated four-member DOCX opened through the frozen Ubuntu guest LibreOffice UNO loader and returned the exact three paragraphs; generated SHA-256 b18574ea50a6b30fec8f3e0764d36eb7d9eb99222319e7a7935b1485f6d010ca.",
+    "offline_original_evaluator_check": "The public source dataset shape produced six selected responses, 11 paragraphs, five blank separators, 33 highlighted occurrences, and compare_docx_files_and_ignore_new_lines returned 1. This development-only check is not runtime input or Agent evidence.",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_json_provider_docx_v102_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-2 A/B. If it fails, try at most one final materially different reusable hypothesis with one targeted A/B. If that also fails, mark Order 109 task_blocked and immediately advance to Order 110; do not retry v101 or v102 unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "source_episode_id": "444071c0b0ae05c2634529c8",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "cb76207b86e50b7709d1e5c268b5059fe33f56da27ae48d6e015a3b6279f2ae5",
+      "execution_class": "golden",
+      "pool_order": 109
+    }
+  ]
+}

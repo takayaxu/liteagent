@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order147-v242-compact-permission-contract",
+  "status": "frozen",
+  "purpose": "Second single-run diagnostic A/B for Order 147. Adapt the reusable permission action to the observed small-model argument-generation failure by exposing a compact one-argument contract. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order147-v241-regular-file-permissions.json",
+  "parent_config_sha256": "1b7502cf33de0ebe2708754cb59f1d6d533339f106fcbe7831f2d38f755221b7",
+  "hypothesis": "v241 proved that routing is no longer the failure: filesystem.chmod_tree was the first exposed action and Qwen selected it immediately. However, on every attempt Qwen emitted only cwd_source=active_terminal and omitted the required instruction-derived mode and recursive fields, even after searching for 'filesystem.chmod_tree mode 644'. If the reusable public action itself means recursively changing regular files under the current visible terminal directory and therefore requires only the instruction-derived quoted octal mode, Qwen should emit the single remaining semantic argument, the Adapter should execute the call unchanged, and verifier-backed completion should terminate the episode.",
+  "change_scope": "Keep the generic permissions implementation, independent verification, routing, and completion context from v241. Narrow only the public filesystem.chmod_tree contract to one required mode string. The action name and description now define the stable environmental scope: all regular files recursively under the current visible terminal directory, with directories and symbolic links untouched. The Adapter resolves that visible terminal directory and recursive traversal as documented action semantics; the Runner does not derive, replace, or inject model arguments. Counterfactual tests cover different permission modes and directory layouts.",
+  "sources": {
+    "v241_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order147-v241-regular-file-permissions.json",
+    "v241_config_sha256": "1b7502cf33de0ebe2708754cb59f1d6d533339f106fcbe7831f2d38f755221b7",
+    "v241_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order147-v241-regular-file-permissions-run1/results.json",
+    "v241_results_sha256": "c884eec32274c5d7409bda2b96264a851312164a7681d9d536d59be8f16c3b7d",
+    "v241_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order147-v241-regular-file-permissions-run1/workers/worker-01/results.json",
+    "v241_worker_results_sha256": "7558436ff17edf0a14bcb01460442795282734080fc08e11c692c17250695064",
+    "v241_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/targeted-audits/order-147-v241-regular-file-permissions.json",
+    "v241_strict_audit_sha256": "09307b23f64977204c27cf6f041236d0e746c004c09531b5a766162a1f8920fd",
+    "v241_outcome": "Reward 0.0, no_successful_action, eight steps, stalled. The initial tool list correctly ranked filesystem.chmod_tree first. Qwen called it five times with only cwd_source=active_terminal and omitted mode and recursive; three identical catalog searches did not change the generated arguments. Strict audit was valid, evidence-valid, and baseline-admissible with zero runtime leakage, action mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "os_permissions_sha256": "c4d8354748406c95560c3fed9c24d9ec87a9b34e93d4e1d814b8bada49016816",
+    "os_actions_sha256": "17516d13ce1a20d4c7563529bff664ac284df4f104dcda1aa51d120234cbf8c2",
+    "os_schema_sha256": "396bb9811721f0070aefcdb7b243c1ad0fd60436ba902479a2ecb313ef1d1c12",
+    "os_tool_manifest_sha256": "cbabfb33383e5c5edd262433f24f6300d1dbdc3db6407b1c39511c711a6b1385",
+    "os_worker_sha256": "bbbc5cea1396998d6e265c9c4727e45cf02f4c86b9f6e50411b5be5b32386937",
+    "os_verifier_sha256": "8bb98531e88c527cdeca66e76b4c90b9028332822665dab64be65206a497a5d1",
+    "filesystem_permission_semantics_sha256": "328f16dce505c60caf569a587d189fb6a08c2f55787f456bf9098b571b4d0ed3",
+    "filesystem_contexts_sha256": "ee082b42da9f84b0f4ce530a88312c123cd73a13c5751af31fa43747e72beff8",
+    "adapter_results_sha256": "08407d9f050014d4b43883cadec8fc8ab7a88dad7860e14032af0dd99b7c9047",
+    "instruction_semantics_sha256": "8fe1fd1c94ea4480e348b2a7f1fb966bb58417a855bffe7888858d04cd9dd64e",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "filesystem_permission_semantics_tests_sha256": "30c8f1d8db4691a56064245758512567b88bc4f4625cbf0835c5406847811a79",
+    "os_actions_tests_sha256": "80266fc2010428c428bb69216a2a0adadd66c00a1278dbf0ab608a6d271bd8d6",
+    "os_schema_tests_sha256": "c0a2bf2d7217c5901c8ca723a0524aa706abda4973b73127014662cd4cce9141",
+    "adapter_results_tests_sha256": "26723f6586a2e3b2e479fc9695d1bbb29166adcdc24ab6492d9840ef32eee0e3",
+    "strict_schema_manifest_tests_sha256": "4772ed18f90f5e22dd1ca1ed4caa1d400310f02b01ddbb82d87293222010482f",
+    "counterfactuals": "Public schema tests accept quoted octal modes 644, 0600, and 0755 and reject integer, invalid-octal, legacy scope, and unexpected recursive arguments. Action tests use unrelated directory trees and modes 0640 and 0600, prove recursive descendant coverage, directory preservation, and symbolic-link skipping. Negative intent tests cover read-only permission listing, ownership changes, filesystem rename, and browser site permissions. A strict LiteAgent test records a model-selected mode=0600 call unchanged and proves verifier-backed completion on the next turn.",
+    "focused_tests": "511 passed",
+    "unit_tests": "2616 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_compact_permission_contract_v242_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed eligible regression item and second evidence-backed reusable hypothesis after v241 model-argument failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T04:05:50Z",
+  "tasks": [
+    {
+      "order": 147,
+      "pool_order": 147,
+      "source_order": 287,
+      "domain": "os",
+      "task_id": "4d117223-a354-47fb-8b45-62ab1390a95f",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

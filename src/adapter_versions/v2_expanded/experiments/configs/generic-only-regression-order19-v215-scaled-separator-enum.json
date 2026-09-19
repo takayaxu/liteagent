@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order19-v215-scaled-separator-enum",
+  "status": "frozen",
+  "purpose": "Second and final single-run A/B hypothesis for v210 Order 19. Replace the strict model-facing free-form scaled-display separator with a semantic enum while preserving legacy Adapter compatibility. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order19-v214-scaled-display-completion.json",
+  "parent_config_sha256": "d2b411e398e7bc1da40ce4d2a74abc4badf210b91af2fb269382307f43ffafa8",
+  "change_scope": "The strict range.copy_with_scaled_display contract exposes separator as space|none. The model-selected enum reaches the Adapter payload unchanged, and the Calc Adapter converts that public semantic representation to one literal space or an empty string internally. Non-strict legacy callers retain literal-space compatibility, but those values are removed from the strict model surface. The v214 instruction-semantic completion coverage remains active. No task identity, expected state, golden artifact, task constant, action injection, or Runner argument rewrite is used.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "first_hypothesis_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order19-v214-scaled-display-completion-run1/results.json",
+    "first_hypothesis_results_sha256": "2242c4caa506912e0acf804b522e0f61eb6899d48537ba99f594fbfebd34bf1f",
+    "first_hypothesis_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order19-v214-scaled-display-completion-run1/strict-audit-worker-01.json",
+    "first_hypothesis_strict_audit_sha256": "418659dc406bf7178ebb7f6bc62368e675243d19c73cfd7bf12a653eb7943e5e",
+    "real_endpoint_schema_preflight": "adapter_versions/v2_expanded/experiments/generic-only-regression-order19-scaled-separator-schema-preflight-v3-strict/results.json",
+    "real_endpoint_schema_preflight_sha256": "6234a3ed48aaffcb1ee033228dd4b089c56b6fe9f0442f857a4b3a39df6ea13a",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "calc_schema_sha256": "a775c2a390b0eb62b455c049abbdbde01b711c7f1760ae5a1eaab2224bdc4881",
+    "calc_tool_manifest_sha256": "3a77133a8b792071fbb3baf6c8c78d95f833d6fdb085870b359e4920eae93722",
+    "calc_uno_worker_sha256": "432701bd2d96c3c9896d640bd6401a00a36f3a303ef7ed1a2c89f0e1253fcf21",
+    "openapa_catalog_sha256": "79bbb0fa0177a43020ec2020d9178e3a9c3c3b975603c826f69a5ec8592e1237",
+    "scaled_display_semantics_sha256": "ce3e4696c49eae32aaca2df0412b3bd0f143f93e0f5f98cb10cebf2f778a0fb2",
+    "calc_semantics_sha256": "4656242deaa8602f688b82a909f8e4bd55276403081d8863fd59740fdc56f0bd",
+    "semantic_requirements_sha256": "627dd006d6946401c26dc2bb140b3d8597a8fef8366c3ab638c84dff43fb3f77",
+    "tool_catalog_sha256": "ccaec3d83f6d469a7ce50d2d8f430ef0242afc681a56f3a61d567f4bcbbc38b0",
+    "tool_schema_changed": true,
+    "completion_gate_changed": true,
+    "unit_tests": "2398 passed",
+    "focused_tests": "586 passed before strict compatibility refinement; 428 targeted compatibility and strict-surface tests passed after refinement",
+    "real_endpoint_preflight": "1/1 strict schema valid and 1/1 semantic match on Planning!D4:D12 -> F4 with thousands/K and two decimal places; model selected separator=space",
+    "ruff": "active integrations, scripts, unit/integration tests, and Adapter sources passed",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_scaled_separator_enum_v215_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same v210 historical-clean-pass regression after the first hypothesis produced materially new evidence",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T18:05:38Z",
+  "tasks": [
+    {
+      "order": 19,
+      "pool_order": 19,
+      "source_order": 98,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

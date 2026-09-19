@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-environment-smoke2-v387e-concurrency2",
+  "status": "frozen",
+  "purpose": "Outcome-informed two-task clean-VM smoke for the isolated v387e duration-based Office readiness gate. It verifies that a measured heavy import settles before the first model request while ordinary Office setup remains undelayed. It is not a routing score, unseen evidence, or a baseline candidate.",
+  "freeze_timestamp": "2026-08-21T10:37:03Z",
+  "sources": {
+    "v387d_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-environment-smoke2-v387d-concurrency2.json",
+    "v387d_config_sha256": "0479b5c9e8a78b4453359fb90e142bbe017c9473753907c74756d44e2ad68895",
+    "v387d_results": "adapter_versions/v2_expanded/experiments/generic-only-environment-smoke2-v387d-concurrency2-run1/results.json",
+    "v387d_results_sha256": "8f87048c7ee3fb2f1d9d6fe56cc4957aa6eab88c1d719aa5c865a748e660c927",
+    "v387d_analysis": "adapter_versions/v2_expanded/experiments/analysis-v387d-environment-smoke2/summary.json",
+    "v387d_analysis_sha256": "510925c8e8a13efb83cdf9d7ce940af5567949988c1e8c4b014b85049cf55b85",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v387e",
+    "role": "development_environment_stabilization_smoke",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-environment-smoke2-v387e-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 778,
+      "total_bytes": 63313595,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "fde6357db4dab574901b736e139f1ae76a9a339914077e26fc8553c6360c1bb3"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v387e_environment_stabilization_2026-08-21",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5.0
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20.0,
+      "minimum_elapsed_before_first_model_seconds": 85.0
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "the same two outcome-informed environment smoke tasks as v387c and v387d",
+    "selected_count": 2,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "success_criteria": {
+      "environment_failures": 0,
+      "pre_model_office_not_responding_dialogs": 0,
+      "pre_setup_office_listener_ready": true,
+      "post_setup_duplicate_open_replay": false,
+      "heavy_setup_delay_applied_only_when_threshold_met": true,
+      "writer_dependency_deployment_ready": true,
+      "strict_audit_v5_all_valid": true
+    }
+  },
+  "tasks": [
+    {
+      "order": 47,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "source_order": 135,
+      "development_stratum": "office_initial_readiness_smoke"
+    },
+    {
+      "order": 65,
+      "domain": "libreoffice_writer",
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+      "source_order": 156,
+      "development_stratum": "writer_dependency_deployment_smoke"
+    }
+  ]
+}

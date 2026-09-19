@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order166-flip-discovery-stall-v161",
+  "status": "frozen",
+  "purpose": "Single targeted A/B after the preserved order-166 baseline searched for a video flip action but the public catalog failed to recall the already-existing generic media.flip_vertical capability.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order166-v160.json",
+  "candidate_parent_config_sha256": "8da6ed1878c6158537f90d53dc910c047d59ea6b63b21d9a568b98c26b7d6e51",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "02778c7a2ab908997d46348fc235888dd4e314b5878b795fbf4ae52877299282",
+  "change_scope": "Add generic VLC vertical-flip discovery keywords and truthful whole-video top-to-bottom flip descriptions so orientation requests distinguish media.flip_vertical from ordinary transcode/trim. Detect an eight-event successful two-operation cycle without treating a third new operation or explicit changed=true mutation as stalled. No task identity, fixed filename, answer value, task route, golden data, evaluator access, Runner argument rewrite, or argument injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vlc_flip_discovery_stall_v161_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it fails after media.flip_vertical is clearly exposed and no new shared high-value defect is demonstrated, mark order 166 task_blocked immediately and advance to order 167. Do not add another task-local schema, prompt, filename, media constant, GUI coordinate, task-shaped workflow, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_final_local_attempt",
+    "hypothesis_class": "generic_vertical_flip_discovery_and_two_operation_stall_detection",
+    "baseline_result": "experiments/generic-only-coverage-order166-v160-run1/results.json",
+    "baseline_result_sha256": "83b6788d06fdcb0a5d343399221b2e8925dc68ab74d22403d69eb4dbab15bffd",
+    "baseline_audit": "experiments/generic-only-coverage-order166-v160-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "58ee67db3d2f1f0046038daa79291beca94b43896b5936d7a8f2a60fa406ac26",
+    "baseline_outcome": "failed_reward_0_model_searched_vlc_flip_video_rotate_but_catalog_omitted_existing_media_flip_vertical_then_model_used_plain_transcode_and_looped_to_30_steps_valid_audit",
+    "counterfactual_contracts": [
+      {
+        "instruction": "Turn the upside-down travel video right way up and save the corrected copy as /home/user/Desktop/upright-trip.mp4.",
+        "expected": "initial generic VLC selection contains media.flip_vertical"
+      },
+      {
+        "query": "flip or rotate video upright",
+        "expected": "public VLC catalog ranks media.flip_vertical first"
+      },
+      {
+        "events": "alternate playback.open between /tmp/media/source-a.mp4 and /tmp/media/source-b.mp4 for eight successful events",
+        "expected": "stalled_no_progress with repeated_successful_action_cycle; a third new source or explicit changed=true does not trigger"
+      }
+    ],
+    "focused_tests": "117 passed across complete LiteAgent tool-catalog and stall-policy unit files",
+    "full_non_guest_tests": "2099 passed",
+    "guest_integration_preflight": "3 multi-app guest tests could not connect to the optional local 127.0.0.1:32959 service; unrelated to the targeted Runner-only change",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "integrations/lite_agent/tool_catalog.py": "e1d13e507c79e359a6b13ef44d9c6c6c7f0104123857ed5e5dee5a564b6ffe75",
+      "integrations/lite_agent/stall_policy.py": "a10e7b0207de4256ff316887e111bc1865dce844ba0aa94ef6d3f79224ad1279",
+      "tests/unit/test_lite_agent_tool_catalog.py": "6e02572c8cf74e69e22c8c6c748b7d4d2126370462330f8fe73977fa68b65504",
+      "tests/unit/test_lite_agent_stall_policy.py": "9118c2d1b38e889fd90ae098d38216135d95a38bdad3194dd21a08953c17b13d"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 166 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 166,
+      "source_order": 310,
+      "domain": "vlc",
+      "task_id": "aa4b5023-aef6-4ed9-bdc9-705f59ab9ad6",
+      "source_episode_id": "d9a79e0af2295e698bd547ad",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "83918c83d3d4fd86722b914ae51b78ed329a27581cd57d68fbbffdf3aa34e93d",
+      "execution_class": "task_specific",
+      "pool_order": 166
+    }
+  ]
+}

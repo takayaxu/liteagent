@@ -1,0 +1,213 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-impress-shape-query3-v392-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen three-task validation of one generic Impress grounding change. Relative to sealed v391 source, add a bounded read-only shape.query contract and task-independent routing disambiguation for heterogeneous per-shape formatting. The model selects every query and mutation argument. No mutation, save, state, transport, budget, VM, evaluator, task identity, or completion behavior changes. This outcome-informed development condition is not a baseline or promotion condition.",
+  "freeze_timestamp": "2026-08-22T13:16:09Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v392-impress-shape-query3/plan.json",
+    "prospective_plan_sha256": "d18d2585f1330e7f940ee91904f1ed42e1320a6156a38d511203278b44b1e55c",
+    "v391_summary": "adapter_versions/v2_expanded/experiments/analysis-v391-development-gate30/summary.json",
+    "v391_summary_sha256": "4421e0a8a5959791385c7214b670f40a0e0d75e47ee0be5c255448aad02ae065",
+    "parameter_diagnosis": "adapter_versions/v2_expanded/experiments/analysis-v391-development-gate30/parameter-grounding-diagnosis.json",
+    "parameter_diagnosis_sha256": "6348c66fc380a22e9a48fb70d87b859908ff47a3f1ed3368f1429eb070196b79",
+    "strict_action_contracts_sha256": "8b3c7e72626988fa05310a13da2ff6c29821ba1fd48580e4d0de970e407bb1fc",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v392-impress-shape-query3/granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "90aa0577bd35b10b29e829c874fc665474cf234f714fc353fea3b080b7932deb",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-v392-impress-shape-query3/source-seal.json",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v392",
+    "role": "development_impress_shape_query3",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-impress-shape-query3-v392-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 815,
+      "total_bytes": 64036826,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "85509ac95b16433b51983c5d1394d1649e215e1cb9fd9e871ea56954f757130e"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v392_impress_shape_query3_2026-08-22",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_authored_state_protocol": "collection_compact_batch_evidence_patch_v17",
+    "initial_work_state_observation_mode": "instruction_only",
+    "model_tool_transport_mode": "stream_first_complete_object_call",
+    "maximum_uncheckpointed_execution_events": 4,
+    "model_retries": 3,
+    "request_timeout": 180,
+    "docker_api_timeout_seconds": 180,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20,
+      "minimum_elapsed_before_first_model_seconds": 85
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Order 63 bounded-shape-query target and Orders 29/39 Impress controls from the immutable v386-derived gate30 selection, frozen before v392 source changes",
+    "selected_count": 3,
+    "failed_target_count": 1,
+    "stable_pass_control_count": 2,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "changed_factor": "bounded read-only Impress shape query and heterogeneous-format routing disambiguation",
+    "unchanged_factors": [
+      "v391 mutation APIs, persistence, model-authored state, transport, completion, and validation behavior",
+      "model-selected action names and all model-facing arguments through strict execution",
+      "Qwen/Qwen3.5-4B, non-thinking mode, temperature zero, and 512 output tokens",
+      "30 steps, 300 Agent seconds, Top-K seven, retry policy, fresh VM resets, and original evaluator",
+      "single endpoint, concurrency one, no resume, no best-of, and immutable raw evidence"
+    ],
+    "success_criteria": {
+      "tasks_completed": 3,
+      "passes_minimum": 3,
+      "order63_passed": true,
+      "order63_shape_query_calls_minimum": 1,
+      "order63_shape_format_text_calls_minimum": 3,
+      "order63_distinct_model_selected_paths_minimum": 3,
+      "order63_slide_or_slides_format_text_roles_calls": 0,
+      "order63_model_selected_all_query_and_format_arguments_unchanged": true,
+      "order29_passed": true,
+      "order29_picture_fit_to_slide_calls_minimum": 1,
+      "order39_passed": true,
+      "order39_save_mode": "current_document",
+      "environment_failures": 0,
+      "gui_calls": 0,
+      "runner_argument_rewrites_or_injections": 0,
+      "invalid_leakage_or_evidence_episodes": 0,
+      "strict_audit_v5_all_valid": true,
+      "transport_reconstruction_mismatches": 0,
+      "model_tool_action_mismatches": 0,
+      "adapter_or_gui_trace_mismatches": 0,
+      "baseline_pointer_unchanged": true
+    },
+    "stop_rules": {
+      "runs_maximum": 1,
+      "rerun_same_condition": false,
+      "read_reward_only_after_worker_audit": true,
+      "advance_to_gate30_only_if_all_success_criteria_pass": true,
+      "advance_to_confirmation60_or_fixed189": false
+    }
+  },
+  "tasks": [
+    {
+      "order": 29,
+      "domain": "libreoffice_impress",
+      "task_id": "5d901039-a89c-4bfb-967b-bf66f4df075e",
+      "source_order": 108,
+      "development_stratum": "semantic_picture_fit_control"
+    },
+    {
+      "order": 39,
+      "domain": "libreoffice_impress",
+      "task_id": "73c99fb9-f828-43ce-b87a-01dc07faa224",
+      "source_order": 125,
+      "development_stratum": "impress_persistence_control"
+    },
+    {
+      "order": 63,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "source_order": 154,
+      "development_stratum": "bounded_shape_query_target"
+    }
+  ]
+}

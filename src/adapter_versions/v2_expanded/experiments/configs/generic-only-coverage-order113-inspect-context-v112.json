@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order113-inspect-context-v112",
+  "status": "frozen",
+  "purpose": "Order 113 hypothesis-2 A/B: test whether bounded model-visible Calc inspection context lets the model reuse observed workbook identity, sheet, and range.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order113-inspect-current-v111.json",
+  "candidate_parent_config_sha256": "9ea5af95d2596e6ed28de85991f104bfb9f6b6aa2e11ca48fdbba9be33706fcd",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b58d94733cd4d8aaa457f6ed3023961b5f6ac741ee8cdc3985370b7b7d9d08c6",
+  "change_scope": "Preserve v111 and add a bounded generic workbook.inspect model-context renderer. It exposes only observed URL, active sheet, used ranges, hidden rows, and chart counts; it executes no next action and injects no model argument.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_current_spreadsheet_context_v112_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2_of_3",
+    "hypothesis_class": "model_visible_structured_result_context",
+    "parent_ab_result": "experiments/generic-only-coverage-order113-inspect-current-v111-run1",
+    "parent_ab_result_sha256": "dd89a4b3b6da4da6f1c160845764731d3f9c3fde602ab0a83edb2ea54f61aa4c",
+    "parent_ab_audit_sha256": "9b127a8ad05562c7ce9cdf299b7c91d8077ab0e6bd3b74f3323b399cbc1c4dc9",
+    "parent_ab_reward": 0.0,
+    "parent_ab_diagnosis": "The facade executed, but the model-visible truthful state contained downstream_context=null and discarded the returned URL, active sheet, and used-range bounds.",
+    "model_facing_action": "spreadsheet.inspect_current",
+    "model_facing_arguments": {},
+    "model_argument_policy": "The observed context is advisory data only; the model must still select every next action and copy every argument in its structured call.",
+    "adapter_results_sha256": "31720bc6f8193d068650050ab277124107c02b3fb3d5a9d590179b144fd436ec",
+    "focused_tests": "2 focused context tests passed; 37 result/executor tests passed; Ruff passed",
+    "counterfactual": "Different workbook titles, URLs, sheet names, non-A1 origins, hidden rows, and chart counts verify generic zero-based-to-A1 rendering without task constants.",
+    "known_unrelated_test_failure": "Existing code-task ordering assertion expects file.read_text before command.run; this predates and is outside the current-spreadsheet change.",
+    "parent_task_implementation_evidence_inherited": false,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 113,
+      "source_order": 229,
+      "domain": "multi_apps",
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "source_episode_id": "cb5cbc015a30d74d0aa920f5",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f975ca424a5dca67ca33f75dfad806a15c120c1ffb1583869d6cb026ccd1a865",
+      "execution_class": "golden",
+      "pool_order": 113
+    }
+  ]
+}

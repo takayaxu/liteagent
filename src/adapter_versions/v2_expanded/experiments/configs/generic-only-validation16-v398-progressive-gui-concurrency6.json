@@ -1,0 +1,237 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-validation16-v398-progressive-gui-concurrency6",
+  "status": "frozen",
+  "purpose": "Frozen multi-domain validation of the unchanged trusted condition. This is a gate, not a score baseline.",
+  "freeze_timestamp": "2026-08-25T15:00:38.642424+00:00",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation16-v250-concurrency6.json",
+    "selection_template_sha256": "79fa7452bacd5e08abd001377a9c8a59a6eac936274925ef39aa030a1b92fdb2"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v398-progressive-gui",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-validation16-v398-progressive-gui-concurrency6-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 818,
+      "total_bytes": 64081749,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "5bd8f4d6d8407aee1f1120ea0c1ca357c185de973a7cc4ffea2c44d983db9dcb"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": false,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v398-progressive-gui_trusted",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": true,
+    "causal_affordance_graph": true,
+    "causal_observation_heartbeat_steps": 3,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback_with_progressive_disclosure",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "pre-existing outcome-independent gate template",
+    "selected_count": 16,
+    "domain_counts": {
+      "libreoffice_calc": 2,
+      "libreoffice_impress": 2,
+      "libreoffice_writer": 2,
+      "multi_apps": 2,
+      "os": 2,
+      "thunderbird": 2,
+      "vlc": 2,
+      "vs_code": 2
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 10,
+      "domain": "libreoffice_calc",
+      "task_id": "51b11269-2ca8-4b2a-9163-f21758420e78",
+      "source_order": 84
+    },
+    {
+      "order": 19,
+      "domain": "libreoffice_calc",
+      "task_id": "21df9241-f8d7-4509-b7f1-37e501a823f7",
+      "source_order": 98
+    },
+    {
+      "order": 40,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "source_order": 126
+    },
+    {
+      "order": 51,
+      "domain": "libreoffice_impress",
+      "task_id": "70bca0cc-c117-427e-b0be-4df7299ebeb6",
+      "source_order": 141
+    },
+    {
+      "order": 70,
+      "domain": "libreoffice_writer",
+      "task_id": "4bcb1253-a636-4df4-8cb0-a35c04dfef31",
+      "source_order": 161
+    },
+    {
+      "order": 77,
+      "domain": "libreoffice_writer",
+      "task_id": "88fe4b2d-3040-4c70-9a70-546a47764b48",
+      "source_order": 168
+    },
+    {
+      "order": 100,
+      "domain": "multi_apps",
+      "task_id": "82e3c869-49f6-4305-a7ce-f3e64a0618e7",
+      "source_order": 208
+    },
+    {
+      "order": 116,
+      "domain": "multi_apps",
+      "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+      "source_order": 233
+    },
+    {
+      "order": 138,
+      "domain": "os",
+      "task_id": "e0df059f-28a6-4169-924f-b9623e7184cc",
+      "source_order": 276
+    },
+    {
+      "order": 143,
+      "domain": "os",
+      "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+      "source_order": 283
+    },
+    {
+      "order": 152,
+      "domain": "thunderbird",
+      "task_id": "9bc3cc16-074a-45ac-9bdc-b2a362e1daf3",
+      "source_order": 292
+    },
+    {
+      "order": 156,
+      "domain": "thunderbird",
+      "task_id": "d38192b0-17dc-4e1d-99c3-786d0117de77",
+      "source_order": 297
+    },
+    {
+      "order": 165,
+      "domain": "vlc",
+      "task_id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+      "source_order": 309
+    },
+    {
+      "order": 169,
+      "domain": "vlc",
+      "task_id": "d06f0d4d-2cd5-4ede-8de9-598629438c6e",
+      "source_order": 313
+    },
+    {
+      "order": 179,
+      "domain": "vs_code",
+      "task_id": "930fdb3b-11a8-46fe-9bac-577332e2640e",
+      "source_order": 326
+    },
+    {
+      "order": 184,
+      "domain": "vs_code",
+      "task_id": "ec71221e-ac43-46f9-89b8-ee7d80f7e1c5",
+      "source_order": 331
+    }
+  ]
+}

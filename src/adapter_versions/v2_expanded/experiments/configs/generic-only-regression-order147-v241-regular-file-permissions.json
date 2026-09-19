@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order147-v241-regular-file-permissions",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for Order 147. Replace the opaque legacy chmod_tree wrapper with a reusable regular-file permission contract, make the semantic action available initially, and provide verified completion evidence. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order138-v240-rename-completion-semantics.json",
+  "parent_config_sha256": "8f842cc7cca8204f2f2c7ee33df1d83a5185eabf235cb0bdede78f0e419c95a7",
+  "hypothesis": "In v210, Qwen understood that a chmod-like mutation was needed, but filesystem.chmod_tree was absent from the initial tools and exposed only an undocumented legacy params/target/verify wrapper after search. The model therefore emitted the same schema-invalid empty wrapper repeatedly. The earlier eligible pass eventually found command.run and changed the three task files, but also changed unrelated home files and then stalled. If filesystem.chmod_tree has a direct model-facing contract for directory source, quoted octal mode, and recursive scope; is surfaced by generic permission-change semantics; and returns bounded verifier-backed completion evidence, Qwen should select it with unchanged instruction-derived arguments, restrict the mutation to the active terminal directory tree, and terminate cleanly.",
+  "change_scope": "Add an OS Adapter permissions module that changes only regular files and skips directories and symbolic links. Replace the legacy root+integer mode contract with cwd_source, optional cwd_path, quoted octal mode, and recursive. Add independent mode-tree verification, a focused filesystem permission intent module returning only the public action name, permission routing keywords, and a bounded result context. The model still selects every argument; the Runner does not derive the working directory, permission digits, or recursive flag, and the evaluator remains post-episode only.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "historical_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-147-generic-only-coverage-order147-v152-run1.json",
+    "historical_current_strict_audit_sha256": "ade774035c48db2dd502d600e2a21b216a88c8536e5c4789c1e223dd85ee99a4",
+    "historical_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order147-v152-run1/results.json",
+    "historical_results_sha256": "e859f248b68797d7f3d746ed41e7a0e8e1e8e23e1d55ce2e62ab9562f550e9d8",
+    "historical_worker_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order147-v152-run1/workers/worker-01/results.json",
+    "historical_worker_results_sha256": "dca48d47ad951bdf4ab5832089b62c66a397ebc7e6cbaef235e02fd27a4c7584",
+    "v210_outcome": "Reward 0.0, generic_api_only, nine steps, stalled. filesystem.chmod_tree was not initially exposed. After a search, the model called it three times with params='', target='', verify=[], and timeout_ms=1000; schema validation or repeated-action protection rejected every call.",
+    "historical_outcome": "Original evaluator reward 1.0 and strict re-audit valid/evidence-valid/baseline-admissible with zero leakage, action mismatch, Runner rewrite, Runner injection, or Adapter trace mismatch. The model used command.run to chmod the three intended files, then made an overbroad second command against all ten files returned by a home-directory search and stalled after fourteen steps.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "os_permissions_sha256": "c4d8354748406c95560c3fed9c24d9ec87a9b34e93d4e1d814b8bada49016816",
+    "os_actions_sha256": "f5d86b861cabd244801ce2ed611c4b436ad1738c23b651cbb9f54354eb2493e4",
+    "os_schema_sha256": "40f51b5b837e81e5513046f053ebd4de6659c216684a0cd681e1b33291b2b5bc",
+    "os_tool_manifest_sha256": "03cd2cb3458c6c21fa4f146e8574a186d0d2f0843d719f7bf7a384f4d5c3ed54",
+    "os_worker_sha256": "bbbc5cea1396998d6e265c9c4727e45cf02f4c86b9f6e50411b5be5b32386937",
+    "os_verifier_sha256": "8bb98531e88c527cdeca66e76b4c90b9028332822665dab64be65206a497a5d1",
+    "filesystem_permission_semantics_sha256": "328f16dce505c60caf569a587d189fb6a08c2f55787f456bf9098b571b4d0ed3",
+    "filesystem_contexts_sha256": "ee082b42da9f84b0f4ce530a88312c123cd73a13c5751af31fa43747e72beff8",
+    "adapter_results_sha256": "08407d9f050014d4b43883cadec8fc8ab7a88dad7860e14032af0dd99b7c9047",
+    "instruction_semantics_sha256": "8fe1fd1c94ea4480e348b2a7f1fb966bb58417a855bffe7888858d04cd9dd64e",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "filesystem_permission_semantics_tests_sha256": "08e6f2c3ac2466f262f1ffbdafbb82613ba053d5a78609251115944d881831c9",
+    "os_actions_tests_sha256": "1cfb596257f19c5161069a061d24035188ef294f240d13abd0f6de60828ad4e3",
+    "os_schema_tests_sha256": "372c53a3a9a72654de28944d7d4be9b9a214f372f0dd399ecdc34ee7a373a8b5",
+    "adapter_results_tests_sha256": "26723f6586a2e3b2e479fc9695d1bbb29166adcdc24ab6492d9840ef32eee0e3",
+    "strict_schema_manifest_tests_sha256": "6d0a0b2fe0c088f2cea2d2d2af8c3dfc4b590d13fc0a05c24d94c9e7afefd736",
+    "project_layout_sha256": "46d3f3237585d44f13019b48298448116d8ae1dae1c64621b1d2e79fe509a8ec",
+    "counterfactuals": "Different directory names and modes 0600, 0640, and 0755 cover explicit, home, and active-terminal sources plus recursive and nonrecursive scopes. Action tests prove descendant selection, directory preservation, and symbolic-link skipping. Negative intent tests cover read-only permission listing, ownership changes, filesystem rename, and browser site permissions. A strict LiteAgent test records a model-selected active_terminal/mode=0600/recursive=false call unchanged and proves verifier-backed completion on the next turn.",
+    "focused_tests": "525 passed",
+    "unit_tests": "2618 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_regular_file_permissions_v241_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next fixed eligible regression item and first evidence-backed reusable hypothesis",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T03:51:03Z",
+  "tasks": [
+    {
+      "order": 147,
+      "pool_order": 147,
+      "source_order": 287,
+      "domain": "os",
+      "task_id": "4d117223-a354-47fb-8b45-62ab1390a95f",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

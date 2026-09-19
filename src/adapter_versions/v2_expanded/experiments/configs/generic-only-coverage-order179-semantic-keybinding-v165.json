@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order179-semantic-keybinding-v165",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 179 after the baseline showed that Qwen selected keybindings.ensure but repeatedly guessed the wrong low-level VS Code command and when-clause identifiers.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order179-v164.json",
+  "candidate_parent_config_sha256": "bcdc622fc95249090eda505bb2c02b8f8144fabe6356761b46df00e603dae1f2",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "e7ff883dbf28745d4563ee3a2b465bb8a5d9d8fa14a8632fb4671dbb3f55aa99",
+  "change_scope": "Replace the model-visible low-level command and when fields of keybindings.ensure with reusable operation and context enums. The model still selects the key, operation, context, and disabled state unchanged. The VS Code Adapter deterministically maps those public semantics to stable command identifiers and when-clauses, writes the binding, and verifies the exact persisted JSON. Legacy exact and nested representations remain Adapter-only compatibility inputs. No task identity, instruction parser, fixed shortcut, answer value, golden data, evaluator access, Runner argument rewrite, or parameter injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vscode_semantic_keybinding_v165_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses_default": 1,
+      "generic_hypotheses_absolute_max": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries_default": 1,
+      "environment_retries_absolute_max": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it does not pass after the semantic Adapter contract is deployed, mark Order 179 task_blocked immediately and advance to Order 180. Do not add another task-local operation, instruction parser, prompt variant, fixed shortcut, GUI sequence, or unchanged rerun.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_default_final_attempt",
+    "hypothesis_class": "generic_adapter_owned_semantic_keybinding_representation",
+    "baseline_result": "experiments/generic-only-coverage-order179-v164-run1/results.json",
+    "baseline_result_sha256": "712e9e16606963ffa9cbcfc8353e1ed990cf8220bee52b96e98efb77eb5a21c1",
+    "baseline_audit": "experiments/generic-only-coverage-order179-v164-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "616838587b5164db3edcd6981fe50242991e79b4d3c863279479b05ee7a0bdc8",
+    "baseline_outcome": "failed_reward_0_model_selected_keybindings_ensure_but_used_workbench_action_focusEditor_and_list_find_context_instead_of_the_requested_terminal_to_active_editor_semantics",
+    "counterfactual_contracts": [
+      {
+        "params": {
+          "key": "ctrl+k",
+          "operation": "tree_view_find",
+          "context": "list_find_available",
+          "disabled": true
+        },
+        "expected": "Adapter maps a different disabled key to the verified negative list.find binding"
+      },
+      {
+        "params": {
+          "key": "ctrl+shift+p",
+          "operation": "show_command_palette",
+          "context": "editor_focused",
+          "disabled": false
+        },
+        "expected": "Adapter maps an unrelated enabled operation and context to workbench.action.showCommands and editorTextFocus"
+      },
+      {
+        "params": {
+          "key": "ctrl+p",
+          "operation": "quick_open",
+          "context": "always",
+          "disabled": false
+        },
+        "expected": "Adapter creates an unconditional binding without a when field"
+      },
+      {
+        "boundary": "LiteAgent normalize_adapter_arguments",
+        "expected": "model-selected semantic keybinding arguments remain byte-for-structure unchanged before Adapter transport"
+      }
+    ],
+    "focused_tests": "645 passed across VS Code Adapter, schema, manifest, Runtime boundary, and strict-schema tests",
+    "full_non_guest_tests": "2132 passed",
+    "ruff_active_sources_and_touched_file_format": "passed",
+    "compileall_active_sources": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "vscode_adapter/keybindings.py": "1940d7f8030f8c9628751046f2def7c04887a470fe6b6bc2d720c292ab6310d6",
+      "vscode_adapter/actions.py": "304c96df63de052dacc5d56b3b1aac18375d66f896196c3f985b7088e637d5d0",
+      "vscode_adapter/schema.py": "d8c9ca749ed26e528e3d881cbfe4dcc1d73366b3140daa0d987c805c427793ee",
+      "vscode_adapter/tool_manifest.py": "bd92c505a422bd1b3878e86765687667008e0a233340acbf384eac5c361b76c5",
+      "integrations/lite_agent/runtime.py": "bed6e8bbbb90eaa324c70cebf8b3e5a2ea3c08d40b5df2dc34ff0d7587cb668a",
+      "integrations/lite_agent/tool_catalog.py": "80cd0bf84e3721a974800857c540689ec069d9156b52573b576eec821e9517ee",
+      "integrations/openapa_osworld/tool_catalog.py": "06aef29820dcf89b94773966086c5f8ef038f30f75a41ee773ed83e2cf0678b0"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one targeted A/B for Order 179 generic hypothesis 1 under the short per-task budget",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 179,
+      "source_order": 326,
+      "domain": "vs_code",
+      "task_id": "930fdb3b-11a8-46fe-9bac-577332e2640e",
+      "source_episode_id": "b5706f21756fed422602a900",
+      "source_path_class": "generic_api_only",
+      "source_manifest_sha256": "a3e578d634d1dcd474282f90f000fb1fbbf9bef9ccd433e2b83423975c0cf2b9",
+      "execution_class": "generic_api_only",
+      "pool_order": 179
+    }
+  ]
+}

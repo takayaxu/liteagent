@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v286-impress-title-notes-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for v286's reusable live Impress title-to-notes and same-title formatting contract. It runs one unresolved v252 failure and two v252 clean controls exactly once. This is a new frozen source condition, not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v286",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v286.json",
+    "candidate_manifest_sha256": "1fb88c388b1abfbcbbabefc29c8a645780ccf0ff259e7acd2fd4cf8cddc54c36",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "900703e37bfaed9a6bdae20501a66a6970c70cb419cc0e27076a73861ee13b4b"
+  },
+  "hypothesis": {
+    "generic_cluster": "same_object_title_to_notes_formatting_and_completion",
+    "statement": "The failed episode briefly reached the requested state but then continued because separate low-level notes and title-format operations were not bound to one live title and one completion proof. Exposing one semantic contract whose complete arguments remain model-selected should let the Adapter resolve and verify the compound operation, while save plus structural read-back prevents cross-slide repetition.",
+    "v252_observation": "Order 43 separately wrote the target title into notes and bolded the title, reached a correct state, then continued through low-level actions, wrote notes on another slide, and stalled. The final evaluated artifact was polluted despite the earlier correct state.",
+    "counterfactual_support": [
+      "Different slides and live titles use the same contract with bold, italic, underline, strike, font size, font name, color, or alignment.",
+      "Existing notes are preserved by default semantics and replaced only under an explicitly model-selected replace policy supported by the instruction.",
+      "Visual headings are verified by the Adapter-confirmed live object path and text rather than a native placeholder type.",
+      "Unrequested formatting fields are omitted from the model-visible schema without fixing any requested value.",
+      "Order 44 detects title-to-notes routing and compound-operation regressions; Order 42 detects general Impress mutation, save, and read-back regressions.",
+      "Both DGX endpoints preserve raw model arguments exactly through Adapter validation."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v286-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "e2ae666b6644c23bf53a43fb1cb78b18600f4075a9c02d2f508ca0ca887a0ae5",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Order 43 directly exercises live-title notes copying plus same-title formatting. Order 44 is a v252 clean pass exercising title-to-notes plus a separate background mutation, so it detects same-mechanism route and completion regressions. Order 42 is a v252 clean multi-operation content-format, background, save, and structural read-back task. The cohort is fixed and source-order-preserving.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v286_impress_title_notes_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Select affected Order 43 plus v252 clean controls 42 and 44 in fixed-189 source order. Round-robin assignment gives Orders 42/44 to DGX1 and Order 43 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [43],
+    "same_mechanism_control_orders": [44],
+    "clean_control_orders": [42],
+    "domain_counts": {"libreoffice_impress": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "same_mechanism_controls_must_pass": 1,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "all_title_notes_rows_must_be_adapter_confirmed": true,
+    "post_save_title_path_text_notes_and_format_readback_required": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T04:18:23Z",
+  "tasks": [
+    {
+      "order": 42,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "cohort_role": "clean_multi_operation_impress_completion_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 43,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "cohort_role": "affected_same_title_notes_and_formatting_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "cohort_role": "clean_same_mechanism_title_notes_background_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-targeted-calc-v187-chart-source-orientation",
+  "status": "frozen",
+  "purpose": "Single-task clean-VM A/B for the remaining v186 Calc failure after replacing ambiguous chart source/orientation defaults with a reusable state-derived Adapter contract. This diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-targeted-calc-git-v186-model-friendly-contracts.json",
+  "parent_config_sha256": "9b35f345d3fbcafdc23525fd89fd43770ed7aca0def7e1ba5d796d689b52165f",
+  "change_scope": "Require the model to distinguish chart destination sheet from source sheet in strict mode. Let chart.create infer row-versus-column series orientation from the geometry of the model-selected source ranges, while retaining explicit public Adapter overrides. When a legacy caller omits source_sheet, accept only a unique populated workbook-state match. No task identity, instruction parser, answer value, golden/evaluator state, Runner argument rewrite, or task-specific branch.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-targeted-calc-git-v186-model-friendly-contracts.json",
+    "task_pool_sha256": "9b35f345d3fbcafdc23525fd89fd43770ed7aca0def7e1ba5d796d689b52165f",
+    "historical_execution_class_or_outcome_used": true,
+    "selection_reason": "Preserved only the Calc evaluator failure from v186. The Git task passed under the same strict boundary and is not rerun in this diagnostic A/B.",
+    "parent_audits": [
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-targeted-calc-git-v186-model-friendly-contracts-run1/strict-audit-worker-01.json",
+        "sha256": "eec570c0af293a16041384fdcfde3e2b277f28523ee989973f93cad3d57c5051",
+        "valid": true
+      },
+      {
+        "path": "adapter_versions/v2_expanded/experiments/generic-only-targeted-calc-git-v186-model-friendly-contracts-run1/strict-audit-worker-02.json",
+        "sha256": "155257a4aeed485f352d57e598994aa5c98c41cae5d8215dc82f217fa61c9575",
+        "valid": true
+      }
+    ]
+  },
+  "implementation_evidence": {
+    "calc_uno_worker_sha256": "41d22a2a0c1973b8da33c2bc519dfdfc59677f05e5be4725a1b4ecba053d10d5",
+    "calc_schema_sha256": "dfc809371d905dd4da6d856e7c4232aaec843412a8d271ac654bda40dead9a91",
+    "openapa_tool_catalog_sha256": "3e40f5ec82a74aaf805575c7d5d68e46408a3e09c67c08a4daff0cc64825ff8c",
+    "lite_agent_tool_catalog_sha256": "9efe69403fa70f29945316cd2ef38a6c8f91ddec668195415d2ee4efcb944d1c",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "2231 passed",
+    "focused_counterfactual_tests": "394 passed; includes unique/ambiguous source-sheet resolution and vertical/horizontal/non-contiguous row orientation",
+    "ruff": "source-scope lint and changed-file format checks passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "clean"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_chart_source_orientation_v187_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "model_visible_schema_enforcement",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v186_remaining_calc_evaluator_failure",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "score_denominator": false,
+    "parent_orders": [
+      1
+    ],
+    "fixed16_orders": [
+      2
+    ],
+    "domain_counts": {
+      "libreoffice_calc": 1
+    },
+    "candidate_condition": "v187 generic chart source/orientation contract; no mid-run changes"
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "parent_order": 1,
+      "fixed16_order": 2,
+      "pool_order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371"
+    }
+  ],
+  "freeze_timestamp": "2026-08-09T02:45:22+00:00"
+}

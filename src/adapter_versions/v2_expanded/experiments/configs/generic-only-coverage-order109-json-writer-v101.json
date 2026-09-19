@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order109-json-writer-v101",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 109 hypothesis 1 after preserving and auditing the untouched v100 baseline failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order109-v100.json",
+  "candidate_parent_config_sha256": "92458bf33bd5709d8b8fbfc89099c00ae233dc0efb878d8b9230a8125678301a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "63ddb2997b1126222fc7788a1b137a3c7ac8d687b953d08b6e54f6cdfaa4189e",
+  "change_scope": "Add one parameterized Multi-Apps document.create_from_json_values capability. The model must select the source JSON path, destination DOCX path, recursive property key, string representation, paragraph separation, highlight terms, case behavior, overwrite behavior, and whether to open the result. The Adapter creates a standards-based DOCX atomically, verifies the package, exact paragraph text, and requested highlight counts, then optionally opens it in Writer.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_recursive_json_values_to_writer_document",
+    "parent_result_sha256": "fd534834c1d6add15a566d62a0a37fad4542777786c62f4bef5e23e37a020278",
+    "parent_audit_sha256": "89f186132aa8bb5f790d8501568ccc1981ca7da3781b6f926757d6abc61e543a",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_13_steps_and_110_070_agent_seconds",
+    "parent_diagnosis": "The untouched candidate could locate and visually open the JSON input, but no deterministic Writer document-creation action existed. Qwen repeatedly requested an unavailable terminal route and document reads, created no destination artifact, and stopped on the eight-event no-progress window.",
+    "counterfactual_scope": "An unrelated nested engine-observation JSON fixture uses different keys, values, source and destination paths, control characters, and case-insensitive highlight terms. It proves recursive source-order selection, JSON-literal representation, blank paragraph insertion, valid DOCX packaging, highlighting, exact read-back, and model-selected desktop opening. Invalid relative paths, suffixes, duplicate terms, and unexpected task fields are rejected.",
+    "model_choice_contract": "The model selects document.create_from_json_values and supplies all task-semantic fields. Runtime and Adapter do not consult task identity, dataset order, instruction fingerprints, evaluator state, golden files, fixed property names, fixed highlight terms, answer strings, or fixed paths. Initial exposure requires generic JSON intent and the action remains searchable.",
+    "original_instruction_top_k": [
+      "document.create_from_json_values",
+      "presentation.fill_missing_notes_from_document",
+      "spreadsheet.insert_matching_rows_into_document",
+      "document.read_file",
+      "image.extract_text_batch",
+      "document.convert_batch",
+      "adapter.call"
+    ],
+    "json_document_sha256": "c1c7883f54fe26f1d05a8b6a7f2335bd93bd24c29844cef45dce416d0b7163b6",
+    "multi_apps_generic_schema_sha256": "72cf8441bd548975eb7c69c5da556c4b00068aba9a60bc35467a71505f99f8b9",
+    "multi_apps_generic_actions_sha256": "5d80a558b72101cfc542e902c2978ac9a9a2fc2bbcf929ad685b8e83d5aa4230",
+    "multi_apps_host_schema_sha256": "77cd4be6e9f9ebfe206fff5e884e36210a4f810f48fb5e4576b090751b99899f",
+    "multi_apps_host_actions_sha256": "2e1d49063bcb0f6d1a7dca1bc43ac6e26b5830b6096c2d2adf7b98b413336a3c",
+    "lite_agent_tool_catalog_sha256": "6fb31c4eae647fb5229b9e6f6edcd4c2cd32d326910dfe3ba30f6833abb20df4",
+    "openapa_tool_catalog_sha256": "4e8c58bae519a49765ab25b06da42fed04403cee7b4e7e5ca0210c7313667fcd",
+    "generic_runtime_tests_sha256": "26316db1a47bc00f84b53f1e2e4df9b14d0a13529d90f952ba0fd0967f4724e6",
+    "catalog_tests_sha256": "5a7c2b0bca40cabe1182a0a70227b9a1e38a52d6481c2662b5d05b32a31fc28a",
+    "focused_tests": "177 passed across Multi-Apps generic runtime and LiteAgent Multi-Apps catalog routing",
+    "full_unit_tests": "1686 passed",
+    "ruff": "all changed files passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_json_writer_v101_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this hypothesis-1 A/B. Try at most two materially different reusable hypotheses with one targeted A/B each. If both fail, mark Order 109 task_blocked and immediately advance to Order 110; do not retry v101 unchanged.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "source_episode_id": "444071c0b0ae05c2634529c8",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "cb76207b86e50b7709d1e5c268b5059fe33f56da27ae48d6e015a3b6279f2ae5",
+      "execution_class": "golden",
+      "pool_order": 109
+    }
+  ]
+}

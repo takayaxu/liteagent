@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order105-sibling-source-paths-v91",
+  "status": "frozen",
+  "purpose": "Final targeted generic-only A/B for Order 105 hypothesis 3 after preserving and auditing the v90 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order105-text-context-v90.json",
+  "candidate_parent_config_sha256": "3119f74d4c158d1299f1ed02359af009c19c5f0d1f8bdc220f8f53a2f742d1fc",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "ea7d8e8cb856dea329fde2eeb6e1004eff50d173e2a6daec3533a80270c62052",
+  "change_scope": "One generic read-result change: file.read_text returns at most 16 sorted non-hidden sibling file paths from the same directory, and LiteAgent preserves those paths in its bounded context. The model must explicitly choose and read a sibling; no path, edit, action, answer, or follow-up call is selected or executed for it.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3_final",
+    "hypothesis_class": "generic_bounded_sibling_file_discovery",
+    "parent_result_sha256": "2b5ae400518c4eb027d159161a1285b0339ecd8dec80d9ee59940785345702e3",
+    "parent_audit_sha256": "96ca9c7dcf9d2da6cf1b06e5d880fe4d844d621bf991b025dcff34a105a919c4",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_10_steps",
+    "parent_diagnosis": "v90 returned the exact recovered snake.py path and preserved all 975 source characters in the next model-visible context. Qwen nevertheless repeated the identical successful read, then cycled through the same blocked read and catalog search until the eight-event no-progress window stopped it after 47.15 Agent seconds. Evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "Tests use unrelated example/helper modules and a separate processor project with two different sibling paths. They prove hidden files are omitted, sibling paths are deterministic and bounded, source content remains bounded to 4200 JSON characters, and only model-selected follow-up calls can execute.",
+    "model_choice_contract": "The read action lists only immediate file paths already visible in the model-selected file's directory. It does not read sibling content, rank semantic relevance, choose a path, generate an edit, rewrite arguments, or issue another tool call.",
+    "instruction_top_k": "unchanged public action selection and Top-K; no action or schema was added",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "vscode_actions_sha256": "ed8e14d716b90038773eae0fe01cc8da4d395b3cb6b371a03a9cd5b3c35dc04d",
+    "adapter_results_sha256": "8bc5c90007896dac62553ad9cc861169a4d9c82fe178b51312d85589d3129af0",
+    "vscode_worker_tests_sha256": "93a3be5886f172144196649b495b0d07860af5d4bc5ce3b6dabfc87cf02d7c2e",
+    "vscode_files_tests_sha256": "5b333030ebc5d71729828b34619d9d72afe0691add05a4427fc62aaf959960f9",
+    "adapter_results_tests_sha256": "62ab5915bba56fc81b79d8de7bdab0f5a207ff22f3ab85a1dd8a4b01a89bcc64",
+    "tool_catalog_sha256": "56ef55baaad78273eba09ae215b74084432b3a637fff6d87e7907c1121d0bf28",
+    "focused_tests": "30 passed",
+    "full_unit_tests": "1663 passed",
+    "ruff": "all active source, scripts, and tests passed lint; changed files passed format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1_manifest_sha256": "01f3437347fce72ad61a8e71e0ab430f7e0e63232c8a93360e510230b0d4a2e7",
+    "frozen_v1_sha256sum_check": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_sibling_source_paths_v91_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit this final targeted A/B. If it fails, mark Order 105 task_blocked and immediately advance to Order 106 without a fourth hypothesis or unchanged retry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "final targeted A/B for the current first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 105,
+      "source_order": 214,
+      "domain": "multi_apps",
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "source_episode_id": "0a52fccb2779dbd008a4c7e9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "dd9e6292448f40ed602b1a951566bcd2594ed26f75480d7179170d8b35e74708",
+      "execution_class": "task_specific",
+      "pool_order": 105
+    }
+  ]
+}

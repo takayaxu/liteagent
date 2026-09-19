@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab4-v316-impress-unique-table-row-concurrency4",
+  "status": "frozen",
+  "purpose": "Second and final Order-56 targeted A/B for the model-selected Impress unique-live-table row replacement contract. This is not a baseline score, best-of selection, consolidated validation, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v315",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v315.json",
+    "candidate_manifest_sha256": "a32ad1becb4f758c98606bb907073cdd153716ec48ae15b8d832909880ec1326",
+    "targeted_disposition": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ab-v315-impress-api-navigation-query.json",
+    "targeted_disposition_sha256": "eabe8a664aeabc6334169ca75a16ac5e28ce14acef776c2b860fa29619a4d985",
+    "outcome": "Rejected as a complete Order-56 candidate after a 3/4 A/B, while retaining the supported task-independent navigation-query guard.",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v316",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/candidate-v316.json",
+    "candidate_manifest_sha256": "ee0b78cdb5ba988ba9fd58546f27c726b10c467102c9fcddb5286c6655640c8d",
+    "active_runtime_and_test_tree_sha256": "95248c72139bb96b2bdcc7280f47fc651f6d2fd8e9c1ac807e6c64ead4ba6cff"
+  },
+  "hypothesis": {
+    "generic_cluster": "impress_complete_row_replacement_without_shape_identity",
+    "statement": "A public table.replace_row contract with model-selected one-based slide_number, one-based row_number, and complete values lets the Adapter resolve exactly one recursive live table, validate dimensions, mutate transactionally, and read back the row without a model-visible selector or Runner-derived arguments.",
+    "runtime_answer_materialization": false,
+    "runner_selects_table_target_or_values": false,
+    "runner_argument_rewrite_or_injection": false,
+    "strict_runtime_accesses_legacy_table_row_plan": false
+  },
+  "sources": {
+    "hypothesis_record": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/hypothesis-v316-impress-unique-table-row.json",
+    "hypothesis_record_sha256": "1a0b43d7f23d003f0e10cfa76c0ae94d8d3cbbd5b1f9a9d1a92352c1ccabe0c4",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v307-residual-optimization/ledger-v316-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "801b73e2852e35fb80c3ce598a46ecea27b8b0c481e9525e9c5e5280256338b7",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v307-development-concurrency6.json",
+    "task_pool_sha256": "a89714e791bc67fb4ac6b62b8f0c5dd19a1c4b0368d089d71366f77183850d87",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "development_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v307-development-concurrency6-run1/results.json",
+    "development_results_sha256": "64a0a59663c7d390af5fdf1040cc116a3bd188caabd2f1dd8bdd6e11af8c3851",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Reuse the exact v315 pre-outcome cohort and fixed source order [40, 46, 56, 58]. Order 56 is the active historical regression; Orders 40, 46, and 58 passed in immutable v252 and v307. No task was selected from v315 or v316 outcomes.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v316_impress_unique_table_row_ab4_concurrency4_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 4,
+    "workers_per_endpoint": 2,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "runner_sha256": "1321afcff5e4cee4f34e32577c76ff93fbda52560bf949e6e185b27763533b3e",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Fixed source order [40, 46, 56, 58], one task per worker; workers 1-2 use DGX1 and workers 3-4 use DGX2.",
+    "selected_count": 4,
+    "affected_failure_orders": [
+      56
+    ],
+    "clean_control_orders": [
+      40,
+      46,
+      58
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 4
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "all_four_tasks_must_pass": true,
+    "order_56_must_terminate_by_agent_propose_done": true,
+    "affected_environment_failures_allowed": 0,
+    "unexplained_control_regressions_allowed": 0,
+    "order_56_executed_slide_move_allowed": 0,
+    "order_56_model_must_select_every_executed_argument": true,
+    "order_56_must_save_after_final_mutation": true,
+    "order_56_must_inspect_after_final_mutation": true,
+    "all_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "control_46_must_not_execute_slide_move": true,
+    "control_40_object_movement_must_not_execute_slide_move": true,
+    "executed_gui_actions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0,
+    "order_56_must_execute_model_selected_table_replace_row": true,
+    "order_56_adapter_must_resolve_exactly_one_live_table": true,
+    "order_56_adapter_readback_must_equal_model_values": true
+  },
+  "freeze_timestamp": "2026-08-13T19:46:00Z",
+  "tasks": [
+    {
+      "order": 40,
+      "source_order": 126,
+      "domain": "libreoffice_impress",
+      "task_id": "15aece23-a215-4579-91b4-69eec72e18da",
+      "cohort_role": "clean_control_object_move_not_deck_reorder_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 46,
+      "source_order": 134,
+      "domain": "libreoffice_impress",
+      "task_id": "9cf05d24-6bd9-4dae-8967-f67d88f5d38a",
+      "cohort_role": "clean_control_read_only_navigation_wording_dgx1",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 56,
+      "source_order": 147,
+      "domain": "libreoffice_impress",
+      "task_id": "5cfb9197-e72b-454b-900e-c06b0c802b40",
+      "cohort_role": "affected_historical_regression_dgx2",
+      "v252_status": "passed",
+      "v307_status": "failed",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "clean_control_stable_same_domain_dgx2",
+      "v252_status": "passed",
+      "v307_status": "passed",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

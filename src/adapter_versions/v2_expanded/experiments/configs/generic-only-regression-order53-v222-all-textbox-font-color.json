@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order53-v222-all-textbox-font-color",
+  "status": "frozen",
+  "purpose": "First single-run A/B hypothesis for v210 Order 53. Route one-slide all-textbox font-color requests through a reusable role facade, reject text/background semantic confusion without rewriting model arguments, and require persisted structural read-back. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order51-v221-single-slide-background-scope.json",
+  "parent_config_sha256": "b13cd6d8d3364ffc1863330cb271dac1462deb54eb4c851cebb64517528d087a",
+  "hypothesis": "The v210 model received a selector-heavy single-shape formatting action for an instruction that targeted every text box, saved before mutating, then searched for and repeatedly selected a background action. If strict routing exposes the reusable slide.format_text_roles facade, its schema maps all text boxes to roles=['all'], wrong background calls are rejected without argument replacement, and completion requires save plus structural text-color read-back, the model can select one generic formatting call and finish.",
+  "change_scope": "A focused Impress textbox module parses reusable one-slide all-textbox font-color language, validates model-selected facade arguments, and checks persisted recursive text-shape colors after save. Strict routing now exposes presentation.inspect plus slide.format_text_roles while legacy mode retains its historical per-shape path. The Adapter-owned schema explains roles=['all'] for all text boxes. Execution rejects semantically wrong calls but never fills, replaces, or injects arguments. Counterfactual tests use different slide indices, colors, and three structurally distinct text shapes.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order53-v21-run1/results.json",
+    "historical_clean_pass_results_sha256": "052cd5e8a1347982df14b57adddbf57bf32ccce41ba1d583c313415abeee09a4",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-053-generic-only-coverage-order53-v21-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "4d4f6b159ac03369091d3267ee1f3f4e6356a604c8f7c6adfb6eac1eefae6bdd",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order51-v221-single-slide-background-scope-run1/results.json",
+    "preceding_ab_results_sha256": "e159d4f5d57169041fc001d73c0411766167599b0856277f378ee3baec78e4fb",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order51-v221-single-slide-background-scope-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "78c7cffe62dc0759f9ed83bbc1a335b487c31ddc3063aba1bdef4cdc0385f78e",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "impress_textboxes_sha256": "ca7914268d3ac079c1c03703304b9bd42259872077487519ce8fbd180d93d482",
+    "instruction_semantics_sha256": "61edd76d903273ee87bb8621b69e256b3488666696fbd69579f803df9bd83a1a",
+    "semantic_requirements_sha256": "2a28fd9fa8c572bf02754bdd13a142d0444e99bb76f220299d7f8f0ab7d1a550",
+    "execution_engine_sha256": "765e8087ddcb68371b2b10fc80d9dbc993dc7ff7c17e65546eb230eabbf171f5",
+    "tool_catalog_sha256": "acfdc41fb71ff162cf980b79753a51567b312d74a4df79f62be13b92cba4481c",
+    "impress_tool_manifest_sha256": "2ab2c8898544d1e12c53bac5cf2a46fe4cc5e37bc736bf8a6dc7abbebf84e68a",
+    "impress_textbox_tests_sha256": "7e2e5453d9987184983f2f81251c5b0d7264e5148396055ce90d1acd4ab0196f",
+    "focused_tests": "254 passed, covering paraphrased color requests, different slides and colors, wrong tool/scope/color rejection, multi-clause background compatibility, exact model argument preservation, and structural read-back",
+    "unit_tests": "2445 passed",
+    "ruff": "passed for active LiteAgent, Impress Adapter, changed tests, and layout checker",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_all_textbox_font_color_v222_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in corrected fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T21:07:10Z",
+  "tasks": [
+    {
+      "order": 53,
+      "pool_order": 53,
+      "source_order": 143,
+      "domain": "libreoffice_impress",
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order73-v229-writer-image-convergence",
+  "status": "frozen",
+  "purpose": "Single-run diagnostic A/B for v210 Order 73. Expose truthful Writer graphic-object mutation and read-back evidence so the model can terminate after one requested insertion. This prior-outcome-selected run is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order72-v228-writer-highlight-convergence.json",
+  "parent_config_sha256": "ac90425ce7eef38e5039df555f71cf445dd0f202166201f081f368c3e9b652f2",
+  "hypothesis": "The v210 episode executed image.insert_at_cursor successfully at step 1, but the model-facing mutation result did not expose the graphic-object count delta and document.inspect omitted image counts from its compact context. Qwen therefore inserted the same image again, producing one extra image placement and evaluator failure. If the reusable Writer contract reports and verifies an exact +1 graphic-object delta, warns that each repeat inserts another copy, and prioritizes placement count in structural read-back, the model will stop after the requested insertion and pass cleanly.",
+  "change_scope": "Writer image.insert_at_cursor now reports live graphic-object counts before and after insertion, verifies an increment of exactly one when UNO exposes the collection, and preserves the saved result. LiteAgent projects those counts plus generic non-repetition guidance to the model. Writer document.inspect now prioritizes graphic placement and embedded-media counts before paragraph details. Tool schema, selected arguments, Runner execution, completion gate, evaluator, and task identity isolation are unchanged.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_task_evidence": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/workers/worker-01/raw/run-1/73-libreoffice_writer-6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "historical_clean_pass_results": "adapter_versions/v2_expanded/experiments/generic-only-coverage-order73-writer-image-schema-v34-run1/results.json",
+    "historical_clean_pass_results_sha256": "2eb41a71ffe61f1882ec15221185294ebafd6dd78cc837890d64aaacf8bf55df",
+    "historical_clean_pass_current_strict_audit": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/historical-reaudits/order-073-generic-only-coverage-order73-writer-image-schema-v34-run1.json",
+    "historical_clean_pass_current_strict_audit_sha256": "20ebdfc7b77b223e6937d38a2613b6b7272de93015857f2a6f50e259c52b3d27",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "writer_uno_worker_sha256": "aaf527ad24aed43d5c5ae856393c703573fd4dcc02cc0edc91f01597972c9e94",
+    "adapter_results_sha256": "c459c3ceb646e7f1d845fd91b6b3770a32b76e2674495b0ad211837a967a19f9",
+    "writer_uno_worker_tests_sha256": "934edfd8267d3fb8af343fb4f89152a3ffe841654f87b7005ce6bd9086a418ac",
+    "adapter_results_tests_sha256": "9dbb8822ace84315226b2dde0163ec8e86974c9dde73ad0012de016810a35775",
+    "tool_catalog_sha256": "c7a2c12ff0a02996d15667175b4ddf564eba1a048f3f03fea13744065d2dcc34",
+    "execution_engine_sha256": "0a46d3ad026fb8088e3e212b54fa5428e7c9bdef3d5aa6bb0c3346c4e2258711",
+    "runtime_sha256": "d7521ecf3d040e3130731de128de94f492f7272a7a03c1adf2c60c1e26c3eaef",
+    "counterfactual": "Tests insert harbor-layout.png into a synthetic Writer document that already contains four graphic objects, require an exact 4-to-5 delta, and compact a different 40-paragraph document whose five placements reuse only three embedded media members.",
+    "focused_tests": "91 passed across Writer UNO behavior and LiteAgent Adapter-result projection",
+    "unit_tests": "2479 passed",
+    "ruff": "passed for active source, scripts, and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_image_convergence_v229_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "same fixed regression item, first evidence-backed reusable hypothesis after comparing the preserved v210 failure with the strict historical clean pass",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T23:30:52Z",
+  "tasks": [
+    {
+      "order": 73,
+      "pool_order": 73,
+      "source_order": 164,
+      "domain": "libreoffice_writer",
+      "task_id": "6ada715d-3aae-4a32-a6a7-429b2e43fb93",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

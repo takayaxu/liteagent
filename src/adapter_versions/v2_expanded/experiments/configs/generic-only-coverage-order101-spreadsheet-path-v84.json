@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order101-spreadsheet-path-v84",
+  "status": "frozen",
+  "purpose": "Targeted A/B for Order 101 under the fixed generic-only protocol after preserving its untouched v83 baseline.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order101-v83.json",
+  "candidate_parent_config_sha256": "0b9e86bc09e932417274f3de7834907961172179c35388739394c053e25af832",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "5ba1a9bb6972f3ce89e7e0bce0d3eb0ac40df5f933a9e1c75dc7fec749d96282",
+  "change_scope": "One generic recovery change: after a spreadsheet read reports a missing path, return bounded exact-basename candidates from the guest home tree and require the model to explicitly retry. Never rewrite or execute the retry automatically.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_bounded_spreadsheet_path_recovery",
+    "parent_result_sha256": "4f95a262722204c40128e2a328837b92d14a773d8d3c2936d5d820d5c19fe5a9",
+    "parent_audit_sha256": "1c0f89a3c7108477f0b8b89e468bbd7e18a98f5cfeb0996503eb9d82c5502433",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_9_steps",
+    "parent_diagnosis": "The model selected the correct spreadsheet reader but inferred the wrong directory. The downstream missing-file error returned no candidate path, after which the model repeated path guesses and unrelated searches. The no-progress window stopped the Agent loop after 51.255 seconds; evaluator reward was 0.0 and the strict audit was valid.",
+    "counterfactual_scope": "Tests use unrelated Regional Budget workbooks in multiple synthetic directories. They require exact basename matching, spreadsheet suffix filtering, depth/directory/result bounds, explicit model retry, unchanged successful argument forwarding, and no automatic candidate execution.",
+    "instruction_top_k": "unchanged public action selection and Top-K; only the existing spreadsheet reader schema documents its missing-path retry contract",
+    "exact_search_top_k": "not_applicable_no_catalog_action_added",
+    "path_recovery_sha256": "69aaaa62c6aab6942b98a19f81f33d4e8c80c0737c996df71c1025214a429958",
+    "multi_apps_generic_actions_sha256": "9515db54dbf1a64775e7ed99e910d9076e730b8006695409f3dfbb8655bdedbf",
+    "calc_tool_manifest_sha256": "dfb986848be008a40d6676fd00d19ec36afc2a80038954034e4036f502c57511",
+    "multi_apps_generic_runtime_tests_sha256": "3b22f4893c30be6e2b87cff78cd33d109224806ab2a7587b024de1853a2f0902",
+    "tool_catalog_sha256": "e267662ee0847fd1d0d3b8efd60a28b77bfdc19e628c6cf7fe0580b83a0f792b",
+    "focused_tests": "98 passed plus one direct counterfactual recovery check",
+    "full_unit_tests": "1641 passed",
+    "ruff": "changed active source and tests passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan",
+    "frozen_v1_tree_sha256": "e0a92777d75e6542814a8639376a7f4bce58251280b3ce2fe5e7021b570e2cd2",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_spreadsheet_path_recovery_v84_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and audit the untouched baseline, classify the failure, and do not rerun it unchanged. Try at most three materially different generic hypotheses with one targeted A/B each. If all three fail, mark the task task_blocked and immediately advance to the next ledger entry.",
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 101,
+      "source_order": 209,
+      "domain": "multi_apps",
+      "task_id": "185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
+      "source_episode_id": "42517c2dbac2e0e2a85c5487",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b071d23910469e7649f50d3eb2b4ce3e794a3593a884d6d36aaaf0b61d301445",
+      "execution_class": "task_specific",
+      "pool_order": 101
+    }
+  ]
+}

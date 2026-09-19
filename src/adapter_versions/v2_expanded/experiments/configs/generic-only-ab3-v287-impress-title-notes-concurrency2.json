@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v287-impress-title-notes-concurrency2",
+  "status": "frozen",
+  "purpose": "Second-hypothesis development A/B for the reusable live Impress title-to-notes contract. It preserves v286's failed run, changes only state-dependent existing-notes policy validation, and runs the same affected failure plus two controls exactly once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v287",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v287.json",
+    "candidate_manifest_sha256": "37d3704d18e23fb8840d5c9bf2a38e5525f3a92d64ca235196aba5f5ebcdf635",
+    "source_change_for_this_condition": true,
+    "active_runtime_and_test_tree_sha256": "22e38c67531f6edf0dc778c57fb80eb84d504f3e524ca97977dc7d71b6c429e9"
+  },
+  "prior_failed_condition": {
+    "candidate": "v286",
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-ab3-v286-impress-title-notes-concurrency2.json",
+    "config_sha256": "df7f993ce33228a3cb30c8e40083bc11d8c7de274da9141865be0155281e2e40",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-ab3-v286-impress-title-notes-concurrency2-run1/results.json",
+    "results_sha256": "6223811ce3df2f3c5a6eed67108f4671fd52e8143d363310ba3918c033167e32",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v286-impress-title-notes.json",
+    "disposition_sha256": "c483759af50397bb4dd80c44647b57f9e953a8d4fa474b1884a197808f07fd3c",
+    "result": "1/3 passed; both title-to-notes calls selected replace against empty live notes and were rejected before Adapter execution.",
+    "resume": false,
+    "best_of": false
+  },
+  "hypothesis": {
+    "number": 2,
+    "generic_cluster": "state_dependent_existing_notes_policy_validation",
+    "statement": "The v286 model calls were structurally and semantically correct for empty live notes, where preserve and replace are behaviorally equivalent. Keeping the model-selected policy unchanged and delegating live conflict behavior to the Adapter should execute those calls while preserving explicit protection for genuinely different live notes.",
+    "counterfactual_support": [
+      "Both policies are non-destructive and equivalent when notes are empty or already match the title.",
+      "Preserve rejects a different existing note; replace permits it and reports actual overwrite.",
+      "Explicitly protected different notes reject replace based only on public inspection state, without argument replacement.",
+      "The live title, notes, and format are still bound to one Adapter-confirmed object and post-save inspection.",
+      "The same v286 cohort detects affected improvement and both same-mechanism and general Impress regressions.",
+      "Both DGX endpoints preserve raw model arguments exactly."
+    ],
+    "runtime_answer_materialization": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v287-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "d77afaa36b716e8f7a01da35d978081513fd1fe5099a6a9110d6b406d5f69df4",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Identical to v286: affected Order 43, same-mechanism clean control 44, and general Impress clean control 42, in fixed source order.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v287_impress_title_notes_policy_ab3_concurrency2_2026-08-12",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1", "http://192.168.0.138:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Use the same source-order-preserving v286 cohort. Round-robin gives Orders 42/44 to DGX1 and Order 43 to DGX2.",
+    "selected_count": 3,
+    "affected_failure_orders": [43],
+    "same_mechanism_control_orders": [44],
+    "clean_control_orders": [42],
+    "domain_counts": {"libreoffice_impress": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "same_mechanism_controls_must_pass": 1,
+    "clean_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "all_title_notes_rows_must_be_adapter_confirmed": true,
+    "post_save_title_path_text_notes_and_format_readback_required": true,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-12T04:41:29Z",
+  "tasks": [
+    {
+      "order": 42,
+      "source_order": 128,
+      "domain": "libreoffice_impress",
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "cohort_role": "clean_multi_operation_impress_completion_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 43,
+      "source_order": 129,
+      "domain": "libreoffice_impress",
+      "task_id": "7dbc52a6-11e0-4c9a-a2cb-1e36cfda80d8",
+      "cohort_role": "affected_same_title_notes_and_formatting_failure",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 44,
+      "source_order": 131,
+      "domain": "libreoffice_impress",
+      "task_id": "8979838c-54a5-4454-a2b8-3d135a1a5c8f",
+      "cohort_role": "clean_same_mechanism_title_notes_background_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

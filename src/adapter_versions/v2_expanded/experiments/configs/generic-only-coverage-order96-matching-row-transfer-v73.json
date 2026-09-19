@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order96-matching-row-transfer-v73",
+  "status": "frozen",
+  "purpose": "Order 96 generic hypothesis 3/3: expose one reusable cross-application action that reads exact displayed spreadsheet text, selects rows by a model-supplied header and values, and inserts an idempotent table after a model-supplied Writer paragraph.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order96-writer-table-after-text-v72.json",
+  "candidate_parent_config_sha256": "03c3acb36ded82d9c7bf3d7b192884ec327b87c852469a3a7b16b23ab17c9f91",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "0caef3f99f14e4bcfa3f58ecab3898c57206ff3eb53936be91fc54c8e0cbb564",
+  "change_scope": "Add spreadsheet.insert_matching_rows_into_document(path, optional source selector, match_column, match_values, include_header, anchor_text, optional match controls). The model supplies every semantic selector unchanged. The Adapter fails closed on truncated sources and ambiguous or missing headers, values, and Writer anchors; preserves displayed strings; and performs no task-ID, instruction, golden, answer, or evaluator lookup. Identical Writer tables return changed=false, and repeated unchanged mutations count toward the generic no-progress stop policy.",
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "3_of_3_final",
+    "hypothesis_class": "generic_cross_application_matching_row_transfer",
+    "parent_result_sha256": "f58e2e8413b25b3f4986119d0f9d838a526c97db6e90d77a3e867408a95d34c3",
+    "parent_audit_sha256": "9d8ea94a40ac64fecba58203844033cdb46925e3bcb491e4e49c32c993d25a93",
+    "parent_status": "manually_interrupted_after_14_completed_events_to_prevent_additional_duplicate_tables",
+    "parent_diagnosis": "The model read all three exact spreadsheet rows, found the actual numbered Writer heading after one recovery, and successfully inserted a table. It selected one unwanted data row, then repeated the successful mutation and changed match_mode to bypass exact-request deduplication, inserting a second identical table.",
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "stall_policy_sha256": "a5644aa36d54a700db9a73dfc73caa739888484eee35718023f3ca04ccaa2505",
+    "tool_catalog_sha256": "3e7ce242ef998279db65becf28250bcca7311a5bc367de11cbbb6398ec8a48f7",
+    "adapter_results_sha256": "bac9bc2ba9271cc2f42c02069b499cb69b9a83bd952bbedda38f092712e2e5a1",
+    "openapa_catalog_sha256": "2ed76aec81c9f3b40ccd67b695f63b4c905f1acd17c717d12c76233bcd9ccb0d",
+    "writer_schema_sha256": "c34aa92a96a881c2e25ffc6df9056071ecf99b0c7456ed73946ca818f9802b35",
+    "writer_tool_manifest_sha256": "40ac2721853bea31cb6e7ab62218afeae0a0f9b34757464a8761a0399b655cd1",
+    "writer_uno_worker_sha256": "d7a1dc0c4d1f6765cc8170df693e0a362cef6c69ebd5733385a91346ae274d7e",
+    "multi_apps_generic_actions_sha256": "2b4c7b032c9924eb944603434b00ebbfde66ee3321be59e6da9fb413a3aef25e",
+    "multi_apps_generic_schema_sha256": "9b87dd9a0407b0f4ee359289ded5bf4bff2c2c81256b10e423f855338814e187",
+    "multi_apps_row_transfer_sha256": "62bcb1ee2f0088ec42ee9623a864862a703cd337caa0243b60ce6e415aa96e82",
+    "multi_apps_catalog_schema_sha256": "262ad4c5bf8dfbc12cbb5d8a4fb2be618badf628149700a5b51f0a8e42d2f377",
+    "multi_apps_catalog_actions_sha256": "ab0f7e04fb611c18b00d3d7f67ba13a6f8826f69ea48ab2d7751cd5339b2c904",
+    "runner_sha256": "e13b95f88d4909ee7dcac756a64b80f1c3c39477b6dfedf26ed8b6cbf546ee08",
+    "trajectory_builder_sha256": "dec7e6623f824db35ae20efba0f076bd771fa76c90cdf601ffcc474054c4bbb3",
+    "full_unit_tests": "1578 passed",
+    "focused_tests": "339 passed; unrelated headings, sheets, header positions, values and matrices; ambiguous headers; exact displayed decimals; Writer duplicate detection; unchanged-mutation stall detection; direct schema and fallback tool retention",
+    "ruff": "changed active source and tests passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator changes",
+    "goal_sha256": "5013d9dc03875dc9e865b7de904f6447556ea2ca1b968c2be270e1d55a9de899",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_matching_row_transfer_v73_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B for Order 96 using final generic hypothesis 3/3; v70 through v72 remain immutable",
+    "selected_count": 1,
+    "prior_development_status": "interrupted",
+    "on_failure": "Preserve, audit and classify this attempt; mark Order 96 task_blocked without another hypothesis or unchanged retry, then immediately continue to Order 97.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 96,
+      "source_order": 197,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "source_episode_id": "503f3e9ef6f71c61a195f97f",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "18261c9eaa71be94b95c03e542361ae34f4ead515366de7c2925203e31f6f36a",
+      "execution_class": "golden",
+      "pool_order": 96
+    }
+  ]
+}

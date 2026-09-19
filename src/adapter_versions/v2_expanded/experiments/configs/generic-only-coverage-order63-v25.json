@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order63-v25",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order62-v25.json",
+  "candidate_parent_config_sha256": "8b89322893139ff82b20e598db03a714de3594983957f3489d6378b6da494504",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b152932c2a5cb9c91b8d4e692fb42a892292f15f2a2d9034bd584ddaf740ec6b",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "runtime_sha256": "4e4cc9063ec721f004c843e46b3fbf89e36daa185c36d33bcef2676b1931cb53",
+    "adapter_results_sha256": "52675d23cd911ce4fba04f0b5fefaf7855632186c3d85e183f27f708a71e91cd",
+    "impress_semantics_sha256": "2966f1d9ce9c4efaf07b9b686f7b3f205cbf510df602d1e76d4f70c0504a61c9",
+    "tool_catalog_sha256": "2adad66cb13cd498490350d47c3fe11e103a493527b7ce8cbe468ba893a69a92",
+    "adapter_results_test_sha256": "fbc938196d3d82ba7b0817568d29305d05ef267ae7f8ef9600ec8a0cd742b1f6",
+    "impress_semantics_test_sha256": "b40e67d434ae0b763bc6ad1a10363bc000f0c61e85b454e0d27bbe4ffc915574",
+    "runtime_test_sha256": "46d87cdcfe24f29bc1fd752c6670da2210d7c3441fe3e859bf345a27a4e5f58a",
+    "tool_catalog_test_sha256": "c8a48346fbdd86bd0d77bfc4ffeb75a0a17caaeb1c7783c7af903ff64cbd979e",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "runner_test_sha256": "4fc3d396d67649e5e0b6ebc47c444179791a71ec89d3ff5807078ccbcdbfead4",
+    "focused_adapter_semantics_and_runtime_tests": "256 passed",
+    "full_unit_tests": "1250 passed",
+    "counterfactual": "A structurally unrelated synthetic deck places a different photo at the bottom of page 4 and removes underline from three top-level or nested text boxes on pages 2 and 5. The model-visible mutation tools take no arguments; the Runner injects only instruction- and observation-derived selectors and geometry. A second synthetic deck uses different page numbers, nested paths, dimensions, top placement, and underline=true.",
+    "preserved_initial_observation_replay": "Replaying only the immutable failed run's initial presentation.inspect result resolves one foreground picture container, preserves its observed x, width, and height while setting y=0, and resolves four nonempty text boxes on the two instruction-selected slides. Golden and evaluator state are not runtime inputs.",
+    "prior_v24_result_sha256": "3821569b803eab540a71d28173ff9e7a83e145dd438edc45881c042bcf34d9b9",
+    "prior_v24_audit_sha256": "cdacb4741f2da7739baa2ff47df67abe62247cb810885e200a0479545fe741b0",
+    "prior_v24_audit_valid": true,
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_impress_edge_underline_v25_2026-08-05",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 63,
+      "source_order": 154,
+      "domain": "libreoffice_impress",
+      "task_id": "04578141-1d42-4146-b9cf-6fab4ce5fd74",
+      "source_episode_id": "b4e3596f27126f81362ef357",
+      "source_path_class": "generic_api_plus_gui",
+      "source_manifest_sha256": "76dbbbabda664dc4e0a8832088f59c01d33afbd8f974cac42f8fe98cf13e534a",
+      "execution_class": "generic_api_plus_gui",
+      "pool_order": 63
+    }
+  ]
+}

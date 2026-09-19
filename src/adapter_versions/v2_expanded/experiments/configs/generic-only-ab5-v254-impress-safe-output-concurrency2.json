@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab5-v254-impress-safe-output-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for generic Impress output validation and destructive image-slide atomicity. It contains two affected v252 non-pass outcomes, one positive control for valid image-slide replacement, the v253 regressed control, and one unchanged same-domain control. This is not a baseline score or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_ab": {
+    "config": "adapter_versions/v2_expanded/experiments/configs/generic-only-ab3-v253-impress-export-contract-concurrency2.json",
+    "config_sha256": "c2f8f1ea252cfcfdb1aaab1d0f348964ba0f4388e59b45d40a6b5068a226d14f",
+    "results": "adapter_versions/v2_expanded/experiments/generic-only-ab3-v253-impress-export-contract-concurrency2-run1/results.json",
+    "results_sha256": "d823d959250e8689c5a7cb02f6626fdfbf78c44a320543bf6aecaf92cbbfc334",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v253-impress-export-contract.json",
+    "disposition_sha256": "7d091b7a1f27745fe4e01c058ab6453af4e9d608e2879b1c71fb79039513f464",
+    "accepted": false,
+    "resume": false
+  },
+  "change_scope": "Retain v253's presentation.export format/destination validation and add an Adapter-owned slides.create_from_images image-path contract plus staged-page rollback. Model, Prompt, Router algorithm, remaining schemas and Adapters, VM, evaluator boundary, limits, no-proxy policy, and audit v4 remain unchanged. The Runner does not inject or rewrite arguments.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v254.json",
+    "candidate_manifest_sha256": "4c7eb3baf45ce1d92f8279a61fbac3f9b08e2db997a7fb102e4bb23c419093c1",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v254-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "9b58f7bfc2c0b0e63aff2b43adcaea059d96deb05e3b1ab0b0a4e1c05701db3b",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Affected outcomes and clean controls are required by the bounded development A/B protocol.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v254",
+    "active_runtime_and_test_tree_sha256": "3401aa93d750f20f5b45037b64deff3fd997c3d2300cf2cb3a62e13f2de9767c",
+    "focused_tests": "567 passed",
+    "complete_unit_suite": "2667 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed",
+    "model_schema_preflight": "1/1 schema-valid and semantically matched on each of dgx1 and dgx2",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v254_impress_safe_output_ab5_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Select v252 Orders 49 and 60 as affected non-pass outcomes; select Order 35 as the nearest earlier clean-pass task that executed valid slides.create_from_images; retain v253 controls 58 and 62, where 62 is the observed control regression. Preserve fixed source order.",
+    "selected_count": 5,
+    "affected_orders": [
+      49,
+      60
+    ],
+    "clean_control_orders": [
+      35,
+      58,
+      62
+    ],
+    "domain_counts": {
+      "libreoffice_impress": 5
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "invalid_image_path_mutations_allowed": 0,
+    "format_extension_corruptions_allowed": 0,
+    "clean_controls_must_pass": 3,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T03:45:00Z",
+  "tasks": [
+    {
+      "order": 35,
+      "source_order": 119,
+      "domain": "libreoffice_impress",
+      "task_id": "bf4e9888-f10f-47af-8dba-76413038b73c",
+      "cohort_role": "positive_image_slide_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 49,
+      "source_order": 138,
+      "domain": "libreoffice_impress",
+      "task_id": "39be0d19-634d-4475-8768-09c130f5425d",
+      "cohort_role": "affected_non_atomic_wrong_input",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 58,
+      "source_order": 149,
+      "domain": "libreoffice_impress",
+      "task_id": "5c1a6c3d-c1b3-47cb-9b01-8d1b7544ffa1",
+      "cohort_role": "unchanged_same_domain_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 60,
+      "source_order": 151,
+      "domain": "libreoffice_impress",
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "cohort_role": "affected_corrupt_output",
+      "v252_status": "environment_failure",
+      "v252_reward": null,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 62,
+      "source_order": 153,
+      "domain": "libreoffice_impress",
+      "task_id": "3161d64e-3120-47b4-aaad-6a764a92493b",
+      "cohort_role": "v253_regressed_control",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

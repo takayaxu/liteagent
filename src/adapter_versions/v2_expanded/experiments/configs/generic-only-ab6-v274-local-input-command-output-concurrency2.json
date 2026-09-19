@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab6-v274-local-input-command-output-concurrency2",
+  "status": "frozen",
+  "purpose": "Development A/B for the v274 generic local-input discovery and command-output contracts. It runs two affected v252 failures, every v252 clean control touched by the former broad discovery predicate, and the accepted v273 positive-discovery fix once. This is not a baseline score, best-of rerun, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "parent_development_evidence": {
+    "candidate": "v273",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v273.json",
+    "candidate_manifest_sha256": "cac9f7e05e1c49548754bb601b8faa4c8c75c0359b28880e0608b14103fe27b9",
+    "disposition": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ab-v273-multiapps-local-input-discovery.json",
+    "disposition_sha256": "f6a100606d6e0a7b35a94c194fb7d4ec86a21cb5b0ceb7fd8d16f60fdcbc9f66",
+    "complete_candidate_accepted": true,
+    "retained_behavior": "Order 115 must retain the accepted filesystem.find to exact returned-path consumption behavior while Orders 90, 91, and 109 remain unaffected clean controls."
+  },
+  "change_scope": "v274 keeps discovery active after zero returned matches, narrows its instruction predicate to actual unresolved local-file clauses, clarifies standard-directory find scope, and replaces command.capture_output's conflicting cwd fields with an optional absolute cwd_path facade. Explicit terminal intent constrains model-selected provenance through a shared schema helper. The Runner derives no action, path, provenance, or argument from task identity, golden data, or evaluator state.",
+  "sources": {
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v274.json",
+    "candidate_manifest_sha256": "b5beae86ffdd17152c18c9e200f7705e6152b643e0ef0642638aa8a7abce4f0d",
+    "immutable_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v274-pre-ab.json",
+    "immutable_ledger_snapshot_sha256": "c68e95f2ec51b7b092d3d33782420315ffac6cfa9cce3e1d75aa6934c89dab0d",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Orders 92 and 94 are the two v273 safety failures directly exercising zero-match discovery and command-output persistence. Orders 90, 91, and 109 are all v252 clean passes exposed by the former broad predicate. Order 115 is the accepted v273 affected pass and validates the positive-match transition changed by v274.",
+    "baseline_candidate": false
+  },
+  "implementation_evidence": {
+    "code_candidate": "v274",
+    "active_runtime_and_test_tree_sha256": "b2a7123b0b0f3c52ff201837d087683f2efb4f2a32043bab2f1c4f46fec61e75",
+    "focused_tests": "328 local-discovery/contract tests and 159 terminal/catalog/completion tests passed",
+    "complete_unit_suite": "2870 passed",
+    "ruff_format_compileall_layout_v1_osworld": "passed; touched-file formatting passed; full-tree format-only drift is pre-existing and unchanged",
+    "model_schema_preflight": "Both DGX endpoints passed local discovery and command.capture_output against the exact frozen source; task identity was absent and model arguments matched execution arguments exactly.",
+    "audit_schema": "generic_only_validation_audit.v4",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v274_local_input_command_output_ab6_concurrency2_2026-08-11",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "Preserve fixed-189 source order for Orders 90, 91, 92, 94, 109, and 115. Round-robin assignment gives Orders 90, 92, and 109 to DGX1 and Orders 91, 94, and 115 to DGX2.",
+    "selected_count": 6,
+    "affected_failure_orders": [92, 94],
+    "clean_control_orders": [90, 91, 109],
+    "retained_fix_control_orders": [115],
+    "domain_counts": {
+      "multi_apps": 6
+    },
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 2,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 3,
+    "retained_fix_controls_must_pass": 1,
+    "unexplained_control_regressions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-11T17:20:37Z",
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "cohort_role": "clean_control_contacts_export_then_convert",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 91,
+      "source_order": 187,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "cohort_role": "clean_control_mail_to_spreadsheet",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "cohort_role": "affected_failure_desktop_ods_command_conversion",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "cohort_role": "affected_failure_desktop_python_script",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 109,
+      "source_order": 219,
+      "domain": "multi_apps",
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "cohort_role": "clean_control_open_json_to_writer",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 115,
+      "source_order": 231,
+      "domain": "multi_apps",
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "cohort_role": "retained_fix_control_positive_local_input_discovery",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "v273_status": "passed",
+      "v273_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

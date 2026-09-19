@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order164-current-source-assertion-v160",
+  "status": "frozen",
+  "purpose": "Single targeted A/B after the preserved order-164 baseline selected the correct current-frame action but repeatedly supplied a redundant source filename that the generic schema rejected.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order164-v159.json",
+  "candidate_parent_config_sha256": "723caf64d1ccb2a372a1159a2a90e64568141131c31780ed43554888788dbda0",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "028bf6d70f3bba3534f20ff1862c53c3c2ad53772c1beb2fd9e9c9091ce91832",
+  "change_scope": "Allow media.extract_frame current_playback mode to accept an optional model-supplied source path or filename as a basename assertion. The VLC Adapter resolves and uses only the actual current media, rejects a mismatched basename with SOURCE_MISMATCH, and still rejects frame_index or time_seconds in current-playback mode. No task identity, fixed filename, answer value, task route, golden data, evaluator access, Runner argument rewrite, or argument injection is added.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_vlc_current_source_assertion_v160_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and audit this single generic hypothesis. If it fails without exposing a new shared high-value defect, mark order 164 task_blocked immediately and advance; do not add another task-local schema, prompt, GUI coordinate, fixed source name, frame index, or task-shaped workflow.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_1_final_local_attempt",
+    "hypothesis_class": "optional_current_media_basename_assertion",
+    "baseline_result": "experiments/generic-only-coverage-order164-v159-run1/results.json",
+    "baseline_result_sha256": "f51236ac3a1705dded8e72259268fc3ad00942bfb9dac5e14748191a58728d9c",
+    "baseline_audit": "experiments/generic-only-coverage-order164-v159-run1/generic-only-audit.json",
+    "baseline_audit_sha256": "2ad8ec3c6655e3059c7c0a32c19f238c496a8a17261bd5abdf474748476229fc",
+    "baseline_outcome": "failed_reward_0_correct_media_extract_frame_selected_but_redundant_input_path_plus_current_playback_rejected_until_stalled_no_progress_at_9_steps_valid_audit",
+    "counterfactual_contracts": [
+      {
+        "current_media": "counterfactual-night-sky.webm",
+        "model_arguments": {
+          "input_path": "counterfactual-night-sky.webm",
+          "output_path": "/home/user/Desktop/night-sky.png",
+          "current_playback": true
+        },
+        "expected": "extract actual current media and preserve all model arguments unchanged"
+      },
+      {
+        "current_media": "actually-playing.webm",
+        "asserted_source": "different-video.mp4",
+        "expected_error": "SOURCE_MISMATCH"
+      },
+      {
+        "current_playback": true,
+        "forbidden_selectors": [
+          "frame_index",
+          "time_seconds"
+        ],
+        "expected_error": "INVALID_REQUEST"
+      }
+    ],
+    "focused_tests": "332 passed across complete VLC schema, VLC action, and LiteAgent runtime files",
+    "full_unit_tests": "2094 passed",
+    "ruff_and_touched_file_format": "passed",
+    "compileall": "passed",
+    "project_layout_and_leakage": "passed",
+    "frozen_v1_hashes": "passed",
+    "osworld_evaluator_tree": "frozen_commit_clean",
+    "source_sha256": {
+      "integrations/lite_agent/tool_catalog.py": "ad4f6ed8e81b43e89c22cdd9cfc8f845710da19cdc0b40b3180bcd91d19aef4e",
+      "vlc_adapter/schema.py": "a8b7693deb442e4f9c4adc1025b3270fb0b50969d2c8b3efce3f894031a05339",
+      "vlc_adapter/actions.py": "585cc760f8c8f78ade84b0be8851b6a501c7ff5fc870c27ff41e27ab9a1aa21d",
+      "tests/unit/test_vlc_schema.py": "9bb54a2a2c127c241c0518873fb2b110fa03a0b8588931a03346ffe5a8eda78f",
+      "tests/unit/test_vlc_actions_verifier.py": "58bc2b8492ce2e3bffe25bf35a98e745fa430684337540c374003b5dc90c420d",
+      "tests/unit/test_lite_agent_runtime.py": "cb02d7cc29ccedd12a2e6d8f492b5eee1002901079f8abf591b57b5ec541a318"
+    },
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for order 164 generic hypothesis 1",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 164,
+      "source_order": 307,
+      "domain": "vlc",
+      "task_id": "fba2c100-79e8-42df-ae74-b592418d54f4",
+      "source_episode_id": "b6458a2281e311210e594f7e",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "b860a3a4ffea2cbdd55a1f2d2b08bba919daa0e81fc51385d04100cdb1dfe274",
+      "execution_class": "task_specific",
+      "pool_order": 164
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-architecture-recall-cohort11-recovery10-v1-concurrency6",
+  "status": "frozen",
+  "purpose": "Prior-outcome diagnostic candidate isolating generic recovery architecture, truthful zero-match evidence, and a ten-result model-requested tool-search surface on the same fixed 11-task affected/control cohort. This condition preserves non-thinking Qwen transport and is not a baseline candidate.",
+  "freeze_timestamp": "2026-08-27T16:59:29.591401Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "source_seal": "adapter_versions/v2_expanded/experiments/analysis-architecture-recall-recovery10-v1/source-seal.json",
+    "source_seal_sha256": "fb6e1c6ac9baf1310c309d1a1c3a04d089b35c992090e52c7673ba6f1768290e",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-architecture-recall-recovery10-v1/strict-tool-granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "67179e3dd452a861060b1935922117f9cccc06eca0212d1a40242f4bbba8e303"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "git-297a7b1-recovery10-v1",
+    "role": "diagnostic",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-architecture-recall-cohort11-recovery10-v1-concurrency6-run1",
+    "source_git_commit": "297a7b1b2922a6b2b6bbaa285a500237f26991d7",
+    "source_dirty": false,
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 850,
+      "total_bytes": 64426648,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "9e30d48108c856ce30482c8d4c0a51d516de63f7a69a971b056b08336b7a7989"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_git_297a7b1_recovery10_v1",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking_architecture_isolation",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 900.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 300.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 6,
+    "workers_per_endpoint": 3,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "initial_work_state_observation_mode": "screenshot",
+    "model_tool_transport_mode": "complete_response",
+    "model_authored_state": false,
+    "causal_affordance_graph": false,
+    "causal_context_event_limit": 8,
+    "causal_context_hint_chars": 32000,
+    "deferred_gui_fallback": false,
+    "enable_image_preview_batch": true,
+    "grounded_completion_claims": false,
+    "model_screenshot_transport": {
+      "format": "png",
+      "compression_level": 1,
+      "lossless": true,
+      "pixel_geometry": "preserved"
+    },
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_public_routes_plus_search10_with_model_visible_non_terminal_completion",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "The exact same prior-outcome-informed cohort as the prior control and maximum-reasoning diagnostic: four premature-completion, three retrieval/selection, one parameter, one result-binding, and two historical-pass controls.",
+    "selected_count": 11,
+    "premature_completion_orders": [
+      5,
+      95,
+      102,
+      132
+    ],
+    "retrieval_or_selection_orders": [
+      7,
+      15,
+      103
+    ],
+    "parameter_orders": [
+      13
+    ],
+    "result_binding_orders": [
+      93
+    ],
+    "control_orders": [
+      55,
+      119
+    ],
+    "source_order_preserved": true,
+    "uses_prior_outcome": true,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {
+      "order": 5,
+      "domain": "libreoffice_calc",
+      "task_id": "4f07fbe9-70de-4927-a4d5-bb28bc12c52c",
+      "source_order": 72
+    },
+    {
+      "order": 7,
+      "domain": "libreoffice_calc",
+      "task_id": "6054afcb-5bab-4702-90a0-b259b5d3217c",
+      "source_order": 75
+    },
+    {
+      "order": 13,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "source_order": 89
+    },
+    {
+      "order": 15,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "source_order": 92
+    },
+    {
+      "order": 55,
+      "domain": "libreoffice_impress",
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "source_order": 146
+    },
+    {
+      "order": 93,
+      "domain": "multi_apps",
+      "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+      "source_order": 190
+    },
+    {
+      "order": 95,
+      "domain": "multi_apps",
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "source_order": 196
+    },
+    {
+      "order": 102,
+      "domain": "multi_apps",
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "source_order": 210
+    },
+    {
+      "order": 103,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "source_order": 212
+    },
+    {
+      "order": 119,
+      "domain": "multi_apps",
+      "task_id": "4c26e3f3-3a14-4d86-b44a-d3cedebbb487",
+      "source_order": 237
+    },
+    {
+      "order": 132,
+      "domain": "multi_apps",
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "source_order": 267
+    }
+  ]
+}

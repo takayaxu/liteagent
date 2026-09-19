@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order92-v54",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order91-calc-create-new-v54.json",
+  "candidate_parent_config_sha256": "64e5878fb4fc25f9180a0b8cf19b11e5c291003bb4b5483bed8c2256b3c7c724",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "c019b357412049396c38006dc6e45da5d2f1806cd3828fd992efc4107c782d1b",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "before_result_sha256": "c56bfe94c5027d21e587c9f4e66d50cbea94ac8b1369063d38c71c13fe2df7b3",
+    "before_audit_sha256": "98ed62ce0b0d623d5de41dfd94882c454753edbf834432ea70ea556c136da751",
+    "before_trajectory_manifest_sha256": "11b55ef958f32184ab9f6447b22f6a7a34e518ccd89a3e942a5ead30a84d01c9",
+    "failure_class": "missing_generic_new_workbook_creation",
+    "hypothesis_index": 3,
+    "hypothesis_limit": 3,
+    "calc_schema_sha256": "78a468dfec9fcf0052fdc9981d99aedbc9720236241d4df82715aa4c89d95566",
+    "calc_tool_manifest_sha256": "9847892eef19ea9a3c30b319da295de2d01b88234b9dc5fa036b8baf6261d24b",
+    "calc_uno_worker_sha256": "6664db2689e0e85e05f76894fe10dc65c8df2c82c7cf64e5737e894fac283e98",
+    "lite_agent_adapter_results_sha256": "986e0b23e90bf64ac713e08af9738f4e761e21cd1a9094619bdd829d7fb06623",
+    "lite_agent_tool_catalog_sha256": "326095f7183816fec1bbc9da89692642e937d62f1085c9025c763b25ebfdbf6b",
+    "openapa_tool_catalog_sha256": "00199dee87dcba5633397a3a5aa1ccb0a05f9573c181532cf30494ba0c3531a2",
+    "lite_agent_runner_sha256": "b81ea162e6f73c2fa720902e77ab54ccb31c8397f1cd95297743150b6fc441af",
+    "lite_agent_supervisor_sha256": "bed048eb65925aebe2cc5f83bca77878a92738186f5613476047716971d4a5ce",
+    "counterfactuals": "A structurally different three-column inventory table with strings, numbers, booleans, and nulls creates a valid XLSX package, writes the expected cells, renames the sheet, records the exact range, and keeps the document active. Schema tests reject relative or unsupported paths, partial table contracts, duplicate headers, and nonrectangular rows. Tool search ranks the action first for two paraphrased new-spreadsheet queries, and exact model-facing arguments reach adapter.call unchanged.",
+    "focused_unit_tests": "300 passed",
+    "full_unit_tests": "1511 passed",
+    "ruff_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_calc_create_new_v54_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 92,
+      "source_order": 189,
+      "domain": "multi_apps",
+      "task_id": "ee9a3c83-f437-4879-8918-be5efbb9fac7",
+      "source_episode_id": "6a989c6dcfe9db0ca1cb348a",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "a3ab6ed27a3924f8988db5c5956b8186842e7e15db3f2b3d1d8585c6093eede6",
+      "execution_class": "task_specific",
+      "pool_order": 92
+    }
+  ]
+}

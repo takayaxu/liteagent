@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order68-v28",
+  "status": "frozen",
+  "purpose": "Coverage-first measurement of the first non-pass task in the fixed 189-task development ledger under the unchanged current generic candidate.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order67-writer-page-number-schema-v28.json",
+  "candidate_parent_config_sha256": "fbd0de25635bc09dbf8b3f43ae528c9b7e0a014f70307cba54ea1cdf9ba0fed8",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "91f027e10d2d1b87bc6fa69ab576295c26670a5e50356a92c7a1f5dcdd82222f",
+  "change_scope": "No task-driven code change. Measure the unchanged generic candidate on the first non-pass ledger task using a fresh VM and immutable result directory.",
+  "implementation_evidence": {
+    "hypothesis": "The model already selects document.add_page_numbers, but the legacy opaque params wrapper causes it to emit an invalid string. A direct position enum should let the same model choose the requested footer alignment without an application-specific parser.",
+    "writer_schema_sha256": "0004e86919e503485714471be23a5b724524dc9fc4b12313fb883989009c175f",
+    "writer_tool_manifest_sha256": "bab2d709e8df1780539863897632bfb134bd49d047b82342b4ec893b4abd62f5",
+    "writer_uno_worker_sha256": "ea8f81244f22323ef6971b39dd0f1be0363d41a583eacf47654cdbf54570be8c",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "writer_schema_test_sha256": "28a610a6d147be68cad7a924dd3fa4a7b0484656337748dbadf3fe96f3cde1e1",
+    "tool_catalog_test_sha256": "d431b0b008dbaa855c29c0bb8a1f90c34728cbd69bc12311ccafe66b5cbdd0f0",
+    "strict_manifest_test_sha256": "696477351681ef5b07a868cb661b1d023c05b3215f058cdba871c10085ac2cdb",
+    "runtime_test_sha256": "be8f2c7ee49c68dce3eaf727c9064561695c18a87761a6244d2ba1626b32c8f9",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "187 passed",
+    "full_unit_tests": "1279 passed",
+    "counterfactual": "Schema and LiteAgent execution use bottom-right and bottom-center footer positions rather than the current task's position. Tests cover all three supported positions, an unsupported top-left value, direct top-level dispatch, and rejection of the old empty params wrapper.",
+    "changed_source_leakage_scan": "No current task UUID, episode ID, or task literal appears in the changed runtime or test sources.",
+    "prior_v27_result_sha256": "115d894c2345d254b50a4e75c33a8cdfdd9776f239755d0522b80697aa0c0020",
+    "prior_v27_audit_sha256": "155b5e17a6fa297a8551ba94e2b19010006c14d1d965f670675698c1099aebbf",
+    "prior_v27_audit_valid": true,
+    "prior_v27_outcome": "evaluator 0.0 after 30 steps; the model selected document.add_page_numbers 15 times and searched 14 times, but every mutation was rejected because it emitted an empty string in the legacy params wrapper",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_page_number_direct_schema_v28_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "unseen",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 68,
+      "source_order": 159,
+      "domain": "libreoffice_writer",
+      "task_id": "0e763496-b6bb-4508-a427-fad0b6c3e195",
+      "source_episode_id": "e8a62b358b11bf971de72304",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "acaa5a808335df46934e21bada42337f388203d46517111fa706f49a22eadb80",
+      "execution_class": "task_specific",
+      "pool_order": 68
+    }
+  ]
+}

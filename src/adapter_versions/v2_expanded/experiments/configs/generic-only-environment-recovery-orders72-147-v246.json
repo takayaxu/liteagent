@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-environment-recovery-orders72-147-v246",
+  "status": "frozen",
+  "purpose": "Single-run environment recovery check for the two v245 cohort episodes that terminated before evaluator scoring because of generic Docker and screenshot-observation faults. This prior-outcome-selected run validates infrastructure behavior only and is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-repaired-cohort22-v245-concurrency6.json",
+  "parent_config_sha256": "18a296d4cf2620ab3d39ef1fbfb6b44fa783f2c981ccf212d3827b7454ae847e",
+  "hypotheses": [
+    "Order 72 failed before the first model request because Docker's high-level containers.list() inspected a container ID that another worker removed after enumeration. Reading published ports directly from the low-level container summaries avoids that stale-ID inspect race while preserving the same locked port-allocation semantics.",
+    "Order 147 received screenshot=None after repeated screenshot endpoint 500 responses and the Runner passed it to Path.write_bytes, producing a TypeError after a model action. Validating screenshot bytes, performing two additional bounded observation fetches, preserving the executed event on exhaustion, and raising a typed environment error prevents the None write and should tolerate a transient capture outage."
+  ],
+  "change_scope": "Generic environment code only. The Docker provider now collects system ports and Docker PublicPort values from the low-level container summary endpoint without per-container inspect calls. The LiteAgent Runner now requires non-empty screenshot bytes for initial, post-action, and final observations, retries within a fixed three-observation budget, normalizes byte-like values, preserves an executed event before a terminal screenshot error, and raises ScreenshotObservationError with bounded diagnostics. No Prompt, Router, tool schema, Adapter application semantics, model settings, task instruction, completion policy, or evaluator behavior changes.",
+  "sources": {
+    "v245_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-repaired-cohort22-v245-concurrency6.json",
+    "v245_config_sha256": "18a296d4cf2620ab3d39ef1fbfb6b44fa783f2c981ccf212d3827b7454ae847e",
+    "v245_results": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v245-concurrency6-run1/results.json",
+    "v245_results_sha256": "47269a8eb48ab10ca96fd0431c09ac8463281c3bc3b8807aba4ac20297399295",
+    "order72_worker_audit": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v245-concurrency6-run1/strict-audit-worker-05.json",
+    "order72_worker_audit_sha256": "40f99bc0b156cc9a86f882a8db1717bf4fd9992f3f8587ec1e84ce89054d09dd",
+    "order147_worker_audit": "adapter_versions/v2_expanded/experiments/generic-only-repaired-cohort22-v245-concurrency6-run1/strict-audit-worker-02.json",
+    "order147_worker_audit_sha256": "c29b3df6ee1dc1d79db3f9105770904c1a063d18d81e458db353def2ce7c7de3",
+    "order72_outcome": "environment_failure after 3.15 seconds and before the first model request: docker.errors.NotFound while high-level containers.list() inspected a concurrently removed container ID.",
+    "order147_outcome": "environment_failure after 127.9 seconds and eight model requests: the screenshot endpoint returned 500 through its internal retries, observation screenshot was None, and Path.write_bytes raised TypeError before evaluator scoring.",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "retained_candidate": "v246",
+    "active_runtime_and_test_tree_sha256": "2a7b1f524bd3e6f664da1e520a3a16a4e7cfb7991c51927f7458f21e5f43cf5b",
+    "active_runtime_and_test_tree_algorithm": "sha256 of sorted sha256sum records for all non-pyc files under active Adapter, integrations, deployment, scripts, and tests directories",
+    "docker_provider_sha256": "a610c93bb13a4827bb3798c748dbf2970458ed054c414a07b333225c001a33fa",
+    "runner_sha256": "b740064515477055928ff235605024c9819b99ad32ffac6616f319d8da1e04ee",
+    "provider_tests_sha256": "3a211a2d5c7473e52dda16549ce547c01d09b8d25e346a676fbe4bf15383aca9",
+    "runner_tests_sha256": "15b6344a78d7b7a8a1d5cfe3d5d5d8cd49c39a41aa53f9e199ed55715d59eaa3",
+    "supervisor_sha256": "893597137a2ec9a533ead3bbaac7eda2dbfd98020cf6eca3767dbcf4894feafe",
+    "strict_auditor_sha256": "c0ff52cfe538b5ab24c6deb4ec400c374400dfae58a805dc519c39ef660d1a24",
+    "lite_agent_tool_catalog_sha256": "ad6ea43ce17555c84708fcae308765c8009a8de76d2c1894fae96ba1767909d4",
+    "counterfactuals": "Provider test supplies a stale-looking container summary and a high-level collection whose list method raises if called; public ports and unrelated system ports are collected without inspect. Runner tests use a different window label and alternate screenshot bytes to prove recovery after one empty capture, then prove typed failure after a bounded all-empty sequence.",
+    "focused_tests": "19 passed",
+    "unit_tests": "2621 passed",
+    "ruff": "passed for all active source and tests",
+    "format": "passed for all changed files",
+    "compileall": "passed for all active source and tests",
+    "project_layout_and_deployment_leakage": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+    "osworld_evaluator_tree": "tracked files unchanged"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_environment_recovery_v246_2026-08-10",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "exactly the two v245 final-cohort environment failures, in fixed-pool order",
+    "selected_count": 2,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-10T05:45:50Z",
+  "tasks": [
+    {
+      "order": 72,
+      "source_order": 163,
+      "domain": "libreoffice_writer",
+      "task_id": "6a33f9b9-0a56-4844-9c3f-96ec3ffb3ba2",
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 147,
+      "source_order": 287,
+      "domain": "os",
+      "task_id": "4d117223-a354-47fb-8b45-62ab1390a95f",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

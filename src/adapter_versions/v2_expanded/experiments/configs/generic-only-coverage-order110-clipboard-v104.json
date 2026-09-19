@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order110-clipboard-v104",
+  "status": "frozen",
+  "purpose": "Targeted generic-only A/B for Order 110 hypothesis 1 after preserving and strictly auditing the untouched v103 failure.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order110-v103.json",
+  "candidate_parent_config_sha256": "678565b6d23e4632910e2444a16a3c7ca825b48e47d2eaa7cc2c8486eab1f0bb",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b06dbeeb0e2ea65802797f1c179e582150157850678f7c8d3da74fee85374c96",
+  "change_scope": "Add reusable OS clipboard.set and clipboard.get actions, strict clipboard read-back verification, transparent Multi-Apps forwarding, and model-facing catalog exposure so a model-selected filesystem.find result can be copied without GUI automation.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_clipboard_v104_2026-08-07",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": "conditional generic code-execution guidance only; no schema, action, or argument forcing",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "on_failure": "Preserve and strictly audit this hypothesis-1 A/B. Classify the new trace before editing, do not rerun v104 unchanged, and test at most two further materially different generic hypotheses. If both fail, mark Order 110 task_blocked and immediately advance to Order 111.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "1_of_3",
+    "hypothesis_class": "generic_os_clipboard_read_write",
+    "parent_result_sha256": "4ee3c65d20e3eb90fea2bedf5ba9117deea27dd5fe5266e30eee9346e00877c3",
+    "parent_audit_sha256": "edf0000447b49b3768a338e4a91d0fd023a317b7156079f276aa08c2f9d88539",
+    "parent_status": "failed_reward_0_stalled_no_progress_after_9_steps_and_57_714_agent_seconds",
+    "parent_diagnosis": "The model correctly selected filesystem.find and obtained the requested path, then repeatedly requested the absent os.clipboard.set action until the eight-event no-progress guard terminated the episode.",
+    "counterfactual_scope": "Unit tests cover unrelated multiline and Unicode strings, empty text, read length limits, strict read-back mismatch, xsel-to-xclip fallback, schema rejection, transparent Multi-Apps forwarding, catalog deduplication, and read-only classification. No task identity, requested filename, fixed path, instruction fingerprint, golden content, or evaluator state appears in the implementation.",
+    "model_choice_contract": "The model selects clipboard.set or clipboard.get and supplies the text or optional read limit. Multi-Apps forwards the captured parameters unchanged; the Adapter validates types and verifies the actual guest clipboard after mutation.",
+    "os_schema_sha256": "a6ff6a09d4c8bf639ca1948405ff0284d74e511239caba893f05a2b3d726c4a0",
+    "os_actions_sha256": "825500f6f17737ff904954dd1ae13117ef77906e1f2d0db12a8efb0cca7f8fcb",
+    "os_tool_manifest_sha256": "fefeee064a9e887485b9f2896190b468f4575caa4ebd079b5972243b0e50e4df",
+    "os_worker_sha256": "3fcd7c47119ca5db489eaf51bad2a634d93d17879b622b162e89f974c2284b72",
+    "os_verifier_sha256": "2bad2b02bbdf5b68a88c69c1074150109900be5b7f5840db89184fd3d97cd5bb",
+    "multi_apps_generic_schema_sha256": "e9ba1da7faeeefc6d2eca6531509aa5323210fe7ecf2f444aa10f626d056c00b",
+    "multi_apps_generic_actions_sha256": "89ec9e05096849e1e9674628a55a4c49e350845f3cd9ffe1906b441da67aa595",
+    "lite_agent_tool_catalog_sha256": "14cc1d9d1d173b15fbebb7c00d2e4fa9c4c5645bfbdcfafb2d3b014e2ab99331",
+    "openapa_tool_catalog_sha256": "225d744548b8dc13e4b384eb1d2698fa3de8ebaddbb91bd3a3e888cde319cc8e",
+    "lite_agent_completion_policy_sha256": "9e745d38278ff3349359bfa1517c1cb6d05755214d812d5c54543b4dea7faad7",
+    "focused_tests": "496 passed",
+    "full_unit_tests": "1717 passed",
+    "ruff": "all changed Python files passed lint and format checks",
+    "project_layout": "passed, including generic deployment leakage scan and canonical links",
+    "frozen_v1": "SHA256SUMS validation passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked evaluator/test changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B on the preserved untouched failure for the first non-pass ledger task",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 110,
+      "source_order": 223,
+      "domain": "multi_apps",
+      "task_id": "716a6079-22da-47f1-ba73-c9d58f986a38",
+      "source_episode_id": "9b9e40dc46d0fc01363a5ce9",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "f696f3545734014420f833fd5fd617c95079a25dbb581bf7dbb9de518a3a4ba5",
+      "execution_class": "task_specific",
+      "pool_order": 110
+    }
+  ]
+}

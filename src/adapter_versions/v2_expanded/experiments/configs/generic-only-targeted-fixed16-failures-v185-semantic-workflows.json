@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-targeted-fixed16-failures-v185-semantic-workflows",
+  "status": "frozen",
+  "purpose": "Targeted clean-VM A/B of the four v184 fixed-16 failures after reusable Calc chart-sheet routing, Git commit-and-push workflow, and VLC semantic media/preference APIs. This diagnostic set is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v184-routing-completion.json",
+  "parent_config_sha256": "35817cce2456924e97ac22fd41418636292cfac422c69345561978acc8fc51a5",
+  "change_scope": "Add reusable application-semantic contracts without task identity, answer values, golden/evaluator state, Runner argument injection, or task-specific branches. The model still selects every action and model-facing argument.",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-validation-16-v184-routing-completion.json",
+    "task_pool_sha256": "35817cce2456924e97ac22fd41418636292cfac422c69345561978acc8fc51a5",
+    "historical_execution_class_or_outcome_used": true,
+    "selection_reason": "Preserved v184 fixed-16 orders 2, 8, 13, and 14, which were the four evaluator failures. This diagnostic set is not a score denominator."
+  },
+  "implementation_evidence": {
+    "runtime_sha256": "a850e27c613dac4a26234d4b94a43bccc993094ca70a549dc154ab9a31ad01e7",
+    "lite_agent_tool_catalog_sha256": "fb6f9ebf9464a3f5afe0b71210ec0eea231f2e3934fb0df5b0660bb842a08f88",
+    "openapa_tool_catalog_sha256": "ef22f1007f83ae701c56971f0e6495b138a75c4c10117d8245f72feb7e7a9460",
+    "completion_policy_sha256": "a863f5a6d9e4ebbe22d44e2528fab1f20086e27dd2d9b7f1b5590114305fa9c3",
+    "calc_semantics_sha256": "e9ccd9dc025c92dfb2b015012a14da38a73605fcb183c6cc813f131c14f5705d",
+    "calc_schema_sha256": "8837ca9293ad855832c11559415a8be08df9d9b0fc0b33c9c87fb1787aebdef1",
+    "git_semantics_sha256": "68305aa785516309b621cfc184925907504353c396c1b2f84cec51dadb6d5105",
+    "git_workflow_sha256": "6fc54e73fcd8f73996ab7ed9b0251843cf838c99708b7e8b4175c2fc029ff986",
+    "multi_apps_generic_actions_sha256": "bc69024bb9bef715f9cb24987f1d8ba3694f03cdb92f0b27951a8375ee7a3c94",
+    "multi_apps_generic_schema_sha256": "b2f11279feddeb9ad2a1e07f3bbe0980e5dd6b9f78984fe83b66eb9ed54dd723",
+    "multi_apps_manifest_sha256": "ccf9c95611f327f5c6d1e862e96d4e9d1a45494febd6154f576a792a55a82373",
+    "vlc_semantics_sha256": "963d87498e6cddde41d475e2e700b61588da294799f5de766967d6181ae2096e",
+    "vlc_actions_sha256": "aa353caffd0daf4c97642968fb74cb2464e9d8dacb983a9ff4ce26f33dbf3470",
+    "vlc_schema_sha256": "dfd114d78bc035f049c63fb28bf4d17ee4b6a4430798d9cc0b053794b5756b39",
+    "vlc_worker_sha256": "428f6c7a125d3f1f3454080833e3faaaca27c263c65d2422fbaca940a09740ca",
+    "vlc_manifest_sha256": "98dbc4037258ae64d20de178f7b7894cdd204992fbbdd572a7c5e639b8683f64",
+    "tool_validation_sha256": "ffd0db8cd6ce3101b53ebb42a908e05a191172a6081a58b579d3e871c015fadd",
+    "runner_sha256": "1653398e8a9011f8996c4c1247ef95c2d2a2b9f48d40e20e119ef9e23d9c6422",
+    "coverage_sha256": "4959de24365ab10af8b57e8faf0c41709316ad12ae265c7535c088ad69e608c5",
+    "unit_tests": "2222 passed",
+    "ruff": "passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "clean"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_semantic_workflows_v185_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "required_evidence": [
+      "exact_model_requests",
+      "model_visible_schema_enforcement",
+      "guest_file_inventory",
+      "guest_sanitization",
+      "adapter_policy_trace",
+      "screenshots",
+      "model_responses",
+      "original_evaluator_output"
+    ]
+  },
+  "selection": {
+    "frozen": true,
+    "method": "v184_fixed16_evaluator_failures",
+    "selected_count": 4,
+    "replace_after_run": false,
+    "score_denominator": false,
+    "parent_orders": [
+      2,
+      8,
+      13,
+      14
+    ],
+    "domain_counts": {
+      "libreoffice_calc": 1,
+      "multi_apps": 1,
+      "vlc": 2
+    },
+    "candidate_condition": "v185 semantic workflows; no mid-run changes"
+  },
+  "tasks": [
+    {
+      "order": 1,
+      "parent_order": 2,
+      "pool_order": 2,
+      "source_order": 68,
+      "domain": "libreoffice_calc",
+      "task_id": "12382c62-0cd1-4bf2-bdc8-1d20bf9b2371"
+    },
+    {
+      "order": 2,
+      "parent_order": 8,
+      "pool_order": 86,
+      "source_order": 178,
+      "domain": "multi_apps",
+      "task_id": "2c9fc0de-3ee7-45e1-a5df-c86206ad78b5"
+    },
+    {
+      "order": 3,
+      "parent_order": 13,
+      "pool_order": 161,
+      "source_order": 303,
+      "domain": "vlc",
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967"
+    },
+    {
+      "order": 4,
+      "parent_order": 14,
+      "pool_order": 162,
+      "source_order": 304,
+      "domain": "vlc",
+      "task_id": "8ba5ae7a-5ae5-4eab-9fcc-5dd4fe3abf89"
+    }
+  ],
+  "freeze_timestamp": "2026-08-09T02:05:29+00:00"
+}

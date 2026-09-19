@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order68-writer-font-schema-v29",
+  "status": "frozen",
+  "purpose": "Targeted coverage-first A/B for the first non-pass task after replacing the Writer whole-document font action's opaque params wrapper with an Adapter-owned direct font_name schema.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order68-v28.json",
+  "candidate_parent_config_sha256": "95ff53205773e7e05beb764554fb2160d22a06804e3260d5bc5f13c0d11b127a",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "e37ea5f8ec55f9dac44ad55cfa1629be50fdfe2f3a0ae0a7ee298401a9a98bfd",
+  "change_scope": "Expose document.set_font through a reusable required font-family string and leave model, prompt, routing, VM, evaluator, and all other tool behavior unchanged.",
+  "implementation_evidence": {
+    "hypothesis": "The model already selects document.set_font, but the legacy opaque params wrapper causes it to emit an invalid string. A direct font_name field should let the same model supply the instruction-named family without an application-specific parser.",
+    "writer_schema_sha256": "0004e86919e503485714471be23a5b724524dc9fc4b12313fb883989009c175f",
+    "writer_tool_manifest_sha256": "c7a623e939770b36a363abce5c75f5f2721c70390a2ea33699c92c39b94a1873",
+    "writer_uno_worker_sha256": "ea8f81244f22323ef6971b39dd0f1be0363d41a583eacf47654cdbf54570be8c",
+    "tool_catalog_sha256": "24882044578770d32311ca5fa61ec0f7133ea42ac201f3f1c762c25b40fe7cbf",
+    "writer_schema_test_sha256": "780566b5539c16e53f546a59711b6dd01b89be9d8d8b34a2665600272202a43b",
+    "tool_catalog_test_sha256": "d431b0b008dbaa855c29c0bb8a1f90c34728cbd69bc12311ccafe66b5cbdd0f0",
+    "strict_manifest_test_sha256": "aca666d10037655230cd0cb6362c67a523f53aea817e70355414b273ece9336d",
+    "runtime_test_sha256": "66ad8cf722e45b3985184da051eba7c4d6dec4674f2a8b9c86448516af669174",
+    "runner_sha256": "b301e5afec50c7dc753e980fe0ec5abdb6debdecfcf43744f991e198e83dc6f3",
+    "supervisor_sha256": "8cce0d4bb01a5a1dd5949ba3f0315680a72f6f801bf786db84efe3717ee4634f",
+    "focused_schema_catalog_runtime_tests": "190 passed",
+    "full_unit_tests": "1283 passed",
+    "counterfactual": "Schema and LiteAgent execution use Liberation Serif and Noto Sans rather than the current task's font. Tests cover a nonempty family, empty-string rejection, direct top-level dispatch, and rejection of the old empty params wrapper.",
+    "changed_source_leakage_scan": "No current task UUID, episode ID, or task literal appears in the changed runtime or test sources.",
+    "prior_v28_result_sha256": "ce9a8f6668fed9df04db8ddee185cde3df4368d106e7a54a4ced356398b78d4c",
+    "prior_v28_audit_sha256": "80c25c682f0a5b64938b81410386c16483b18f7b343b40dcf6434738eab77f39",
+    "prior_v28_audit_valid": true,
+    "prior_v28_outcome": "evaluator 0.0 after 30 steps; the model selected document.set_font 16 times and searched 13 times, but every mutation was rejected because it emitted an empty string in the legacy params wrapper",
+    "ruff": "passed",
+    "ruff_format_changed_files": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_writer_whole_document_font_schema_v29_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "first non-pass in the task-ID-deduplicated development coverage ledger",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 68,
+      "source_order": 159,
+      "domain": "libreoffice_writer",
+      "task_id": "0e763496-b6bb-4508-a427-fad0b6c3e195",
+      "source_episode_id": "e8a62b358b11bf971de72304",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "acaa5a808335df46934e21bada42337f388203d46517111fa706f49a22eadb80",
+      "execution_class": "task_specific",
+      "pool_order": 68
+    }
+  ]
+}

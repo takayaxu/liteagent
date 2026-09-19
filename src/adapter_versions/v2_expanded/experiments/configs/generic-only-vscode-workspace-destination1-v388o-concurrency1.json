@@ -1,0 +1,193 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-vscode-workspace-destination1-v388o-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen one-task development A/B for a reusable VS Code workspace destination representation. Relative to v388n, the existing workspace.write and workspace.set_folders contracts accept either an exact full path or explicit directory plus workspace_name. The Adapter deterministically represents the latter as <directory>/<workspace_name>.code-workspace. The model still selects the mutation, destination values, complete folder list, state transitions, and completion; workspace.save_current_project remains absent and the Runner never copies workspace.inspect results into a mutation. Order 182 is outcome-informed development evidence and cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-21T19:53:05Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v388o-vscode-workspace-destination1/plan.json",
+    "prospective_plan_sha256": "fc713780a5b134f0912523f6836040c5a9fb778827b9b9c7e31100b0b7b4cc76",
+    "v388h_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-direct-outcome-workflow8-v388h-concurrency1.json",
+    "v388h_config_sha256": "39cc410feed327ece920c2e99b26eb623b216b03173ea39ea03f77954bf3a02b",
+    "v388h_results": "adapter_versions/v2_expanded/experiments/generic-only-direct-outcome-workflow8-v388h-concurrency1-run1/results.json",
+    "v388h_results_sha256": "c2aeea984e39036192bec705b2feb5e025a07cdc24fc66b0c83235f919569ec5",
+    "v388h_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-direct-outcome-workflow8-v388h-concurrency1-run1/strict-audit-v5.json",
+    "v388h_strict_audit_sha256": "037620d620b75c5a47912b2f803408dd4ed377c6c66a733eb443826b53b3ad39",
+    "v388h_analysis": "adapter_versions/v2_expanded/experiments/analysis-v388h-direct-outcome-workflow8/summary.json",
+    "v388h_analysis_sha256": "d898058f088192c262a712bfe951743da961f9831de1db8f4f77f2f802a55a52",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v388o",
+    "role": "development_vscode_workspace_destination_representation_ab",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-vscode-workspace-destination1-v388o-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 784,
+      "total_bytes": 63500769,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "018d33d89e38acdd14dc31b5350ffef2f3120c02c309c6228e18bb835611981f"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v388o_vscode_workspace_destination_2026-08-21",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5.0
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "docker_api_timeout_seconds": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20.0,
+      "minimum_elapsed_before_first_model_seconds": 85.0
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true,
+    "model_authored_state_protocol": "direct_outcome_patch_v5"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single outcome-informed VS Code failure from the already frozen v388h workflow_completion subset",
+    "selected_count": 1,
+    "failed_target_count": 1,
+    "stable_pass_control_count": 0,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "changed_factor": "explicit full-path versus directory-and-workspace-name destination representation on existing workspace write/set-folders contracts",
+    "unchanged_factors": [
+      "strict generic routing and Top-K policy",
+      "model-authored state and completion protocols",
+      "all non-workspace Adapter contracts",
+      "model and output-token budget",
+      "VM image and reset policy",
+      "original evaluator"
+    ],
+    "reference_behavior": {
+      "v388h_evidence_valid": true,
+      "v388h_reward": 0.0,
+      "v388h_steps": 5,
+      "v388h_selected_action": "workspace.set_folders",
+      "v388h_model_selected_path": "/home/user/project/.code-workspace",
+      "v388h_environment_failures": 0
+    },
+    "success_criteria": {
+      "passes_minimum": 1,
+      "model_selects_workspace_mutation": true,
+      "model_uses_named_destination_form": true,
+      "executed_payload_equals_model_arguments": true,
+      "created_workspace_basename_equals_model_selected_workspace_name_plus_suffix": true,
+      "created_workspace_folders_equal_model_selected_folders_after_portable_representation_conversion": true,
+      "runner_prefilled_action_or_argument_count": 0,
+      "model_authored_state_declared_minimum": 1,
+      "rejected_state_updates_maximum": 0,
+      "empty_transition_arrays_maximum": 0,
+      "total_steps_maximum": 10,
+      "environment_failures": 0,
+      "strict_audit_v5_all_valid": true,
+      "work_state_protocol": "direct_outcome_patch_v5",
+      "work_state_transition_mismatches": 0,
+      "no_runner_argument_rewrite_injection_or_trace_mismatch": true
+    }
+  },
+  "tasks": [
+    {
+      "order": 182,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_order": 329,
+      "development_stratum": "workflow_completion"
+    }
+  ]
+}

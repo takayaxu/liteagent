@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-ab3-v306-thunderbird-explicit-condition-concurrency2",
+  "status": "frozen",
+  "purpose": "Second targeted development A/B for the public Thunderbird semantic filter contract, adding explicit model-selected conditionality. This is not a baseline score, best-of selection, or promotion run.",
+  "parent_baseline": {
+    "id": "generic-only-fixed189-v252",
+    "promotion_record": "adapter_versions/v2_expanded/experiments/baselines/v252.json",
+    "promotion_record_sha256": "c04028f57bf29add2f58a7dce22f54c43a26ed0508d3c458839746b06fdb460c",
+    "current_pointer_sha256_at_freeze": "90c02e22fccbd56396037f518ca342a403a3a6c4d6d64ccbfc9ffc3c3abfe06a",
+    "immutable": true
+  },
+  "development_candidate": {
+    "candidate": "v306",
+    "candidate_manifest": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/candidate-v306.json",
+    "candidate_manifest_sha256": "816bfe707fb0d8440c538bdbd720fdd03e5261fa4e62f5b4f83c9d2b3818deae",
+    "active_runtime_and_test_tree_sha256": "38666da8951ed732c6522922fb93fd9784b497e681c6aa510e127920e671f0f7"
+  },
+  "hypothesis": {
+    "generic_cluster": "thunderbird_semantic_filter_configuration",
+    "statement": "Explicit model-selected condition_mode plus a consistent conditions array prevents omitted filter criteria from silently compiling as ALL while preserving normal conditional and all-message rules.",
+    "runtime_answer_materialization": false,
+    "runner_selects_condition_mode_field_operator_value_action_or_destination": false,
+    "runner_argument_rewrite_or_injection": false
+  },
+  "sources": {
+    "pre_edit_hypothesis": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/hypothesis-v306-thunderbird-explicit-condition-mode.json",
+    "pre_edit_hypothesis_sha256": "2fcaad43d1fb3067b13d94a46dc5c0e14d1e99e15e54cebeaa87a5decff8e3aa",
+    "pre_ab_ledger_snapshot": "adapter_versions/v2_expanded/experiments/analysis-v252-failure-optimization/ledger-v306-pre-ab.json",
+    "pre_ab_ledger_snapshot_sha256": "81ac0d76112f3794a9ed7c72d0e1b4c1a86cd57d73bb9f340d2d05758fcd23de",
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/generic-only-fixed189-v252-concurrency6.json",
+    "task_pool_sha256": "21bfc7b3d2119bffa92f4a60d01898c8e466c7773dde3d8e5b1d9190a5c05bee",
+    "baseline_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v252-concurrency6-run1/results.json",
+    "baseline_results_sha256": "2d64fd1101c2c175f4727c3fd1669bb51ed3d60eab88dcf7c14e02991ea7e38c",
+    "previous_ab": "adapter_versions/v2_expanded/experiments/generic-only-ab3-v305-thunderbird-semantic-filter-concurrency2-run1/results.json",
+    "previous_ab_sha256": "21bd1b8cda80778e68e8b2d4b1a55effb3424e740edcf4fe67762fcd32525e69",
+    "selection_uses_prior_outcome": true,
+    "selection_reason": "Reuse the frozen v305 cohort unchanged: Order 154 is the affected v252 failure; Orders 155 and 160 are the nearest clean Thunderbird controls covering a local-folder message mutation and filter-related application configuration.",
+    "baseline_candidate": false
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v306_thunderbird_explicit_condition_ab2_concurrency2_2026-08-13",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1",
+      "http://192.168.0.138:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v4",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "resume": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "The unchanged v305 cohort: one affected failure plus the two predeclared nearest clean Thunderbird controls, with source order preserved and round-robin endpoint assignment.",
+    "selected_count": 3,
+    "affected_failure_orders": [154],
+    "clean_control_orders": [155, 160],
+    "domain_counts": {"thunderbird": 3},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "acceptance": {
+    "all_worker_audits_valid_and_baseline_admissible": true,
+    "minimum_affected_passes": 1,
+    "affected_environment_failures_allowed": 0,
+    "clean_controls_must_pass": 2,
+    "unexplained_control_regressions_allowed": 0,
+    "order_154_must_execute_filters_configure": true,
+    "order_154_filters_upsert_must_not_execute": true,
+    "order_154_condition_mode_must_be_model_selected_criteria": true,
+    "order_154_conditions_must_be_nonempty_and_model_selected": true,
+    "order_154_adapter_must_verify_native_rule_and_destination": true,
+    "all_raw_arguments_must_equal_event_and_adapter_payload": true,
+    "executed_gui_actions_allowed": 0,
+    "argument_rewrites_or_injections_allowed": 0,
+    "task_identity_or_golden_exposure_allowed": 0
+  },
+  "freeze_timestamp": "2026-08-13T06:07:52Z",
+  "tasks": [
+    {
+      "order": 154,
+      "source_order": 294,
+      "domain": "thunderbird",
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "cohort_role": "affected_explicit_conditional_filter_dgx1",
+      "v252_status": "failed",
+      "v252_reward": 0.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 155,
+      "source_order": 295,
+      "domain": "thunderbird",
+      "task_id": "dd84e895-72fd-4023-a336-97689ded257c",
+      "cohort_role": "clean_control_local_folder_message_mutation_dgx2",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    },
+    {
+      "order": 160,
+      "source_order": 302,
+      "domain": "thunderbird",
+      "task_id": "08c73485-7c6d-4681-999d-919f5c32dcfa",
+      "cohort_role": "clean_control_filter_related_application_configuration_dgx1",
+      "v252_status": "passed",
+      "v252_reward": 1.0,
+      "execution_class": "generic_api_only"
+    }
+  ]
+}

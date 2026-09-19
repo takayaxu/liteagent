@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order127-result-context-v138",
+  "status": "frozen",
+  "purpose": "Single targeted A/B for Order 127 hypothesis 2: preserve exact extracted-image paths and wallpaper read-back evidence in generic LiteAgent result context.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order127-document-images-wallpaper-v137.json",
+  "candidate_parent_config_sha256": "290f2e536581e3dc51cd384ed7afb552229e7d822170fcdd77bbf5682d43cd79",
+  "parent_attempt_result": "experiments/generic-only-coverage-order127-document-images-wallpaper-v137-run2-env-recovery/results.json",
+  "parent_attempt_result_sha256": "82ad2eb7f6c84600219e584d17ba6768b1b5e5ca9dbf7fe56da4eb1408ff38a9",
+  "parent_attempt_audit": "experiments/generic-only-coverage-order127-document-images-wallpaper-v137-run2-env-recovery/generic-only-audit.json",
+  "parent_attempt_audit_sha256": "4f91c80184b5bf21849c8ca1f7588cfd9d5ce74820eec4f8407e98b65c63aff3",
+  "parent_attempt_trajectory": "experiments/generic-only-coverage-order127-document-images-wallpaper-v137-run2-env-recovery/workers/worker-01/raw/run-1/127-multi_apps-c2751594-0cd5-4088-be1b-b5f2f9ec97c4/trajectory_manifest.json",
+  "parent_attempt_trajectory_sha256": "968182db908584362ebc3408a43e0f1628cf34f6829f681c0ba415506ed8a03c",
+  "preserved_environment_failure": "experiments/generic-only-coverage-order127-document-images-wallpaper-v137-run1/results.json",
+  "preserved_environment_failure_sha256": "94c6d7084f6c1e36b450849473963419cd288c7db3fbc0341b0bbaf62818e9e9",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "7aecc43abe6fbb08f95af64c519bfd9f0ea53ab3e6ce5b3ce53a207816ad4650",
+  "change_scope": "Add generic LiteAgent result-context summaries for Writer document.extract_images and OS desktop.set_wallpaper. The extraction summary preserves model-selected source and destination fields, bounded exact image output paths, sizes, formats, and hashes, then explains the field-level binding required by a later image-consuming action. The wallpaper summary preserves the model-selected image path and GNOME settings read-back as completion evidence. No action is injected, no argument is rewritten, no directory is resolved to a guessed file, and no email query, attachment selection, combined workflow, task identity, dataset order, fixed path, answer value, golden material, or evaluator state is embedded.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_document_image_result_context_v138_2026-08-08",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 600,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "early_stop_on_repetitive_no_evidence_loop": true,
+    "runner_guard_terminal_semantics": "Internal guard termination records the reason and invokes the original evaluator without appending OSWorld FAIL; explicit model fail_task remains OSWorld FAIL.",
+    "on_failure": "Preserve and strictly audit this single targeted A/B. Do not rerun it unchanged. If exact extraction output_path is visible and the model still substitutes a directory for desktop.set_wallpaper.image_path, classify the remaining failure as model-side observed-value binding and mark Order 127 task_blocked unless a materially different high-value generic hypothesis is supported. Never exceed one further hypothesis, 600 Agent seconds, or eight no-progress events before continuing to Order 128.",
+    "regression_validation_deferred_by_user": true
+  },
+  "implementation_evidence": {
+    "hypothesis_budget_slot": "generic_hypothesis_2",
+    "hypothesis_class": "generic_exact_output_path_and_completion_evidence_context",
+    "failure_evidence": "The v137 targeted A/B returned evaluator 0.0 and stopped at step 17 after a 93.3-second Agent loop. Query, attachment save, document.extract_images, filesystem.find, and desktop.open_path all succeeded. The extraction Adapter response contained /home/user/Desktop/lecture-notes-image-001.png, but LiteAgent exposed downstream_context=null for document.extract_images. Although a later filesystem.find also exposed the exact image path, Qwen repeatedly called desktop.set_wallpaper with image_path=~/ and was stopped by the eight-event no-progress guard.",
+    "counterfactual_tests": "Tests use an unrelated ODT field-study document, an estuary WebP output in a different directory, and a synthetic GNOME settings read-back. They verify that bounded exact output paths, hashes, media types, and selection metadata survive the Multi-Apps wrapper; guidance binds output_path to a later image_path without changing it; and successful wallpaper state is retained as completion evidence. No task or fixed runtime artifact is referenced.",
+    "focused_unit_suite": "496 passed",
+    "full_unit_suite": "1940 passed",
+    "static_verification": "Ruff check and format, compileall, project layout/deployment leakage, frozen-v1 SHA256SUMS, frozen OSWorld commit, and evaluator-tree checks passed.",
+    "parent_implementation_bundle_sha256": "ac01f76d8e27519af0e7df6183cb4f79a84562796951829616d63d94ab5315f8",
+    "context_change_bundle_sha256": "2b185ddef8c6710d1076654f027c1ede69cf0f7dc91a78f405695316e0b1832d",
+    "context_change_bundle_algorithm": "sha256 of sorted sha256sum lines for the two changed files",
+    "source_sha256": {
+      "integrations/lite_agent/adapter_results.py": "0635b5366b1ca142ddd8738b6b406f2ec97b10ed469b7458399e57a0e6504dca",
+      "tests/unit/test_lite_agent_adapter_results.py": "31f17876249fadc5e0d3bc33e4e543baeda942bfe2140d36635d075320b2065e"
+    },
+    "parent_task_implementation_evidence_inherited": true,
+    "regression_validation": "deferred_by_user"
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for the preserved Order 127 v137 exact-path context and model binding failure",
+    "selected_count": 1,
+    "prior_development_status": "baseline_and_generic_hypothesis_1_failed_with_strict_valid_evidence",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 127,
+      "source_order": 253,
+      "domain": "multi_apps",
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "source_episode_id": "172935c7d79395229e282323",
+      "source_path_class": "task_specific",
+      "source_manifest_sha256": "d2707e8944a19bc6f38387436e60b6bd9d0b72e356e9614cff60f3fab5fc80af",
+      "execution_class": "task_specific",
+      "pool_order": 127
+    }
+  ]
+}

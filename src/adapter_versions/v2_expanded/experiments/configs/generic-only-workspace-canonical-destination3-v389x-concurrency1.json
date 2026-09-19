@@ -1,0 +1,207 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-workspace-canonical-destination3-v389x-concurrency1",
+  "status": "frozen",
+  "purpose": "Prospectively frozen three-task validation of one VS Code Adapter contract change. Relative to v389w source, workspace.write and workspace.set_folders expose one canonical model-selected destination representation: directory, workspace_name, and folders. The Adapter deterministically converts those exact fields to <directory>/<workspace_name>.code-workspace. workspace.add_folders retains its separate existing-file path contract. Routing, completion, work-state protocol, prompts, model transport, token and step budgets, VM, evaluator, and concurrency remain unchanged. This is outcome-informed development evidence and cannot be promoted as a baseline.",
+  "freeze_timestamp": "2026-08-22T10:07:16Z",
+  "sources": {
+    "selection_record": "adapter_versions/v2_expanded/experiments/analysis-v386-development-gate30/selection.json",
+    "selection_record_sha256": "b306d4f47656df83eef1ed106a80e48d5b3e0110c2620a88bc7ea451728a2d70",
+    "prospective_plan": "adapter_versions/v2_expanded/experiments/analysis-v389x-workspace-canonical-destination3/plan.json",
+    "prospective_plan_sha256": "89e70b1745cb5f5a75feaf02342009372c2e2dd87ef9d74614bfadc31cbee51d",
+    "v389w_summary": "adapter_versions/v2_expanded/experiments/analysis-v389w-model-evidence-completion4/summary.json",
+    "v389w_summary_sha256": "1ed78af12b03f5a0c52d1dada6f396f7e52707319c2eebb4e32e37a82afa457b",
+    "strict_action_contracts_sha256": "8418f99c73f3c6db7700f0f9416a39e8ab13c6f1a9f53dc1f3e85459bc96012d",
+    "strict_tool_granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-v389x-workspace-canonical-destination3/granularity-audit.json",
+    "strict_tool_granularity_audit_sha256": "6a8c9c821a61e0d9ae2ea6fb6c524eb4fe9438f385eb8cc17a11596117b45aa5",
+    "selection_uses_prior_outcome": true,
+    "baseline_candidate": false,
+    "resume": false
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v389x",
+    "role": "development_workspace_canonical_destination3",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-workspace-canonical-destination3-v389x-concurrency1-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations",
+        "scripts",
+        "tests",
+        "deployment",
+        "calc_adapter",
+        "chrome_adapter",
+        "gimp_adapter",
+        "impress_adapter",
+        "multi_apps_adapter",
+        "os_adapter",
+        "thunderbird_adapter",
+        "vlc_adapter",
+        "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": [
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv*",
+        "*.pyc"
+      ],
+      "file_count": 804,
+      "total_bytes": 63970913,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "fbb9fe36fd085f36aed0284a0a708622da596ccfeb290f4d08a122fa48e2781b"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v389x_workspace_canonical_destination3_2026-08-22",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true,
+    "pre_model_start_attempts": 2,
+    "start_retry_delay_seconds": 5
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_authored_state": true,
+    "model_authored_state_protocol": "collection_compact_batch_evidence_patch_v17",
+    "initial_work_state_observation_mode": "instruction_only",
+    "model_tool_transport_mode": "stream_first_complete_object_call",
+    "maximum_uncheckpointed_execution_events": 4,
+    "model_retries": 3,
+    "request_timeout": 180,
+    "docker_api_timeout_seconds": 180,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5,
+    "supervisor_heartbeat_seconds": 600,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "writer_dependency_install": "background_guest_job_with_host_polling",
+    "office_listener_order": "prepare_before_task_setup_then_verify_after_setup",
+    "office_setup_replay": "only_when_post_setup_prepare_restarted_listener",
+    "office_heavy_setup_readiness": {
+      "selection": "measured_reset_setup_duration_only",
+      "threshold_seconds": 20,
+      "minimum_elapsed_before_first_model_seconds": 85
+    },
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "three VS Code tasks from the immutable gate30 selection, frozen before v389x source changes",
+    "selected_count": 3,
+    "failed_target_count": 1,
+    "stable_pass_control_count": 2,
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false,
+    "changed_factor": "workspace.write and workspace.set_folders canonical directory plus workspace_name destination contract",
+    "unchanged_factors": [
+      "v389w public routing, ranking, Top-K membership, search behavior, prompts, and completion policy",
+      "v17 model-authored state declaration, cardinality, scope, effect-role, compact collection, evidence, checkpoint, schema, and transition behavior",
+      "stream_first_complete_object_call transport and strict execution validation",
+      "instruction-only initial observation and screenshot restoration after state declaration",
+      "every non-workspace VS Code action and workspace.add_folders contract",
+      "Qwen/Qwen3.5-4B, non-thinking mode, temperature zero, and 512 output tokens",
+      "30 steps, 300 Agent seconds, and retry policy",
+      "single endpoint, concurrency one, fresh VM per task, and original evaluator"
+    ],
+    "success_criteria": {
+      "tasks_completed": 3,
+      "passes_minimum": 3,
+      "order182_passed": true,
+      "order182_successful_workspace_mutation": true,
+      "order182_workspace_mutation_model_arguments_exactly_canonical": true,
+      "order182_workspace_schema_rejections_maximum": 1,
+      "vs_code_controls_passed": 2,
+      "environment_failures": 0,
+      "model_propose_done_terminations_minimum": 3,
+      "runner_argument_rewrites_or_injections": 0,
+      "invalid_leakage_or_evidence_episodes": 0,
+      "strict_audit_v5_all_valid": true,
+      "transport_reconstruction_mismatches": 0,
+      "model_tool_action_mismatches": 0,
+      "adapter_or_gui_trace_mismatches": 0,
+      "baseline_pointer_unchanged": true
+    },
+    "stop_rules": {
+      "runs_maximum": 1,
+      "rerun_same_condition": false,
+      "advance_to_gate30": false,
+      "advance_to_confirmation60_or_fixed189": false
+    }
+  },
+  "tasks": [
+    {
+      "order": 174,
+      "domain": "vs_code",
+      "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+      "source_order": 318,
+      "development_stratum": "stable_pass_control"
+    },
+    {
+      "order": 180,
+      "domain": "vs_code",
+      "task_id": "276cc624-87ea-4f08-ab93-f770e3790175",
+      "source_order": 327,
+      "development_stratum": "routing_regression_control"
+    },
+    {
+      "order": 182,
+      "domain": "vs_code",
+      "task_id": "5e2d93d8-8ad0-4435-b150-1692aacaa994",
+      "source_order": 329,
+      "development_stratum": "workspace_contract_target"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "experiment_id": "generic-only-initial-type-aware-routes-validation2-v352-concurrency2",
+  "status": "frozen",
+  "purpose": "Failure-directed validation of v352 initial type-aware generic route retrieval on the v351 source-edit failure, with the retained presentation task as a regression control. Both tasks were selected before observing any v352 OSWorld reward.",
+  "freeze_timestamp": "2026-08-19T02:38:09Z",
+  "sources": {
+    "task_pool": "adapter_versions/v2_expanded/experiments/configs/qwen35-lite-agent-fixed-189-generic-only-v1.json",
+    "task_pool_sha256": "eab739e905ba4a93684c125aafd7f3ce06389771226da87d8e611fef6343cb8e",
+    "selection_template": "adapter_versions/v2_expanded/experiments/configs/generic-only-simplified-command-cwd-validation2-v351-concurrency2.json",
+    "selection_template_sha256": "6b9a85b8ab7c9203dd4258850f03e3cae7f707905f6a1483a06b95d00e203e32",
+    "predecessor_result": "adapter_versions/v2_expanded/experiments/generic-only-simplified-command-cwd-validation2-v351-concurrency2-run1/results.json",
+    "predecessor_result_sha256": "63082eb98dcff33af9fcef5d8b7afe9e9a945d900ceb722dfa0feb58fa9da237",
+    "real_model_preflight": "adapter_versions/v2_expanded/experiments/preflight-qwen35-initial-routes-v352-run3/results.json",
+    "real_model_preflight_sha256": "1df932a44cb7c3a13dd47daa704b817957971551bd9f9032cf5d343be0ddc07a",
+    "granularity_audit": "adapter_versions/v2_expanded/experiments/analysis-generic-tool-granularity/v352-granularity-audit.json",
+    "granularity_audit_sha256": "18a5ca562b855e5057598aa9cfd1c68bce83335a2803f3550b8cdb7ffcb77d24"
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "v352",
+    "role": "validation",
+    "result_directory": "adapter_versions/v2_expanded/experiments/generic-only-initial-type-aware-routes-validation2-v352-concurrency2-run1",
+    "source_tree": {
+      "scope_roots": [
+        "integrations", "scripts", "tests", "deployment", "calc_adapter",
+        "chrome_adapter", "gimp_adapter", "impress_adapter", "multi_apps_adapter",
+        "os_adapter", "thunderbird_adapter", "vlc_adapter", "vscode_adapter",
+        "writer_adapter"
+      ],
+      "excludes": ["__pycache__", ".pytest_cache", ".ruff_cache", ".venv*", "*.pyc"],
+      "file_count": 776,
+      "total_bytes": 63642698,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "acf8f6ec5422f2cf8bd98acef7b7f396355f78f537f03d23c8f0617b52ea23c0"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_v352_initial_type_aware_routes",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1", "http://192.168.0.138:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300.0,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "concurrency": 2,
+    "workers_per_endpoint": 1,
+    "worker_start_delay_seconds": 5.0,
+    "supervisor": "scripts/supervise_lite_agent_parallel.py",
+    "runner": "scripts/run_lite_agent_pilot.py",
+    "supervisor_poll_seconds": 5.0,
+    "supervisor_heartbeat_seconds": 600.0,
+    "audit_schema": "generic_only_validation_audit.v5",
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_strict_ranked_generic_routes_plus_search_and_gui_fallback",
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "fixed_task_order": true,
+    "resume": false,
+    "condition_enforced": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "one v351 source-edit failure directly affected by v352 and one retained presentation regression control",
+    "selected_count": 2,
+    "domain_counts": {"libreoffice_impress": 1, "multi_apps": 1},
+    "source_order_preserved": true,
+    "replace_after_run": false,
+    "baseline_candidate": false
+  },
+  "tasks": [
+    {"order": 40, "domain": "libreoffice_impress", "task_id": "15aece23-a215-4579-91b4-69eec72e18da", "source_order": 126, "selection_role": "regression_control"},
+    {"order": 116, "domain": "multi_apps", "task_id": "20236825-b5df-46e7-89bf-62e1d640a897", "source_order": 233, "selection_role": "prior_failure_target"}
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order90-thunderbird-contacts-v50",
+  "status": "frozen",
+  "purpose": "Bounded targeted A/B for coverage Order 90 after adding reusable Thunderbird address-book CSV export.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order90-v49.json",
+  "candidate_parent_config_sha256": "d9467d93ebe0d78bdbb6128da533459cb2224a8fbe70b509f2133794976329ec",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "73a77e59d2c242c30c1b997b709e3df942ccbcd5e51f542fe934035e238912f0",
+  "change_scope": "Hypothesis 1/3: add parameterized Thunderbird contacts.export_csv with model-selected address-book name and output path, deterministic profile-database extraction, product-standard CSV fields, structural verification, and generic Multi-Apps retrieval. No task identity, contact value, golden artifact, fixed destination, or Runner argument injection is used.",
+  "implementation_evidence": {
+    "before_result_sha256": "ed896d94fc078552fb32628002a8b89cac810a728eb8baa30d547bac4d9761da",
+    "before_audit_sha256": "77bc5b5a0cee91a78de20f2a883c26d7baacfc071a81f488c773480f03dcc8f3",
+    "before_trajectory_manifest_sha256": "ea5ba4ede3f297949ca6a65c6d28b2227aeeb06a5abd5e6e7eadb5193a02af98",
+    "failure_class": "missing_generic_thunderbird_contact_export",
+    "hypothesis_index": 1,
+    "hypothesis_limit": 3,
+    "thunderbird_profile_sha256": "e42c498816d56f2575ec394d41b2f2244323163e29e055c3ee82079121562f0f",
+    "thunderbird_actions_sha256": "9a5dd71018a8a33526d72158758be672e9c358af0ed66b7da4bd1c7c5c8b73f2",
+    "thunderbird_schema_sha256": "42a2187b3f83301b3002feb6828fa1a276ae3d47b631d1425d9d7695f76c7b83",
+    "thunderbird_tool_manifest_sha256": "954b90af50c8ab7b01f7d6c885d173584d6e33c67d2b98d6e421d0ec7d7d2ff6",
+    "thunderbird_worker_sha256": "85f66297043a1e61574e8cc9f56258448985eb292aec8909cb71381e0cf2e7da",
+    "thunderbird_verifier_sha256": "45a04c8795964d9f84cb6fa3113f97e72e03fa7d4ed52a4c97ac2a6fef4e18e6",
+    "lite_agent_tool_catalog_sha256": "790974b4368c387dba226693d6d5ffe0be2d0d75c894be661a089b56c287da09",
+    "counterfactuals": "A built-in address book with two unrelated contacts exercises names, duplicate-primary suppression, two emails, phones, structured addresses, dates, notes, title, organization, and department; a separately configured Research Team database exports to a different directory; unknown books and relative paths fail closed; Multi-Apps search returns the action and exact model arguments reach the wrapper unchanged.",
+    "real_profile_offline_check": "30 contacts exported; generated CSV is byte-identical to the original evaluator reference without embedding reference values or bytes in runtime code",
+    "real_profile_generated_and_reference_sha256": "beb4c4e09458c8401e2c20ad90d5b550f57bb2ed79afb3719e18305bbe039b3a",
+    "focused_unit_tests": "243 passed",
+    "full_unit_tests": "1476 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "169ccc0233383a6f94921b14bccc30215a8161c64b66c41747bfc45e9c120f69",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_thunderbird_contacts_v50_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 10,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "targeted A/B of failed Order 90 after reusable generic hypothesis 1/3",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order90-v49-run1",
+    "rerun_reason": "The preserved v49 run repeatedly proposed a semantically correct Thunderbird contact-export action, but the Adapter returned UNSUPPORTED_ACTION and neither target file was created.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 90,
+      "source_order": 186,
+      "domain": "multi_apps",
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "source_episode_id": "3b8df687caf86c3add9a59ff",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "558e207ad4e70263b9eb288102a9b9a137f76d3efd05149797d1d2a8cb4427fc",
+      "execution_class": "golden",
+      "pool_order": 90
+    }
+  ]
+}

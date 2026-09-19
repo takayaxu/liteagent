@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-coverage-order94-read-loop-circuit-breaker-v64",
+  "status": "frozen",
+  "purpose": "Sole targeted A/B for coverage Order 94 generic hypothesis 3: stop repeated parameter-variant read loops from dominating Multi-Apps recovery search.",
+  "candidate_parent_config": "experiments/configs/generic-only-coverage-order94-write-text-facade-v63.json",
+  "candidate_parent_config_sha256": "54742c2d941fa83cd86d9cc4bc5b8cc2e265d86084353777a0023c93d3937b28",
+  "coverage_ledger": "experiments/generic-only-development-coverage-ledger.json",
+  "coverage_ledger_sha256": "b7d7cd06008d1d917884e02add76c77a8e386a6db3ff00f10fb53ecf3b6cc4ff",
+  "change_scope": "Hypothesis 3/3: classify file.read_text as read-only, fully exclude a read-only action from recovery after two distinct argument variants each reach an episode block, and make Multi-Apps search honor excluded_actions like all other domains. This only constrains repeated tool selection; it does not parse the task, inspect file content, choose a replacement, alter model arguments, execute an answer, or decide completion. Model, prompt, Adapter capabilities, VM, evaluator, top_k, and step budget are unchanged.",
+  "implementation_evidence": {
+    "prior_config_sha256": "54742c2d941fa83cd86d9cc4bc5b8cc2e265d86084353777a0023c93d3937b28",
+    "prior_result_sha256": "527162be9f572e07c0833fe59aaabbd86e24d7700c8ed0fe1b1e9ac2ea72b884",
+    "prior_worker_result_sha256": "c664d8e04b024ec504517f3450f341c348f9484ecfdfd29ceb42fda48c2efc04",
+    "prior_audit_sha256": "af32119bc7d3fb5e47c6c17500e33f2f1be910ee62fd1b0fc88653b01394b650",
+    "prior_status": "interrupted_after_15_complete_model_steps_to_stop_a_repetitive_no-source-mutation_loop",
+    "prior_failure": "The model read the source, ran the unchanged script, used file.write_text to save the wrong stdout to log.txt, and then repeatedly selected two parameter variants of file.read_text. Both variants reached episode blocks, but Multi-Apps tools_search still returned file.read_text because excluded_actions was ignored in that branch.",
+    "prior_audit_interruption_note": "The audit observed qwen3.5-4b on all 15 completed responses with zero leakage, action mismatch, argument rewrite, or injection. valid=false only because request 16 was written before interruption and has no response.",
+    "hypothesis_index": 3,
+    "hypothesis_limit": 3,
+    "runtime_sha256": "147cbe9b2af997fc967207a08e15c2d70cf4a8eb1214ccdc932ca1be36f5c53f",
+    "completion_policy_sha256": "0d0fbbf5f70a6b1ad759e23332911c068026299301805d4303f6b0649e39ba3b",
+    "tool_catalog_sha256": "ba7a3db4a2647b8ee812e0988963bf6f1387e0a6430dcbff2e5a797d65f802bb",
+    "counterfactuals": "An unrelated /tmp/counterfactual/notes.py read remains available after one blocked argument variant. After two different read variants each repeat to an episode block, a generic edit-source search excludes file.read_text while preserving other actions. No benchmark identifier, source, output, path, or answer is used.",
+    "focused_tests": "91 passed",
+    "full_unit_tests": "1535 passed",
+    "ruff": "passed",
+    "project_layout": "passed",
+    "frozen_v1_sha256sums": "passed",
+    "osworld_evaluator_tree": "frozen commit with zero tracked changes",
+    "goal_sha256": "b76d2f18d7c53a8e1a60e962c0ee11434afd78f0378af7caa8207a2ab926a23d",
+    "regression_validation": "deferred_by_user"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_read_loop_circuit_breaker_v64_2026-08-06",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": [
+      "http://192.168.0.224:8001/v1"
+    ],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true,
+    "model_selected_actions_and_arguments_required": true,
+    "strict_tool_surface": "generic_instruction_router_plus_model_search_only",
+    "dynamic_instruction_schema_or_stage_forcing": false,
+    "runner_argument_rewrite_or_injection": "fail_closed_before_adapter_http",
+    "legacy_task_files_removed_before_model": true,
+    "evaluator_file_fetch_policy": "retry_incomplete_zip_packaged_documents",
+    "evaluator_file_fetch_max_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "development_hypothesis_limit_per_task": 3,
+    "per_task_attempt_budget": {
+      "untouched_baseline": 1,
+      "generic_hypotheses": 3,
+      "targeted_ab_per_hypothesis": 1,
+      "environment_retries": 2,
+      "unchanged_retries": 0
+    },
+    "regression_validation_deferred_by_user": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "single targeted A/B for generic hypothesis 3 of coverage Order 94",
+    "selected_count": 1,
+    "prior_development_status": "failed",
+    "prior_attempt": "experiments/generic-only-coverage-order94-write-text-facade-v63-run1",
+    "rerun_reason": "The preserved v63 trace proves a reusable recovery defect: two blocked read variants remained searchable in Multi-Apps. This v64 run is the only A/B for hypothesis 3 and does not repeat either earlier hypothesis.",
+    "on_failure": "Preserve the result, mark Order 94 task_blocked because its baseline plus all three generic hypotheses are exhausted, and immediately advance to Order 95. Do not run a fourth hypothesis or repeat v64 unchanged.",
+    "replace_after_run": false
+  },
+  "tasks": [
+    {
+      "order": 94,
+      "source_order": 192,
+      "domain": "multi_apps",
+      "task_id": "f918266a-b3e0-4914-865d-4faa564f1aef",
+      "source_episode_id": "0035a61317f6aca92dbe0138",
+      "source_path_class": "golden",
+      "source_manifest_sha256": "f150db7c95f1cc5f1003febdb398849c1482bda566e646d2ae6b5df3f9528900",
+      "execution_class": "golden",
+      "pool_order": 94
+    }
+  ]
+}

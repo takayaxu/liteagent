@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "experiment_id": "generic-only-regression-order14-v213-freeze-range",
+  "status": "frozen",
+  "purpose": "Single-run A/B for v210 Order 14 using a reusable model-selected freeze-range Adapter facade. This prior-outcome-selected diagnostic is not a baseline denominator.",
+  "parent_config": "adapter_versions/v2_expanded/experiments/configs/generic-only-regression-order12-v212-decimal-separator.json",
+  "parent_config_sha256": "f284ee60f9eba4bde9f3ab03bf9604749ef99888cd8faf68cb508dc8ea2b2494",
+  "change_scope": "Add view.freeze_range with model-selected sheet and A1-anchored range. The Calc Adapter derives row and column counts from live range geometry. Explicit count-based requests continue to use view.freeze_panes. No task identity, expected state, golden artifact, fixed target, or Runner argument rewrite is used.",
+  "sources": {
+    "v210_results": "adapter_versions/v2_expanded/experiments/generic-only-fixed189-v210-concurrency6-run1/results.json",
+    "v210_results_sha256": "f10fe20917cc10afd9bf445547f06139935e730bfbf49172ed31b5c3081029e2",
+    "v210_regression_analysis": "adapter_versions/v2_expanded/experiments/analysis-v210-historical-clean-pass-regressions/analysis.json",
+    "v210_regression_analysis_sha256": "9f01ff6b724323528377c495159c5f6cd159dfb864f96e3e969177b6578ce18b",
+    "preceding_ab_results": "adapter_versions/v2_expanded/experiments/generic-only-regression-order12-v212-decimal-separator-run1/results.json",
+    "preceding_ab_results_sha256": "f819ef20c17c5d07b20a44a142e20db8f5e49a5128ec6767b2a790b86f1bf561",
+    "preceding_ab_strict_audit": "adapter_versions/v2_expanded/experiments/generic-only-regression-order12-v212-decimal-separator-run1/strict-audit-worker-01.json",
+    "preceding_ab_strict_audit_sha256": "a65576e631c04c9b602f86331ad72bdcccb01a34b8c040b2b43570728e668552",
+    "real_endpoint_schema_preflight": "adapter_versions/v2_expanded/experiments/generic-only-regression-order14-freeze-range-schema-preflight-v1/results.json",
+    "real_endpoint_schema_preflight_sha256": "fb0d63830b258db80ca3746c3e5f80082eb60ed1e8c3fbe917145a72c786e44f",
+    "selection_uses_prior_outcome": true,
+    "baseline_admissible": false
+  },
+  "implementation_evidence": {
+    "calc_schema_sha256": "efebfd439d58060ef3977d64cd9221ed91c588af02f8e81678df58128c7ae6d0",
+    "calc_tool_manifest_sha256": "3718ee24b7b11dbe3d6fc1627ebfd103ff57f5268a0e167b054a9422a5a205b6",
+    "calc_uno_worker_sha256": "8f5c6eec29934afbccf89d4894abcba7cc23e2b2f75dd9033f18e5f0fb6a98d9",
+    "calc_semantics_sha256": "7935e904a89d988cc3f7c09587d759d12c915fe247833b9c16775024d3af95d3",
+    "strict_contracts_sha256": "88494c3dd56687b3f7a7b0596986d6a384f8e49271bc50e0caef0c00d249841f",
+    "tool_catalog_sha256": "dcaed5f20ff4238948f7b37f1370f51ac37dea72ac0e261b65a08241cd1411e8",
+    "unit_tests": "2388 passed",
+    "focused_tests": "569 passed with different freeze ranges, rejected non-A1 anchor, and distinct range/count routing",
+    "real_endpoint_preflight": "1/1 schema valid and 1/1 semantic match on Archive!A1:D2",
+    "ruff": "active integrations, scripts, unit/integration tests, and Adapter sources passed",
+    "format": "changed files passed",
+    "compileall": "passed",
+    "project_layout": "passed",
+    "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded_generic_only_freeze_range_v213_2026-08-09",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["http://192.168.0.224:8001/v1"],
+    "served_root": "Qwen/Qwen3.5-4B",
+    "reasoning_effort": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0.0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "concurrency": 1,
+    "workers_per_endpoint": 1,
+    "reset": "fresh_docker_kvm_container_per_task",
+    "tools": "lite_agent_generic_public_adapter_actions_plus_gui_fallback",
+    "original_evaluator": true,
+    "task_specific_or_golden_exposed": false,
+    "task_id_visible_to_agent": false,
+    "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+    "guest_proxy": false,
+    "oauth_excluded": true,
+    "best_of": false,
+    "no_mid_run_condition_changes": true,
+    "preserve_every_attempt": true
+  },
+  "selection": {
+    "frozen": true,
+    "method": "next v210 failure with a prior strict-admissible clean pass in fixed pool order",
+    "selected_count": 1,
+    "replace_after_run": false,
+    "baseline_admissible": false
+  },
+  "freeze_timestamp": "2026-08-09T17:28:46Z",
+  "tasks": [
+    {
+      "order": 14,
+      "pool_order": 14,
+      "source_order": 91,
+      "domain": "libreoffice_calc",
+      "task_id": "4188d3a4-077d-46b7-9c86-23e1a036f6c1",
+      "execution_class": "generic_api_only"
+    }
+  ]
+}
