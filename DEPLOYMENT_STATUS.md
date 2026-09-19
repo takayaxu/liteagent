@@ -9,6 +9,7 @@ Verified on 2026-09-19 UTC.
 - Control endpoint: `http://127.0.0.1:5020`
 - noVNC endpoint: `http://127.0.0.1:8020`
 - Shared qcow2: `/var/lib/liteagent-shared/Ubuntu.qcow2`
+- Shared Python environment: `/var/lib/liteagent-shared/python-env`
 
 The shared qcow2 and the original file have the same filesystem device and
 inode, with link count 2. This confirms that the deployment did not allocate a
@@ -22,5 +23,8 @@ Validation completed:
   Multi-Apps.
 - LiteAgent Python source compiled and its runtime, tool catalog and Docker
   provider imported successfully.
+- Both `liuxv` and `pengzhe` passed the source/import check, CLI help check,
+  shared qcow2 read check, screenshot check and live Adapter health checks
+  under their own Unix accounts.
 
 Run `./bin/guest-status.sh` for a fresh local check.

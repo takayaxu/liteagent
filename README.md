@@ -14,7 +14,13 @@ LiteAgent 使用的 Docker controller、公开任务定义和 evaluator 源码�
 容器：liteagent-shared-osworld
 镜像：happysixd/osworld-docker:latest
 磁盘：/var/lib/liteagent-shared/Ubuntu.qcow2（共享硬链接，不占第二份空间）
+Python：/var/lib/liteagent-shared/python-env（两个账号共用）
 ```
+
+每份源码在运行器要求的标准路径
+`src/third_party/OSWorld/docker_vm_data/Ubuntu.qcow2` 也有一个硬链接；这些路径
+与上述共享磁盘是同一个 inode，不会重复占用 24 GB。`bin/run-liteagent.sh`
+默认使用这个标准路径，也可通过 `--qcow2` 显式覆盖。
 
 Ubuntu 磁盘以只读方式挂载，两个用户目录不会各自复制一份 12/24 GB 镜像。
 共享 guest 同一时间只应运行一个任务；需要并行任务时，应另外启动 guest，
@@ -46,8 +52,9 @@ cd /home/liuxv/liteagent       # pengzhe 目录同理
 ./bin/check.sh
 ```
 
-检查只读源码，不会下载模型或启动任务。主机上已有可用的 Python 3.12
-环境时，可以安装依赖（不把虚拟环境放进源码包）：
+检查只读源码，不会下载模型或启动任务。启动和检查脚本默认使用已部署的
+`/var/lib/liteagent-shared/python-env`。如需使用自己的 Python 环境，可设置
+`PYTHON`；虚拟环境不要提交进源码包：
 
 ```bash
 python3 -m venv .venv
