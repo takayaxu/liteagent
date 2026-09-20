@@ -222,13 +222,6 @@ TEXT_ROLE_LIST = {
         "Ambiguous visual headings fail without mutation."
     ),
 }
-TEXT_ROLE_OVERRIDE = {
-    "type": "object",
-    "properties": {"roles": TEXT_ROLE_LIST, **TEXT_FORMAT_PROPERTIES},
-    "required": ["roles"],
-    "anyOf": TEXT_FORMAT_REQUIRED,
-    "additionalProperties": False,
-}
 # Structured action contracts used to expose strict native tool schemas. The
 # corresponding runtime validation remains in impress_adapter.schema.
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
@@ -582,17 +575,18 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "slides.format_text_roles": {
         "description": (
-            "Apply one shared semantic-role text-format rule atomically to several explicitly "
-            "selected zero-based slides. Pass every target in slides and all shared style "
-            "properties in this one call. The Adapter resolves live roles and preflights every "
-            "slide before changing any of them. Use slide.format_text_roles for one slide."
+            "Apply one shared semantic-role text-format rule to several explicitly "
+            "selected zero-based slides. All selected roles on every slide receive the same "
+            "supplied style properties. For a different rule, make a separate format call. "
+            "The Adapter resolves live roles and preflights every slide before changing any "
+            "of them. Use slide.format_text_roles for one slide."
         ),
         "properties": {
             "slides": {
                 **SLIDE_INDICES,
                 "description": (
                     "Unique zero-based slide indices that receive the same role-format "
-                    "rules; use this for an instruction that names multiple slides."
+                    "rule; use this for an instruction that names multiple slides."
                 ),
             },
             "roles": TEXT_ROLE_LIST,
@@ -603,16 +597,6 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "Font color for every selected semantic role. For all text boxes or "
                     "all text on one slide, pass roles=['all']; when the instruction names "
                     "a color, pass that exact name instead of guessing another RGB value."
-                ),
-            },
-            "overrides": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 8,
-                "items": TEXT_ROLE_OVERRIDE,
-                "description": (
-                    "Optional role-specific formatting applied after the base rule. Each "
-                    "override changes only its supplied properties."
                 ),
             },
         },

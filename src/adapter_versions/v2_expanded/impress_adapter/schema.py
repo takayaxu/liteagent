@@ -445,16 +445,15 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _optional_bool(params, "replace")
     if action in {"slide.format_text_roles", "slides.format_text_roles"}:
         location_field = "slide" if action.startswith("slide.") else "slides"
-        if action == "slide.format_text_roles" and "overrides" in params:
+        if "overrides" in params:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.overrides conflicts with slide.format_text_roles: this action "
-                "accepts one shared rule for the selected roles; make a separate "
-                "slide.format_text_roles call with its own roles and formatting fields",
+                f"params.overrides conflicts with {action}: this action accepts "
+                "one shared rule for the selected roles; make a separate "
+                f"{action} call with its own roles and formatting fields",
             )
         unexpected = set(params).difference(
             {location_field, "roles", *TEXT_FORMAT_FIELDS}
-            | ({"overrides"} if location_field == "slides" else set())
         )
         if unexpected:
             raise AdapterError(
@@ -484,26 +483,8 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                     "INVALID_REQUEST",
                     "params.slides must be an array of 1 to 100 unique non-negative integers",
                 )
-        base_rule = {
-            key: value
-            for key, value in params.items()
-            if key not in {location_field, "overrides"}
-        }
+        base_rule = {key: value for key, value in params.items() if key != location_field}
         _validate_role_format_rule(base_rule, "params")
-        if "overrides" in params:
-            overrides = params["overrides"]
-            if (
-                not isinstance(overrides, list)
-                or not overrides
-                or len(overrides) > 8
-                or any(not isinstance(override, Mapping) for override in overrides)
-            ):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.overrides must be an array of 1 to 8 role-format objects",
-                )
-            for index, override in enumerate(overrides):
-                _validate_role_format_rule(override, f"params.overrides[{index}]")
     if action in {"shape.format_text", "table.format_text"}:
         for field in ("bold", "italic", "underline", "strike", "bullet"):
             _optional_bool(params, field)

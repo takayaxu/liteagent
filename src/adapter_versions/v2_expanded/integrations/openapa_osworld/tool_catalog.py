@@ -310,9 +310,9 @@ DOMAIN_SIGNATURES = {
             '"all"|"title"|"content"|"body"|"table"|"text"], one or more of '
             '"color": color, "font_size": number, "font_name": str, "bold": bool, '
             '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment, '
-            '"overrides"?: [{"roles": [role], one or more formatting fields}]}; '
-            "applies one shared rule atomically after every selected slide and live semantic "
-            "role has passed preflight; use slide.format_text_roles for one slide"
+            "}; applies exactly one shared rule after every selected slide and live "
+            "semantic role has passed preflight; use a separate format call for a "
+            "different rule, or slide.format_text_roles for one slide"
         ),
         "shape.set_geometry": (
             'params={"slide": nonnegative 0-based int, "selector": object, '
