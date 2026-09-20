@@ -689,7 +689,18 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         if params.get("mode") not in {"lower", "title"}:
             raise AdapterError("INVALID_REQUEST", "params.mode must be lower or title")
     elif action == "document.add_page_numbers":
-        if params.get("position", "bottom_left") not in {
+        if set(params) != {"position"}:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "document.add_page_numbers requires only params.position; existing footer "
+                "content is always preserved",
+                {
+                    "unexpected": sorted(set(params) - {"position"}),
+                    "missing": [] if "position" in params else ["position"],
+                    "allowed": ["position"],
+                },
+            )
+        if params["position"] not in {
             "bottom_left",
             "bottom_center",
             "bottom_right",

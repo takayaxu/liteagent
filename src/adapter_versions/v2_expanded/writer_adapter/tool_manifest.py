@@ -302,12 +302,17 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         ],
     },
     "document.add_page_numbers": {
+        "description": (
+            "Create or update native page-number fields in the footer of every active "
+            "page style. Existing footer text and non-page-number fields are preserved."
+        ),
         "properties": {
             "position": {
                 "type": "string",
                 "enum": ["bottom_left", "bottom_center", "bottom_right"],
                 "description": (
-                    "Footer position for the page-number field on every active page style."
+                    "Footer position for the page-number field on every active page style; "
+                    "this does not replace other footer content."
                 ),
             },
         },

@@ -338,14 +338,7 @@ def _footer_summary(doc: Any) -> list[dict[str, Any]]:
         if not state["enabled"]:
             records.append(state)
             continue
-        # Shared regions alias the same native text; inspect independent variants once.
-        variants = (
-            [("shared", "FooterText")]
-            if style.FooterIsShared
-            else [("right", "FooterTextRight"), ("left", "FooterTextLeft")]
-        )
-        if not style.FirstIsShared:
-            variants.append(("first", "FooterTextFirst"))
+        variants = _footer_variants(style)
         for variant, property_name in variants:
             text = getattr(style, property_name)
             fields = []
@@ -376,6 +369,32 @@ def _footer_summary(doc: Any) -> list[dict[str, Any]]:
                 }
             )
     return records
+
+
+def _footer_variants(style: Any) -> list[tuple[str, str]]:
+    """Return each independent native footer region exactly once."""
+    variants = (
+        [("shared", "FooterText")]
+        if style.FooterIsShared
+        else [("right", "FooterTextRight"), ("left", "FooterTextLeft")]
+    )
+    if not style.FirstIsShared:
+        variants.append(("first", "FooterTextFirst"))
+    return variants
+
+
+def _page_number_fields(text: Any) -> list[tuple[Any, Any]]:
+    fields = []
+    for paragraph in _paragraphs(text):
+        portions = paragraph.createEnumeration()
+        while portions.hasMoreElements():
+            portion = portions.nextElement()
+            field = getattr(portion, "TextField", None)
+            if field is not None and field.supportsService(
+                "com.sun.star.text.TextField.PageNumber"
+            ):
+                fields.append((paragraph, field))
+    return fields
 
 
 def _highlight_summary(doc: Any) -> dict[str, Any]:
@@ -2047,31 +2066,51 @@ def _remove_highlighting(
 
 def _add_page_numbers(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
     alignment = {"bottom_left": 0, "bottom_center": 3, "bottom_right": 1}[
-        params.get("position", "bottom_left")
+        params["position"]
     ]
     page_styles = session.doc.StyleFamilies.getByName("PageStyles")
     changed = []
+    targets = []
     for name in page_styles.getElementNames():
         style = page_styles.getByName(name)
-        if name != "Standard" and not bool(getattr(style, "IsPhysical", False)):
+        if not bool(style.isInUse()):
             continue
-        try:
-            style.FooterIsOn = True
-            footer = style.FooterText
-            cursor = footer.createTextCursorByRange(footer.getStart())
-            cursor.gotoRange(footer.getEnd(), True)
-            cursor.String = ""
-            cursor.gotoStart(False)
-            cursor.ParaAdjust = alignment
-            field = session.doc.createInstance("com.sun.star.text.TextField.PageNumber")
-            field.NumberingType = 4
-            footer.insertTextContent(cursor, field, False)
-            changed.append(name)
-        except Exception:
-            if name == "Standard":
-                raise
+        style.FooterIsOn = True
+        changed.append(str(name))
+        for variant, property_name in _footer_variants(style):
+            footer = getattr(style, property_name)
+            existing = _page_number_fields(footer)
+            if existing:
+                for paragraph, field in existing:
+                    paragraph.ParaAdjust = alignment
+                    field.NumberingType = 4
+                    field.Offset = 0
+                operation = "updated"
+                field_count = len(existing)
+            else:
+                cursor = footer.createTextCursorByRange(footer.getEnd())
+                if str(footer.String):
+                    footer.insertControlCharacter(cursor, 0, False)
+                    cursor = footer.createTextCursorByRange(footer.getEnd())
+                cursor.ParaAdjust = alignment
+                field = session.doc.createInstance(
+                    "com.sun.star.text.TextField.PageNumber"
+                )
+                field.NumberingType = 4
+                field.Offset = 0
+                footer.insertTextContent(cursor, field, False)
+                operation = "created"
+                field_count = 1
+            targets.append(
+                {
+                    "page_style": str(name),
+                    "variant": variant,
+                    "operation": operation,
+                    "field_count": field_count,
+                }
+            )
     session.doc.getTextFields().refresh()
-    return {"position": params.get("position", "bottom_left"), "page_styles": changed}
+    return {"position": params["position"], "page_styles": changed, "targets": targets}
 
 
 def _insert_page_break(
@@ -2880,6 +2919,49 @@ def _implicit_action_verification(
             [{"type": "pdf", "passed": passed}],
             result,
             expected,
+        )
+    if action == "document.add_page_numbers":
+        footers = _footer_summary(session.doc)
+        expected_alignment = {
+            "bottom_left": "left",
+            "bottom_center": "center",
+            "bottom_right": "right",
+        }[result["position"]]
+        checks = []
+        for target in result["targets"]:
+            matching = [
+                footer
+                for footer in footers
+                if footer.get("page_style") == target["page_style"]
+                and footer.get("variant") == target["variant"]
+            ]
+            passed = bool(matching) and any(
+                field.get("alignment") == expected_alignment
+                for field in matching[0].get("page_number_fields", [])
+            )
+            checks.append(
+                {
+                    "type": "page_numbers",
+                    "page_style": target["page_style"],
+                    "variant": target["variant"],
+                    "passed": passed,
+                }
+            )
+        saved = _saved_file_state(session.path)
+        saved_ok = saved["exists"] and saved["valid"]
+        checks.append({"type": "file_saved", "passed": saved_ok})
+        return _verification(
+            bool(result["targets"])
+            and saved_ok
+            and all(check["passed"] for check in checks),
+            checks,
+            {"footers": footers, "file_saved": saved},
+            {
+                "position": result["position"],
+                "alignment": expected_alignment,
+                "targets": result["targets"],
+                "file_saved": {"exists": True, "valid": True},
+            },
         )
     state = _saved_file_state(session.path)
     passed = state["exists"] and state["valid"]
