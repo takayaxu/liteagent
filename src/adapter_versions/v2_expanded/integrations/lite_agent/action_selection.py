@@ -8,6 +8,7 @@ from . import (
     impress_semantics,
     impress_cover_semantics,
     impress_image_insertion,
+    impress_textboxes,
     impress_title_formatting,
     impress_role_text_update,
     source_execution_semantics,
@@ -145,6 +146,7 @@ class ActionSelectionMixin:
         selected = impress_semantics.stage_actions(
             state, selected, prefer_role_api=True
         )
+        selected = impress_textboxes.stage_actions(state, selected)
         selected = impress_image_insertion.stage_actions(state, selected)
         selected = impress_role_text_update.stage_actions(state, selected)
         selected = impress_title_formatting.stage_actions(state, selected)

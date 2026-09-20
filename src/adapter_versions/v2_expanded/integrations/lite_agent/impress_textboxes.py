@@ -114,6 +114,34 @@ def _arguments(event: Any) -> dict[str, Any]:
     return arguments if isinstance(arguments, dict) else {}
 
 
+def _matches_all_textbox_color_mutation(
+    event: Any, intent: AllTextboxColorIntent
+) -> bool:
+    arguments = _arguments(event)
+    roles = arguments.get("roles")
+    return bool(
+        arguments.get("slide") == intent.slide
+        and isinstance(roles, list)
+        and "all" in roles
+        and normalize_impress_color(arguments.get("color")) == intent.color
+    )
+
+
+def stage_actions(state: Any, actions: list[str]) -> list[str]:
+    """Expose the pending inspect or shared-rule mutation without deriving arguments."""
+    intent = parse_all_textbox_color_intent(str(state.instruction))
+    if intent is None:
+        return actions
+    if not state.successful_action_events("presentation.inspect"):
+        return [action for action in actions if action == "presentation.inspect"]
+    if not any(
+        _matches_all_textbox_color_mutation(event, intent)
+        for event in state.successful_action_events("slide.format_text_roles")
+    ):
+        return [action for action in actions if action == "slide.format_text_roles"]
+    return actions
+
+
 def _mappings(value: Any) -> Iterable[dict[str, Any]]:
     if isinstance(value, dict):
         yield value
@@ -159,17 +187,11 @@ def all_textbox_color_requirement_errors(state: Any) -> list[str]:
     intent = parse_all_textbox_color_intent(str(state.instruction))
     if intent is None:
         return []
-    mutations = []
-    for event in state.successful_action_events("slide.format_text_roles"):
-        arguments = _arguments(event)
-        roles = arguments.get("roles")
-        if (
-            arguments.get("slide") == intent.slide
-            and isinstance(roles, list)
-            and "all" in roles
-            and normalize_impress_color(arguments.get("color")) == intent.color
-        ):
-            mutations.append(event)
+    mutations = [
+        event
+        for event in state.successful_action_events("slide.format_text_roles")
+        if _matches_all_textbox_color_mutation(event, intent)
+    ]
     if not mutations:
         return [
             "slide.format_text_roles has not succeeded for the requested zero-based slide, "
