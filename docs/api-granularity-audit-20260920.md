@@ -4,11 +4,12 @@
 
 ## 结论
 
-本次从十个 Adapter 的 `schema.ACTIONS` 重新枚举公开面，共 **216** 个 action。复查结果为：
+本次从十个 Adapter 的 `schema.ACTIONS` 重新枚举公开面；增加 Thunderbird identity
+发现动作后，共 **217** 个 action。复查结果为：
 
 - **P0 必拆/收窄 19 个**：一个调用可表达多个互相独立的设置、多个有顺序的变换、把两种操作模式合并在同一个入口，或带有未声明的破坏性副作用。
 - **P1 复核 17 个**：粒度较大，但可能属于显式同构批处理或应用原生事务；先写保留理由和反例，再决定是否拆，不要机械拆分。
-- **保留 180 个**：当前可解释为单一语义操作、只读查询、保存/导出、显式同构批处理或纯传输。
+- **保留 181 个**：当前可解释为单一语义操作、只读查询、保存/导出、显式同构批处理或纯传输。
 
 这只是源码审计和任务分配，不是新基线，不改变任何历史分数，也没有运行模型或 evaluator。这里的“必拆”表示契约粒度过大，不表示已发现任务 ID、写死答案或 golden 泄漏。
 
@@ -58,7 +59,13 @@ P0 满足至少一项：
 
 | API | Replacement | 实现提交 | 实际验证 |
 | --- | --- | --- | --- |
-| `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。 | `0b6b25e` | `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python -m pytest -q src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py src/adapter_versions/v2_expanded/tests/test_recovery_surface.py`（75 passed）；`/opt/anaconda3/bin/ruff check <5 changed Python files>`；`/opt/anaconda3/bin/ruff format --check <5 changed Python files>` |
+| `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。新增只读 `identities.query`，在 identity-specific mutation 前返回 profile 中的精确 identity/account/email 映射。 | `0b6b25e`, `27a6552` | 初始收窄：邮件契约 focused pytest（75 passed）。identity 发现修复：`test_mail_selector_contract.py`（21 passed）及改动文件 Ruff。Order 153 单题正式复跑 `status=passed`、`reward=1.0`。 |
+
+### 单题闭环记录
+
+- Order 153，task `3f28fe4f-5d9d-4994-a456-efd78cfae1a3`：设置两行纯文本签名。首次有效运行位于 `experiments/local-mail-configure-single-20260920-retry1/workers/worker-00/results.json`，`reward=0.0`；模型将可见邮箱地址误作内部 identity，三次调用均在 mutation 前以 `params.identity contains unsupported characters` 被拒绝。
+- 通用修复提交 `27a6552` 增加无参数只读 `identities.query`，返回 identity、email、display name、account、server 和 hostname 映射；签名与回复引用指令把该查询和 `mail.configure` 同时列为必需动作，配置契约要求使用查询返回的精确 identity。
+- 同题 retry2 位于 `experiments/local-mail-configure-single-20260920-retry2/workers/worker-00/results.json`。模型第 1 步查询得到 `id1`，第 2 步调用 `mail.configure`，Adapter verification 通过；原始离线 evaluator 最终 `status=passed`、`reward=1.0`、`termination_reason=agent_done`。
 
 ## P1 复核清单
 
@@ -88,9 +95,9 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 
 ## 旧审计覆盖核对
 
-与 v422 的 `strict-tool-granularity-audit.json` 交叉核对，当前 216 项中有 184 项在旧清单出现：125 项旧标为 `atomic_generic`、19 项 `read_only`、5 项 `save`、1 项 `composite_split_required`，另有 34 项当时是 `unreviewed`。还有 32 项是在该审计后加入。旧分类只是对照，不覆盖本次源码复查；例如若干旧 `atomic_generic` 在本次被重新列入 P0。
+与 v422 的 `strict-tool-granularity-audit.json` 交叉核对，当前 217 项中有 184 项在旧清单出现：125 项旧标为 `atomic_generic`、19 项 `read_only`、5 项 `save`、1 项 `composite_split_required`，另有 34 项当时是 `unreviewed`。还有 33 项是在该审计后加入。旧分类只是对照，不覆盖本次源码复查；例如若干旧 `atomic_generic` 在本次被重新列入 P0。
 
-没有发现 `schema.ACTIONS` 之外仍被 Agent 暴露的 Adapter action。LiteAgent 的搜索目录覆盖全部 216 项；其中 34 项尚无 `DIRECT_ACTION_SCHEMAS`，会使用通用参数 wrapper 和文本 signature 暴露。Codex Desktop MCP 使用 `public_actions ∩ DIRECT_ACTION_SCHEMAS`，因此不加载这 34 项；去掉同样不作为下游直连工具的 `multi_apps.adapter.call` 后，Codex MCP 当前最多加载 181 个下游 Adapter action。这个“缺 Direct schema 的 34 项”与下面 v422 的 34 个 `unreviewed` 不是同一个集合，不能混为一谈。
+没有发现 `schema.ACTIONS` 之外仍被 Agent 暴露的 Adapter action。LiteAgent 的搜索目录覆盖全部 217 项；其中 34 项尚无 `DIRECT_ACTION_SCHEMAS`，会使用通用参数 wrapper 和文本 signature 暴露。Codex Desktop MCP 使用 `public_actions ∩ DIRECT_ACTION_SCHEMAS`，因此不加载这 34 项；去掉同样不作为下游直连工具的 `multi_apps.adapter.call` 后，Codex MCP 当前最多加载 182 个下游 Adapter action。这个“缺 Direct schema 的 34 项”与下面 v422 的 34 个 `unreviewed` 不是同一个集合，不能混为一谈。
 
 缺 Direct schema 的 34 项分布为：Chrome 22 项（除 `browser.inspect`、`settings.set` 外的全部公开 action）、GIMP 9 项（除 `image.inspect`、`image.adjust`、`image.crop` 外）、OS 的 `package.install_snap`、Writer 的 `document.insert_page_break`、Thunderbird 的 `xulstore.update`。这是一项 Codex MCP 覆盖差异，不自动表示它们是大粒度 API。
 
@@ -104,17 +111,18 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 
 本次逐项读过契约后，这 34 项均可暂列保留：每项是单一 mutation、单一导航/生命周期动作或只读动作。`xulstore.update` 的 keys 是一个嵌套 JSON 路径的有序分段，一次只写一个明确 path/value，并不是多个独立 key 的批处理。
 
-### v422 后新增的 32 项
+### v422 后新增的 33 项
 
 - Calc（1）：`cells.set_formulas`。
 - Impress（1）：`presentation.set_page_size`。
 - OS（10）：`archive.compress_file`、`desktop.favorites.list`、`document.convert`、`filesystem.copy`、`pdf.form.fill`、`pdf.form.inspect`、`pdf.tables.inspect`、`terminal.default_profile.inspect`、`terminal.default_profile.set_setting`、`trash.list`。
 - Writer（11）：`bookmark.create`、`cross_reference.insert`、`document.append_paragraphs`、`document.read_file`、`paragraph.apply_numbering`、`paragraph.clear_text`、`paragraph.replace_text`、`table.convert_text`、`table.read`、`text.find`、`text.set_format`。
 - VS Code（9）：`debug.breakpoint.set`、`debug.continue`、`debug.session.wait`、`debug.start`、`debug.stop`、`debug.variables.read`、`editor.open_file`、`ui.expand_section`、`ui.open_view`。
+- Thunderbird（1）：`identities.query`。
 
-这 32 项中有 31 项当前可保留；`archive.compress_file` 因可在压缩后删除源文件列入 P1，先确认它是否属于明确的原生事务。其余是单目标动作、显式同构写入、应用原生转换或有界只读观察。特别地，`pdf.form.fill` 和 `cells.set_formulas` 虽可一次提交多个显式值，但每个成员都由模型给出，集合使用同一个公开契约，不包含字段发现或答案推导。
+这 33 项中有 32 项当前可保留；`archive.compress_file` 因可在压缩后删除源文件列入 P1，先确认它是否属于明确的原生事务。其余是单目标动作、显式同构写入、应用原生转换或有界只读观察。特别地，`pdf.form.fill` 和 `cells.set_formulas` 虽可一次提交多个显式值，但每个成员都由模型给出，集合使用同一个公开契约，不包含字段发现或答案推导。
 
-## 216 项全量清单
+## 217 项全量清单
 
 表中 P0/P1 与上文相同；“保留”列是本次明确检查过、当前不进入拆分队列的剩余项。三列互斥，合计必须等于每行公开数。
 
@@ -128,10 +136,10 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 | Writer | 28 | `document.add_page_numbers` | `document.extract_images`, `document.remove_highlighting`, `document.set_font`, `document.transform_case` | `bookmark.create`, `cross_reference.insert`, `document.append_paragraphs`, `document.export_pdf`, `document.insert_page_break`, `document.inspect`, `document.read_file`, `document.save`, `image.insert_at_cursor`, `paragraph.apply_numbering`, `paragraph.clear_text`, `paragraph.replace_text`, `paragraph.set_format`, `paragraph.split`, `settings.set_default_font`, `table.convert_text`, `table.insert_after_text`, `table.insert_at_cursor`, `table.read`, `table.set_cell_text_color`, `text.find`, `text.find_replace`, `text.set_format` |
 | VS Code | 27 | `debugging.configure`, `editor.configure`, `files.configure`, `settings.update` | `workspace.add_folders`, `workspace.open`, `workspace.set_folders` | `debug.breakpoint.set`, `debug.continue`, `debug.session.wait`, `debug.start`, `debug.stop`, `debug.variables.read`, `diagnostics.configure`, `editor.open_file`, `explorer.set_exclusion`, `extension.install`, `file.create`, `file.indent_lines`, `file.read_text`, `file.replace_literal`, `keybindings.ensure`, `ui.expand_section`, `ui.open_view`, `workspace.find_files`, `workspace.inspect`, `workspace.write` |
 | VLC | 9 | `config.update`, `preferences.configure` | `playback.open` | `media.extract_audio`, `media.extract_frame`, `media.extract_subtitles`, `media.transcode_clip`, `playback.status`, `window.set_fullscreen` |
-| Thunderbird | 13 | `filters.configure`, `mail.configure`, `preferences.update` | `messages.export_eml` | `accounts.remove`, `attachments.save`, `compose.attach`, `compose.set_recipients`, `contacts.export_csv`, `folders.ensure_local`, `messages.query`, `ui.prefill_account_setup`, `xulstore.update` |
+| Thunderbird | 14 | `filters.configure`, `mail.configure`, `preferences.update` | `messages.export_eml` | `accounts.remove`, `attachments.save`, `compose.attach`, `compose.set_recipients`, `contacts.export_csv`, `folders.ensure_local`, `identities.query`, `messages.query`, `ui.prefill_account_setup`, `xulstore.update` |
 | Multi-Apps | 1 | - | - | `adapter.call` |
 
-总计：30 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 13 + 1 = **216**；P0 19；P1 17；保留 180。
+总计：30 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 14 + 1 = **217**；P0 19；P1 17；保留 181。
 
 ## 关键源码证据
 
