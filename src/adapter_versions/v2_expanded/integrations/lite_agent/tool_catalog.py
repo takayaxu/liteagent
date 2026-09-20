@@ -2004,18 +2004,26 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
         },
         "workbook.save": {
             "description": (
-                "Save the active workbook. Pass {} to save the current file in its existing "
-                "format. For Save As, pass url ending in .ods or .xlsx; the Adapter selects "
-                "that file format from the extension. Use workbook.export for CSV or PDF."
+                "Save the active workbook in place using its current URL and file format. "
+                "This action accepts no fields. Use workbook.save_as when the instruction "
+                "requires a new .ods or .xlsx destination."
+            ),
+            "properties": {},
+            "required": [],
+        },
+        "workbook.save_as": {
+            "description": (
+                "Save the active workbook to one explicit new .ods or .xlsx file. "
+                "The filename extension selects the format."
             ),
             "properties": {
                 "url": {
                     "type": "string",
-                    "description": "Optional output file path or file URL for Save As; omit to save the current file.",
+                    "pattern": r"^(?:.*/)?[^/.][^/]*\.(?:[Oo][Dd][Ss]|[Xx][Ll][Ss][Xx])$",
                 },
-                "filter_name": {"type": "string"},
+                "filter_name": {"type": "string", "minLength": 1},
             },
-            "required": [],
+            "required": ["url"],
         },
         "workbook.export": {
             "properties": {
@@ -3707,7 +3715,7 @@ def _strict_generic_schema_overlay(
         # the deterministic default-export contract presented to a small model.
         parameters["properties"].pop("filter_options", None)
     elif (domain, action) in {
-        ("libreoffice_calc", "workbook.save"),
+        ("libreoffice_calc", "workbook.save_as"),
         ("libreoffice_impress", "presentation.save"),
     }:
         # Save keeps the current format (or infers Save As from the URL). Format

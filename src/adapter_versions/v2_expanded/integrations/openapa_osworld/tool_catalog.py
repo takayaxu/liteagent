@@ -97,10 +97,11 @@ DOMAIN_SIGNATURES = {
             '"overwrite"?: bool}; headers and rows must be supplied together; creates, '
             "optionally populates, and saves a new workbook"
         ),
-        "workbook.save": (
-            'params={"url"?: str, "filter_name"?: str}; the URL extension selects the '
-            "format, so omit filter_name normally; when supplied it must match the extension "
-            "(for example .xlsx uses Calc MS Excel 2007 XML)"
+        "workbook.save": "params={}; saves the active workbook in place",
+        "workbook.save_as": (
+            'params={"url": explicit ODS|XLSX path, "filter_name"?: str}; the URL '
+            "extension selects the format, so omit filter_name normally; when supplied "
+            "it must match the extension"
         ),
         "workbook.convert_file": (
             'params={"input_path": absolute local CSV|ODS|XLSX path, '
@@ -130,9 +131,10 @@ DOMAIN_SIGNATURES = {
         "range.text_transform": (
             'params={"source_sheet": str, "source_range": A1 range, '
             '"destination_sheet": str, "destination": top-left A1 cell, '
-            '"operations": ["trim"|"collapse_whitespace"|"title_case"|'
-            '"lowercase"|"uppercase"], "skip_blank"?: bool}; applies ordered '
-            "text-only transformations and writes a same-sized output range"
+            '"transform": "trim"|"collapse_whitespace"|"title_case"|'
+            '"lowercase"|"uppercase", "skip_blank"?: bool}; applies one text-only '
+            "transform and writes a same-sized output range; call once per transform "
+            "in the intended order"
         ),
         "range.set_scaled_display": (
             'params={"sheet": str, "range": A1 range, "divisor": positive power of 1000, '

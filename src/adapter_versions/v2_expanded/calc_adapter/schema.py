@@ -20,6 +20,7 @@ ACTIONS = frozenset(
         "workbook.read_file",
         "workbook.create_new",
         "workbook.save",
+        "workbook.save_as",
         "workbook.export",
         "workbook.convert_file",
         "sheet.create",
@@ -602,7 +603,25 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _optional_bool(params, "overwrite")
         _validate_plain_table(params)
     elif action == "workbook.save":
-        _optional_string(params, "url")
+        if params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "workbook.save accepts no fields and saves the current workbook in place; "
+                "for a new .ods or .xlsx target, call workbook.save_as with params.url",
+                {
+                    "conflicting_fields": sorted(params),
+                    "replacement_action": "workbook.save_as",
+                },
+            )
+    elif action == "workbook.save_as":
+        url = _required_string(params, "url")
+        save_target = url.split("?", 1)[0]
+        if not re.search(r"(?i)(?:^|/)[^/.][^/]*\.(?:ods|xlsx)$", save_target):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.url must contain a filename before the .ods or .xlsx extension",
+                {"field": "url", "url": url},
+            )
         _optional_string(params, "filter_name")
     elif action == "workbook.convert_file":
         input_path = _required_string(params, "input_path")
@@ -703,9 +722,14 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _required_string(params, "source_range")
         _required_string(params, "destination_sheet")
         _required_string(params, "destination")
-        operations = _string_list(params, "operations")
-        if len(operations) != len(set(operations)):
-            raise AdapterError("INVALID_REQUEST", "params.operations must be unique")
+        if "operations" in params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.operations is no longer supported; call range.text_transform "
+                "once per transform with params.transform",
+                {"conflicting_field": "operations", "replacement_field": "transform"},
+            )
+        transform = _required_string(params, "transform")
         supported = {
             "trim",
             "collapse_whitespace",
@@ -713,12 +737,12 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             "lowercase",
             "uppercase",
         }
-        unknown = sorted(set(operations) - supported)
-        if unknown:
+        if transform not in supported:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.operations contains unsupported text transforms",
-                unknown,
+                "params.transform must be one of: collapse_whitespace, lowercase, "
+                "title_case, trim, uppercase",
+                {"transform": transform},
             )
         _optional_bool(params, "skip_blank")
     elif action == "sheet.create":

@@ -179,7 +179,7 @@ def test_persistence_recovery_keeps_owning_inspection_when_only_save_is_selected
 
 
 @pytest.mark.parametrize("forwarded", [False, True])
-def test_calc_save_recovery_keeps_in_place_and_save_as_without_expert_filter(forwarded):
+def test_calc_save_recovery_keeps_zero_argument_in_place_save(forwarded):
     if forwarded:
         tools = _strict_proactive(
             _state([
@@ -204,12 +204,26 @@ def test_calc_save_recovery_keeps_in_place_and_save_as_without_expert_filter(for
         )[0]["function"]
         parameters = function["parameters"]
 
+    assert parameters["properties"] == {}
+    validate({}, parameters)
+
+
+def test_calc_save_as_requires_target_without_expert_filter() -> None:
+    function = completion_recovery.build_tools(
+        "libreoffice_calc", ["workbook.save_as"],
+        include_gui=False, strict_generic=True,
+    )[0]["function"]
+    parameters = function["parameters"]
+
     assert set(parameters["properties"]) == {"url"}
-    for arguments in ({}, {"url": "file:///tmp/budget.ods"}, {"url": "/tmp/revenue.xlsx"}):
+    assert parameters["required"] == ["url"]
+    for arguments in (
+        {"url": "file:///tmp/budget.ods"},
+        {"url": "/tmp/revenue.xlsx"},
+    ):
         validate(arguments, parameters)
-    # Building a strict or forwarded contract must not mutate the legacy API.
     legacy = completion_recovery.build_tools(
-        "libreoffice_calc", ["workbook.save"],
+        "libreoffice_calc", ["workbook.save_as"],
         include_gui=False, strict_generic=False,
     )[0]["function"]
     assert "filter_name" in legacy["parameters"]["properties"]

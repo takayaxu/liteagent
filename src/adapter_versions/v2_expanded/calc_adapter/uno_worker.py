@@ -1176,46 +1176,59 @@ def _spreadsheet_package_format(path: Path) -> str | None:
 def _save(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     doc = session.doc
     doc.calculateAll()
-    target = params.get("url")
     try:
-        if target:
-            url = _file_url(target)
-            path = _url_path(url)
-            suffix = path.suffix.lower() if path is not None else ""
-            inferred_filter = _NEW_WORKBOOK_FILTERS.get(suffix)
-            requested_filter = params.get("filter_name")
-            if (
-                inferred_filter is not None
-                and requested_filter is not None
-                and requested_filter != inferred_filter
-            ):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.filter_name conflicts with the selected output extension",
-                    {
-                        "extension": suffix,
-                        "selected_filter": requested_filter,
-                        "required_filter": inferred_filter,
-                    },
-                )
-            filter_name = requested_filter or inferred_filter
-            properties = [_property("Overwrite", True)]
-            if filter_name:
-                properties.insert(0, _property("FilterName", filter_name))
-            doc.storeAsURL(url, tuple(properties))
-        else:
-            if not doc.URL:
-                raise AdapterError(
-                    "SAVE_FAILED", "unsaved documents require params.url"
-                )
-            doc.store()
-            url = doc.URL
+        if not doc.URL:
+            raise AdapterError(
+                "SAVE_FAILED",
+                "unsaved documents require workbook.save_as with params.url",
+            )
+        doc.store()
+        url = doc.URL
     except AdapterError:
         raise
     except Exception as exc:
         raise AdapterError(
             "SAVE_FAILED", "LibreOffice failed to save the workbook", str(exc), 500
         ) from exc
+    return _saved_workbook_result(url)
+
+
+def _save_as(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
+    doc = session.doc
+    doc.calculateAll()
+    url = _file_url(params["url"])
+    path = _url_path(url)
+    suffix = path.suffix.lower() if path is not None else ""
+    inferred_filter = _NEW_WORKBOOK_FILTERS.get(suffix)
+    requested_filter = params.get("filter_name")
+    if (
+        inferred_filter is not None
+        and requested_filter is not None
+        and requested_filter != inferred_filter
+    ):
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "params.filter_name conflicts with the selected output extension",
+            {
+                "extension": suffix,
+                "selected_filter": requested_filter,
+                "required_filter": inferred_filter,
+            },
+        )
+    filter_name = requested_filter or inferred_filter
+    properties = [_property("Overwrite", True)]
+    if filter_name:
+        properties.insert(0, _property("FilterName", filter_name))
+    try:
+        doc.storeAsURL(url, tuple(properties))
+    except Exception as exc:
+        raise AdapterError(
+            "SAVE_FAILED", "LibreOffice failed to save the workbook", str(exc), 500
+        ) from exc
+    return _saved_workbook_result(url)
+
+
+def _saved_workbook_result(url: str) -> dict[str, Any]:
     path = _url_path(url)
     if not path or not path.is_file() or path.stat().st_size == 0:
         raise AdapterError(
@@ -1707,20 +1720,18 @@ def _fill_down(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _transform_text_value(value: str, operations: list[str]) -> str:
-    transformed = value
-    for operation in operations:
-        if operation == "trim":
-            transformed = transformed.strip()
-        elif operation == "collapse_whitespace":
-            transformed = re.sub(r"\s+", " ", transformed.strip())
-        elif operation == "title_case":
-            transformed = transformed.title()
-        elif operation == "lowercase":
-            transformed = transformed.lower()
-        elif operation == "uppercase":
-            transformed = transformed.upper()
-    return transformed
+def _transform_text_value(value: str, transform: str) -> str:
+    if transform == "trim":
+        return value.strip()
+    if transform == "collapse_whitespace":
+        return re.sub(r"\s+", " ", value.strip())
+    if transform == "title_case":
+        return value.title()
+    if transform == "lowercase":
+        return value.lower()
+    if transform == "uppercase":
+        return value.upper()
+    raise AdapterError("INVALID_REQUEST", f"unsupported text transform: {transform}")
 
 
 def _text_transform(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
@@ -1767,7 +1778,7 @@ def _text_transform(session: CalcSession, params: dict[str, Any]) -> dict[str, A
             destination.setString(
                 ""
                 if kind == "blank"
-                else _transform_text_value(value, params["operations"])
+                else _transform_text_value(value, params["transform"])
             )
             written += 1
 
@@ -1783,7 +1794,7 @@ def _text_transform(session: CalcSession, params: dict[str, Any]) -> dict[str, A
         "source_range": params["source_range"],
         "destination_sheet": params["destination_sheet"],
         "destination_range": output_range,
-        "operations": params["operations"],
+        "transform": params["transform"],
         "written_cells": written,
         "readback": _range_snapshot(
             destination_sheet.getCellRangeByName(output_range), session.doc
@@ -4120,6 +4131,7 @@ ACTIONS = {
     "workbook.read_file": _read_file,
     "workbook.create_new": _create_new,
     "workbook.save": _save,
+    "workbook.save_as": _save_as,
     "workbook.export": _export,
     "workbook.convert_file": _convert_file,
     "sheet.create": _create_sheet,

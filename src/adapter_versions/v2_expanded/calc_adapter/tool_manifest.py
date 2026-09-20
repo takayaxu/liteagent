@@ -214,6 +214,34 @@ CELL_VALUE = {
 # Structured action contracts used to expose strict native tool schemas. The
 # corresponding runtime validation remains in calc_adapter.schema.
 _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
+    "workbook.save": {
+        "description": (
+            "Save the active workbook in place using its current URL and file format. "
+            "This action accepts no fields. Use workbook.save_as when the instruction "
+            "requires a new .ods or .xlsx destination."
+        ),
+        "properties": {},
+        "required": [],
+    },
+    "workbook.save_as": {
+        "description": (
+            "Save the active workbook to one explicit new .ods or .xlsx file. "
+            "The filename extension selects the format. Use workbook.save with an empty "
+            "arguments object to save the current workbook in place."
+        ),
+        "properties": {
+            "url": {
+                "type": "string",
+                "pattern": r"^(?:.*/)?[^/.][^/]*\.(?:[Oo][Dd][Ss]|[Xx][Ll][Ss][Xx])$",
+                "description": (
+                    "Output file path or file URL containing a filename and ending in "
+                    ".ods or .xlsx."
+                ),
+            },
+            "filter_name": {"type": "string", "minLength": 1},
+        },
+        "required": ["url"],
+    },
     "range.write": {
         "properties": {
             "sheet": {
@@ -685,8 +713,14 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "range.text_transform": {
         "description": (
-            "Clean or change the case of selected text cells and write the result "
-            "to an explicit destination. Every selected source cell is transformed; "
+            "Apply exactly one text transform to selected cells and write the result "
+            "to an explicit destination. Call this action again for each additional "
+            "transform in the intended order, using the preceding destination_range "
+            "as source_range and the same top-left destination when transforming in place. "
+            "title_case changes letter case only and does not trim or collapse whitespace; "
+            "a request for both whitespace cleanup and title casing requires separate "
+            "collapse_whitespace and title_case calls. "
+            "Every selected source cell is transformed; "
             "headers are not detected or skipped automatically. When cleaning data "
             "below existing column headers, select only data rows and keep both "
             "headers unchanged unless the user asks to edit them."
@@ -715,21 +749,21 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "explicitly asks to replace them."
                 ),
             },
-            "operations": {
-                "type": "array",
-                "minItems": 1,
-                "uniqueItems": True,
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "trim",
-                        "collapse_whitespace",
-                        "title_case",
-                        "lowercase",
-                        "uppercase",
-                    ],
-                },
-                "description": "Transforms are applied in the supplied order.",
+            "transform": {
+                "type": "string",
+                "enum": [
+                    "trim",
+                    "collapse_whitespace",
+                    "title_case",
+                    "lowercase",
+                    "uppercase",
+                ],
+                "description": (
+                    "The single transform to apply: trim removes leading and trailing "
+                    "whitespace; collapse_whitespace also replaces each internal whitespace "
+                    "run with one space; title_case capitalizes each word and lowercases its "
+                    "remaining letters; lowercase and uppercase change all letter case."
+                ),
             },
             "skip_blank": {
                 "type": "boolean",
@@ -741,7 +775,7 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "source_range",
             "destination_sheet",
             "destination",
-            "operations",
+            "transform",
         ],
     },
     "range.merge": {
