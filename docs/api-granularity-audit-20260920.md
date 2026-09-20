@@ -54,6 +54,12 @@ P0 满足至少一项：
 
 实现时优先缩窄现有契约，只有语义确实不同才增加窄 action。不要为了“拆分”复制执行器或制造一批同义工具。
 
+### P0 完成记录
+
+| API | Replacement | 实现提交 | 实际验证 |
+| --- | --- | --- | --- |
+| `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。 | `0b6b25e` | `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python -m pytest -q src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py src/adapter_versions/v2_expanded/tests/test_recovery_surface.py`（75 passed）；`/opt/anaconda3/bin/ruff check <5 changed Python files>`；`/opt/anaconda3/bin/ruff format --check <5 changed Python files>` |
+
 ## P1 复核清单
 
 | 负责人 | API | 需要确认的边界 |
