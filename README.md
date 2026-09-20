@@ -45,6 +45,13 @@ docker/shared-endpoints.env        共享 guest 的本机端口
 requirements-liteagent.txt        运行时 Python 依赖清单
 ```
 
+## 当前开发任务
+
+`liuxv` 的工作分支是 `codex/api-split-liuxv`。先读
+[大粒度 API 拆分任务](API_SPLIT_TASK.md)，完整的 216 项公开面复查、P0/P1
+清单和源码证据在 [API 粒度审计](docs/api-granularity-audit-20260920.md)。
+本任务只做 Adapter 契约拆分和针对性测试，不新增门禁，也不启动全量评测。
+
 ## 首次检查
 
 ```bash
