@@ -59,7 +59,7 @@ P0 满足至少一项：
 
 | API | Replacement | 实现提交 | 实际验证 |
 | --- | --- | --- | --- |
-| `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。新增只读 `identities.query`，在 identity-specific mutation 前返回 profile 中的精确 identity/account/email 映射。 | `0b6b25e`, `27a6552` | 初始收窄：邮件契约 focused pytest（75 passed）。identity 发现修复：`test_mail_selector_contract.py`（21 passed）及改动文件 Ruff。Order 153 单题正式复跑 `status=passed`、`reward=1.0`。 |
+| `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。新增只读 `identities.query`，在 identity-specific mutation 前返回 profile 中的精确 identity/account/email 映射。 | `0b6b25e`, `27a6552` | 初始收窄：邮件契约 focused pytest（75 passed）。identity 发现修复：`/var/lib/liteagent-shared/python-env/bin/python -m pytest tests/test_mail_selector_contract.py -q`（21 passed）；8 个改动 Python 文件执行 `ruff check` 通过。Order 153 单题正式复跑 `status=passed`、`reward=1.0`。 |
 | `thunderbird.filters.configure` | 保留 action 名；`filters: [rule, ...]` 改为 `filter: rule`，一次只创建或更新一条。move 前由模型调用 `folders.ensure_local`；不存在则在修改规则文件前报错；forward 不创建文件夹。连续调用保留其他规则，同名规则更新，默认验证限定在单条规则块内。 | `4ac68e4` | `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python -m pytest -q src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py`（25 passed）；`/opt/anaconda3/bin/ruff check` 和 `ruff format --check`（8 个改动 Python 文件通过）；Order 154 单题正式离线 evaluator `status=passed`、`reward=1.0`。 |
 
 ### 单题闭环记录
