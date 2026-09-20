@@ -530,9 +530,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     "slide.format_text_roles": {
         "description": (
             "Format live text on exactly one zero-based slide by semantic role, without "
-            "shape names, paths, or GUI selection. Only supplied properties change. Base "
-            "formatting applies to roles first; optional overrides then apply in array order, "
-            "which supports a shared all-text format plus a role-specific difference. Use "
+            "shape names, paths, or GUI selection. One call applies one shared rule to "
+            "the selected roles; only supplied properties change. For a different "
+            "role or formatting rule, make a separate format call. Use "
             "slides.format_text_roles when the same rule targets several slides."
         ),
         "properties": {
@@ -545,16 +545,6 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "Font color for every selected semantic role. For all text boxes or "
                     "all text on one slide, pass roles=['all']; when the instruction names "
                     "a color, pass that exact name instead of guessing another RGB value."
-                ),
-            },
-            "overrides": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 8,
-                "items": TEXT_ROLE_OVERRIDE,
-                "description": (
-                    "Optional role-specific formatting applied after the base rule. Each "
-                    "override changes only its supplied properties."
                 ),
             },
         },

@@ -445,8 +445,16 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _optional_bool(params, "replace")
     if action in {"slide.format_text_roles", "slides.format_text_roles"}:
         location_field = "slide" if action.startswith("slide.") else "slides"
+        if action == "slide.format_text_roles" and "overrides" in params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.overrides conflicts with slide.format_text_roles: this action "
+                "accepts one shared rule for the selected roles; make a separate "
+                "slide.format_text_roles call with its own roles and formatting fields",
+            )
         unexpected = set(params).difference(
-            {location_field, "roles", "overrides", *TEXT_FORMAT_FIELDS}
+            {location_field, "roles", *TEXT_FORMAT_FIELDS}
+            | ({"overrides"} if location_field == "slides" else set())
         )
         if unexpected:
             raise AdapterError(

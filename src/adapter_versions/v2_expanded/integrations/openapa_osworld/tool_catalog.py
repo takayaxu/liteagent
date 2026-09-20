@@ -295,10 +295,9 @@ DOMAIN_SIGNATURES = {
             'params={"slide": nonnegative 0-based int, "roles": ['
             '"all"|"title"|"content"|"body"|"table"|"text"], one or more of '
             '"color": color, "font_size": number, "font_name": str, "bold": bool, '
-            '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment, '
-            '"overrides"?: [{"roles": [role], one or more formatting fields}]}; '
-            "resolves roles from live UNO shape services, changes only supplied properties, "
-            "and applies overrides after the shared base rule"
+            '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment}; '
+            "resolves roles from live UNO shape services and applies one shared rule; "
+            "use a separate call for a different role or formatting rule"
         ),
         "slide.set_role_text": (
             'params={"slide": nonnegative 0-based int, "role": '

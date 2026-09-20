@@ -2031,6 +2031,12 @@ def _format_role_shape_text(shape: Any, params: dict[str, Any]) -> dict[str, Any
 def _format_text_roles(
     session: ImpressSession, params: dict[str, Any]
 ) -> dict[str, Any]:
+    if "slide" in params and "overrides" in params:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "params.overrides is unsupported: make a separate slide.format_text_roles "
+            "call for each role and formatting rule",
+        )
     slide_indices = [params["slide"]] if "slide" in params else list(params["slides"])
     pages = [(slide, session.page(slide)) for slide in slide_indices]
     rules = [
