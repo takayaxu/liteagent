@@ -507,14 +507,19 @@ DOMAIN_SIGNATURES = {
         ),
     },
     "thunderbird": {
+        "identities.query": (
+            "params={}; reads current Thunderbird identity keys and their email, display name, "
+            "account, server, and hostname mappings; use the exact returned identity key for "
+            "identity-specific mail.configure settings"
+        ),
         "mail.configure": (
-            'params={"identity"?: str (required for identity-specific settings), '
+            'params={"identity"?: exact key returned by identities.query, '
             '"signature_text"?: str, '
             '"quote_original_on_reply"?: bool, '
             '"automatic_filters_on_subfolders"?: bool, "unified_inbox"?: bool, '
             '"dark_mode"?: bool}; provide exactly one semantic setting per call; '
-            "identity is accepted only for signature or reply quoting; the adapter resolves "
-            "and verifies the corresponding Thunderbird state"
+            "identity is required and accepted only for signature or reply quoting; call "
+            "identities.query first and use its exact identity value"
         ),
         "folders.ensure_local": 'params={"names": [str]}',
         "messages.query": (

@@ -14,6 +14,7 @@ from .profile import (
     export_folder_messages,
     export_mbox_messages,
     find_profile,
+    query_identities,
     query_messages,
     remove_account,
     resolve_filter_rules_path,
@@ -296,6 +297,12 @@ class ThunderbirdActions:
             ),
             "profile": str(profile),
         }
+
+    def identities_query(
+        self, _params: dict[str, Any], _timeout: float
+    ) -> dict[str, Any]:
+        profile = find_profile()
+        return {**query_identities(profile), "profile": str(profile)}
 
     def attachments_save(
         self, params: dict[str, Any], _timeout: float

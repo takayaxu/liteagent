@@ -1537,6 +1537,14 @@ def instruction_required_actions(
     actions.extend(clipboard_path_semantics.required_actions(domain, instruction))
     semantic_action = semantic_configuration_action(domain, instruction)
     if semantic_action is not None:
+        if (
+            domain == "thunderbird"
+            and semantic_action == "mail.configure"
+            and re.search(
+                r"(?i)\b(?:signature|reply|replies|quot(?:e|ed|es|ing))\b", instruction
+            )
+        ):
+            actions.append("identities.query")
         actions.append(semantic_action)
     actions.extend(vscode_configuration_semantics.required_actions(domain, instruction))
     actions.extend(workspace_open_semantics.required_actions(domain, instruction))

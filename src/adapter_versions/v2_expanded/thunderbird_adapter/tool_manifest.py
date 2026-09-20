@@ -8,6 +8,15 @@ NONEMPTY_STRING = {"type": "string", "minLength": 1}
 # Model-visible parameter contracts owned by the Adapter. Runtime validation
 # remains in thunderbird_adapter.schema and is checked against this manifest.
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
+    "identities.query": {
+        "description": (
+            "Read the current Thunderbird identity keys and their email, display name, "
+            "account, server, and hostname mappings without changing profile state. Use the "
+            "exact returned identity value for identity-specific mail.configure settings."
+        ),
+        "properties": {},
+        "required": [],
+    },
     "filters.configure": {
         "properties": {
             "filters": {
@@ -141,8 +150,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "identity": {
                 **NONEMPTY_STRING,
                 "description": (
-                    "Thunderbird identity identifier. Required when setting signature_text "
-                    "or quote_original_on_reply; no identity is inferred."
+                    "Exact internal Thunderbird identity key returned by identities.query, "
+                    "for example id1. Required when setting signature_text or "
+                    "quote_original_on_reply; an email address is not an identity key."
                 ),
             },
             "signature_text": {

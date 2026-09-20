@@ -22,6 +22,7 @@ ACTIONS = frozenset(
         "messages.export_eml",
         "contacts.export_csv",
         "messages.query",
+        "identities.query",
         "attachments.save",
         "accounts.remove",
         "compose.attach",
@@ -108,7 +109,12 @@ def _string_list(
 
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
-    if action == "mail.configure":
+    if action == "identities.query":
+        if params:
+            raise AdapterError(
+                "INVALID_REQUEST", "identities.query does not accept parameters"
+            )
+    elif action == "mail.configure":
         unknown_fields = set(params).difference(
             MAIL_CONFIGURE_SETTING_FIELDS | {"identity"}
         )

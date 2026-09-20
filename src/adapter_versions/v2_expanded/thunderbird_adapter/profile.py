@@ -175,6 +175,60 @@ def read_preferences(path: Path) -> dict[str, Any]:
     return values
 
 
+def query_identities(profile: Path) -> dict[str, Any]:
+    """Return Thunderbird identity keys and their account-facing metadata."""
+    preferences = read_preferences(profile / "prefs.js")
+    identity_fields: dict[str, dict[str, Any]] = {}
+    for key, value in preferences.items():
+        match = re.fullmatch(r"mail\.identity\.([^.]+)\.(useremail|fullName)", key)
+        if match and isinstance(value, str):
+            identity_fields.setdefault(match.group(1), {})[match.group(2)] = value
+
+    identity_accounts: dict[str, list[str]] = {}
+    for key, value in preferences.items():
+        match = re.fullmatch(r"mail\.account\.([^.]+)\.identities", key)
+        if not match or not isinstance(value, str):
+            continue
+        account = match.group(1)
+        for identity in (item.strip() for item in value.split(",")):
+            if identity:
+                identity_accounts.setdefault(identity, []).append(account)
+
+    identities = sorted(set(identity_fields) | set(identity_accounts))
+    rows: list[dict[str, Any]] = []
+    for identity in identities:
+        fields = identity_fields.get(identity, {})
+        accounts = sorted(set(identity_accounts.get(identity, [])))
+        servers = sorted(
+            {
+                str(preferences[f"mail.account.{account}.server"]).strip()
+                for account in accounts
+                if isinstance(preferences.get(f"mail.account.{account}.server"), str)
+                and str(preferences[f"mail.account.{account}.server"]).strip()
+            }
+        )
+        hostnames = sorted(
+            {
+                str(preferences[f"mail.server.{server}.hostname"]).strip()
+                for server in servers
+                if isinstance(preferences.get(f"mail.server.{server}.hostname"), str)
+                and str(preferences[f"mail.server.{server}.hostname"]).strip()
+            }
+        )
+        row: dict[str, Any] = {
+            "identity": identity,
+            "account_ids": accounts,
+            "server_ids": servers,
+            "hostnames": hostnames,
+        }
+        if fields.get("useremail"):
+            row["email"] = fields["useremail"]
+        if fields.get("fullName"):
+            row["full_name"] = fields["fullName"]
+        rows.append(row)
+    return {"identities": rows, "count": len(rows)}
+
+
 def resolve_filter_rules_path(profile: Path) -> Path:
     """Resolve one configured incoming account's filter file from live profile data."""
     preferences = read_preferences(profile / "prefs.js")

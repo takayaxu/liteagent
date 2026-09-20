@@ -21,6 +21,7 @@ from thunderbird_adapter.actions import ThunderbirdActions, semantic_preference_
 from thunderbird_adapter.errors import AdapterError as ThunderbirdAdapterError
 from thunderbird_adapter.profile import (
     export_mbox_messages,
+    query_identities,
     query_messages,
     read_preferences,
     resolve_filter_rules_path,
@@ -406,6 +407,58 @@ def test_identity_specific_mail_settings_require_explicit_identity(
     update = semantic_preference_update(explicit)
     assert update["values"]
     assert all(key.startswith("mail.identity.id7.") for key in update["values"])
+
+
+def test_identities_query_exposes_exact_profile_keys_for_mail_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    (profile / "prefs.js").write_text(
+        "\n".join(
+            [
+                'user_pref("mail.account.account1.identities", "id1");',
+                'user_pref("mail.account.account1.server", "server1");',
+                'user_pref("mail.identity.id1.useremail", "person@example.test");',
+                'user_pref("mail.identity.id1.fullName", "Example Person");',
+                'user_pref("mail.server.server1.hostname", "mail.example.test");',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    assert query_identities(profile) == {
+        "identities": [
+            {
+                "identity": "id1",
+                "email": "person@example.test",
+                "full_name": "Example Person",
+                "account_ids": ["account1"],
+                "server_ids": ["server1"],
+                "hostnames": ["mail.example.test"],
+            }
+        ],
+        "count": 1,
+    }
+
+    monkeypatch.setattr(thunderbird_actions, "find_profile", lambda: profile)
+    result = ThunderbirdActions(object()).identities_query({}, 1)
+    assert result["identities"][0]["identity"] == "id1"
+    assert result["profile"] == str(profile)
+
+    exposed = _exposed_schema("identities.query")
+    assert not list(jsonschema.Draft202012Validator(exposed).iter_errors({}))
+    assert list(jsonschema.Draft202012Validator(exposed).iter_errors({"email": "x"}))
+    validate_thunderbird("identities.query", {})
+    with pytest.raises(ThunderbirdAdapterError, match="does not accept"):
+        validate_thunderbird("identities.query", {"email": "x"})
+
+
+def test_signature_requires_identity_discovery_before_configuration() -> None:
+    assert strict_instruction_required_actions(
+        "thunderbird", "Set my email signature to Regards"
+    ) == ["identities.query", "mail.configure"]
 
 
 def _stub_mail_lifecycle(
