@@ -295,14 +295,12 @@ def test_filter_configuration_resolves_one_live_incoming_account(
     )
     result = actions.filters_configure(
         {
-            "filters": [
-                {
-                    "condition_mode": "all_messages",
-                    "conditions": [],
-                    "action": "forward",
-                    "destination": "archive@example.test",
-                }
-            ]
+            "filter": {
+                "condition_mode": "all_messages",
+                "conditions": [],
+                "action": "forward",
+                "destination": "archive@example.test",
+            }
         },
         1,
     )
@@ -338,19 +336,140 @@ def test_filter_target_resolution_fails_closed_for_missing_or_ambiguous_accounts
     with pytest.raises(ThunderbirdAdapterError) as configure_error:
         actions.filters_configure(
             {
-                "filters": [
-                    {
-                        "condition_mode": "all_messages",
-                        "conditions": [],
-                        "action": "move_to_local_folder",
-                        "destination": "MustNotBeCreated",
-                    }
-                ]
+                "filter": {
+                    "condition_mode": "all_messages",
+                    "conditions": [],
+                    "action": "move_to_local_folder",
+                    "destination": "MustNotBeCreated",
+                }
             },
             1,
         )
     assert configure_error.value.code == "AMBIGUOUS_FILTER_TARGET"
     assert not (ambiguous / "Mail" / "Local Folders" / "MustNotBeCreated").exists()
+
+
+def test_filter_contract_accepts_one_rule_and_rejects_old_batch() -> None:
+    rule = {
+        "condition_mode": "criteria",
+        "conditions": [{"field": "subject", "operator": "contains", "value": "news"}],
+        "action": "forward",
+        "destination": "archive@example.test",
+    }
+    schema = _exposed_schema("filters.configure")
+    assert not list(
+        jsonschema.Draft202012Validator(schema).iter_errors({"filter": rule})
+    )
+    validate_thunderbird("filters.configure", {"filter": rule})
+    assert list(
+        jsonschema.Draft202012Validator(schema).iter_errors({"filters": [rule, rule]})
+    )
+    with pytest.raises(ThunderbirdAdapterError, match="params.filters.*params.filter"):
+        validate_thunderbird("filters.configure", {"filters": [rule, rule]})
+
+
+def test_filter_move_requires_existing_folder_before_mutating_rules(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    _write_account_preferences(profile, [("imap", "mail.example.test")])
+    path = resolve_filter_rules_path(profile)
+    original = 'version="9"\nlogging="yes"\n'
+    path.write_text(original, encoding="utf-8")
+    actions = ThunderbirdActions(object())
+    monkeypatch.setattr(
+        actions, "_profile_action", lambda operation, _timeout: operation(profile)
+    )
+
+    with pytest.raises(ThunderbirdAdapterError, match="folders.ensure_local") as error:
+        actions.filters_configure(
+            {
+                "filter": {
+                    "condition_mode": "all_messages",
+                    "conditions": [],
+                    "action": "move_to_local_folder",
+                    "destination": "Missing",
+                }
+            },
+            1,
+        )
+    assert error.value.code == "LOCAL_FOLDER_NOT_FOUND"
+    assert path.read_text(encoding="utf-8") == original
+    assert not (profile / "Mail" / "Local Folders" / "Missing").exists()
+
+
+def test_filter_single_rule_calls_preserve_existing_rules_and_forward_needs_no_folder(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    _write_account_preferences(profile, [("imap", "mail.example.test")])
+    actions = ThunderbirdActions(object())
+    monkeypatch.setattr(
+        actions, "_profile_action", lambda operation, _timeout: operation(profile)
+    )
+    forward = {
+        "name": "Forward updates",
+        "condition_mode": "all_messages",
+        "conditions": [],
+        "action": "forward",
+        "destination": "archive@example.test",
+    }
+    actions.filters_configure({"filter": forward}, 1)
+    folder = profile / "Mail" / "Local Folders" / "Updates"
+    folder.parent.mkdir(parents=True, exist_ok=True)
+    folder.touch()
+    move = {
+        "name": "Move updates",
+        "condition_mode": "all_messages",
+        "conditions": [],
+        "action": "move_to_local_folder",
+        "destination": "Updates",
+    }
+    actions.filters_configure({"filter": move}, 1)
+    path = resolve_filter_rules_path(profile)
+    text = path.read_text(encoding="utf-8")
+    assert 'name="Forward updates"' in text
+    assert 'name="Move updates"' in text
+    assert text.count('name="') == 2
+    actions.filters_configure({"filter": {**forward, "enabled": False}}, 1)
+    text = path.read_text(encoding="utf-8")
+    assert text.count('name="Forward updates"') == 1
+    assert 'name="Forward updates"\nenabled="no"' in text
+    assert 'name="Move updates"' in text
+    assert sorted(path.name for path in folder.parent.iterdir()) == ["Updates"]
+
+
+def test_filter_verification_does_not_mix_fields_from_different_rules(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    _write_account_preferences(profile, [("imap", "mail.example.test")])
+    actions = ThunderbirdActions(object())
+    monkeypatch.setattr(
+        actions, "_profile_action", lambda operation, _timeout: operation(profile)
+    )
+    for name in ("First", "Second"):
+        actions.filters_configure(
+            {
+                "filter": {
+                    "name": name,
+                    "condition_mode": "all_messages",
+                    "conditions": [],
+                    "action": "forward",
+                    "destination": f"{name.lower()}@example.test",
+                }
+            },
+            1,
+        )
+    monkeypatch.setattr(thunderbird_verifier, "find_profile", lambda _hint: profile)
+    verification = thunderbird_verifier.verify_check(
+        {
+            "type": "filters",
+            "filters": [{"name": "First", "actionValue": "second@example.test"}],
+        }
+    )
+    assert not verification["passed"]
+    assert verification["error_code"] == "VERIFICATION_FAILED"
 
 
 def test_export_eml_rejects_existing_entries_without_deleting_or_overwriting(

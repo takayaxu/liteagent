@@ -522,6 +522,13 @@ DOMAIN_SIGNATURES = {
             "identities.query first and use its exact identity value"
         ),
         "folders.ensure_local": 'params={"names": [str]}',
+        "filters.configure": (
+            'params={"filter": {"name"?: str, "enabled"?: bool, "match"?: "all"|"any", '
+            '"condition_mode": "criteria"|"all_messages", "conditions": [{"field": str, '
+            '"operator": str, "value": str}], "action": "move_to_local_folder"|"forward", '
+            '"destination": str}}; configures one rule; call folders.ensure_local first for '
+            "move_to_local_folder; forward does not create a local folder"
+        ),
         "messages.query": (
             'params={"folder_name": str, "limit"?: int[1,500], '
             '"select_from"?: "latest"|"earliest", '

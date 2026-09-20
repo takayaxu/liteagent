@@ -239,13 +239,19 @@ class ThunderbirdActions:
 
         def operation(profile: Path) -> dict[str, Any]:
             path = resolve_filter_rules_path(profile)
-            folders = (
-                ensure_local_folders(profile, configuration["local_folders"])
-                if configuration["local_folders"]
-                else None
-            )
-            result = write_filters(path, configuration["filters"])
-            return {**result, "local_folders": folders}
+            if configuration["local_folder"]:
+                folder = (
+                    profile / "Mail" / "Local Folders" / configuration["local_folder"]
+                )
+                if not folder.is_file():
+                    raise AdapterError(
+                        "LOCAL_FOLDER_NOT_FOUND",
+                        "filter.destination local folder does not exist: "
+                        f"{configuration['local_folder']}; call folders.ensure_local "
+                        "with names=[destination] before filters.configure",
+                        http_status=404,
+                    )
+            return write_filters(path, configuration["filter"])
 
         return self._profile_action(operation, timeout)
 

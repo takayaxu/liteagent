@@ -393,13 +393,34 @@ def _quote_filter(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def write_filters(path: Path, filters: list[dict[str, str]]) -> dict[str, Any]:
-    lines = ['version="9"', 'logging="no"']
-    for item in filters:
-        for key in ("name", "enabled", "type", "action", "actionValue", "condition"):
-            lines.append(f'{key}="{_quote_filter(str(item[key]))}"')
-    _atomic_write(path, "\n".join(lines) + "\n")
-    return {"path": str(path), "filters": filters}
+def write_filters(path: Path, item: dict[str, str]) -> dict[str, Any]:
+    existing = path.read_text(encoding="utf-8") if path.is_file() else ""
+    if existing and not existing.startswith('version="'):
+        raise AdapterError(
+            "INVALID_FILTER_RULES", f"filter file has an unsupported header: {path}"
+        )
+    lines = (
+        existing.splitlines(keepends=True)
+        if existing
+        else ['version="9"\n', 'logging="no"\n']
+    )
+    name_line = f'name="{_quote_filter(item["name"])}"'
+    starts = [index for index, line in enumerate(lines) if line.startswith('name="')]
+    matching = [index for index in starts if lines[index].rstrip("\r\n") == name_line]
+    block = [
+        f'{key}="{_quote_filter(item[key])}"\n'
+        for key in ("name", "enabled", "type", "action", "actionValue", "condition")
+    ]
+    if matching:
+        start = matching[0]
+        end = next((index for index in starts if index > start), len(lines))
+        lines[start:end] = block
+    else:
+        if lines and not lines[-1].endswith("\n"):
+            lines[-1] += "\n"
+        lines.extend(block)
+    _atomic_write(path, "".join(lines))
+    return {"path": str(path), "filter": item}
 
 
 def export_mbox_messages(source: Path, destination: Path) -> dict[str, Any]:

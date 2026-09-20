@@ -55,14 +55,7 @@ def _default_specs(
         return [{"type": "folders", "names": params["names"]}]
     if action == "filters.configure":
         configuration = compile_filter_configuration(params)
-        checks: list[dict[str, Any]] = [
-            {"type": "filters", "filters": configuration["filters"]}
-        ]
-        if configuration["local_folders"]:
-            checks.insert(
-                0, {"type": "folders", "names": configuration["local_folders"]}
-            )
-        return checks
+        return [{"type": "filters", "filters": [configuration["filter"]]}]
     if action == "messages.export_eml":
         return [
             {

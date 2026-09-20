@@ -18,128 +18,122 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": [],
     },
     "filters.configure": {
+        "description": (
+            "Create or update exactly one Thunderbird message-filter rule per call. "
+            "For move_to_local_folder, call folders.ensure_local with the destination "
+            "name first; this action never creates folders. Forward needs no folder."
+        ),
         "properties": {
-            "filters": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 50,
-                "description": (
-                    "Semantic Thunderbird message-filter rules. A move_to_local_folder rule "
-                    "creates its destination local folder when missing."
-                ),
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            **NONEMPTY_STRING,
-                            "maxLength": 255,
-                            "description": "Optional visible rule name; a descriptive name is generated when omitted.",
-                        },
-                        "enabled": {
-                            "type": "boolean",
-                            "default": True,
-                            "description": "Whether the filter is active; defaults to true.",
-                        },
-                        "match": {
-                            "type": "string",
-                            "enum": ["all", "any"],
-                            "default": "all",
-                            "description": "Require all conditions or any condition; defaults to all.",
-                        },
-                        "condition_mode": {
-                            "type": "string",
-                            "enum": ["criteria", "all_messages"],
-                            "description": (
-                                "Use criteria when the request names message conditions. "
-                                "Use all_messages only when it explicitly applies to every incoming message."
-                            ),
-                        },
-                        "conditions": {
-                            "type": "array",
-                            "maxItems": 10,
-                            "description": (
-                                "Explicit message conditions. Supply at least one item for "
-                                "condition_mode=criteria, or an empty array for all_messages."
-                            ),
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "field": {
-                                        "type": "string",
-                                        "enum": [
-                                            "subject",
-                                            "sender",
-                                            "recipient",
-                                            "cc",
-                                            "body",
-                                        ],
-                                        "description": "Message field to test.",
-                                    },
-                                    "operator": {
-                                        "type": "string",
-                                        "enum": [
-                                            "contains",
-                                            "does_not_contain",
-                                            "is",
-                                            "is_not",
-                                            "begins_with",
-                                            "ends_with",
-                                        ],
-                                        "description": "Comparison applied to the selected field.",
-                                    },
-                                    "value": {
-                                        **NONEMPTY_STRING,
-                                        "maxLength": 1024,
-                                        "description": "Literal text to compare with the selected message field.",
-                                    },
+            "filter": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        **NONEMPTY_STRING,
+                        "maxLength": 255,
+                        "description": "Optional visible rule name; a descriptive name is generated when omitted.",
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": "Whether the filter is active; defaults to true.",
+                    },
+                    "match": {
+                        "type": "string",
+                        "enum": ["all", "any"],
+                        "default": "all",
+                        "description": "Require all conditions or any condition; defaults to all.",
+                    },
+                    "condition_mode": {
+                        "type": "string",
+                        "enum": ["criteria", "all_messages"],
+                        "description": (
+                            "Use criteria when the request names message conditions. "
+                            "Use all_messages only when it explicitly applies to every incoming message."
+                        ),
+                    },
+                    "conditions": {
+                        "type": "array",
+                        "maxItems": 10,
+                        "description": (
+                            "Explicit message conditions. Supply at least one item for "
+                            "condition_mode=criteria, or an empty array for all_messages."
+                        ),
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "field": {
+                                    "type": "string",
+                                    "enum": [
+                                        "subject",
+                                        "sender",
+                                        "recipient",
+                                        "cc",
+                                        "body",
+                                    ],
+                                    "description": "Message field to test.",
                                 },
-                                "required": ["field", "operator", "value"],
-                                "additionalProperties": False,
+                                "operator": {
+                                    "type": "string",
+                                    "enum": [
+                                        "contains",
+                                        "does_not_contain",
+                                        "is",
+                                        "is_not",
+                                        "begins_with",
+                                        "ends_with",
+                                    ],
+                                    "description": "Comparison applied to the selected field.",
+                                },
+                                "value": {
+                                    **NONEMPTY_STRING,
+                                    "maxLength": 1024,
+                                    "description": "Literal text to compare with the selected message field.",
+                                },
                             },
-                        },
-                        "action": {
-                            "type": "string",
-                            "enum": ["move_to_local_folder", "forward"],
-                            "description": "Move matching messages to a local folder or forward them.",
-                        },
-                        "destination": {
-                            **NONEMPTY_STRING,
-                            "maxLength": 512,
-                            "description": (
-                                "For move_to_local_folder, the visible local-folder name. "
-                                "For forward, the destination email address."
-                            ),
+                            "required": ["field", "operator", "value"],
+                            "additionalProperties": False,
                         },
                     },
-                    "required": [
-                        "condition_mode",
-                        "conditions",
-                        "action",
-                        "destination",
-                    ],
-                    "allOf": [
-                        {
-                            "if": {
-                                "properties": {"condition_mode": {"const": "criteria"}},
-                                "required": ["condition_mode"],
-                            },
-                            "then": {"properties": {"conditions": {"minItems": 1}}},
-                        },
-                        {
-                            "if": {
-                                "properties": {
-                                    "condition_mode": {"const": "all_messages"}
-                                },
-                                "required": ["condition_mode"],
-                            },
-                            "then": {"properties": {"conditions": {"maxItems": 0}}},
-                        },
-                    ],
-                    "additionalProperties": False,
+                    "action": {
+                        "type": "string",
+                        "enum": ["move_to_local_folder", "forward"],
+                        "description": "Move matching messages to a local folder or forward them.",
+                    },
+                    "destination": {
+                        **NONEMPTY_STRING,
+                        "maxLength": 512,
+                        "description": (
+                            "For move_to_local_folder, the visible local-folder name. "
+                            "For forward, the destination email address."
+                        ),
+                    },
                 },
+                "required": [
+                    "condition_mode",
+                    "conditions",
+                    "action",
+                    "destination",
+                ],
+                "allOf": [
+                    {
+                        "if": {
+                            "properties": {"condition_mode": {"const": "criteria"}},
+                            "required": ["condition_mode"],
+                        },
+                        "then": {"properties": {"conditions": {"minItems": 1}}},
+                    },
+                    {
+                        "if": {
+                            "properties": {"condition_mode": {"const": "all_messages"}},
+                            "required": ["condition_mode"],
+                        },
+                        "then": {"properties": {"conditions": {"maxItems": 0}}},
+                    },
+                ],
+                "additionalProperties": False,
             }
         },
-        "required": ["filters"],
+        "required": ["filter"],
     },
     "mail.configure": {
         "description": (
