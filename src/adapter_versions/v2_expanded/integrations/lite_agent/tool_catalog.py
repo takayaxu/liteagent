@@ -2682,32 +2682,6 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
             },
             "required": ["subject", "attachment_path"],
         },
-        "preferences.update": {
-            "properties": {
-                "values": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "Thunderbird preference names mapped to JSON scalar values.",
-                    "additionalProperties": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                            {"type": "number"},
-                        ]
-                    },
-                },
-                "remove_keys": {
-                    "type": "array",
-                    "minItems": 1,
-                    "uniqueItems": True,
-                    "items": {"type": "string", "minLength": 1},
-                    "description": "Preference names to remove from the user profile.",
-                },
-            },
-            "required": [],
-            "anyOf": [{"required": ["values"]}, {"required": ["remove_keys"]}],
-        },
     },
     "multi_apps": {},
 }

@@ -43,6 +43,7 @@ RETIRED_ACTIONS = {
     "messages.star_folder",
     "ui.open_about_profiles",
 }
+RETIRED_LOW_LEVEL_ACTION = "preferences.update"
 
 
 def _message(
@@ -256,6 +257,29 @@ def test_task_shaped_mail_actions_are_absent_from_runtime_surfaces() -> None:
     )
     assert "filters.configure" in required
     assert RETIRED_ACTIONS.isdisjoint(required)
+
+
+def test_low_level_preferences_update_is_not_publicly_callable() -> None:
+    surfaces = (
+        set(THUNDERBIRD_ACTIONS),
+        set(THUNDERBIRD_SCHEMAS),
+        set(DIRECT_ACTION_SCHEMAS["thunderbird"]),
+        set(public_actions("thunderbird")),
+    )
+    assert all(RETIRED_LOW_LEVEL_ACTION not in surface for surface in surfaces)
+
+    request = {
+        "action": RETIRED_LOW_LEVEL_ACTION,
+        "params": {"values": {"example.preference": True}},
+    }
+    with pytest.raises(ThunderbirdAdapterError) as parsed_error:
+        parse_action_request(request)
+    assert parsed_error.value.code == "UNSUPPORTED_ACTION"
+
+    with pytest.raises(ThunderbirdAdapterError) as worker_error:
+        execute_thunderbird(request)
+    assert worker_error.value.code == "UNSUPPORTED_ACTION"
+    assert not hasattr(ThunderbirdActions, "preferences_update")
 
 
 def _write_account_preferences(profile: Path, servers: list[tuple[str, str]]) -> None:
@@ -618,6 +642,49 @@ def test_mail_configure_signature_mutates_and_verifies_preferences_only(
     assert result["xulstore"] is None
     specs = _default_specs("mail.configure", params, result)
     assert [spec["type"] for spec in specs] == ["preferences"]
+    assert thunderbird_verifier.verify_specs(specs)["passed"] is True
+
+
+def test_mail_configure_dark_mode_preserves_unrelated_profile_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    preferences_path = profile / "prefs.js"
+    preferences_path.write_text(
+        "\n".join(
+            [
+                'user_pref("extensions.activeThemeID", "default-theme@mozilla.org");',
+                'user_pref("preserved.preference", true);',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    xulstore = profile / "xulstore.json"
+    xulstore.write_text('{"preserved": true}\n', encoding="utf-8")
+    original_xulstore = xulstore.read_bytes()
+    actions = ThunderbirdActions()
+    _stub_mail_lifecycle(monkeypatch, actions, profile)
+    params = {"dark_mode": True}
+
+    result = actions.mail_configure(params, 30)
+
+    preferences = read_preferences(preferences_path)
+    assert preferences["extensions.activeThemeID"] == (
+        "firefox-compact-dark@mozilla.org"
+    )
+    assert preferences["preserved.preference"] is True
+    assert xulstore.read_bytes() == original_xulstore
+    assert result["xulstore"] is None
+    specs = _default_specs("mail.configure", params, result)
+    assert specs == [
+        {
+            "type": "preferences",
+            "values": {"extensions.activeThemeID": "firefox-compact-dark@mozilla.org"},
+            "absent": [],
+        }
+    ]
     assert thunderbird_verifier.verify_specs(specs)["passed"] is True
 
 

@@ -34,14 +34,6 @@ def _default_specs(
         if xulstore is not None:
             checks.append({"type": "json_path", "path": "xulstore.json", **xulstore})
         return checks
-    if action == "preferences.update":
-        return [
-            {
-                "type": "preferences",
-                "values": params["values"],
-                "absent": params.get("remove_keys", []),
-            }
-        ]
     if action == "xulstore.update":
         return [
             {

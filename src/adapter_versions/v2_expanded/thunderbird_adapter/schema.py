@@ -15,7 +15,6 @@ DEFAULT_TIMEOUT_MS = 60_000
 ACTIONS = frozenset(
     {
         "mail.configure",
-        "preferences.update",
         "xulstore.update",
         "folders.ensure_local",
         "filters.configure",
@@ -185,23 +184,6 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 raise AdapterError(
                     "INVALID_REQUEST", f"params.{field} must be a boolean"
                 )
-    elif action == "preferences.update":
-        values = params.get("values")
-        if not isinstance(values, Mapping) or not values:
-            raise AdapterError(
-                "INVALID_REQUEST", "params.values must be a non-empty object"
-            )
-        for key, value in values.items():
-            if (
-                not isinstance(key, str)
-                or not key
-                or not isinstance(value, (str, int, bool))
-            ):
-                raise AdapterError(
-                    "INVALID_REQUEST", "preference names and values must be scalar"
-                )
-        if "remove_keys" in params:
-            _string_list(params, "remove_keys")
     elif action == "xulstore.update":
         _string_list(params, "keys")
         if "value" not in params:

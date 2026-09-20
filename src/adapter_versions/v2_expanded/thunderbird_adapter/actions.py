@@ -159,18 +159,6 @@ class ThunderbirdActions:
             "lifecycle": {"stop": stopped, "start": started},
         }
 
-    def preferences_update(
-        self, params: dict[str, Any], timeout: float
-    ) -> dict[str, Any]:
-        return self._profile_action(
-            lambda profile: update_preferences(
-                profile / "prefs.js",
-                dict(params["values"]),
-                params.get("remove_keys", []),
-            ),
-            timeout,
-        )
-
     def mail_configure(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:
         validate_action_params("mail.configure", params)
         preference_update = semantic_preference_update(params)
