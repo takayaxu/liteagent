@@ -40,7 +40,7 @@ P0 满足至少一项：
 | liuxv | `libreoffice_writer.document.add_page_numbers` | 声称添加页码，实际会清空每个活动页样式的整个页脚 | 保留已有页脚，仅创建或更新本 action 自己的页码字段；清空页脚必须是独立显式动作 |
 | liuxv | `thunderbird.mail.configure` | 一次可改签名、回复引用、过滤行为、统一收件箱和主题，并跨两个配置存储写入 | 一个公开调用只改一个语义设置；跨存储效果不得合并 |
 | liuxv | `thunderbird.filters.configure` | 一次接受最多 50 条不同规则，move 规则还会隐式创建本地文件夹 | 一次配置一条规则；`move_to_local_folder` 先显式调用 `folders.ensure_local`，forward 无需该步骤 |
-| liuxv | `thunderbird.preferences.update` | 任意 values map 加 remove list 可一次改动多个无关偏好 | 每次只 set 或 remove 一个精确 key |
+| liuxv | `thunderbird.preferences.update` | 任意 values map 加 remove list 可一次改动多个无关偏好 | 退役模型可见的底层入口；由窄语义 action 负责已支持的偏好设置 |
 | pengzhe | `chrome.settings.set` | 一个 map 混合隐私、资料、启动、外观、字体和搜索设置 | 一次只允许一个 setting |
 | pengzhe | `gimp.image.adjust` | 一次可串联亮度、对比度和饱和度调整 | 一次只允许一种 adjustment 和一个 amount |
 | pengzhe | `os.archive.create_extract` | 同一 action 用 mode 合并创建 ZIP 和解压 ZIP | 拆成明确的 create-ZIP 与 extract-ZIP action |
@@ -61,6 +61,7 @@ P0 满足至少一项：
 | --- | --- | --- | --- |
 | `thunderbird.mail.configure` | 保留 action 名；`signature_text`、`quote_original_on_reply`、`automatic_filters_on_subfolders`、`unified_inbox`、`dark_mode` 严格五选一。`identity` 只允许用于签名或回复引用。每次调用只写 `prefs.js` 或 `xulstore.json` 中的一处存储。新增只读 `identities.query`，在 identity-specific mutation 前返回 profile 中的精确 identity/account/email 映射。 | `0b6b25e`, `27a6552` | 初始收窄：邮件契约 focused pytest（75 passed）。identity 发现修复：`/var/lib/liteagent-shared/python-env/bin/python -m pytest tests/test_mail_selector_contract.py -q`（21 passed）；8 个改动 Python 文件执行 `ruff check` 通过。Order 153 单题正式复跑 `status=passed`、`reward=1.0`。 |
 | `thunderbird.filters.configure` | 保留 action 名；`filters: [rule, ...]` 改为 `filter: rule`，一次只创建或更新一条。move 前由模型调用 `folders.ensure_local`；不存在则在修改规则文件前报错；forward 不创建文件夹。连续调用保留其他规则，同名规则更新，默认验证限定在单条规则块内。 | `4ac68e4` | `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python -m pytest -q src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py`（25 passed）；`/opt/anaconda3/bin/ruff check` 和 `ruff format --check`（8 个改动 Python 文件通过）；Order 154 单题正式离线 evaluator `status=passed`、`reward=1.0`。 |
+| `thunderbird.preferences.update` | 退役公开 action、直连 schema、运行时 validation/dispatch 和默认 verification；内部 `update_preferences` helper 仅供 `mail.configure` 等窄语义 action 使用。旧 action 请求在 mutation 前返回 `UNSUPPORTED_ACTION`。 | `07fa09c` | `test_mail_selector_contract.py`（27 passed）；5 个改动 Python 文件 `ruff check` 通过，4 个专属 Thunderbird/测试文件 `ruff format --check` 通过。Order 159 拆分后正式离线 evaluator `status=passed`、`reward=1.0`。 |
 
 ### 单题闭环记录
 
@@ -70,6 +71,9 @@ P0 满足至少一项：
 - Order 154，task `5203d847-2572-4150-912a-03f062254390`：完整题目定义为 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/5203d847-2572-4150-912a-03f062254390.json`。历史 v305/v306 的原始轨迹不在本工作区；本地拆分前基准的完整原始轨迹是 `src/adapter_versions/v2_expanded/experiments/local-filter-configure-154-baseline-retry3-20260920/workers/worker-00/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/`，结果为同一 worker 的 `results.json`（`passed`, `1.0`）。模型第 1 步显式建本地文件夹，第 2 步以旧 `filters` 数组配置一条规则；Adapter 同一步又隐式建该文件夹。基准通过但隐藏副作用和 50 条异构规则容量仍违反单一语义契约；旧 writer 覆盖全部规则文件，还会使拆分后的连续调用丢失早先规则。
 - 初次本地基准预取原始 Hugging Face URL 超时，记录在 `experiments/local-filter-configure-154-baseline-20260920/workers/worker-00/results.json`（`environment_failure`，模型未运行）；从同一数据集路径的可用镜像预取到 OSWorld 标准缓存并与已有原 URL 缓存核对 SHA-256 后，retry3 的环境与原始 evaluator 均正常。两次中间配置因并发源码 seal 变化在模型启动前被拒绝，无评测分数。
 - 本题通用修复提交 `4ac68e4`；拆分后轨迹在 `src/adapter_versions/v2_expanded/experiments/local-filter-configure-154-split-20260920/workers/worker-00/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/`，结果在同一 worker 的 `results.json`。模型第 1 步显式 `folders.ensure_local`，第 2 步仅传 `filters.configure(filter={...})`，Adapter 的单规则 verification 通过且无隐式建目录；正式离线 evaluator 判定 `passed`, `reward=1.0`。实际命令：`PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-filter-configure-154-split-20260920.json --orders 154 --result-dir src/adapter_versions/v2_expanded/experiments/local-filter-configure-154-split-20260920/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --max-local-steps 15`。
+- Order 159，task `10a730d5-d414-4b40-b479-684bed1ae522`：完整题目定义为 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/10a730d5-d414-4b40-b479-684bed1ae522.json`，要求启用完整深色模式。首次基准因原始 Hugging Face URL 超时在模型启动前结束；retry1/retry2 因并发源码 seal 变化在模型启动前被门禁拒绝。复用同一原始 URL 的既有 Thunderbird profile 缓存并核对 SHA-256 `8a714a4102d6f3aa604c0fd2bb96e63ba51594485977ed5c8dd19af846ae07e8` 后，有效基线 retry3 位于 `src/adapter_versions/v2_expanded/experiments/local-preferences-update-159-baseline-retry3-20260920/workers/worker-00/`，正式 evaluator 为 `passed`, `reward=1.0`。
+- 有效基线的 top-k 和完整调用轨迹均未包含 `preferences.update`；模型第 1 步调用 `mail.configure(dark_mode=true)`，Adapter verification 读回 `extensions.activeThemeID` 成功，第 2 步完成。该题已有窄语义 replacement，任意 key 底层入口既非完成本题所需，又允许绕过语义约束批量修改无关偏好，因此提交 `07fa09c` 将其从公开 schema、validation、dispatch 和默认 verification 中退役，并保留内部 profile helper。
+- 拆分后完整轨迹在 `src/adapter_versions/v2_expanded/experiments/local-preferences-update-159-retired-20260920/workers/worker-00/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/`，结果在同一 worker 的 `results.json`：模型仍调用单一语义 `mail.configure(dark_mode=true)`，Adapter verification 通过，正式离线 evaluator 判定 `passed`, `reward=1.0`, `termination_reason=agent_done`。实际命令：`PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-preferences-update-159-retired-20260920.json --orders 159 --result-dir src/adapter_versions/v2_expanded/experiments/local-preferences-update-159-retired-20260920/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --max-local-steps 15`。
 
 ## P1 复核清单
 
@@ -126,7 +130,7 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 
 这 33 项中有 32 项当前可保留；`archive.compress_file` 因可在压缩后删除源文件列入 P1，先确认它是否属于明确的原生事务。其余是单目标动作、显式同构写入、应用原生转换或有界只读观察。特别地，`pdf.form.fill` 和 `cells.set_formulas` 虽可一次提交多个显式值，但每个成员都由模型给出，集合使用同一个公开契约，不包含字段发现或答案推导。
 
-## 217 项全量清单
+## 216 项全量清单
 
 表中 P0/P1 与上文相同；“保留”列是本次明确检查过、当前不进入拆分队列的剩余项。三列互斥，合计必须等于每行公开数。
 
@@ -140,10 +144,10 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 | Writer | 28 | `document.add_page_numbers` | `document.extract_images`, `document.remove_highlighting`, `document.set_font`, `document.transform_case` | `bookmark.create`, `cross_reference.insert`, `document.append_paragraphs`, `document.export_pdf`, `document.insert_page_break`, `document.inspect`, `document.read_file`, `document.save`, `image.insert_at_cursor`, `paragraph.apply_numbering`, `paragraph.clear_text`, `paragraph.replace_text`, `paragraph.set_format`, `paragraph.split`, `settings.set_default_font`, `table.convert_text`, `table.insert_after_text`, `table.insert_at_cursor`, `table.read`, `table.set_cell_text_color`, `text.find`, `text.find_replace`, `text.set_format` |
 | VS Code | 27 | `debugging.configure`, `editor.configure`, `files.configure`, `settings.update` | `workspace.add_folders`, `workspace.open`, `workspace.set_folders` | `debug.breakpoint.set`, `debug.continue`, `debug.session.wait`, `debug.start`, `debug.stop`, `debug.variables.read`, `diagnostics.configure`, `editor.open_file`, `explorer.set_exclusion`, `extension.install`, `file.create`, `file.indent_lines`, `file.read_text`, `file.replace_literal`, `keybindings.ensure`, `ui.expand_section`, `ui.open_view`, `workspace.find_files`, `workspace.inspect`, `workspace.write` |
 | VLC | 9 | `config.update`, `preferences.configure` | `playback.open` | `media.extract_audio`, `media.extract_frame`, `media.extract_subtitles`, `media.transcode_clip`, `playback.status`, `window.set_fullscreen` |
-| Thunderbird | 14 | `filters.configure`, `mail.configure`, `preferences.update` | `messages.export_eml` | `accounts.remove`, `attachments.save`, `compose.attach`, `compose.set_recipients`, `contacts.export_csv`, `folders.ensure_local`, `identities.query`, `messages.query`, `ui.prefill_account_setup`, `xulstore.update` |
+| Thunderbird | 13 | `filters.configure`, `mail.configure` | `messages.export_eml` | `accounts.remove`, `attachments.save`, `compose.attach`, `compose.set_recipients`, `contacts.export_csv`, `folders.ensure_local`, `identities.query`, `messages.query`, `ui.prefill_account_setup`, `xulstore.update` |
 | Multi-Apps | 1 | - | - | `adapter.call` |
 
-总计：30 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 14 + 1 = **217**；P0 19；P1 17；保留 181。
+总计：30 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 13 + 1 = **216**；P0 18；P1 17；保留 181。
 
 ## 关键源码证据
 
