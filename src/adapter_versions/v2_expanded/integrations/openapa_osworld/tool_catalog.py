@@ -302,12 +302,9 @@ DOMAIN_SIGNATURES = {
         ),
         "slide.set_role_text": (
             'params={"slide": nonnegative 0-based int, "role": '
-            '"title"|"content"|"body"|"text", "text": non-empty str, '
-            'optional "color": color, "font_size": number, "font_name": str, '
-            '"bold": bool, "italic": bool, "underline": bool, "strike": bool, '
-            '"alignment": "left"|"center"|"right"|"justify"}; resolves exactly one '
-            "live semantic text role, replaces its text, applies only model-selected "
-            "formatting, and verifies the resulting text and properties"
+            '"title"|"content"|"body"|"text", "text": non-empty str}; resolves '
+            "exactly one live semantic text role, replaces only its text, and verifies "
+            "the replacement; use slide.format_text_roles separately for formatting"
         ),
         "slides.format_text_roles": (
             'params={"slides": [unique nonnegative zero-based ints], "roles": ['

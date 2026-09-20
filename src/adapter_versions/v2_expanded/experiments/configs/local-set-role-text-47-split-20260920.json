@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "experiment_id": "local-set-role-text-47-split-20260920",
+  "status": "frozen",
+  "purpose": "Single-task local evaluation of separate Impress semantic-role text replacement and formatting calls; not promotion.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "local_set_role_text_47_split",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["https://qwen.jinmaoapi.cc.cd/v1"],
+    "served_root": "/root/.cache/huggingface/hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "reasoning_mode": "non_thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "guest_proxy": false,
+    "max_steps": 30,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "reasoning_mode": "non_thinking",
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "task_specific_or_golden_exposed": false,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "non_promotable": true
+  },
+  "tasks": [
+    {
+      "order": 47,
+      "source_order": 135,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302"
+    }
+  ],
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "code_label": "set-role-text-47-split-20260920",
+    "role": "local_single_task_run",
+    "result_directory": "adapter_versions/v2_expanded/experiments/local-set-role-text-47-split-20260920",
+    "source_tree": {
+      "scope_roots": ["integrations", "scripts", "tests", "deployment", "calc_adapter", "chrome_adapter", "gimp_adapter", "impress_adapter", "multi_apps_adapter", "os_adapter", "thunderbird_adapter", "vlc_adapter", "vscode_adapter", "writer_adapter"],
+      "excludes": ["__pycache__", ".pytest_cache", ".ruff_cache", ".venv*", "*.pyc"],
+      "file_count": 549,
+      "total_bytes": 81535126,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "f1c559f8679a20cdfabf99d98d13a697acb63f4cc5ac752b290899188aa09fc4"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false,
+    "selection_uses_prior_outcome": true,
+    "immutable_result_directory": true
+  }
+}

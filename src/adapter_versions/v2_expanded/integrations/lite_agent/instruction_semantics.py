@@ -1682,6 +1682,8 @@ def instruction_required_actions(
             actions.extend(["presentation.inspect", "shape.set_geometry"])
         if strict_generic and role_text_update is not None:
             actions.extend(["presentation.inspect", "slide.set_role_text"])
+            if role_text_update.formatting:
+                actions.append("slide.format_text_roles")
         elif requested_slide_title_update(instruction) is not None:
             actions.extend(
                 ["presentation.inspect", "shape.write_text", "shape.format_text"]

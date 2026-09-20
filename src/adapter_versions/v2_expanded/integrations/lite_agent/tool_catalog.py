@@ -1722,10 +1722,8 @@ ACTION_KEYWORDS = {
     },
     ("libreoffice_impress", "slide.set_role_text"): {
         "add",
-        "align",
         "body",
         "content",
-        "font",
         "heading",
         "insert",
         "replace",

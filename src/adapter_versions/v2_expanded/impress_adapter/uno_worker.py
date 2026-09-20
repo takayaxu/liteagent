@@ -1779,21 +1779,6 @@ def _set_role_text(session: ImpressSession, params: dict[str, Any]) -> dict[str,
             {"expected": params["text"], "observed": observed, "path": path},
             422,
         )
-    formatting = {
-        key: params[key]
-        for key in (
-            "color",
-            "font_size",
-            "font_name",
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "alignment",
-        )
-        if key in params
-    }
-    formatted = _format_role_shape_text(shape, formatting) if formatting else None
     return {
         "slide": params["slide"],
         "requested_role": params["role"],
@@ -1801,7 +1786,6 @@ def _set_role_text(session: ImpressSession, params: dict[str, Any]) -> dict[str,
         "path": path,
         "previous_text": before,
         "text": observed,
-        "properties": formatted["properties"] if formatted is not None else {},
     }
 
 

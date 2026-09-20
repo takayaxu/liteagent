@@ -564,10 +564,10 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     "slide.set_role_text": {
         "description": (
             "Replace the text of exactly one live semantic text role on one zero-based "
-            "slide and optionally apply only the supplied formatting. The Adapter resolves "
+            "slide without changing its formatting. The Adapter resolves "
             "the role from the current presentation, rejects zero or multiple matches before "
-            "mutation, and verifies text and formatting by read-back. Use this instead of a "
-            "shape selector when the instruction names a title or another unique text role."
+            "mutation, and verifies the replacement text by read-back. Use "
+            "slide.format_text_roles in a separate call for formatting."
         ),
         "properties": {
             "slide": {
@@ -587,7 +587,6 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "minLength": 1,
                 "description": "Exact replacement text selected from the instruction.",
             },
-            **TEXT_FORMAT_PROPERTIES,
         },
         "required": ["slide", "role", "text"],
     },
