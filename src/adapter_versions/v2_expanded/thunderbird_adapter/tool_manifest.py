@@ -133,6 +133,10 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["filters"],
     },
     "mail.configure": {
+        "description": (
+            "Change exactly one Thunderbird mail setting. Call this action again for each "
+            "additional setting so every mutation and verification result is independent."
+        ),
         "properties": {
             "identity": {
                 **NONEMPTY_STRING,
@@ -170,7 +174,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             },
         },
         "required": [],
-        "anyOf": [
+        "oneOf": [
             {"required": ["signature_text"]},
             {"required": ["quote_original_on_reply"]},
             {"required": ["automatic_filters_on_subfolders"]},
@@ -186,7 +190,16 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     ]
                 },
                 "then": {"required": ["identity"]},
-            }
+            },
+            {
+                "if": {"required": ["identity"]},
+                "then": {
+                    "anyOf": [
+                        {"required": ["signature_text"]},
+                        {"required": ["quote_original_on_reply"]},
+                    ]
+                },
+            },
         ],
     },
     "compose.set_recipients": {

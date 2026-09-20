@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import mailbox
 from email.message import EmailMessage
 from pathlib import Path
@@ -7,7 +8,9 @@ from pathlib import Path
 import jsonschema
 import pytest
 
+import thunderbird_adapter.actions as thunderbird_actions
 import thunderbird_adapter.ui as thunderbird_ui
+import thunderbird_adapter.verifier as thunderbird_verifier
 from integrations.lite_agent.adapter_results import thunderbird_message_query_context
 from integrations.lite_agent.instruction_semantics import (
     strict_instruction_required_actions,
@@ -19,6 +22,7 @@ from thunderbird_adapter.errors import AdapterError as ThunderbirdAdapterError
 from thunderbird_adapter.profile import (
     export_mbox_messages,
     query_messages,
+    read_preferences,
     resolve_filter_rules_path,
     save_attachment,
 )
@@ -28,6 +32,7 @@ from thunderbird_adapter.schema import validate_action_params as validate_thunde
 from thunderbird_adapter.tool_manifest import (
     STRICT_ACTION_PARAM_SCHEMAS as THUNDERBIRD_SCHEMAS,
 )
+from thunderbird_adapter.worker import _default_specs
 from thunderbird_adapter.worker import execute as execute_thunderbird
 
 
@@ -401,6 +406,108 @@ def test_identity_specific_mail_settings_require_explicit_identity(
     update = semantic_preference_update(explicit)
     assert update["values"]
     assert all(key.startswith("mail.identity.id7.") for key in update["values"])
+
+
+def _stub_mail_lifecycle(
+    monkeypatch: pytest.MonkeyPatch, actions: ThunderbirdActions, profile: Path
+) -> None:
+    monkeypatch.setattr(thunderbird_actions, "find_profile", lambda: profile)
+    monkeypatch.setattr(actions, "stop_thunderbird", lambda _timeout: {"stopped": True})
+    monkeypatch.setattr(
+        actions, "start_thunderbird", lambda _timeout: {"started": True}
+    )
+    monkeypatch.setattr(
+        thunderbird_verifier, "find_profile", lambda _path=None: profile
+    )
+
+
+def test_mail_configure_signature_mutates_and_verifies_preferences_only(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    (profile / "prefs.js").write_text(
+        'user_pref("preserved.preference", true);\n', encoding="utf-8"
+    )
+    xulstore = profile / "xulstore.json"
+    xulstore.write_text('{"preserved": true}\n', encoding="utf-8")
+    original_xulstore = xulstore.read_bytes()
+    actions = ThunderbirdActions()
+    _stub_mail_lifecycle(monkeypatch, actions, profile)
+    params = {"identity": "id7", "signature_text": "Regards\\nLiuxv"}
+
+    result = actions.mail_configure(params, 30)
+
+    preferences = read_preferences(profile / "prefs.js")
+    assert preferences["preserved.preference"] is True
+    assert preferences["mail.identity.id7.htmlSigText"] == "Regards\nLiuxv"
+    assert preferences["mail.identity.id7.htmlSig"] is False
+    assert xulstore.read_bytes() == original_xulstore
+    assert result["xulstore"] is None
+    specs = _default_specs("mail.configure", params, result)
+    assert [spec["type"] for spec in specs] == ["preferences"]
+    assert thunderbird_verifier.verify_specs(specs)["passed"] is True
+
+
+def test_mail_configure_unified_inbox_mutates_and_verifies_xulstore_only(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    preferences = profile / "prefs.js"
+    preferences.write_text(
+        'user_pref("preserved.preference", true);\n', encoding="utf-8"
+    )
+    original_preferences = preferences.read_bytes()
+    (profile / "xulstore.json").write_text("{}\n", encoding="utf-8")
+    actions = ThunderbirdActions()
+    _stub_mail_lifecycle(monkeypatch, actions, profile)
+    params = {"unified_inbox": True}
+
+    result = actions.mail_configure(params, 30)
+
+    assert preferences.read_bytes() == original_preferences
+    assert result["preferences"] is None
+    observed = json.loads((profile / "xulstore.json").read_text(encoding="utf-8"))
+    assert (
+        observed["chrome://messenger/content/messenger.xhtml"]["folderTree"]["mode"]
+        == "smart"
+    )
+    specs = _default_specs("mail.configure", params, result)
+    assert [spec["type"] for spec in specs] == ["json_path"]
+    assert thunderbird_verifier.verify_specs(specs)["passed"] is True
+
+
+def test_mail_configure_rejects_multiple_settings_before_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    params = {
+        "identity": "id7",
+        "signature_text": "Regards",
+        "unified_inbox": True,
+    }
+    exposed = _exposed_schema("mail.configure")
+    assert list(jsonschema.Draft202012Validator(exposed).iter_errors(params))
+
+    with pytest.raises(ThunderbirdAdapterError) as validation_error:
+        validate_thunderbird("mail.configure", params)
+    assert validation_error.value.code == "INVALID_REQUEST"
+    assert validation_error.value.details["conflicting_fields"] == [
+        "signature_text",
+        "unified_inbox",
+    ]
+    assert (
+        "once per semantic setting" in validation_error.value.details["correct_usage"]
+    )
+
+    actions = ThunderbirdActions()
+    lifecycle_calls: list[float] = []
+    monkeypatch.setattr(
+        actions, "stop_thunderbird", lambda timeout: lifecycle_calls.append(timeout)
+    )
+    with pytest.raises(ThunderbirdAdapterError):
+        actions.mail_configure(params, 30)
+    assert lifecycle_calls == []
 
 
 class _FakeAccessibleNode:

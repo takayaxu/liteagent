@@ -22,6 +22,7 @@ from .profile import (
     update_preferences,
     write_filters,
 )
+from .schema import validate_action_params
 from .ui import (
     compose_attachment,
     compose_set_recipients,
@@ -170,6 +171,7 @@ class ThunderbirdActions:
         )
 
     def mail_configure(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:
+        validate_action_params("mail.configure", params)
         preference_update = semantic_preference_update(params)
         xulstore_update = semantic_xulstore_update(params)
         stopped = self.stop_thunderbird(min(timeout, 15))

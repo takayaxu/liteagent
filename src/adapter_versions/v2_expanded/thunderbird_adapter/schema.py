@@ -43,6 +43,16 @@ VERIFY_TYPES = frozenset(
     }
 )
 
+MAIL_CONFIGURE_SETTING_FIELDS = frozenset(
+    {
+        "signature_text",
+        "quote_original_on_reply",
+        "automatic_filters_on_subfolders",
+        "unified_inbox",
+        "dark_mode",
+    }
+)
+
 
 @dataclass(frozen=True)
 class ActionRequest:
@@ -99,26 +109,55 @@ def _string_list(
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     if action == "mail.configure":
-        fields = {
-            "signature_text",
-            "quote_original_on_reply",
-            "automatic_filters_on_subfolders",
-            "unified_inbox",
-            "dark_mode",
-        }
-        if not fields.intersection(params):
+        unknown_fields = set(params).difference(
+            MAIL_CONFIGURE_SETTING_FIELDS | {"identity"}
+        )
+        if unknown_fields:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "mail.configure requires at least one semantic setting",
+                "mail.configure received unsupported fields",
+                {
+                    "unsupported_fields": sorted(unknown_fields),
+                    "allowed_setting_fields": sorted(MAIL_CONFIGURE_SETTING_FIELDS),
+                },
+            )
+        settings = MAIL_CONFIGURE_SETTING_FIELDS.intersection(params)
+        if len(settings) != 1:
+            details = {
+                "allowed_setting_fields": sorted(MAIL_CONFIGURE_SETTING_FIELDS),
+                "correct_usage": (
+                    "Call mail.configure once per semantic setting with exactly one "
+                    "setting field."
+                ),
+            }
+            if settings:
+                details["conflicting_fields"] = sorted(settings)
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "mail.configure requires exactly one semantic setting",
+                details,
             )
         identity_settings = {"signature_text", "quote_original_on_reply"}.intersection(
-            params
+            settings
         )
         if identity_settings and "identity" not in params:
             raise AdapterError(
                 "INVALID_REQUEST",
                 "params.identity is required for identity-specific mail settings",
                 {"settings": sorted(identity_settings)},
+            )
+        if "identity" in params and not identity_settings:
+            setting = next(iter(settings))
+            raise AdapterError(
+                "INVALID_REQUEST",
+                f"params.identity is not used with params.{setting}",
+                {
+                    "conflicting_fields": ["identity", setting],
+                    "correct_usage": (
+                        "Omit params.identity unless configuring signature_text or "
+                        "quote_original_on_reply."
+                    ),
+                },
             )
         if "identity" in params:
             identity = _string(params, "identity")

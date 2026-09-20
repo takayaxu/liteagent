@@ -512,8 +512,9 @@ DOMAIN_SIGNATURES = {
             '"signature_text"?: str, '
             '"quote_original_on_reply"?: bool, '
             '"automatic_filters_on_subfolders"?: bool, "unified_inbox"?: bool, '
-            '"dark_mode"?: bool}; provide at least one '
-            "semantic setting; the adapter resolves and verifies Thunderbird preference keys"
+            '"dark_mode"?: bool}; provide exactly one semantic setting per call; '
+            "identity is accepted only for signature or reply quoting; the adapter resolves "
+            "and verifies the corresponding Thunderbird state"
         ),
         "folders.ensure_local": 'params={"names": [str]}',
         "messages.query": (
