@@ -262,3 +262,13 @@ consistent `slide` plus `slide_number` arguments. The focused suite remained
 follow-up; retry6 was sealed against the repaired source but the model endpoint
 returned `522/525` on all three attempts before any tool call, so it has no
 evaluator score.
+
+Retry7 used the repaired source and a fresh sealed result directory. The real
+trajectory confirms the intended mutation progression:
+`presentation.inspect -> shape.set_geometry -> slide.format_text_roles`; after
+the picture mutation, no picture mutation or inspection was exposed before the
+text mutation. The raw run is preserved at
+`src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry7-20260921/workers/worker-00/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/`.
+After both mutations the model repeatedly inspected instead of saving and
+finished with `agent_deadline_exhausted` (`passed=0`, no evaluator score); this
+does not regress the requested picture-to-text staging.

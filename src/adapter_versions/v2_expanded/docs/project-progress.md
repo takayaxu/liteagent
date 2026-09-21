@@ -11719,3 +11719,10 @@ The focused suite remained **81 passed** with Ruff clean. Retry5 reached the
 real VM and performed the geometry call but preceded the receipt fix; retry6
 used the repaired source but the model endpoint returned `522/525` on all three
 attempts before any tool call, so no evaluator score is claimed.
+Retry7 used the repaired source and confirmed the intended live sequence:
+`presentation.inspect -> shape.set_geometry -> slide.format_text_roles`; after
+the picture mutation, neither picture mutation nor inspection was exposed before
+the text mutation. The model then repeatedly inspected after both mutations
+instead of saving and ended with `agent_deadline_exhausted` (`passed=0`, no
+evaluator score). Raw trajectory:
+`experiments/local-impress-picture-text-60-retry7-20260921/workers/worker-00/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/`.
