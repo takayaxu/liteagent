@@ -35,7 +35,10 @@ from .gui_policy import repeated_gui_action_error
 from .gui_actions import GUI_REQUEST_SCHEMA, build_gui_command
 from .impress_background import background_argument_contract_errors
 from .impress_page_number import page_number_argument_contract_errors
-from .impress_role_formatting import multislide_role_argument_contract_errors
+from .impress_role_formatting import (
+    multislide_role_argument_contract_errors,
+    multislide_visual_title_argument_contract_errors,
+)
 from .impress_role_text_update import role_text_update_argument_contract_errors
 from .impress_title_formatting import title_format_argument_contract_errors
 from .impress_image_insertion import image_insertion_argument_contract_errors
@@ -497,6 +500,11 @@ class ExecutionEngineMixin:
                 )
                 semantic_argument_errors.extend(
                     multislide_role_argument_contract_errors(state, action, arguments)
+                )
+                semantic_argument_errors.extend(
+                    multislide_visual_title_argument_contract_errors(
+                        state, action, arguments
+                    )
                 )
                 semantic_argument_errors.extend(
                     role_text_update_argument_contract_errors(state, action, arguments)

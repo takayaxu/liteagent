@@ -25,6 +25,168 @@ class MultiSlideRoleFormatIntent:
     properties: dict[str, Any]
 
 
+def _shape_text(shape: dict[str, Any]) -> str:
+    lines = shape.get("lines")
+    if isinstance(lines, list):
+        text = "\n".join(str(line) for line in lines).strip()
+        if text:
+            return text
+    text = shape.get("text")
+    return text.strip() if isinstance(text, str) else ""
+
+
+def _visual_title_shape(slide: dict[str, Any]) -> dict[str, Any] | None:
+    values = slide.get("text_shapes")
+    if not isinstance(values, list):
+        values = slide.get("all_shapes")
+    if not isinstance(values, list):
+        return None
+    candidates = []
+    for shape in values:
+        if not isinstance(shape, dict) or not isinstance(shape.get("path"), list):
+            continue
+        if not _shape_text(shape):
+            continue
+        kind = str(shape.get("kind", "")).casefold()
+        style = shape.get("text_style")
+        font_size = style.get("font_size") if isinstance(style, dict) else None
+        y, height = shape.get("y"), shape.get("height")
+        if not isinstance(font_size, (int, float)) or isinstance(font_size, bool):
+            continue
+        if not isinstance(y, (int, float)) or not isinstance(height, (int, float)):
+            continue
+        if kind.endswith(".titletextshape") or kind.endswith("titletextshape"):
+            return shape
+        candidates.append((shape, float(font_size), float(y) + float(height) / 2))
+    if not candidates:
+        return None
+    slide_height = slide.get("height")
+    if isinstance(slide_height, (int, float)) and not isinstance(slide_height, bool):
+        candidates = [item for item in candidates if item[2] <= float(slide_height) / 2]
+    if not candidates:
+        return None
+    candidates.sort(key=lambda item: (-item[1], tuple(item[0]["path"])))
+    if len(candidates) > 1 and (
+        candidates[0][1] == candidates[1][1]
+        or candidates[0][1] < candidates[1][1] * 1.5
+    ):
+        return None
+    return candidates[0][0]
+
+
+def _visual_title_role_format_satisfied(
+    state: Any, intent: MultiSlideRoleFormatIntent
+) -> bool:
+    for action in ROLE_ACTIONS:
+        for event in state.successful_action_events(action):
+            arguments = event.proposed.get("arguments")
+            if not isinstance(arguments, dict) or not _arguments_match_intent(
+                arguments, intent
+            ):
+                continue
+            if adapter_confirmed_role_slides(event, intent.roles) >= set(intent.slides):
+                return True
+    return False
+
+
+def multislide_visual_title_fallback_plan(state: Any) -> dict[str, Any] | None:
+    """Build an atomic plan when imported slides lack native title roles."""
+    intent = parse_multislide_role_format_intent(str(state.instruction))
+    if intent is None or not state.successful_action_events("presentation.inspect"):
+        return None
+    initial = state.initial_presentation_context_hint()
+    slides = initial.get("slides") if isinstance(initial, dict) else None
+    if not isinstance(slides, list):
+        return None
+    targets = []
+    for slide_index in intent.slides:
+        slide = next(
+            (item for item in slides if isinstance(item, dict) and item.get("slide") == slide_index),
+            None,
+        )
+        if not isinstance(slide, dict):
+            return None
+        shape = _visual_title_shape(slide)
+        if shape is None:
+            return None
+        targets.append(
+            {
+                "action": "shape.format_text",
+                "arguments": {
+                    "slide": slide_index,
+                    "selector": {"path": list(shape["path"])},
+                    **intent.properties,
+                },
+            }
+        )
+    has_native_titles = all(
+        any(
+            isinstance(shape, dict)
+            and str(shape.get("kind", "")).casefold().endswith("titletextshape")
+            for shape in (slide.get("text_shapes") or slide.get("all_shapes") or [])
+        )
+        for slide in slides
+        if isinstance(slide, dict) and slide.get("slide") in intent.slides
+    )
+    if has_native_titles:
+        return None
+    return {"intent": intent, "steps": targets}
+
+
+def next_multislide_visual_title_action(state: Any) -> dict[str, Any] | None:
+    plan = multislide_visual_title_fallback_plan(state)
+    if plan is None:
+        return None
+    intent = plan["intent"]
+    for action in ROLE_ACTIONS:
+        for event in state.successful_action_events(action):
+            arguments = event.proposed.get("arguments")
+            if isinstance(arguments, dict) and _arguments_match_intent(
+                arguments, intent
+            ):
+                return None
+    successful = state.successful_action_events("shape.format_text")
+    for step in plan["steps"]:
+        expected = dict(step["arguments"])
+        if "color" in expected:
+            expected["color"] = normalize_impress_color(expected["color"])
+        covered = False
+        for event in successful:
+            actual = event.proposed.get("arguments")
+            if not isinstance(actual, dict):
+                continue
+            actual = dict(actual)
+            if "color" in actual:
+                actual["color"] = normalize_impress_color(actual["color"])
+            if actual == expected:
+                covered = True
+                break
+        if not covered:
+            return step
+    return None
+
+
+def multislide_visual_title_argument_contract_errors(
+    state: Any, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    if action != "shape.format_text":
+        return []
+    step = next_multislide_visual_title_action(state)
+    if step is None:
+        return []
+    expected = dict(step["arguments"])
+    actual = dict(arguments)
+    for values in (expected, actual):
+        if "color" in values:
+            values["color"] = normalize_impress_color(values["color"])
+    if actual != expected:
+        return [
+            "imported-slide title formatting must match the next observed visual-title "
+            f"shape step: {step!r}"
+        ]
+    return []
+
+
 def _listed_slides(text: str) -> tuple[int, ...]:
     values: set[int] = set()
     token_re = re.compile(r"(?i)\s*(\d+|,|&|-|\band\b|\bto\b|\bthrough\b)")
@@ -85,6 +247,15 @@ def parse_multislide_role_format_intent(
     instruction: str,
 ) -> MultiSlideRoleFormatIntent | None:
     """Parse uniform title formatting on an arbitrary explicit slide list."""
+    # Composite title-range plus personal-information cleanup has its own
+    # observation-derived atomic plan. Do not reinterpret that request as a
+    # semantic role-format operation, which would impose an unrelated
+    # slides.format_text_roles completion requirement.
+    if re.search(
+        r"(?is)\b(?:delete|remove|clear|erase)\b.{0,100}\bpersonal\s+information\b",
+        instruction,
+    ):
+        return None
     scope = _title_format_scope(instruction)
     slides = _listed_slides(scope)
     if len(slides) < 2 or not re.search(r"(?i)\b(?:titles?|headings?)\b", scope):
@@ -246,6 +417,30 @@ def multislide_role_requirement_errors(state: Any) -> list[str]:
     intent = parse_multislide_role_format_intent(str(state.instruction))
     if intent is None:
         return []
+    fallback = multislide_visual_title_fallback_plan(state)
+    if fallback is not None:
+        for action in ROLE_ACTIONS:
+            for event in state.successful_action_events(action):
+                arguments = event.proposed.get("arguments")
+                if not isinstance(arguments, dict) or not _arguments_match_intent(
+                    arguments, intent
+                ):
+                    continue
+                return []
+        missing = [
+            step
+            for step in fallback["steps"]
+            if not any(
+                event.proposed.get("arguments") == step["arguments"]
+                for event in state.successful_action_events("shape.format_text")
+            )
+        ]
+        if missing:
+            return [
+                "observation-derived visual-title formatting lacks successful "
+                f"shape.format_text coverage for {len(missing)} target slide(s)"
+            ]
+        return []
     covered: set[int] = set()
     for action in ROLE_ACTIONS:
         for event in state.successful_action_events(action):
@@ -274,5 +469,8 @@ __all__ = [
     "adapter_confirmed_role_slides",
     "multislide_role_argument_contract_errors",
     "multislide_role_requirement_errors",
+    "multislide_visual_title_argument_contract_errors",
+    "multislide_visual_title_fallback_plan",
+    "next_multislide_visual_title_action",
     "parse_multislide_role_format_intent",
 ]

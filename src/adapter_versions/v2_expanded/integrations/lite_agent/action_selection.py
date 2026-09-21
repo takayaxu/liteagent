@@ -60,6 +60,11 @@ from .instruction_semantics import (
 )
 from .state_model import RuntimeState
 from .local_file_discovery import stage_local_file_discovery
+from .impress_colors import normalize_impress_color
+from .impress_role_formatting import (
+    multislide_visual_title_fallback_plan,
+    next_multislide_visual_title_action,
+)
 
 
 def _debug_dependency_recovery_needed(state: RuntimeState) -> bool:
@@ -103,6 +108,45 @@ def _debug_dependency_recovery_needed(state: RuntimeState) -> bool:
 
 class ActionSelectionMixin:
     def selected_actions(self, state: RuntimeState) -> list[str]:
+        cleanup_request = requested_title_range_personal_info_cleanup(state.instruction)
+        if cleanup_request is not None:
+            next_cleanup_step = state.next_title_range_personal_info_cleanup_action()
+            if next_cleanup_step is not None:
+                # Cleanup is a strictly ordered mutation plan. Keep the model
+                # focused on exactly the next observed operation so save cannot
+                # be issued before every title and deletion mutation succeeds.
+                return [next_cleanup_step["action"]]
+            if state.title_range_personal_info_cleanup_plan() is not None:
+                # Only a fully consumed plan may expose the final save/readback
+                # path. The plan itself remains the source of truth here.
+                return ["presentation.inspect", "presentation.save"]
+            # A missing observation cannot prove cleanup completion.
+            return ["presentation.inspect"]
+        visual_title_plan = multislide_visual_title_fallback_plan(state)
+        if visual_title_plan is not None:
+            role_attempted = any(
+                event.proposed.get("action") in {"slides.format_text_roles", "slide.format_text_roles"}
+                for event in state.events
+            )
+            if not role_attempted:
+                # The Impress role API can resolve imported visual titles and
+                # returns Adapter-confirmed paths. Prefer that atomic route
+                # before exposing selector-level fallback mutations.
+                return ["slides.format_text_roles"]
+            next_visual_title = next_multislide_visual_title_action(state)
+            if next_visual_title is not None:
+                return [next_visual_title["action"]]
+            if state.successful_action_events("presentation.save"):
+                save_event = state.successful_action_events("presentation.save")[-1]
+                if any(
+                    event.step > save_event.step
+                    and event.proposed.get("action") == "presentation.inspect"
+                    and event.executed
+                    for event in state.events
+                ):
+                    return []
+                return ["presentation.inspect"]
+            return ["presentation.save"]
         semantic_hints = [
             action
             for action in strict_instruction_required_actions(
@@ -183,6 +227,15 @@ class ActionSelectionMixin:
         state: RuntimeState, action: str, arguments: dict[str, Any]
     ) -> None:
         if impress_semantics.validate_arguments(state, action, arguments):
+            return
+        visual_title_plan = multislide_visual_title_fallback_plan(state)
+        if visual_title_plan is not None and action == "shape.format_text":
+            expected = next_multislide_visual_title_action(state)
+            if expected is None or arguments != expected["arguments"]:
+                raise ValueError(
+                    "imported-slide title formatting must match the next observed "
+                    f"visual-title shape step: {expected!r}"
+                )
             return
         period_rate_step = state.next_period_rate_action()
         if (
@@ -544,10 +597,23 @@ class ActionSelectionMixin:
                 and (state.title_range_personal_info_cleanup_plan() is not None)
             ):
                 return
+            expected_arguments = step["arguments"] if step is not None else None
+            comparable_arguments = dict(arguments)
+            comparable_expected = (
+                dict(expected_arguments) if isinstance(expected_arguments, dict) else None
+            )
+            if "color" in comparable_arguments:
+                comparable_arguments["color"] = normalize_impress_color(
+                    comparable_arguments["color"]
+                )
+            if comparable_expected is not None and "color" in comparable_expected:
+                comparable_expected["color"] = normalize_impress_color(
+                    comparable_expected["color"]
+                )
             if (
                 step is None
                 or action != step["action"]
-                or arguments != step["arguments"]
+                or comparable_arguments != comparable_expected
             ):
                 raise ValueError(
                     f"title formatting and personal-info cleanup must match the next instruction- and observation-derived step: {step!r}"

@@ -1660,7 +1660,13 @@ def instruction_required_actions(
         if requests_presentation_audio_insertion(instruction):
             actions.extend(["presentation.inspect", "audio.insert"])
         role_text_update = parse_role_text_update_intent(instruction)
-        if parse_multislide_role_format_intent(instruction) is not None:
+        title_range_personal_cleanup = (
+            requested_title_range_personal_info_cleanup(instruction) is not None
+        )
+        if (
+            parse_multislide_role_format_intent(instruction) is not None
+            and not title_range_personal_cleanup
+        ):
             actions.extend(
                 ["presentation.inspect", "slides.format_text_roles"]
                 if strict_generic
@@ -1716,7 +1722,11 @@ def instruction_required_actions(
             actions.extend(["presentation.inspect", "shape.set_geometry"])
         if requested_table_edge_position(instruction) is not None:
             actions.extend(["presentation.inspect", "shape.set_geometry"])
-        if strict_generic and parse_personal_information_removal_intent(instruction):
+        if (
+            strict_generic
+            and parse_personal_information_removal_intent(instruction)
+            and not title_range_personal_cleanup
+        ):
             actions.extend(["presentation.inspect", "shape.delete"])
         elif requested_title_range_personal_info_cleanup(instruction) is not None:
             actions.extend(

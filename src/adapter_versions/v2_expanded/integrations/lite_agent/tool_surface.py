@@ -45,10 +45,15 @@ from .tool_catalog import (
 )
 from .instruction_semantics import (
     requested_pivot_count,
+    requested_title_range_personal_info_cleanup,
     strict_instruction_required_actions,
 )
 from .impress_title_formatting import (
     constrain_tool_schema as constrain_title_format_tool_schema,
+)
+from .impress_role_formatting import (
+    multislide_visual_title_fallback_plan,
+    next_multislide_visual_title_action,
 )
 from .impress_image_insertion import (
     constrain_image_insertion_tool_schema,
@@ -506,10 +511,41 @@ class ToolSurfaceMixin:
         )
         if proactive_tools:
             return self._apply_common_tool_constraints(proactive_tools, state)
+        visual_title_plan = multislide_visual_title_fallback_plan(state)
+        if visual_title_plan is not None and next_multislide_visual_title_action(state) is None:
+            saves = state.successful_action_events("presentation.save")
+            if saves and any(
+                event.step > saves[-1].step
+                and event.proposed.get("action") == "presentation.inspect"
+                and event.executed
+                for event in state.events
+            ):
+                completion_tools = self._build_tools(
+                    state.domain,
+                    [],
+                    include_gui=False,
+                    include_control_tools=True,
+                    strict_generic=True,
+                )
+                return [
+                    tool
+                    for tool in completion_tools
+                    if isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == "propose_done"
+                ]
         if phase_tools:
             return self._apply_common_tool_constraints(phase_tools, state)
         actions = calc_semantics.stage_new_sheet_prerequisites(
             state, self.selected_actions(state), strict_required_actions
+        )
+        cleanup_request = requested_title_range_personal_info_cleanup(state.instruction)
+        cleanup_in_progress = bool(
+            cleanup_request is not None
+            and state.next_title_range_personal_info_cleanup_action() is not None
+        )
+        visual_title_fallback_in_progress = bool(
+            multislide_visual_title_fallback_plan(state) is not None
+            and next_multislide_visual_title_action(state) is not None
         )
         batch_inspection_pending = (
             False if multi_app else batch_table_semantics.inspection_pending(state)
@@ -548,6 +584,11 @@ class ToolSurfaceMixin:
             and actions in (["presentation.save"], ["presentation.inspect"])
         )
         discovery_only = discovery_only or batch_inspection_pending
+        # Composite Impress cleanup is an ordered mutation plan. Until its
+        # final mutation succeeds, expose only the current next mutation and
+        # suppress save, completion, search, and GUI controls.
+        discovery_only = discovery_only or cleanup_in_progress
+        discovery_only = discovery_only or visual_title_fallback_in_progress
         if not multi_app:
             discovery_only = discovery_only or workspace_file_semantics.stage_active(
                 state, actions

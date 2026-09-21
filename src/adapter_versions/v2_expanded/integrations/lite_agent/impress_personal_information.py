@@ -6,6 +6,8 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from .impress_colors import normalize_impress_color
+
 
 _REMOVAL_RE = re.compile(
     r"(?is)\b(?:delete|remove|clear|erase)\b.{0,100}"
@@ -59,7 +61,28 @@ def stage_actions(state: Any, actions: list[str]) -> list[str]:
 def personal_information_argument_contract_errors(
     state: Any, action: str, arguments: dict[str, Any]
 ) -> list[str]:
-    """The standard atomic action contracts validate their own arguments."""
+    """Keep each cleanup mutation aligned with the observed next plan step."""
+    if action not in {"shape.format_text", "shape.delete"}:
+        return []
+    next_step = state.next_title_range_personal_info_cleanup_action()
+    if next_step is None:
+        return []
+    expected = next_step["arguments"]
+    comparable_arguments = dict(arguments)
+    comparable_expected = dict(expected)
+    if "color" in comparable_arguments:
+        comparable_arguments["color"] = normalize_impress_color(
+            comparable_arguments["color"]
+        )
+    if "color" in comparable_expected:
+        comparable_expected["color"] = normalize_impress_color(
+            comparable_expected["color"]
+        )
+    if action != next_step["action"] or comparable_arguments != comparable_expected:
+        return [
+            "title formatting and personal-information cleanup must use the exact "
+            f"next observation-derived step: {next_step!r}"
+        ]
     return []
 
 
