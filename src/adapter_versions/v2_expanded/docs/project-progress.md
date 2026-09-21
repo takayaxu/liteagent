@@ -11709,8 +11709,7 @@ The raw trajectory is preserved at
 the model made 13 successful `presentation.inspect` calls, issued no mutation,
 and ended with `agent_deadline_exhausted` (`passed=0`, no evaluator score).
 This is a model progression failure; the focused Adapter regression suite still
-verifies that a successful picture mutation exposes only the next textbox mutation
-plus read-only inspection.
+verifies that a successful picture mutation exposes only the next textbox mutation.
 Follow-up repair `8cc8729` closes the remaining progression gap: after the
 required observation, `shape.set_geometry` is the only exposed mutation and
 duplicate `presentation.inspect` is hidden; after a successful geometry receipt,

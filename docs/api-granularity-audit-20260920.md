@@ -208,9 +208,10 @@ Order 60 (`e4ef0baf-4b52-4590-a47e-d4d464cca2d7`) retains two independent API
 mutations: `shape.set_geometry` for the observed picture height on slide 3 and
 `slide.format_text_roles` with `roles=["all"]` for slide 6. No new Adapter action,
 schema, or combined mutation was introduced. Commit `d32a2f7` connects the existing
-textbox-font-size stage to `impress_semantics.next_action`, so a successful picture
-mutation leaves only the next textbox mutation (plus read-only inspection) in the
-tool surface; the first all-textbox step still requires an initial inspection.
+textbox-font-size stage to `impress_semantics.next_action`. After the initial
+observation, only `shape.set_geometry` is exposed; after that mutation succeeds,
+only the next textbox mutation remains in the tool surface. The first stage still
+requires the initial inspection.
 
 The focused progression and related Impress regression suite passed **81 tests**;
 Ruff and compileall also passed. The reproducible local command was:
@@ -247,8 +248,8 @@ The model made 13 successful `presentation.inspect` calls against slide 3,
 never issued either mutation, and ended with `agent_deadline_exhausted`; the
 worker result is `passed=0` with no evaluator score. This is a model progression
 failure, not an Adapter contract failure: the focused regression suite still
-proves that once `shape.set_geometry` succeeds, only the textbox mutation (and
-read-only inspection) remains exposed.
+proves that once `shape.set_geometry` succeeds, only the textbox mutation remains
+exposed.
 
 Follow-up repair `8cc8729` closes the remaining progression gap: after the
 required inspection, `stage_actions`/`filter_tools` hide duplicate
