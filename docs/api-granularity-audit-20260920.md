@@ -239,3 +239,13 @@ with `status=environment_failure`, `passed=0`, and no evaluator score. The
 implementation commit and this receipt are ready for the integration owner; the
 full evaluator rerun still needs a newly sealed condition with a reachable or
 pre-cached dataset input.
+
+After correcting the cache key and sealing a retry4 condition, the real VM and
+model did start. Its raw run is preserved at
+`src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry4-20260921/workers/worker-00/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/`.
+The model made 13 successful `presentation.inspect` calls against slide 3,
+never issued either mutation, and ended with `agent_deadline_exhausted`; the
+worker result is `passed=0` with no evaluator score. This is a model progression
+failure, not an Adapter contract failure: the focused regression suite still
+proves that once `shape.set_geometry` succeeds, only the textbox mutation (and
+read-only inspection) remains exposed.

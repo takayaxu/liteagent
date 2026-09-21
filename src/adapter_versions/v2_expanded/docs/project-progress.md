@@ -11703,3 +11703,11 @@ reasoning-gate configuration (`openapi_url=null`), and retry3 reached model pref
 failed on the same input prefetch timeout before any model tool call. Retry3 is preserved at
 `experiments/local-impress-picture-text-60-retry3-20260921/workers/worker-00/results.json`
 with `status=environment_failure`, `passed=0`, and no evaluator score.
+After fixing the cache key and sealing retry4, the real VM/model run started.
+The raw trajectory is preserved at
+`experiments/local-impress-picture-text-60-retry4-20260921/workers/worker-00/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/`;
+the model made 13 successful `presentation.inspect` calls, issued no mutation,
+and ended with `agent_deadline_exhausted` (`passed=0`, no evaluator score).
+This is a model progression failure; the focused Adapter regression suite still
+verifies that a successful picture mutation exposes only the next textbox mutation
+plus read-only inspection.
