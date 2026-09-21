@@ -11711,3 +11711,12 @@ and ended with `agent_deadline_exhausted` (`passed=0`, no evaluator score).
 This is a model progression failure; the focused Adapter regression suite still
 verifies that a successful picture mutation exposes only the next textbox mutation
 plus read-only inspection.
+Follow-up repair `8cc8729` closes the remaining progression gap: after the
+required observation, `shape.set_geometry` is the only exposed mutation and
+duplicate `presentation.inspect` is hidden; after a successful geometry receipt,
+only `slide.format_text_roles` remains exposed. Receipt matching now accepts
+schema-valid `height_measurement` and consistent `slide`/`slide_number` pairs.
+The focused suite remained **81 passed** with Ruff clean. Retry5 reached the
+real VM and performed the geometry call but preceded the receipt fix; retry6
+used the repaired source but the model endpoint returned `522/525` on all three
+attempts before any tool call, so no evaluator score is claimed.

@@ -249,3 +249,15 @@ worker result is `passed=0` with no evaluator score. This is a model progression
 failure, not an Adapter contract failure: the focused regression suite still
 proves that once `shape.set_geometry` succeeds, only the textbox mutation (and
 read-only inspection) remains exposed.
+
+Follow-up repair `8cc8729` closes the remaining progression gap: after the
+required inspection, `stage_actions`/`filter_tools` hide duplicate
+`presentation.inspect` for `shape.set_geometry`; after geometry succeeds they
+hide both inspection and geometry while exposing only `slide.format_text_roles`.
+Picture receipts now recognize schema-valid `height_measurement` values and
+consistent `slide` plus `slide_number` arguments. The focused suite remained
+**81 passed** with Ruff clean. Retry5 confirmed the first half in a real VM
+(inspect, then geometry) but exposed the receipt-matching bug before this
+follow-up; retry6 was sealed against the repaired source but the model endpoint
+returned `522/525` on all three attempts before any tool call, so it has no
+evaluator score.
