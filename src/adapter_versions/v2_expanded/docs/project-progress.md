@@ -11664,3 +11664,37 @@ the audit record and are unchanged; this backfill covers the missing development
   `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-impress-textbox-color-53-current-retry1-20260920.json --orders 53 --result-dir src/adapter_versions/v2_expanded/experiments/local-impress-textbox-color-53-current-retry1-20260920/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --max-steps 30 --max-local-steps 15 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 300 --max-output-tokens 512 --reasoning-mode non_thinking --temperature 0 --request-timeout 180`.
 - **Order 54**, task `a53f80cd-4a90-4490-8310-097b011433f6`: existing `slide.remove_personal_information` plus title-formatting actions were staged as observation-derived sequential mutations; save and completion stayed gated until cleanup finished. The final retry15 evaluator passed with reward `1.0`; the shared implementation is in `5301ab8`. Command:
   `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-impress-personal-cleanup-54-current-20260921.json --orders 54 --result-dir src/adapter_versions/v2_expanded/experiments/local-impress-personal-cleanup-54-current-retry15-20260921/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --max-steps 40 --max-local-steps 20 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 420 --max-output-tokens 512 --reasoning-mode non_thinking --temperature 0 --request-timeout 180`.
+
+## 2026-09-21 Order 60 picture-to-text staging repair
+
+Order **60**, task `e4ef0baf-4b52-4590-a47e-d4d464cca2d7`, requires two independent mutations:
+`shape.set_geometry` for the observed picture on slide 3 and `slide.format_text_roles` with
+`roles=["all"]` for slide 6. No Adapter action or schema was added or combined. The minimal
+replacement is in `impress_semantics.next_action`: after a successful observation-derived
+picture mutation, the router now exposes only the next textbox-font mutation (with
+`presentation.inspect` retained as the read-only observation tool); before the first inspect,
+all-textbox formatting remains observation-first. This prevents a second or unrelated picture
+mutation from reappearing in the model tool surface.
+
+Implementation commit: `d32a2f7` (`impress: route picture progress to textbox mutation`).
+The focused regression test is `tests/test_impress_picture_text_progression.py`. Local validation
+passed:
+
+```bash
+PYTHONPATH=src/adapter_versions/v2_expanded pytest -q \
+  src/adapter_versions/v2_expanded/tests/test_impress_picture_text_progression.py \
+  src/adapter_versions/v2_expanded/tests/test_strict_impress_completion.py \
+  src/adapter_versions/v2_expanded/tests/test_bounded_impress_decomposition.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_picture_edge.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_underline_wiring.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_role_text_split.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_textbox_color_progression.py
+ruff check src/adapter_versions/v2_expanded/integrations/lite_agent/impress_semantics.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_picture_text_progression.py
+```
+
+Result: **81 tests passed**, Ruff passed, and compileall passed. The attempted single-task pilot
+commands using the historical `generic-only-coverage-order60-impress-properties-v24.json` and
+`generic-only-ab4-v323-semantic-picture-progress-concurrency4.json` manifests were rejected
+before model/VM startup because those frozen manifests lack the current required `condition`
+object; no evaluator score is claimed from those attempts.

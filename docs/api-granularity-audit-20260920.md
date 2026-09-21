@@ -201,3 +201,33 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 - 每个旧大粒度 action 单独提交。提交应同时更新模型可见 schema、运行时 validation、dispatch/worker、默认 verification 和相应测试，不能留下两套不一致契约。
 - 两位负责人只改各自 Adapter；共享 LiteAgent 路由只有在删除旧 action 引用时才做最小修改，并在提交说明中标出。
 - P0 完成后更新本文件的状态和 replacement；P1 先记录“拆/留”理由。全量测试和基线冻结由集成人员另行决定。
+
+## Order 60 Staging Receipt (2026-09-21)
+
+Order 60 (`e4ef0baf-4b52-4590-a47e-d4d464cca2d7`) retains two independent API
+mutations: `shape.set_geometry` for the observed picture height on slide 3 and
+`slide.format_text_roles` with `roles=["all"]` for slide 6. No new Adapter action,
+schema, or combined mutation was introduced. Commit `d32a2f7` connects the existing
+textbox-font-size stage to `impress_semantics.next_action`, so a successful picture
+mutation leaves only the next textbox mutation (plus read-only inspection) in the
+tool surface; the first all-textbox step still requires an initial inspection.
+
+The focused progression and related Impress regression suite passed **81 tests**;
+Ruff and compileall also passed. The reproducible local command was:
+
+```bash
+PYTHONPATH=src/adapter_versions/v2_expanded pytest -q \
+  src/adapter_versions/v2_expanded/tests/test_impress_picture_text_progression.py \
+  src/adapter_versions/v2_expanded/tests/test_strict_impress_completion.py \
+  src/adapter_versions/v2_expanded/tests/test_bounded_impress_decomposition.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_picture_edge.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_underline_wiring.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_role_text_split.py \
+  src/adapter_versions/v2_expanded/tests/test_impress_textbox_color_progression.py
+```
+
+An attempted Order 60 pilot with the historical v24 and v323 manifests stopped
+at the runner condition gate because those frozen manifests have no current
+`condition` object; it did not start a model/VM and has no evaluator score.
+The implementation commit and this receipt are ready for the integration owner;
+the full evaluator rerun needs a newly sealed local condition.
