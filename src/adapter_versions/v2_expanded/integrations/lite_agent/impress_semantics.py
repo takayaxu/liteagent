@@ -2233,6 +2233,8 @@ def _next_textbox_font_size_action(state: Any) -> str | None:
     intent = parse_textbox_font_size_intent(state.instruction)
     if intent is None:
         return None
+    if not state.successful_action_events("presentation.inspect"):
+        return "presentation.inspect"
     if intent.scope == "all":
         role_mutation = _matching_all_textbox_role_mutation(state)
         legacy_shape_mutations_complete = bool(
@@ -2292,6 +2294,7 @@ def next_action(state: Any) -> str | None:
     return (
         _next_picture_height_action_name(state)
         or _next_picture_edge_action_name(state)
+        or _next_textbox_font_size_action(state)
         or _next_textbox_underline_action(state)
     )
 
