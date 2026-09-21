@@ -11607,3 +11607,38 @@ conditions. They do not override the current repair source in
    integrated frozen rerun of the selected scope.
 5. Keep v337 as the only promoted baseline. A new fixed-189 run requires explicit user authorization and a new
    frozen condition; never modify or resume prior evidence.
+
+## 2026-09-21 Order 59 imported Impress title formatting passed
+
+Order **59**, task `4ed5abd0-8b5d-47bd-839f-cacfa15ca37a`, required: `Set the color of titles in slides 2,3,5 as black and underline them.`
+The completed run is recorded at
+`experiments/local-impress-multislide-title-59-retry12-20260921/workers/worker-00/results.json` and finished with
+`status=passed`, `reward=1.0`, and `termination_reason=agent_done`. Adapter read-back confirmed the target title
+paths `[12]`, `[4]`, and `[9]` on zero-based slides 1, 2, and 4, with `CharColor=0` and `CharUnderline=1`.
+
+The failed attempts were caused by imported PPTX files lacking native `TitleTextShape` placeholders. The model then
+repeatedly guessed title selectors instead of using the observation-derived visual-title path. The replacement keeps
+`libreoffice_impress.slides.format_text_roles` as the first atomic mutation: the Adapter resolves imported visual
+titles and returns their paths; only a role-API failure falls back to one `shape.format_text` mutation per observed
+title. Black comparison is normalized to `#000000`, and save/completion stays hidden until every mutation succeeds,
+save completes, and a post-save inspect verifies the result.
+
+The final call chain was `presentation.inspect -> slides.format_text_roles -> presentation.save -> presentation.inspect -> propose_done`.
+The exact run used:
+
+```bash
+PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+/var/lib/liteagent-shared/python-env/bin/python \
+src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-impress-multislide-title-59-20260921.json \
+  --orders 59 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-impress-multislide-title-59-retry12-20260921/workers/worker-00 \
+  --base-url https://qwen.jinmaoapi.cc.cd/v1 \
+  --max-steps 35 --max-local-steps 20 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 420 --max-output-tokens 512 \
+  --reasoning-mode non_thinking --temperature 0 --request-timeout 180
+```
+
+Implementation commit: `5301ab8` (`impress: finish cleanup and imported title routing`). It also contains the shared
+Order 54 cleanup gate changes in the same LiteAgent route; the untracked experiment artifacts are intentionally not
+part of the commit. The result and replacement are now ready for the integration owner to merge.
