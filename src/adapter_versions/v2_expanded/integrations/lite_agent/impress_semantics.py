@@ -1249,7 +1249,10 @@ def _result_matches_picture_height_target(
     ):
         if observed_display_slide - 1 != target["slide"]:
             return False
-    if slide_index_from_reference(arguments) != target["slide"]:
+    if (
+        slide_index_from_reference(arguments, allow_consistent_pair=True)
+        != target["slide"]
+    ):
         return False
 
     target_selector = target["selector"]
@@ -1280,6 +1283,20 @@ def _result_matches_picture_height_target(
     if not isinstance(observed_height, (int, float)) or isinstance(
         observed_height, bool
     ):
+        measurement = arguments.get("height_measurement")
+        if isinstance(measurement, dict):
+            value = measurement.get("value")
+            unit = measurement.get("unit")
+            if (
+                isinstance(value, (int, float))
+                and not isinstance(value, bool)
+                and isinstance(unit, str)
+            ):
+                observed_height = _to_hundredth_mm(str(value), unit)
+
+    if not isinstance(observed_height, (int, float)) or isinstance(
+        observed_height, bool
+    ):
         observed_height = arguments.get("height")
     return bool(
         isinstance(observed_height, (int, float))
@@ -1295,7 +1312,10 @@ def _matching_picture_height_events(state: Any, target: dict[str, Any]) -> list[
         arguments = event.proposed.get("arguments")
         if not isinstance(arguments, dict):
             continue
-        if slide_index_from_reference(arguments) != target["slide"]:
+        if (
+            slide_index_from_reference(arguments, allow_consistent_pair=True)
+            != target["slide"]
+        ):
             continue
         if any(
             _result_matches_picture_height_target(event, result, target)
@@ -2311,8 +2331,14 @@ def stage_actions(
         pending = "shape.format_text"
     if pending is None:
         return actions
-    # Pending edits still need fresh observations of their targets.
-    return [action for action in actions if action in {pending, "presentation.inspect"}]
+    # Geometry and role mutations already have observation-derived targets and
+    # must not be deferred by an endlessly repeatable inspection call. Shape
+    # text mutations still keep inspection available because each selector may
+    # need a fresh read-back between atomic edits.
+    allowed = {pending}
+    if pending not in {"shape.set_geometry", "slide.format_text_roles"}:
+        allowed.add("presentation.inspect")
+    return [action for action in actions if action in allowed]
 
 
 def filter_tools(
@@ -2328,10 +2354,13 @@ def filter_tools(
         and "adapter__shape_format_text" in available_names
     ):
         name = "adapter__shape_format_text"
+    allowed_names = {name}
+    if pending not in {"shape.set_geometry", "slide.format_text_roles"}:
+        allowed_names.add("adapter__presentation_inspect")
     return [
         tool
         for tool in tools
-        if tool["function"]["name"] in {name, "adapter__presentation_inspect"}
+        if tool["function"]["name"] in allowed_names
     ]
 
 

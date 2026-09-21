@@ -76,8 +76,9 @@ def _inspection() -> ExecutionEvent:
 def _geometry_mutation() -> ExecutionEvent:
     arguments = {
         "slide": 2,
+        "slide_number": 3,
         "selector": {"path": [4]},
-        "height": 20000,
+        "height_measurement": {"value": 20, "unit": "cm"},
     }
     return _event(
         2,
@@ -119,6 +120,19 @@ def test_picture_success_exposes_only_the_next_text_mutation() -> None:
 
     state.events.append(_inspection())
     assert impress_semantics.next_action(state) == "shape.set_geometry"
+    assert impress_semantics.stage_actions(
+        state,
+        [
+            "presentation.inspect",
+            "shape.set_geometry",
+            "slide.format_text_roles",
+            "presentation.save",
+        ],
+    ) == ["shape.set_geometry"]
+    assert [
+        tool["function"]["name"]
+        for tool in impress_semantics.filter_tools(state, _tools())
+    ] == ["adapter__shape_set_geometry"]
 
     state.events.append(_geometry_mutation())
     assert impress_semantics.next_action(state) == "slide.format_text_roles"
@@ -130,8 +144,8 @@ def test_picture_success_exposes_only_the_next_text_mutation() -> None:
             "slide.format_text_roles",
             "presentation.save",
         ],
-    ) == ["presentation.inspect", "slide.format_text_roles"]
+    ) == ["slide.format_text_roles"]
     assert [
         tool["function"]["name"]
         for tool in impress_semantics.filter_tools(state, _tools())
-    ] == ["adapter__presentation_inspect", "adapter__slide_format_text_roles"]
+    ] == ["adapter__slide_format_text_roles"]
