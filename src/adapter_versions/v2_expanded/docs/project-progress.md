@@ -11697,4 +11697,9 @@ Result: **81 tests passed**, Ruff passed, and compileall passed. The attempted s
 commands using the historical `generic-only-coverage-order60-impress-properties-v24.json` and
 `generic-only-ab4-v323-semantic-picture-progress-concurrency4.json` manifests were rejected
 before model/VM startup because those frozen manifests lack the current required `condition`
-object; no evaluator score is claimed from those attempts.
+object; no evaluator score is claimed from those attempts. Newly sealed local retry1 failed
+while prefetching the input PPTX from Hugging Face, retry2 was rejected by a transient
+reasoning-gate configuration (`openapi_url=null`), and retry3 reached model preflight but
+failed on the same input prefetch timeout before any model tool call. Retry3 is preserved at
+`experiments/local-impress-picture-text-60-retry3-20260921/workers/worker-00/results.json`
+with `status=environment_failure`, `passed=0`, and no evaluator score.

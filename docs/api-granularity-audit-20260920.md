@@ -229,5 +229,13 @@ PYTHONPATH=src/adapter_versions/v2_expanded pytest -q \
 An attempted Order 60 pilot with the historical v24 and v323 manifests stopped
 at the runner condition gate because those frozen manifests have no current
 `condition` object; it did not start a model/VM and has no evaluator score.
-The implementation commit and this receipt are ready for the integration owner;
-the full evaluator rerun needs a newly sealed local condition.
+The newly sealed local retry1 then failed while prefetching the input PPTX from
+Hugging Face; retry2 was rejected by a transient reasoning-gate configuration
+(`openapi_url=null`); retry3 reached model preflight but failed on the same
+Hugging Face input prefetch timeout before any model tool call. The retry3 result
+is preserved at
+`src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry3-20260921/workers/worker-00/results.json`
+with `status=environment_failure`, `passed=0`, and no evaluator score. The
+implementation commit and this receipt are ready for the integration owner; the
+full evaluator rerun still needs a newly sealed condition with a reachable or
+pre-cached dataset input.
