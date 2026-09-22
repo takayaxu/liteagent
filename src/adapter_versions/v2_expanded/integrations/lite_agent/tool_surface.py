@@ -584,6 +584,20 @@ class ToolSurfaceMixin:
             and actions in (["presentation.save"], ["presentation.inspect"])
         )
         discovery_only = discovery_only or batch_inspection_pending
+        # Composite Impress mutations have a strict one-action handoff. Once
+        # action selection narrows the stage to one of these actions, hide
+        # GUI/search/completion bypasses so the model performs that action and
+        # advances to the next observation-derived stage.
+        discovery_only = discovery_only or (
+            state.domain == "libreoffice_impress"
+            and tuple(actions)
+            in {
+                ("presentation.inspect",),
+                ("shape.set_geometry",),
+                ("slide.format_text_roles",),
+                ("presentation.save",),
+            }
+        )
         # Composite Impress cleanup is an ordered mutation plan. Until its
         # final mutation succeeds, expose only the current next mutation and
         # suppress save, completion, search, and GUI controls.
