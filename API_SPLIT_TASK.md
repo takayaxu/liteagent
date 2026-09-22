@@ -72,3 +72,28 @@ $PYTHON -m ruff check <changed_python_files>
 - 不顺手重构无关代码，不提交结果目录、缓存、虚拟环境、镜像或凭据。
 
 完成 P0 后，把每项的 replacement、提交号和 focused test 结果补到审计文档，再交给集成人员决定是否做更大范围测试。
+
+## Order 60 开发记录（2026-09-22）
+
+- 题目：`e4ef0baf-4b52-4590-a47e-d4d464cca2d7`；本地缓存输入为
+  `src/third_party/OSWorld/cache/e4ef0baf-4b52-4590-a47e-d4d464cca2d7/42_2.pptx`。
+- API replacement：本题仍保持两个独立 mutation，`shape.set_geometry` 负责观察到的图片高度，`slide.format_text_roles` 负责目标页文本格式；没有新增或合并 API。新增的最小修复只收窄 terminal-audit 工具面：已通过的 `propose_done` 只再暴露对应的 `propose_done`（`fail_task` 同理），隐藏 `tools_search`、`presentation.inspect` 和其它 mutation，避免完成后的重复搜索/检查循环。
+- 实现提交：`57d69d3ea127154034cc87ce495914dd225e80b1`（`fix(order60): bound terminal audit to completion control`）。
+- focused checks：`test_recovery_surface.py` 全文件 **56 passed**；`test_episode_control.py` 与 `test_hybrid_gui_completion.py` **34 passed**；改动文件 `/opt/anaconda3/bin/ruff check ...` 通过。
+- 实际单题命令：
+
+  ```bash
+  PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+  /var/lib/liteagent-shared/python-env/bin/python \
+  src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-impress-picture-text-60-retry19-20260922.json \
+  --orders 60 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry19-20260922/workers/worker-00 \
+  --base-url https://qwen1.jinmaoapi.cc.cd/v1 \
+  --max-steps 35 --max-local-steps 20 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 600 \
+  --max-output-tokens 512 --reasoning-mode non_thinking \
+  --temperature 0 --request-timeout 180
+  ```
+
+- retry19：`status=passed`、`reward=1.0`、`termination_reason=agent_done`；原始 evaluator 日志为 `COMPARISON SUCCESSFUL - Files match`。轨迹为 `presentation.inspect -> shape.set_geometry -> presentation.inspect -> slide.format_text_roles -> presentation.inspect -> presentation.save -> presentation.inspect -> propose_done`，未再出现 terminal-audit 循环。结果见 `src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry19-20260922/workers/worker-00/results.json`。

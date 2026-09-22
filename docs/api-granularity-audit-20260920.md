@@ -303,3 +303,23 @@ returned HTTP 200 before the rerun. Retry13 then passed the original evaluator
 with `reward=1.0`; its mutation/read-back prefix contains exactly one inspect
 after each mutation and no repeated mutation. No replacement or combined API
 was added.
+
+### Order 60 Terminal-Audit Repair (2026-09-22)
+
+The API replacement remains unchanged: `shape.set_geometry` and
+`slide.format_text_roles` are still two independent mutations. Commit
+`57d69d3ea127154034cc87ce495914dd225e80b1` changes only the post-completion
+audit surface. Once a `propose_done` or `fail_task` result has passed the generic
+completion gate, the next model turn exposes only that same terminal control;
+`tools_search`, `presentation.inspect`, GUI actions and other mutations are no
+longer alternatives. This prevents an accepted completion from reopening a
+search/inspect loop while preserving the existing one-turn audit boundary.
+
+Focused checks passed: `test_recovery_surface.py` (**56 passed**),
+`test_episode_control.py` plus `test_hybrid_gui_completion.py` (**34 passed**),
+and Ruff on the three changed Python files. The qwen1 single-task command and
+local-cache input are recorded in `API_SPLIT_TASK.md`. Retry19 passed the
+original Order 60 evaluator with `status=passed`, `reward=1.0`, and
+`termination_reason=agent_done`; the saved PPTX comparison reported
+`COMPARISON SUCCESSFUL - Files match`. Result:
+`experiments/local-impress-picture-text-60-retry19-20260922/workers/worker-00/results.json`.
