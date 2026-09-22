@@ -11768,3 +11768,13 @@ src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 420 \
 --max-output-tokens 512 --reasoning-mode non_thinking --temperature 0 --request-timeout 180
 ```
+
+After a minimal transport probe returned HTTP 200 from the same Qwen endpoint,
+retry13 was sealed against commit `920031c`. Its model-visible sequence was:
+`presentation.inspect -> shape.set_geometry -> presentation.inspect ->
+slide.format_text_roles -> presentation.inspect -> presentation.save ->
+presentation.inspect -> propose_done`. The worker completed the deferred
+terminal audit and the original evaluator returned `status=passed` with
+`reward=1.0`; no mutation or post-mutation read-back was repeated. The raw
+evidence is preserved at
+`experiments/local-impress-picture-text-60-retry13-20260922/`.

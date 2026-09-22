@@ -296,3 +296,10 @@ at each first turn, but the model endpoint returned `502`/`524` before mutation;
 no evaluator score is claimed. The runs are preserved in the corresponding
 `experiments/local-impress-picture-text-60-retry8-20260922/` through
 `retry11-20260922/` directories.
+
+The final completion-surface fix is commit `920031c`: once the saved read-back
+is complete, only `propose_done` is exposed. A minimal direct transport probe
+returned HTTP 200 before the rerun. Retry13 then passed the original evaluator
+with `reward=1.0`; its mutation/read-back prefix contains exactly one inspect
+after each mutation and no repeated mutation. No replacement or combined API
+was added.
