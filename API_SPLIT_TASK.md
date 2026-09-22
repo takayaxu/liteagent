@@ -146,3 +146,28 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - 当前结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。轨迹为 `document.set_font(font_name="Times New Roman") -> document.inspect -> propose_done`；mutation 处理 23 个文本对象，inspect 的西文、亚洲和复杂文本字体回读均包含 `Times New Roman`。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-font-68-retain-20260922/workers/worker-00/results.json`。
+
+## Order 81 开发记录（2026-09-22）
+
+- 题目：`d53ff5ee-3b1a-431e-b2be-30ed2673079b`；要求把 Writer 文档中的全部大写文本转换为小写。输入和 golden 只从本地镜像缓存读取；输入 SHA-256 为 `26932140b262b8886b42d82e3a8acd1e48a4c9c97abe803791e9cf1ab10d3ce8`，golden SHA-256 为 `4bf3cec92ae61e1263f4bd54131c03ec90f6dbc8f70159a3a1fdc6be10cfc19a`，两者均通过 ZIP 完整性检查。
+- API replacement：P1 复核结论为保留 `document.transform_case(mode)`，不拆分 action。`mode` 严格且仅允许 `lower` 或 `title`，一次调用只选择一条互斥的全文同构大小写规则，不含操作数组、范围选择或第二个独立副作用。运行时在自动保存前对正文和表格段落逐项原生回读；任一写入未持久化即返回 `VERIFICATION_FAILED`。
+- 实现提交：`3d98fd27363b13d79754f6af09fd9367e875ae3b`（`fix(order81): verify whole-document case transforms`）。
+- focused checks：`test_writer_transform_case.py` 与 `test_bounded_writer_decomposition.py` **46 passed**；Writer schema、worker 和新增测试执行 `/opt/anaconda3/bin/ruff check ...` 通过；`git diff --check` 通过。
+- 实际单题命令：
+
+  ```bash
+  PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+  HF_ENDPOINT=https://hf-mirror.com \
+  /var/lib/liteagent-shared/python-env/bin/python \
+  src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-writer-transform-case-81-20260922.json \
+  --orders 81 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-81-20260922/workers/worker-00 \
+  --base-url https://qwen1.jinmaoapi.cc.cd/v1 \
+  --max-steps 30 --max-local-steps 15 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 300 \
+  --max-output-tokens 512 --reasoning-mode non_thinking \
+  --temperature 0 --request-timeout 180
+  ```
+
+- 当前结果：`status=passed`、`reward=1.0`、`path_class=generic_api_only`；原始 `compare_docx_files` evaluator 返回 `1.0`。第 1 步即调用 `document.transform_case(mode="lower")`，Adapter 返回 `paragraphs_changed=14`、`paragraphs_verified=18` 并成功保存，随后 `document.inspect` 回读为小写。模型之后重复检查并以 `termination_reason=stalled_no_progress` 收尾，但结果文档仍与 golden 匹配。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-81-20260922/workers/worker-00/results.json`。
