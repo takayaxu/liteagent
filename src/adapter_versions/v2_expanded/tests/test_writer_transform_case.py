@@ -54,6 +54,28 @@ def test_lowercase_contract_and_native_readback(monkeypatch):
     }
 
 
+def test_title_case_capitalizes_first_alphabetic_character_per_token(monkeypatch):
+    paragraphs = [
+        _paragraph("geography and magical realism"),
+        _paragraph("'quoted' words\tstay-mixed"),
+    ]
+    params = {"mode": "title"}
+    validate_action_params("document.transform_case", params)
+    monkeypatch.setattr(uno_worker, "_all_paragraphs", lambda doc: iter(paragraphs))
+
+    result = uno_worker._transform_case(SimpleNamespace(doc=object()), params)
+
+    assert [paragraph.String for paragraph in paragraphs] == [
+        "Geography And Magical Realism",
+        "'Quoted' Words\tStay-mixed",
+    ]
+    assert result == {
+        "mode": "title",
+        "paragraphs_changed": 2,
+        "paragraphs_verified": 2,
+    }
+
+
 def test_transform_case_rejects_fields_outside_single_mode():
     with pytest.raises(AdapterError, match="requires only params.mode") as error:
         validate_action_params(
