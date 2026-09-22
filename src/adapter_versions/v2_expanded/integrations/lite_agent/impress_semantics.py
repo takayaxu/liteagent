@@ -2391,6 +2391,36 @@ def _semantic_save_pending(state: Any) -> bool:
     )
 
 
+def _final_readback_complete(state: Any) -> bool:
+    """Close the two-mutation workflow after its one final saved read-back."""
+    if not (
+        parse_picture_height_intent(state.instruction) is not None
+        and parse_textbox_font_size_intent(state.instruction) is not None
+    ):
+        return False
+    mutations = _successful_required_mutations(state)
+    if not mutations:
+        return False
+    latest_mutation = max(event.step for event in mutations)
+    saves = [
+        event
+        for event in state.successful_adapter_events()
+        if action_is_save(str(event.proposed.get("action", "")))
+        and event.step > latest_mutation
+    ]
+    if not saves:
+        return False
+    latest_save = max(event.step for event in saves)
+    if not any(
+        event.step > latest_save
+        for event in state.successful_action_events("presentation.inspect")
+    ):
+        return False
+    return picture_height_readback_satisfied(state) and textbox_font_size_readback_satisfied(
+        state
+    )
+
+
 def next_structured_action(state: Any) -> dict[str, Any] | None:
     """Return a model-callable step whose arguments are fully observation-derived."""
     if next_picture_height_action(state) is not None:
@@ -2427,6 +2457,8 @@ def stage_actions(
             return [action for action in actions if action == "presentation.inspect"]
         if _semantic_save_pending(state):
             return [action for action in actions if action == "presentation.save"]
+        if _final_readback_complete(state):
+            return []
         return actions
     # Geometry and role mutations already have observation-derived targets and
     # must not be deferred by an endlessly repeatable inspection call. Shape
@@ -2447,6 +2479,8 @@ def filter_tools(
             pending = "presentation.inspect"
         elif _semantic_save_pending(state):
             pending = "presentation.save"
+        elif _final_readback_complete(state):
+            return []
     if pending is None:
         return tools
     name = "adapter__" + pending.replace(".", "_")

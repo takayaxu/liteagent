@@ -27,7 +27,13 @@ def _event(
     )
 
 
-def _inspection(height: int = 10000, step: int = 1) -> ExecutionEvent:
+def _inspection(
+    height: int = 10000,
+    step: int = 1,
+    *,
+    include_picture: bool = True,
+    font_size: int = 18,
+) -> ExecutionEvent:
     picture = {
         "path": [4],
         "name": "Foreground picture",
@@ -43,19 +49,23 @@ def _inspection(height: int = 10000, step: int = 1) -> ExecutionEvent:
         "name": "Textbox",
         "kind": "com.sun.star.presentation.OutlinerShape",
         "lines": ["Observed text"],
-        "text_style": {"font_size": 18},
+        "text_style": {"font_size": font_size},
         "is_text": True,
     }
-    slides = [
-        {
-            "slide": 2,
-            "width": 30000,
-            "height": 20000,
-            "picture_containers": [picture],
-            "graphic_shapes": [picture],
-            "all_shapes": [picture],
-            "text_shapes": [],
-        },
+    slides = []
+    if include_picture:
+        slides.append(
+            {
+                "slide": 2,
+                "width": 30000,
+                "height": 20000,
+                "picture_containers": [picture],
+                "graphic_shapes": [picture],
+                "all_shapes": [picture],
+                "text_shapes": [],
+            }
+        )
+    slides.append(
         {
             "slide": 5,
             "width": 30000,
@@ -63,8 +73,8 @@ def _inspection(height: int = 10000, step: int = 1) -> ExecutionEvent:
             "recursive_text_shapes": [textbox],
             "text_shapes": [textbox],
             "all_shapes": [textbox],
-        },
-    ]
+        }
+    )
     return _event(
         step,
         "presentation.inspect",
@@ -103,6 +113,10 @@ def _text_mutation() -> ExecutionEvent:
         {"slide": 5, "roles": ["all"], "font_size": 40},
         {"status": "ok"},
     )
+
+
+def _save() -> ExecutionEvent:
+    return _event(6, "presentation.save", {}, {"status": "ok"})
 
 
 def _state(events: list[ExecutionEvent]) -> RuntimeState:
@@ -178,3 +192,33 @@ def test_picture_success_exposes_only_the_next_text_mutation() -> None:
         tool["function"]["name"]
         for tool in impress_semantics.filter_tools(state, _tools())
     ] == ["adapter__presentation_save"]
+
+
+def test_final_saved_readback_closes_the_surface_after_one_inspection() -> None:
+    state = _state(
+        [
+            _inspection(),
+            _geometry_mutation(),
+            _inspection(height=20000, step=3),
+            _text_mutation(),
+            _inspection(height=20000, step=5, font_size=40),
+            _save(),
+            _inspection(
+                step=7,
+                include_picture=False,
+                font_size=40,
+            ),
+        ]
+    )
+
+    assert impress_semantics.next_action(state) is None
+    assert impress_semantics.stage_actions(
+        state,
+        [
+            "presentation.inspect",
+            "shape.set_geometry",
+            "slide.format_text_roles",
+            "presentation.save",
+        ],
+    ) == []
+    assert impress_semantics.filter_tools(state, _tools()) == []
