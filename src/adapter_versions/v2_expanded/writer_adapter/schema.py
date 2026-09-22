@@ -686,6 +686,16 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     elif action == "document.set_font":
         _string(params, "font_name")
     elif action == "document.transform_case":
+        if set(params) != {"mode"}:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "document.transform_case requires only params.mode",
+                {
+                    "unexpected": sorted(set(params) - {"mode"}),
+                    "missing": [] if "mode" in params else ["mode"],
+                    "allowed": ["mode"],
+                },
+            )
         if params.get("mode") not in {"lower", "title"}:
             raise AdapterError("INVALID_REQUEST", "params.mode must be lower or title")
     elif action == "document.add_page_numbers":

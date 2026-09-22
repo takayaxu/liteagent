@@ -2022,16 +2022,39 @@ def _set_font(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
 
 def _transform_case(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
     mode = params["mode"]
+    paragraphs = list(_all_paragraphs(session.doc))
     changed = 0
-    for paragraph in list(_all_paragraphs(session.doc)):
+    expected = []
+    for paragraph in paragraphs:
         original = str(paragraph.String)
         transformed = (
             original.lower() if mode == "lower" else _title_case_preserve(original)
         )
+        expected.append(transformed)
         if transformed != original:
             paragraph.String = transformed
             changed += 1
-    return {"mode": mode, "paragraphs_changed": changed}
+    mismatches = [
+        index
+        for index, (paragraph, transformed) in enumerate(zip(paragraphs, expected))
+        if str(paragraph.String) != transformed
+    ]
+    if mismatches:
+        raise AdapterError(
+            "VERIFICATION_FAILED",
+            "document case transformation did not persist for every paragraph",
+            {
+                "mode": mode,
+                "paragraph_count": len(paragraphs),
+                "mismatch_indices": mismatches,
+            },
+            422,
+        )
+    return {
+        "mode": mode,
+        "paragraphs_changed": changed,
+        "paragraphs_verified": len(paragraphs),
+    }
 
 
 def _remove_highlighting(
