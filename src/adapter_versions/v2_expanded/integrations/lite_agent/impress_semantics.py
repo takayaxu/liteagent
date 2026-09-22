@@ -1375,10 +1375,22 @@ def next_picture_height_action(state: Any) -> dict[str, Any] | None:
     readback = _latest_post_save_inspection(state, after_step)
     if readback is None:
         return None
+    saves_after_mutation = [
+        event
+        for event in state.successful_adapter_events()
+        if action_is_save(str(event.proposed.get("action", "")))
+        and event.step > after_step
+    ]
     slides = _inspection_slides(readback)
     assert slides is not None
     for target in plan["resolved_targets"]:
         if _picture_height_observed(slides, target):
+            continue
+        # A saved, Adapter-verified geometry mutation must not be re-exposed
+        # merely because the model's single final inspection focused on a
+        # different slide. The completion check accepts that native receipt as
+        # the persisted evidence for this target.
+        if saves_after_mutation and _matching_picture_height_events(state, target):
             continue
         if not any(
             event.step > readback.step
@@ -1452,6 +1464,7 @@ def picture_height_readback_satisfied(state: Any) -> bool:
         slides is not None
         and all(
             _picture_height_observed(slides, target)
+            or bool(_matching_picture_height_events(state, target))
             for target in plan["resolved_targets"]
         )
     )
