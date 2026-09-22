@@ -7,9 +7,9 @@
 本次从十个 Adapter 的 `schema.ACTIONS` 重新枚举公开面；增加 Thunderbird identity
 发现动作后，共 **217** 个 action。复查结果为：
 
-- **P0 必拆/收窄 19 个**：一个调用可表达多个互相独立的设置、多个有顺序的变换、把两种操作模式合并在同一个入口，或带有未声明的破坏性副作用。
-- **P1 复核 17 个**：粒度较大，但可能属于显式同构批处理或应用原生事务；先写保留理由和反例，再决定是否拆，不要机械拆分。
-- **保留 181 个**：当前可解释为单一语义操作、只读查询、保存/导出、显式同构批处理或纯传输。
+- **P0 必拆/收窄 18 个**：一个调用可表达多个互相独立的设置、多个有顺序的变换、把两种操作模式合并在同一个入口，或带有未声明的破坏性副作用。
+- **P1 复核 16 个**：粒度较大，但可能属于显式同构批处理或应用原生事务；先写保留理由和反例，再决定是否拆，不要机械拆分。
+- **保留 183 个**：当前可解释为单一语义操作、只读查询、保存/导出、显式同构批处理或纯传输。
 
 这只是源码审计和任务分配，不是新基线，不改变任何历史分数，也没有运行模型或 evaluator。这里的“必拆”表示契约粒度过大，不表示已发现任务 ID、写死答案或 golden 泄漏。
 
@@ -112,7 +112,6 @@ P0 满足至少一项：
 | liuxv | `libreoffice_calc.workbook.create_new` | 同时创建工作簿、写 headers/rows；确认这是一个原生新建事务，而不是隐藏的多步文档生成 |
 | liuxv | `libreoffice_writer.document.extract_images` | 批量导出文档图片；确认所有成员使用完全相同规则且没有隐式选择 |
 | liuxv | `libreoffice_writer.document.remove_highlighting` | 可覆盖大范围；确认只执行一个明确的高亮移除规则 |
-| liuxv | `libreoffice_writer.document.set_font` | 可覆盖大范围；确认只执行一个明确字体规则 |
 | liuxv | `libreoffice_writer.document.transform_case` | 可覆盖大范围；确认只执行一种 case transform |
 | liuxv | `thunderbird.messages.export_eml` | 可导出整个文件夹；确认文件夹和输出目录显式且没有挑选消息的隐藏逻辑 |
 | pengzhe | `os.user.ensure_account` | 可能同时创建账号并修改账号属性；确认一个调用只对应一个账户声明式事务 |
@@ -128,6 +127,8 @@ P0 满足至少一项：
 | pengzhe | `vlc.playback.open` | 打开媒体会终止/重启当前 VLC，并另外切换 loop | 确认生命周期是公开契约且 loop 不应成为独立 mutation |
 
 `slides.format_text_roles` P1 复核：保留显式 `slides` 批处理。模型选择所有目标索引和唯一共享 `roles`/格式规则，worker 先为每页解析形状并确认角色都存在，之后才对任何目标 mutation；后续格式化逐对象回读。`test_impress_multislide_shared_rule.py` 的两页用例确认后页缺失角色时前页未修改，且成功时每页仅有同一条规则。为了兼容模型已有的单元素 `slides` 调用，仍允许单元素列表；它不代表真实多页 evaluator 已验证，实际跨页事务目前只有 focused test 证据。
+
+`document.set_font` P1 复核：保留并转入“保留”状态。模型可见契约只有必填的单值 `font_name`，不接受字体大小、范围选择或多规则列表；worker 对正文和表格的所有文本对象应用同一字体族，同时写入西文、亚洲和复杂文本三个原生字体属性并返回原生 `fonts` 回读。因此它是一个明确的全文同构格式规则，不隐藏独立决策或异构 mutation。实现来源提交为 `b800fd9c8861528bc5dc0c204c88a84163835769`，当前复核不新增代码。Order 68 focused pytest **22 passed**、Ruff 通过；正式单题 evaluator `status=passed`、`reward=1.0`、`termination_reason=agent_done`，实际调用为 `document.set_font(font_name="Times New Roman")`，随后 `document.inspect` 确认三个字体槽均包含目标字体。
 
 P1 默认不改代码。只有源码证据证明它包含独立决策或异构 mutation 才进入拆分；保留时把理由补到本文件。
 
@@ -171,13 +172,13 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 | Chrome | 24 | `settings.set` | - | `bookmark.add_current`, `bookmark.create_folder`, `browser.ensure_running`, `browser.inspect`, `browser.restart`, `extension.load_unpacked`, `page.click`, `page.fill`, `page.goto`, `page.press`, `page.print_pdf`, `page.read`, `page.select`, `page.snapshot`, `page.wait_for`, `privacy.delete_cookies`, `privacy.delete_history`, `shortcut.create_current`, `tab.activate`, `tab.close`, `tab.list`, `tab.open`, `tab.restore_last_closed` |
 | GIMP | 12 | `image.adjust` | - | `config.set`, `image.apply_alpha_mask`, `image.convert_indexed`, `image.crop`, `image.export`, `image.flip`, `image.inspect`, `layer.add`, `layer.fill`, `layer.scale`, `layer.translate` |
 | OS | 41 | `archive.create_extract`, `desktop.set_accessibility_scale`, `desktop.set_dim_inactive` | `archive.compress_file`, `desktop.mime_associations.set`, `filesystem.copy_to_directories`, `filesystem.rename`, `image.extract_text_batch`, `pdf.extract_text_batch`, `user.ensure_account` | `audio.set_volume`, `clipboard.get`, `clipboard.set`, `command.run`, `desktop.applications.inspect`, `desktop.favorites.list`, `desktop.open_path`, `desktop.remove_favorite`, `desktop.set_setting`, `desktop.set_wallpaper`, `document.convert`, `filesystem.copy`, `filesystem.create_directory`, `filesystem.find`, `filesystem.set_permissions`, `notifications.configure`, `package.install_snap`, `pdf.form.fill`, `pdf.form.inspect`, `pdf.outline.inspect`, `pdf.pages.extract`, `pdf.tables.inspect`, `system.set_timezone`, `terminal.default_profile.inspect`, `terminal.default_profile.set_setting`, `terminal.launch`, `terminal.show_output`, `text.append_each_line`, `trash.list`, `trash.restore`, `window.capture` |
-| Writer | 28 | `document.add_page_numbers` | `document.extract_images`, `document.remove_highlighting`, `document.set_font`, `document.transform_case` | `bookmark.create`, `cross_reference.insert`, `document.append_paragraphs`, `document.export_pdf`, `document.insert_page_break`, `document.inspect`, `document.read_file`, `document.save`, `image.insert_at_cursor`, `paragraph.apply_numbering`, `paragraph.clear_text`, `paragraph.replace_text`, `paragraph.set_format`, `paragraph.split`, `settings.set_default_font`, `table.convert_text`, `table.insert_after_text`, `table.insert_at_cursor`, `table.read`, `table.set_cell_text_color`, `text.find`, `text.find_replace`, `text.set_format` |
+| Writer | 28 | `document.add_page_numbers` | `document.extract_images`, `document.remove_highlighting`, `document.transform_case` | `bookmark.create`, `cross_reference.insert`, `document.append_paragraphs`, `document.export_pdf`, `document.insert_page_break`, `document.inspect`, `document.read_file`, `document.save`, `document.set_font`, `image.insert_at_cursor`, `paragraph.apply_numbering`, `paragraph.clear_text`, `paragraph.replace_text`, `paragraph.set_format`, `paragraph.split`, `settings.set_default_font`, `table.convert_text`, `table.insert_after_text`, `table.insert_at_cursor`, `table.read`, `table.set_cell_text_color`, `text.find`, `text.find_replace`, `text.set_format` |
 | VS Code | 27 | `debugging.configure`, `editor.configure`, `files.configure`, `settings.update` | `workspace.add_folders`, `workspace.open`, `workspace.set_folders` | `debug.breakpoint.set`, `debug.continue`, `debug.session.wait`, `debug.start`, `debug.stop`, `debug.variables.read`, `diagnostics.configure`, `editor.open_file`, `explorer.set_exclusion`, `extension.install`, `file.create`, `file.indent_lines`, `file.read_text`, `file.replace_literal`, `keybindings.ensure`, `ui.expand_section`, `ui.open_view`, `workspace.find_files`, `workspace.inspect`, `workspace.write` |
 | VLC | 9 | `config.update`, `preferences.configure` | `playback.open` | `media.extract_audio`, `media.extract_frame`, `media.extract_subtitles`, `media.transcode_clip`, `playback.status`, `window.set_fullscreen` |
 | Thunderbird | 13 | `filters.configure`, `mail.configure` | `messages.export_eml` | `accounts.remove`, `attachments.save`, `compose.attach`, `compose.set_recipients`, `contacts.export_csv`, `folders.ensure_local`, `identities.query`, `messages.query`, `ui.prefill_account_setup`, `xulstore.update` |
 | Multi-Apps | 1 | - | - | `adapter.call` |
 
-总计：31 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 13 + 1 = **217**；P0 18；P1 17；保留 182。
+总计：31 + 31 + 24 + 12 + 41 + 28 + 27 + 9 + 13 + 1 = **217**；P0 18；P1 16；保留 183。
 
 ## 关键源码证据
 

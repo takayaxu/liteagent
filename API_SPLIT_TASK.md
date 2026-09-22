@@ -121,3 +121,28 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - retry4：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。轨迹为 `document.add_page_numbers(position="bottom_left") -> document.inspect -> propose_done`，completion gate 通过且没有终止审计循环。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-page-numbers-67-split-retry4-20260922/workers/worker-00/results.json`。
+
+## Order 68 开发记录（2026-09-22）
+
+- 题目：`0e763496-b6bb-4508-a427-fad0b6c3e195`；要求把全文字体改为 `Times New Roman`。输入从非官方镜像预取到 OSWorld 原始 URL 的 UUID 前缀缓存，DOCX SHA-256 为 `76d9039c2b6c86381cbcf1a87178c6c50bbcf9b1e3d651ddb6e9caa189988430`，ZIP 完整性检查通过；评测未访问 Hugging Face 官方站。
+- API replacement：P1 复核结论为保留 `document.set_font(font_name)`，不再拆分。它只接受一个必填字体族字符串，一次调用只表达一条全文字体规则；worker 对正文和表格文本统一写入 `CharFontName`、`CharFontNameAsian`、`CharFontNameComplex`，并通过 `fonts` 原生回读验证。旧 opaque `params` wrapper 已由直接 `font_name` schema 取代，没有第二个同义 action。
+- 实现提交：`b800fd9c8861528bc5dc0c204c88a84163835769`（`Import runnable LiteAgent source snapshot`，当前窄 schema、validation、worker 与字体观察测试均包含于该导入提交）；本次复核不需要新增 Writer 代码提交。
+- focused checks：`test_writer_font_observation.py` 与 `test_writer_preference_evidence.py` **22 passed**；Writer manifest、schema、worker 和两份测试执行 `/opt/anaconda3/bin/ruff check ...` 通过。
+- 实际单题命令：
+
+  ```bash
+  PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+  HF_ENDPOINT=https://hf-mirror.com \
+  /var/lib/liteagent-shared/python-env/bin/python \
+  src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-writer-font-68-retain-20260922.json \
+  --orders 68 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-writer-font-68-retain-20260922/workers/worker-00 \
+  --base-url https://qwen1.jinmaoapi.cc.cd/v1 \
+  --max-steps 30 --max-local-steps 15 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 300 \
+  --max-output-tokens 512 --reasoning-mode non_thinking \
+  --temperature 0 --request-timeout 180
+  ```
+
+- 当前结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。轨迹为 `document.set_font(font_name="Times New Roman") -> document.inspect -> propose_done`；mutation 处理 23 个文本对象，inspect 的西文、亚洲和复杂文本字体回读均包含 `Times New Roman`。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-font-68-retain-20260922/workers/worker-00/results.json`。
