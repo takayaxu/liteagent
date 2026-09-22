@@ -273,7 +273,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "enum": ["latest", "earliest"],
                 "default": "latest",
                 "description": (
-                    "Which end of the date-sorted matches to select before arranging the response."
+                    "Which end of the date-sorted matches to select before arranging the response. "
+                    "Use latest when the instruction says latest, most recent, newest, or last; "
+                    "use earliest only when it explicitly asks for oldest or first."
                 ),
             },
             "order": {
@@ -282,7 +284,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "default": "descending",
                 "description": (
                     "Date order of returned messages. For the latest N messages arranged from "
-                    "earliest to most recent, use select_from='latest' and order='ascending'."
+                    "earliest to most recent, use select_from='latest' and order='ascending'. "
+                    "This changes presentation order only; it does not change which messages "
+                    "are selected."
                 ),
             },
             "sender_contains": {

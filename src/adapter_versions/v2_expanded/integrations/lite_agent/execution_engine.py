@@ -44,7 +44,10 @@ from .impress_title_formatting import title_format_argument_contract_errors
 from .impress_image_insertion import image_insertion_argument_contract_errors
 from .impress_personal_information import personal_information_argument_contract_errors
 from .impress_textboxes import textbox_color_argument_contract_errors
-from .instruction_semantics import strict_instruction_required_actions
+from .instruction_semantics import (
+    messages_query_argument_contract_errors,
+    strict_instruction_required_actions,
+)
 from .semantic_requirements import strict_semantic_action_equivalents
 from .standard_location_semantics import (
     argument_contract_errors as standard_location_argument_contract_errors,
@@ -491,6 +494,11 @@ class ExecutionEngineMixin:
                 )
                 semantic_argument_errors = background_argument_contract_errors(
                     state, action, arguments
+                )
+                semantic_argument_errors.extend(
+                    messages_query_argument_contract_errors(
+                        state.instruction, state.domain, action, arguments
+                    )
                 )
                 semantic_argument_errors.extend(
                     page_number_argument_contract_errors(state, action, arguments)

@@ -533,7 +533,9 @@ DOMAIN_SIGNATURES = {
             '"order"?: "ascending"|"descending", "sender_contains"?: str, '
             '"subject_contains"?: str, "after"?: ISO-8601 str, '
             '"before"?: ISO-8601 str, "has_attachments"?: bool}; returns sender name/address, '
-            "subject, recipients, CC, date, message ID and attachment metadata without message bodies"
+            "subject, recipients, CC, date, message ID and attachment metadata without message bodies; "
+            "select_from chooses the newest/oldest matching messages, while order only controls "
+            "their returned chronology (latest N oldest-to-newest = select_from='latest', order='ascending')"
         ),
         "compose.attach": (
             'params={"subject": exact open compose subject, '

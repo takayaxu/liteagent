@@ -1776,6 +1776,27 @@ def strict_instruction_required_actions(domain: str, instruction: str) -> list[s
     return instruction_required_actions(domain, instruction, strict_generic=True)
 
 
+def messages_query_argument_contract_errors(
+    instruction: str, domain: str, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    """Reject a contradictory mail selector without rewriting model arguments."""
+    if domain != "multi_apps" or action != "adapter.call":
+        return []
+    if not isinstance(arguments, dict):
+        return []
+    if arguments.get("adapter") != "thunderbird" or arguments.get("action") != "messages.query":
+        return []
+    payload = arguments.get("payload")
+    params = payload.get("params") if isinstance(payload, dict) else None
+    if not isinstance(params, dict) or params.get("select_from") != "earliest":
+        return []
+    if re.search(r"(?i)\b(?:latest|most\s+recent|newest|last)\b", instruction):
+        return [
+            "messages.query select_from=earliest contradicts the instruction's latest/most-recent request; use select_from=latest and keep order separate for presentation"
+        ]
+    return []
+
+
 def requested_column_order(instruction: str) -> list[str]:
     intent = parse_column_reorder_intent(instruction)
     return list(intent.headers) if intent is not None else []
