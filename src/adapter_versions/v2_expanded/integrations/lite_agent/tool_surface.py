@@ -7,6 +7,7 @@ from . import (
     calc_semantics,
     clipboard_path_semantics,
     completion_recovery,
+    impress_semantics,
     source_execution_semantics,
     spreadsheet_open_semantics,
     verified_artifact_handoff,
@@ -538,6 +539,24 @@ class ToolSurfaceMixin:
         actions = calc_semantics.stage_new_sheet_prerequisites(
             state, self.selected_actions(state), strict_required_actions
         )
+        if (
+            state.domain == "libreoffice_impress"
+            and not actions
+            and impress_semantics.final_readback_complete(state)
+        ):
+            completion_tools = self._build_tools(
+                state.domain,
+                [],
+                include_gui=False,
+                include_control_tools=True,
+                strict_generic=True,
+            )
+            return [
+                tool
+                for tool in completion_tools
+                if isinstance(tool.get("function"), dict)
+                and tool["function"].get("name") == "propose_done"
+            ]
         cleanup_request = requested_title_range_personal_info_cleanup(state.instruction)
         cleanup_in_progress = bool(
             cleanup_request is not None

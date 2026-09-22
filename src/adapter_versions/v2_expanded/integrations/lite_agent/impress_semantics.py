@@ -2421,6 +2421,11 @@ def _final_readback_complete(state: Any) -> bool:
     )
 
 
+def final_readback_complete(state: Any) -> bool:
+    """Expose the completed two-mutation state to the tool-surface owner."""
+    return _final_readback_complete(state)
+
+
 def next_structured_action(state: Any) -> dict[str, Any] | None:
     """Return a model-callable step whose arguments are fully observation-derived."""
     if next_picture_height_action(state) is not None:
