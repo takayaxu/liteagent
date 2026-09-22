@@ -272,3 +272,27 @@ text mutation. The raw run is preserved at
 After both mutations the model repeatedly inspected instead of saving and
 finished with `agent_deadline_exhausted` (`passed=0`, no evaluator score); this
 does not regress the requested picture-to-text staging.
+
+### Order 60 Final Staging Surface (2026-09-22)
+
+The two independent mutation APIs remain unchanged: `shape.set_geometry` and
+`slide.format_text_roles`. Commit `7f0d519` adds one-shot post-mutation inspect
+stages and save gating. Commit `4b682a5` prevents a saved, Adapter-verified
+geometry receipt from being re-exposed when the final inspection focuses on a
+different slide. Commit `cb88e13` closes the completed saved-readback surface,
+and `6746d30` makes the staged action surface discovery-only, hiding
+`gui_action`, `tools_search`, and other bypasses while exactly one of
+`presentation.inspect`, `shape.set_geometry`, `slide.format_text_roles`, or
+`presentation.save` is pending. No replacement API or combined mutation was
+introduced.
+
+The explicit Impress regression suite passed **221 tests**. Retry8 reproduced
+the expected seven-call prefix but used a sealed pre-final-readback source and
+then re-entered geometry. Retry9 reproduced the same seven-call prefix and
+confirmed no geometry re-entry, but repeated inspect after the final read-back.
+Retry10 exposed the bypass tools before `6746d30` and was stopped. Retry11 used
+the final sealed source and its request artifacts show only the staged action
+at each first turn, but the model endpoint returned `502`/`524` before mutation;
+no evaluator score is claimed. The runs are preserved in the corresponding
+`experiments/local-impress-picture-text-60-retry8-20260922/` through
+`retry11-20260922/` directories.

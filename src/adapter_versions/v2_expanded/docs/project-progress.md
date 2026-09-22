@@ -11726,3 +11726,45 @@ the text mutation. The model then repeatedly inspected after both mutations
 instead of saving and ended with `agent_deadline_exhausted` (`passed=0`, no
 evaluator score). Raw trajectory:
 `experiments/local-impress-picture-text-60-retry7-20260921/workers/worker-00/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/`.
+
+Follow-up commit `7f0d519` bounds each post-mutation read-back to one
+`presentation.inspect` and exposes `presentation.save` only after both
+mutations have completed. Retry8 used the sealed pre-final-readback source and
+confirmed the first seven calls:
+`presentation.inspect -> shape.set_geometry -> presentation.inspect ->
+slide.format_text_roles -> presentation.inspect -> presentation.save ->
+presentation.inspect`. Its older save/readback state then re-exposed geometry
+because the final inspection covered slide 6 but not slide 3, and it ended with
+`agent_deadline_exhausted`; raw evidence is preserved under
+`experiments/local-impress-picture-text-60-retry8-20260922/`.
+
+Commit `4b682a5` accepts a successful Adapter-verified geometry receipt as
+persistence evidence after save, preventing that mutation re-entry. Commit
+`cb88e13` closes the completed surface after the single final saved read-back,
+and commit `6746d30` hides GUI/search/completion bypasses while a staged Impress
+action is pending. The explicit Impress suite is now **221 passed**; Ruff,
+compileall, and diff checks pass. Retry9 reproduced the seven-call prefix and
+confirmed no geometry re-entry, but repeated inspect after the final read-back;
+its raw evidence is under
+`experiments/local-impress-picture-text-60-retry9-20260922/`. Retry10 was
+stopped after the bypass surface was observed, before the final tool-surface
+fix was sealed. Retry11 used the final sealed source and its request artifacts
+show only the staged action at each first turn, but the Qwen endpoint returned
+`502`/`524` after the initial inspect and therefore has
+`status=model_transport_failure`, `passed=0`, and no evaluator score. Retry11
+raw evidence is under
+`experiments/local-impress-picture-text-60-retry11-20260922/`.
+
+The final sealed pilot was launched with:
+
+```bash
+PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+/var/lib/liteagent-shared/python-env/bin/python \
+src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+--config src/adapter_versions/v2_expanded/experiments/configs/local-impress-picture-text-60-retry11-20260922.json \
+--orders 60 \
+--result-dir src/adapter_versions/v2_expanded/experiments/local-impress-picture-text-60-retry11-20260922/workers/worker-00 \
+--base-url https://qwen.jinmaoapi.cc.cd/v1 --max-steps 35 --max-local-steps 20 \
+--max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 420 \
+--max-output-tokens 512 --reasoning-mode non_thinking --temperature 0 --request-timeout 180
+```
