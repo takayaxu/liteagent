@@ -171,3 +171,29 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - 当前结果：`status=passed`、`reward=1.0`、`path_class=generic_api_only`；原始 `compare_docx_files` evaluator 返回 `1.0`。第 1 步即调用 `document.transform_case(mode="lower")`，Adapter 返回 `paragraphs_changed=14`、`paragraphs_verified=18` 并成功保存，随后 `document.inspect` 回读为小写。模型之后重复检查并以 `termination_reason=stalled_no_progress` 收尾，但结果文档仍与 golden 匹配。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-81-20260922/workers/worker-00/results.json`。
+
+## Order 83 开发记录（2026-09-22）
+
+- 题目：`e528b65e-1107-4b8c-8988-490e4fece599`；要求把 Writer 文档中每个单词的首字母改为大写。输入和 golden 只从本地镜像缓存读取；输入 SHA-256 为 `b7a84074837e33be184bac095e0c6824bd818a79791c3358ef2cdcd352f046b4`，golden SHA-256 为 `6b2a1968cd8ba4a91ebf122d11a6168ffdc9fec314e1641b8f635fe7644ad74b`，两者均通过 ZIP 完整性检查。
+- 历史与本题判断：历史 recovery 轨迹已证明模型实际选择 `document.transform_case(mode="title")`；该 action 与 Order 81 的 `lower` 共用同一窄契约和同构全文事务，因此本题不新增、不拆分 API。新增 title-case focused 用例只验证通用的首个英文字母转换和原生回读。
+- API replacement：保留 `document.transform_case(mode)`；`mode` 仍严格为互斥的 `lower` 或 `title`，不接受操作数组、范围选择或额外副作用。实现提交沿用 `3d98fd27363b13d79754f6af09fd9367e875ae3b`；本题新增测试提交为 `140f7db`（`test(order83): cover Writer title-case transform`）。
+- focused checks：`test_writer_transform_case.py` **6 passed**；新增测试 Ruff 通过；输入与 golden `unzip -t` 通过。
+- 第一次单题运行因 qwen1 两次 `522` 消耗了 300 秒 episode 上限，未产生 evaluator 分数；保留在 `experiments/local-writer-transform-case-83-20260922/`。随后仅增加同一协议的 600 秒传输余量，未改源码或注入参数。
+- 实际通过命令：
+
+  ```bash
+  PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+  HF_ENDPOINT=https://hf-mirror.com \
+  /var/lib/liteagent-shared/python-env/bin/python \
+  src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-writer-transform-case-83-retry1-20260922.json \
+  --orders 83 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-83-retry1-20260922/workers/worker-00 \
+  --base-url https://qwen1.jinmaoapi.cc.cd/v1 \
+  --max-steps 30 --max-local-steps 15 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 600 \
+  --max-output-tokens 512 --reasoning-mode non_thinking \
+  --temperature 0 --request-timeout 180
+  ```
+
+- 当前结果：`status=passed`、`reward=1.0`、`path_class=generic_api_only`、`termination_reason=stalled_no_progress`；原始 `compare_docx_files` evaluator 返回 `1.0`。第 1 步 `document.transform_case(mode="title")` 返回 `paragraphs_changed=3`、`paragraphs_verified=4` 并自动保存，结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-83-retry1-20260922/workers/worker-00/results.json`。
