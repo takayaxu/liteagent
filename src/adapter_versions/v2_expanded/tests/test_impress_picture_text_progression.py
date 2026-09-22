@@ -27,13 +27,13 @@ def _event(
     )
 
 
-def _inspection() -> ExecutionEvent:
+def _inspection(height: int = 10000, step: int = 1) -> ExecutionEvent:
     picture = {
         "path": [4],
         "name": "Foreground picture",
         "kind": "com.sun.star.drawing.GraphicObjectShape",
         "width": 20000,
-        "height": 10000,
+        "height": height,
         "x": 100,
         "y": 100,
         "is_text": False,
@@ -66,7 +66,7 @@ def _inspection() -> ExecutionEvent:
         },
     ]
     return _event(
-        1,
+        step,
         "presentation.inspect",
         {},
         {"context_hint": {"slide_count": 6, "slides": slides}},
@@ -93,6 +93,15 @@ def _geometry_mutation() -> ExecutionEvent:
             "resolved_geometry": {"height": 20000},
             "verification_passed": True,
         },
+    )
+
+
+def _text_mutation() -> ExecutionEvent:
+    return _event(
+        4,
+        "slide.format_text_roles",
+        {"slide": 5, "roles": ["all"], "font_size": 40},
+        {"status": "ok"},
     )
 
 
@@ -135,7 +144,7 @@ def test_picture_success_exposes_only_the_next_text_mutation() -> None:
     ] == ["adapter__shape_set_geometry"]
 
     state.events.append(_geometry_mutation())
-    assert impress_semantics.next_action(state) == "slide.format_text_roles"
+    assert impress_semantics.next_action(state) == "presentation.inspect"
     assert impress_semantics.stage_actions(
         state,
         [
@@ -144,8 +153,28 @@ def test_picture_success_exposes_only_the_next_text_mutation() -> None:
             "slide.format_text_roles",
             "presentation.save",
         ],
-    ) == ["slide.format_text_roles"]
+    ) == ["presentation.inspect"]
     assert [
         tool["function"]["name"]
         for tool in impress_semantics.filter_tools(state, _tools())
-    ] == ["adapter__slide_format_text_roles"]
+    ] == ["adapter__presentation_inspect"]
+
+    state.events.append(_inspection(height=20000, step=3))
+    assert impress_semantics.next_action(state) == "slide.format_text_roles"
+    state.events.append(_text_mutation())
+    assert impress_semantics.next_action(state) == "presentation.inspect"
+    assert impress_semantics.stage_actions(
+        state,
+        ["presentation.inspect", "presentation.save"],
+    ) == ["presentation.inspect"]
+
+    state.events.append(_inspection(height=20000, step=5))
+    assert impress_semantics.next_action(state) is None
+    assert impress_semantics.stage_actions(
+        state,
+        ["presentation.inspect", "presentation.save"],
+    ) == ["presentation.save"]
+    assert [
+        tool["function"]["name"]
+        for tool in impress_semantics.filter_tools(state, _tools())
+    ] == ["adapter__presentation_save"]
