@@ -131,6 +131,8 @@ P0 满足至少一项：
 
 `document.transform_case` P1 复核：保留并转入“保留”状态。公开契约严格且仅接受必填单值 `mode`，枚举为 `lower` 或 `title`；每次调用只选择一种互斥的全文同构大小写规则，不接受操作数组、局部范围或额外格式副作用。worker 对正文和表格段落统一变换，并在自动保存前逐段原生回读；任一写入未持久化即返回 `VERIFICATION_FAILED`。实现提交为 `3d98fd27363b13d79754f6af09fd9367e875ae3b`。Order 81 focused pytest **46 passed**、Ruff 通过；正式单题 evaluator `status=passed`、`reward=1.0`，实际 mutation 为 `document.transform_case(mode="lower")`，返回 `paragraphs_changed=14`、`paragraphs_verified=18`。Order 83 又以同一 API 的 `mode="title"` 通过，返回 `paragraphs_changed=3`、`paragraphs_verified=4`；其 title-case focused check **6 passed**。两题均可能在模型重复观察后以 `stalled_no_progress` 收尾，但原始 `compare_docx_files` 均返回 `1.0`。
 
+`thunderbird.messages.query` Order 91 复核：保留。它是有界只读查询，`select_from` 负责从匹配结果的最新/最早一端选取窗口，`order` 只负责返回顺序；两者不是可合并的异构 mutation。新增的通用 latest-selector 语义拒绝保护只拦截 instruction 明确要求 latest/most-recent 而模型传 `select_from="earliest"` 的矛盾调用，不重写参数或注入任务数据。`libreoffice_calc.workbook.create_new` 同题保留，headers/rows 是显式模型数据且创建后自动保存，不新增宏 API。Order 91 正式 evaluator `status=passed`、`reward=1.0`；focused selector check **27 passed**。源码提交为 `d077b18f02805becaa8f5ff21bb7d1c27b5e8c2c`（`fix(order91): guard latest mail selection semantics`）。
+
 P1 默认不改代码。只有源码证据证明它包含独立决策或异构 mutation 才进入拆分；保留时把理由补到本文件。
 
 ## 旧审计覆盖核对
