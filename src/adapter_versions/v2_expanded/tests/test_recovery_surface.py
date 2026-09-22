@@ -258,7 +258,7 @@ def test_later_blocked_calls_keep_original_error_in_model_feedback() -> None:
     assert "previous_error" not in json.dumps(event.error["previous_error"])
 
 
-def test_pending_terminal_surface_exposes_audit_controls_and_alternatives() -> None:
+def test_pending_terminal_surface_exposes_only_the_expected_audit_control() -> None:
     state = RuntimeState(
         task_id="synthetic-task",
         domain="os",
@@ -273,17 +273,9 @@ def test_pending_terminal_surface_exposes_audit_controls_and_alternatives() -> N
 
     tools = agent.tools(state)
     names = {tool["function"]["name"] for tool in tools}
-    control_descriptions = {
-        tool["function"]["name"]: tool["function"]["description"]
-        for tool in tools
-        if tool.get("function", {}).get("name") in {"propose_done", "fail_task"}
-    }
-
-    assert {"propose_done", "fail_task", "tools_search"}.issubset(names)
-    assert any(name.startswith("adapter__") for name in names)
-    assert (
-        "Audit the previous propose_done result" in control_descriptions["propose_done"]
-    )
+    assert names == {"propose_done"}
+    description = tools[0]["function"]["description"]
+    assert "Confirm the previous propose_done result once" in description
 
 
 @pytest.mark.parametrize("recovery_action", ["tools_search", "filesystem.find"])

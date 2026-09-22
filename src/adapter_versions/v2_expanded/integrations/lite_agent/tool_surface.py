@@ -210,46 +210,26 @@ class ToolSurfaceMixin:
         multi_app = state.domain == "multi_apps"
         pending_terminal = getattr(state, "pending_terminal", None)
         if isinstance(pending_terminal, dict):
-            # A terminal control is a model-visible result first, not an
-            # immediate loop break.  Keep the normal public alternatives
-            # available so Qwen can either confirm the result or choose a
-            # different action after auditing it; bypassing the stage-specific
-            # early returns here guarantees the two control Tools are present
-            # on every audit turn.
-            clipboard_path_complete = (
-                False
-                if multi_app
-                else clipboard_path_semantics.path_clipboard_satisfied(state)
-            )
-            audit_actions = (
-                []
-                if clipboard_path_complete
-                else [
-                    action
-                    for action in self.selected_actions(state)
-                    if action not in FORBIDDEN_DATASET_ACTIONS
-                ]
-            )
+            # A passed terminal result has no remaining mutation to plan. Keep
+            # its single audit turn deterministic: exposing search and action
+            # alternatives lets a model reopen a completed episode indefinitely.
+            expected_tool = str(pending_terminal.get("tool", "propose_done"))
+            if expected_tool not in {"propose_done", "fail_task"}:
+                expected_tool = "propose_done"
             audit_tools = self._build_tools(
                 state.domain,
-                list(dict.fromkeys(audit_actions)),
-                include_gui=(
-                    self.config.include_gui
-                    and self._gui_execution_configured()
-                    and not clipboard_path_complete
-                ),
+                [],
+                include_gui=False,
                 include_control_tools=True,
                 strict_generic=True,
             )
-            if clipboard_path_complete:
-                audit_tools = [
-                    tool
-                    for tool in audit_tools
-                    if not isinstance(tool.get("function"), dict)
-                    or tool["function"].get("name") != "tools_search"
-                ]
+            audit_tools = [
+                tool
+                for tool in audit_tools
+                if isinstance(tool.get("function"), dict)
+                and tool["function"].get("name") == expected_tool
+            ]
             audit_tools = self._apply_common_tool_constraints(audit_tools, state)
-            expected_tool = pending_terminal.get("tool", "terminal control")
             for tool in audit_tools:
                 function = tool.get("function")
                 if not isinstance(function, dict):
@@ -257,8 +237,8 @@ class ToolSurfaceMixin:
                 name = function.get("name")
                 if name in {"propose_done", "fail_task"}:
                     function["description"] = (
-                        f"Audit the previous {expected_tool} result. Confirm it only "
-                        "if it is still correct; otherwise choose another public Tool."
+                        f"Confirm the previous {expected_tool} result once. "
+                        "The result was already accepted and no further action is needed."
                     )
             return audit_tools
 

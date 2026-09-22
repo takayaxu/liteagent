@@ -141,14 +141,11 @@ class AgentProtocolMixin:
         )
         pending_terminal = getattr(state, "pending_terminal", None)
         terminal_audit_guidance = (
-            " The previous terminal control result is waiting for your audit. "
-            "Review the truthful result and screenshot now: select the same terminal "
-            "Tool only to confirm it, or select another public Tool if the task still "
-            "needs work. A completion result with status=ok or gate.passed=true "
-            "acknowledges the submitted action evidence; it does not independently "
-            "verify the final application state. Compare the current screenshot and "
-            "tool observations with the user's request. Do not use your previous "
-            "completion claim or its acceptance as proof that the task is complete."
+            " The previous terminal control result is waiting for one audit turn. "
+            "Review the truthful result and screenshot, then call the same terminal "
+            "Tool once to confirm it. No further mutation, search, or inspection is "
+            "needed after an accepted completion result. A completion result with "
+            "status=ok or gate.passed=true acknowledges the submitted action evidence."
             if isinstance(pending_terminal, dict)
             else ""
         )
