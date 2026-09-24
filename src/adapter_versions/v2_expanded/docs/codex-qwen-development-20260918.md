@@ -180,3 +180,50 @@ HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/pytho
 ```
 
 Result: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00/results.json`.
+
+### Order 95 PDF Authors (2026-09-24 backfill)
+
+Order 95 (`b5062e3e-641c-4e3a-907b-ac864d2e7652`) remains **blocked/failed**.
+The final completed local-Qwen retry (`retry8`) returned `status=failed`,
+`reward=0.0`, and `termination_reason=stalled_no_progress`; the earlier
+v301-v303 generic lifecycle also reached the evaluator with `reward=0.0`
+because the model changed author-name/email/affiliation values. The result
+artifact is
+`src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry8-20260922/workers/worker-00/results.json`.
+
+The API replacement is intentionally generic and remains split: use
+`os.pdf.extract_text_batch` for bounded observation, then the existing
+`libreoffice_calc.workbook.create_new` for the model-supplied headers/rows.
+No author-specific parser or combined PDF-to-workbook mutation was added.
+There is no dedicated Order 95 implementation commit in the current Git
+history; the frozen imported source is `b800fd9` and the OSWorld evaluator
+tree is pinned to `091f5ef1d5544bc74953c77875d5feb5bed30108`.
+
+Exact validation command (local HF cache/mirror and Qwen endpoint):
+
+```text
+HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-pdf-authors-95-20260922.json --orders 95 --result-dir src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry8-20260922/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+### Order 96 Spreadsheet-to-Writer Transfer (2026-09-24 backfill)
+
+Order 96 (`00fa164e-2612-4439-992e-157d019a8436`) has one historical
+original-evaluator **PASS**: attempt 76 finished with `reward=1.0`,
+`agent_done`, 14 steps, and result SHA-256
+`36fd81b0da7591e3c9979ba1f5aa21dbe8d17cf21fefec7e9fbeddcb0fb26b90`.
+The model read the displayed spreadsheet matrix, created an intermediate
+workbook, copied the selected row into Writer, and completed the task. It did
+not retrieve or call the patched `text.find` route, so the pass is recorded as
+an outcome, not as causal evidence for that API guidance change.
+
+No new API replacement was promoted for this order. The public surface remains
+generic and model-driven; the later v70-v73 matching-row candidates were
+preserved as non-promoted experiments. The frozen historical source commit is
+`93d391af26637dbd761b006a810b1f536e77490a` (imported source snapshot
+`b800fd9`); no dedicated Order 96 implementation commit exists.
+
+Exact historical validation command reconstructed from the frozen config:
+
+```text
+PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py --config src/adapter_versions/v2_expanded/experiments/configs/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1.json --result-dir src/adapter_versions/v2_expanded/experiments/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1-run1 --workers 1 --base-urls http://192.168.0.138:8001/v1 --model holo3.1-4b --python /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python --max-steps 100 --max-local-steps 50 --max-agent-seconds 1800 --max-output-tokens 4096 --reasoning-mode thinking --request-timeout 240
+```

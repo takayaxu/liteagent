@@ -346,3 +346,47 @@ behavior and does not encode Order 99 paths or evaluator data.
 Implementation commit: `97adcf2`.
 
 Evidence: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00/results.json`.
+
+### Order 95 API State (backfilled 2026-09-24)
+
+Order 95 is **BLOCKED/FAIL**. The final completed local-Qwen retry returned
+`reward=0.0` with `termination_reason=stalled_no_progress`; the generic
+v301-v303 lifecycle likewise reached the evaluator but remained content-inexact
+(`reward=0.0`). Evidence:
+`src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry8-20260922/workers/worker-00/results.json`.
+
+The API state is unchanged and deliberately split:
+`os.pdf.extract_text_batch` is the bounded, read-only observation operation;
+`libreoffice_calc.workbook.create_new` is the separate native workbook
+creation mutation receiving model-supplied headers and rows. No author parser,
+task-specific route, or combined PDF-to-spreadsheet API was introduced.
+There is no dedicated Order 95 implementation commit; the frozen imported
+source is `b800fd9`, with OSWorld pinned at
+`091f5ef1d5544bc74953c77875d5feb5bed30108`.
+
+Reproduction command:
+
+```text
+HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-pdf-authors-95-20260922.json --orders 95 --result-dir src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry8-20260922/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+### Order 96 API State (backfilled 2026-09-24)
+
+Order 96 has a historical original-evaluator **PASS** (`reward=1.0`,
+`agent_done`, 14 steps; result SHA-256
+`36fd81b0da7591e3c9979ba1f5aa21dbe8d17cf21fefec7e9fbeddcb0fb26b90`). The
+model used the existing generic spreadsheet/Writer workflow and did not call
+the patched `text.find` route, so the result does not establish causal benefit
+from that guidance change.
+
+No API replacement was promoted. The existing generic actions remain the
+public contract; the v70-v73 matching-row candidates are retained as
+non-promoted experiments. Frozen source metadata is
+`93d391af26637dbd761b006a810b1f536e77490a` (import snapshot `b800fd9`), and
+there is no dedicated Order 96 implementation commit.
+
+Historical reproduction command:
+
+```text
+PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py --config src/adapter_versions/v2_expanded/experiments/configs/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1.json --result-dir src/adapter_versions/v2_expanded/experiments/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1-run1 --workers 1 --base-urls http://192.168.0.138:8001/v1 --model holo3.1-4b --python /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python --max-steps 100 --max-local-steps 50 --max-agent-seconds 1800 --max-output-tokens 4096 --reasoning-mode thinking --request-timeout 240
+```
