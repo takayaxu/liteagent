@@ -328,3 +328,21 @@ original Order 60 evaluator with `status=passed`, `reward=1.0`, and
 `termination_reason=agent_done`; the saved PPTX comparison reported
 `COMPARISON SUCCESSFUL - Files match`. Result:
 `experiments/local-impress-picture-text-60-retry19-20260922/workers/worker-00/results.json`.
+
+### Order 99 API State (2026-09-24)
+
+Order 99 is **PASS** (`reward=1.0`). The public generic flow remains split into
+three bounded operations: `os.pdf.extract_text_batch` for observation,
+`os.filesystem.create_directory` for destination preparation, and
+`os.filesystem.copy_to_directories` for the single-file mutation. No replacement
+or combined invoice-reconciliation API was introduced.
+
+The API state changed only in generic routing/recovery: PDF extraction accepts a
+unique discovered directory when `active_terminal` is unavailable, and
+multi-app search gives invoice/statement extraction plus file-organization
+mutations higher relevance than repeated `filesystem.find`. This is reusable
+behavior and does not encode Order 99 paths or evaluator data.
+
+Implementation commit: `97adcf2`.
+
+Evidence: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00/results.json`.

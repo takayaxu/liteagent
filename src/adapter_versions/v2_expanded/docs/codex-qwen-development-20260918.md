@@ -155,3 +155,28 @@ evaluators returned 0. The newly frozen affected-task retries and their outcomes
   `--adapter-urls-json` only when existing deployed Adapter actions are needed.
 - The OSWorld integration consists entirely of new files; unrelated working-tree
   changes are preserved. Fork changes remain local and uncommitted.
+
+### Order 99 Invoice Discrepancy (2026-09-24)
+
+Order 99 passed the original evaluator with `status=passed` and `reward=1.0`.
+The model extracted the four PDFs, created `~/problematic`, and copied the
+invoice artifacts; the evaluator verified the required
+`/home/user/Desktop/problematic/Invoice # 243729.pdf`.
+
+The minimal API replacement was generic only: `os.pdf.extract_text_batch`,
+`os.filesystem.create_directory`, and `os.filesystem.copy_to_directories` remain
+separate public actions. `pdf.extract_text_batch` now resolves a single
+unambiguous PDF directory when no observable shell exists, and generic
+multi-app search ranks PDF/invoice/statement extraction and file-organization
+mutations ahead of repeated discovery. No task-specific route or combined API
+was added.
+
+Implementation commit: `97adcf2` (`fix(order99): route invoice file operations`).
+
+Exact validation command:
+
+```text
+HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-invoice-discrepancy-99-retry8-20260924.json --orders 99 --result-dir src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+Result: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00/results.json`.
