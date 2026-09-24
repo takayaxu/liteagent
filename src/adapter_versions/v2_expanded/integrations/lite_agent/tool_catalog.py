@@ -835,15 +835,22 @@ ACTION_KEYWORDS = {
         "articles",
         "author",
         "batch",
+        "bank",
         "content",
         "document",
         "documents",
+        "discrepancy",
+        "discrepancies",
         "extract",
+        "invoice",
+        "invoices",
         "metadata",
         "paper",
         "papers",
         "pdf",
         "read",
+        "statement",
+        "statements",
         "text",
     },
     ("os", "pdf.tables.inspect"): {
@@ -3523,6 +3530,14 @@ def _search_multi_app_actions(
     )
     pdf_split_search = _pdf_split_intent(search_tokens)
     desktop_association_search = _desktop_association_intent(search_tokens)
+    file_organization_search = bool(
+        search_tokens.intersection(
+            {"copy", "move", "organize", "place", "put", "folder", "directory"}
+        )
+        and search_tokens.intersection(
+            {"file", "files", "invoice", "invoices", "problematic", "matching"}
+        )
+    )
 
     for route_domain in DOWNSTREAM_ADAPTER_DOMAINS:
         available = set(public_actions(route_domain))
@@ -3636,6 +3651,13 @@ def _search_multi_app_actions(
                     ("os", "pdf.outline.inspect"): 5000,
                     ("os", "filesystem.find"): 4500,
                     ("os", "pdf.pages.extract"): 4000,
+                }.get((route_domain, action), 0)
+            if file_organization_search:
+                score += {
+                    ("os", "filesystem.create_directory"): 5200,
+                    ("os", "filesystem.copy"): 5000,
+                    ("os", "filesystem.copy_to_directories"): 4800,
+                    ("os", "filesystem.find"): 1800,
                 }.get((route_domain, action), 0)
             if score:
                 matches.append((score, route_domain, action))

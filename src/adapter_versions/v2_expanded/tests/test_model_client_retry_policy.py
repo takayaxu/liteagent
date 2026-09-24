@@ -1,12 +1,69 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
 import httpx
 import integrations.lite_agent.model_client as model_client_module
 import pytest
 from openai import APITimeoutError, OpenAI
-from integrations.lite_agent.model_client import StructuredToolModelClient
+from integrations.lite_agent.model_client import (
+    StructuredToolModelClient,
+    _aggregate_stream_response,
+)
+
+
+def test_streamed_tool_call_deltas_are_aggregated() -> None:
+    stream = [
+        SimpleNamespace(
+            model="qwen3.5-4b",
+            choices=[
+                SimpleNamespace(
+                    finish_reason=None,
+                    delta=SimpleNamespace(
+                        content=None,
+                        tool_calls=[
+                            SimpleNamespace(
+                                index=0,
+                                id="call-1",
+                                function=SimpleNamespace(
+                                    name="adapter.call", arguments='{"adapter":'
+                                ),
+                            )
+                        ],
+                    ),
+                )
+            ],
+        ),
+        SimpleNamespace(
+            model="qwen3.5-4b",
+            choices=[
+                SimpleNamespace(
+                    finish_reason="tool_calls",
+                    delta=SimpleNamespace(
+                        content=None,
+                        tool_calls=[
+                            SimpleNamespace(
+                                index=0,
+                                id=None,
+                                function=SimpleNamespace(
+                                    name=None,
+                                    arguments='"os"}',
+                                ),
+                            )
+                        ],
+                    ),
+                )
+            ],
+        ),
+    ]
+    response = _aggregate_stream_response(stream)
+    call = response.choices[0].message.tool_calls[0]
+    assert response.model == "qwen3.5-4b"
+    assert call.id == "call-1"
+    assert call.function.name == "adapter.call"
+    assert call.function.arguments == '{"adapter":"os"}'
+    assert response.choices[0].finish_reason == "tool_calls"
 
 
 def test_default_transport_delegates_retries_to_runner(monkeypatch) -> None:

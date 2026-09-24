@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from types import SimpleNamespace
 from typing import Any
 
 import httpx
@@ -23,6 +24,117 @@ _SCHEMA_HINT_ITEM_MAX = 180
 # keep an HTTP request alive after that deadline and hide the true attempt
 # count in the episode ledger.
 MODEL_SDK_MAX_RETRIES = 0
+
+
+def _stream_value(value: Any, key: str, default: Any = None) -> Any:
+    if isinstance(value, dict):
+        return value.get(key, default)
+    return getattr(value, key, default)
+
+
+def _jsonable(value: Any, *, exclude_none: bool = False) -> Any:
+    """Serialize both SDK models and lightweight OpenAI-compatible objects."""
+    if value is None:
+        return None
+    model_dump = getattr(value, "model_dump", None)
+    if callable(model_dump):
+        try:
+            return model_dump(mode="json", exclude_none=exclude_none)
+        except (AttributeError, TypeError, ValueError):
+            pass
+    if isinstance(value, dict):
+        return {
+            key: _jsonable(item, exclude_none=exclude_none)
+            for key, item in value.items()
+            if not (exclude_none and item is None)
+        }
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item, exclude_none=exclude_none) for item in value]
+    namespace = getattr(value, "__dict__", None)
+    if isinstance(namespace, dict):
+        return {
+            key: _jsonable(item, exclude_none=exclude_none)
+            for key, item in namespace.items()
+            if not (exclude_none and item is None)
+        }
+    return value
+
+
+def _aggregate_stream_response(response: Any) -> Any:
+    """Aggregate streamed Chat Completions deltas into the normal response shape."""
+    choices = _stream_value(response, "choices")
+    if isinstance(choices, list):
+        # Test doubles and providers that ignore stream=True may return a full
+        # response. Keep that response unchanged.
+        return response
+    if not hasattr(response, "__iter__"):
+        return response
+
+    model = None
+    usage = None
+    finish_reason = None
+    content: list[str] = []
+    reasoning: list[str] = []
+    reasoning_content: list[str] = []
+    calls: dict[int, dict[str, Any]] = {}
+    for chunk in response:
+        model = _stream_value(chunk, "model", model)
+        chunk_usage = _stream_value(chunk, "usage")
+        if chunk_usage is not None:
+            usage = chunk_usage
+        for choice in _stream_value(chunk, "choices", []) or []:
+            finish = _stream_value(choice, "finish_reason")
+            if finish is not None:
+                finish_reason = finish
+            delta = _stream_value(choice, "delta")
+            if delta is None:
+                continue
+            text = _stream_value(delta, "content")
+            if isinstance(text, str):
+                content.append(text)
+            for key, target in (("reasoning", reasoning), ("reasoning_content", reasoning_content)):
+                value = _stream_value(delta, key)
+                if isinstance(value, str):
+                    target.append(value)
+            for call in _stream_value(delta, "tool_calls", []) or []:
+                index = _stream_value(call, "index", 0)
+                if not isinstance(index, int) or index < 0:
+                    index = 0
+                entry = calls.setdefault(
+                    index,
+                    {"id": None, "name": "", "arguments": []},
+                )
+                call_id = _stream_value(call, "id")
+                if isinstance(call_id, str):
+                    entry["id"] = call_id
+                function = _stream_value(call, "function")
+                name = _stream_value(function, "name")
+                arguments = _stream_value(function, "arguments")
+                if isinstance(name, str):
+                    entry["name"] += name
+                if isinstance(arguments, str):
+                    entry["arguments"].append(arguments)
+
+    tool_calls = [
+        SimpleNamespace(
+            id=entry["id"],
+            function=SimpleNamespace(
+                name=entry["name"], arguments="".join(entry["arguments"])
+            ),
+        )
+        for _index, entry in sorted(calls.items())
+    ]
+    message = SimpleNamespace(
+        content="".join(content) or None,
+        tool_calls=tool_calls,
+        reasoning="".join(reasoning) or None,
+        reasoning_content="".join(reasoning_content) or None,
+    )
+    return SimpleNamespace(
+        model=model,
+        usage=usage,
+        choices=[SimpleNamespace(message=message, finish_reason=finish_reason)],
+    )
 
 
 def _safe_schema_path(path: Any) -> str:
@@ -440,6 +552,7 @@ class StructuredToolModelClient:
             "tools": tools,
             "tool_choice": "required",
             "parallel_tool_calls": False,
+            "stream": True,
             "temperature": temperature,
             "max_tokens": output_token_budget,
             "extra_body": {
@@ -464,7 +577,9 @@ class StructuredToolModelClient:
             with_options = getattr(self.client, "with_options", None)
             if callable(with_options):
                 request_client = with_options(timeout=timeout)
-        response = request_client.chat.completions.create(**request)
+        response = _aggregate_stream_response(
+            request_client.chat.completions.create(**request)
+        )
         if (
             expected_model is not None
             and getattr(response, "model", None) != expected_model
@@ -568,11 +683,11 @@ class StructuredToolModelClient:
             "tool": tool,
             "arguments_raw": arguments_raw,
             "model_actual": response.model,
-            "usage": response.usage.model_dump(mode="json") if response.usage else None,
+            "usage": _jsonable(response.usage),
             "finish_reason": choice.finish_reason,
             "max_output_tokens_requested": output_token_budget,
             "request_timeout_seconds": request_timeout_seconds,
-            "response_message": message.model_dump(mode="json", exclude_none=True),
+            "response_message": _jsonable(message, exclude_none=True),
             # ``length`` can still be valid when only the reasoning suffix was
             # truncated; completeness is established by JSON/schema validation.
             "structured_call_validated": True,
@@ -604,12 +719,8 @@ class StructuredToolModelClient:
         response: Any, choice: Any | None, message: Any | None
     ) -> dict[str, Any]:
         usage = getattr(response, "usage", None)
-        if usage is not None and hasattr(usage, "model_dump"):
-            usage = usage.model_dump(mode="json")
-        if message is not None and hasattr(message, "model_dump"):
-            message_dump = message.model_dump(mode="json", exclude_none=True)
-        else:
-            message_dump = None
+        usage = _jsonable(usage)
+        message_dump = _jsonable(message, exclude_none=True)
         snapshot = {
             "model": getattr(response, "model", None),
             "finish_reason": getattr(choice, "finish_reason", None),

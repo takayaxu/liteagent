@@ -384,6 +384,12 @@ def _batch_input_directory(
                 include_hidden=bool(params.get("include_hidden", False)),
             )
             suggestions = recovery["suggested_directories"]
+            # In headless task containers there may be no observable shell even
+            # though the requested PDFs live in one unambiguous user directory.
+            # Resolve that single candidate directly; keep explicit recovery
+            # guidance when the match is ambiguous or absent.
+            if len(suggestions) == 1:
+                return Path(suggestions[0]).resolve()
             if suggestions:
                 guidance = (
                     'retry with cwd_source="explicit" and cwd_path set to one '
