@@ -423,9 +423,27 @@ def test_source_continuation_preserves_target_probe_and_moves_to_consumers() -> 
     )
 
     assert batch_table_semantics.batch_continuation_action(state) is None
-    assert batch_table_semantics.inspection_pending(state) is False
-    assert batch_table_semantics.pending_consumer_actions(state, []) == (
-        batch_table_semantics.CONSUMER_ACTIONS
+
+
+def test_completed_fields_hide_only_batch_routes() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    files = state.events[0].result["adapter_response"]["result"]["files"]
+    files[0]["text"] = "First Author\nExample University\nfirst@example.edu"
+    assert batch_table_semantics.requested_fields_complete(state)
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "pdf.extract_text_batch"
+    )
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.create_new"
+    )
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "filesystem.find"
     )
 
 
@@ -1372,6 +1390,264 @@ def test_creation_constraints_begin_only_after_successful_model_create() -> None
     )
     assert argument_errors
     assert "exactly 3" in argument_errors[0]
+
+    wrapped_errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/other.ods",
+                    "headers": ["Name"],
+                    "rows": [["two"], ["null"], ["three"]],
+                }
+            },
+        },
+    )
+    assert wrapped_errors
+    assert "placeholder" in wrapped_errors[0]
+    assert "retry workbook.create_new" in wrapped_errors[0]
+    assert "without rereading" in wrapped_errors[0]
+
+
+def test_create_new_reports_sort_repair_without_source_replay() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table sorted by name."
+        )
+    )
+    _append_batch_result(state, count=2, step=1, truncated=True)
+    files = state.events[0].result["adapter_response"]["result"]["files"]
+    files[0]["text"] = "Zed Author\nExample University\nzed@example.edu"
+    files[1]["text"] = "Ada Author\nExample University\nada@example.edu"
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/authors.xlsx",
+                    "headers": ["Name", "Affiliation", "Email"],
+                    "rows": [
+                        ["Zed Author", "Example University", "zed@example.edu"],
+                        ["Ada Author", "Example University", "ada@example.edu"],
+                    ],
+                }
+            },
+        },
+    )
+    assert errors
+    assert "requested observed sort column" in errors[0]
+    assert "without rereading the source" in errors[0]
+
+
+def test_create_new_rejects_guessed_email_not_observed_in_pdf() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    state.events[0].result["adapter_response"]["result"]["files"][0]["text"] = (
+        "Runliang Niu\nSchool of Artificial Intelligence\n"
+        "{niurl19,jdLi21}@mails.jlu.edu.cn"
+    )
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/authors.xlsx",
+                    "headers": ["Name", "Email", "Affiliation"],
+                    "rows": [["Runliang Niu", "niu@jlu.edu.cn", "School of Artificial Intelligence"]],
+                }
+            },
+        },
+    )
+    assert errors
+    assert "exact complete address observed" in " ".join(errors)
+    assert "do not derive" in " ".join(errors)
+    assert "{niurl19,jdLi21}@mails.jlu.edu.cn" in " ".join(errors)
+
+
+def test_create_new_rejects_cross_document_first_author_email_assembly() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    state.events[0].result["adapter_response"]["result"]["files"][0]["text"] = (
+        "Example Paper\n"
+        "Runliang Niu1, Jindong Li1, Shiqi Wang1\n"
+        "School of Artificial Intelligence, Jilin University\n"
+        "{niurl19,jdLi21}@mails.jlu.edu.cn"
+    )
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/authors.xlsx",
+                    "headers": ["Name", "Email", "Affiliation"],
+                    "rows": [[
+                        "Runliang Niu",
+                        "jdLi21@mails.jlu.edu.cn",
+                        "School of Artificial Intelligence, Jilin University",
+                    ]],
+                }
+            },
+        },
+    )
+    assert errors
+    assert "first-author/email assembly" in " ".join(errors)
+    assert "niurl19@mails.jlu.edu.cn" in " ".join(errors)
+
+
+def test_create_new_rejects_shortened_observed_affiliation_and_email_header() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    state.events[0].result["adapter_response"]["result"]["files"][0]["text"] = (
+        "ScreenAgent\n"
+        "Runliang Niu1 , Jindong Li1\n"
+        "School of Artificial Intelligence, Jilin University\n"
+        "{niurl19,jdLi21}@mails.jlu.edu.cn"
+    )
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/authors.xlsx",
+                    "headers": ["Name", "Email", "Affiliation"],
+                    "rows": [[
+                        "Runliang Niu",
+                        "niurl19@mails.jlu.edu.cn",
+                        "Jilin University",
+                    ]],
+                }
+            },
+        },
+    )
+    joined = " ".join(errors)
+    assert "complete affiliation line" in joined
+    assert "School of Artificial Intelligence, Jilin University" in joined
+    assert "header" in joined and "Mail" in joined
+
+
+def test_requested_fields_complete_stops_pdf_continuation_before_eof() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=4, step=1, truncated=True)
+    texts = [
+        "Xiang Deng\nThe Ohio State University\ndeng.595@osu.edu\nremaining body",
+        "Jing Yu Koh\nCarnegie Mellon University\njingyuk@cs.cmu.edu\nremaining body",
+        "Runliang Niu\nSchool of Artificial Intelligence, Jilin University\n"
+        "{niurl19,jdLi21}@mails.jlu.edu.cn\nremaining body",
+        "Chi Zhang\nTencent\n{johnczhang,jayzyang}@tencent.com\nremaining body",
+    ]
+    files = state.events[0].result["adapter_response"]["result"]["files"]
+    for file, text in zip(files, texts):
+        file["text"] = text
+    _append_inspect_result(state, step=2)
+
+    assert batch_table_semantics.requested_fields_complete(state)
+    assert batch_table_semantics.batch_continuation_action(state) is None
+    assert batch_table_semantics.stage_actions(state, []) == [
+        batch_table_semantics.WRITE_ACTION,
+        batch_table_semantics.READ_ACTION,
+        batch_table_semantics.SAVE_ACTION,
+        batch_table_semantics.CREATE_ACTION,
+    ]
+
+
+def test_requested_fields_complete_reads_model_visible_text_chunks() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=4, step=1, truncated=True)
+    texts = [
+        ("Xiang Deng", "The Ohio State University", "deng.595@osu.edu"),
+        ("Jing Yu Koh", "Carnegie Mellon University", "jingyuk@cs.cmu.edu"),
+        ("Runliang Niu", "School of Artificial Intelligence", "niurl19@mails.jlu.edu.cn"),
+        ("Chi Zhang", "Tencent", "johnczhang@tencent.com"),
+    ]
+    files = state.events[0].result["adapter_response"]["result"]["files"]
+    for file, (name, affiliation, email) in zip(files, texts):
+        file.pop("text", None)
+        file["chunks"] = [{"type": "text", "text": f"{name}\n{affiliation}\n{email}"}]
+    _append_inspect_result(state, step=2)
+
+    assert batch_table_semantics.requested_fields_complete(state)
+    assert batch_table_semantics.batch_continuation_action(state) is None
+
+
+def test_complete_fields_expose_create_before_target_probe() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    state.events[0].result["adapter_response"]["result"]["files"][0]["text"] = (
+        "First Author\nExample University\nfirst@example.edu"
+    )
+    assert batch_table_semantics.stage_actions(
+        state, [batch_table_semantics.INSPECT_ACTION]
+    ) == [batch_table_semantics.INSPECT_ACTION, batch_table_semantics.CREATE_ACTION]
+
+
+def test_completed_fields_reject_continuation_at_contract_boundary() -> None:
+    state = _state(
+        instruction=(
+            "Extract the name, e-mail, and affiliation of the first author from "
+            "each paper and organize them in an Excel table."
+        )
+    )
+    _append_batch_result(state, count=1, step=1, truncated=True)
+    state.events[0].result["adapter_response"]["result"]["files"][0]["text"] = (
+        "First Author\nExample University\nfirst@example.edu"
+    )
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {"params": {"input_pattern": "source.pdf"}},
+        },
+    )
+    assert errors
+    assert "already observed" in errors[0]
 
 
 def test_create_before_latest_batch_does_not_satisfy_current_creation_lifecycle() -> (

@@ -34,6 +34,7 @@ MAX_BATCH_CONTINUATION_ATTEMPTS = 3
 INSPECT_ACTION = "spreadsheet.inspect_current"
 TARGET_INSPECTION_ACTIONS = frozenset({INSPECT_ACTION, "workbook.inspect"})
 CREATE_ACTION = "spreadsheet.create_workbook"
+CREATE_ACTIONS = frozenset({CREATE_ACTION, "workbook.create_new"})
 WRITE_ACTION = "spreadsheet.write_range"
 READ_ACTION = "spreadsheet.read_file"
 SORT_ACTION = "table.sort"
@@ -126,6 +127,306 @@ _TABLE_OUTPUT_RE = re.compile(
     r"(?i)\b(?:spreadsheet|workbook|excel|xlsx|ods|table|rows?|records?)\b"
 )
 _SORT_RE = re.compile(r"(?i)\bsort(?:ed|ing)?\b")
+_EMAIL_OBSERVED_RE = re.compile(
+    r"(?i)[a-z0-9._%+{}-]+@[a-z0-9.-]+\.[a-z]{2,}"
+)
+_NAME_OBSERVED_RE = re.compile(
+    r"\b[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?(?:\s+[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?){1,3}\b"
+)
+_AFFILIATION_OBSERVED_RE = re.compile(
+    r"(?i)\b(?:university|institute|school|college|laborator(?:y|ies)|"
+    r"department|company|corporation|tencent|carnegie\s+mellon|ohio\s+state)\b"
+)
+
+
+def _observed_text_for_item(item: dict[str, Any]) -> str:
+    """Collect only text explicitly present in an observed file projection."""
+    parts: list[str] = []
+    text = item.get("text")
+    if isinstance(text, str):
+        parts.append(text)
+    for key in ("chunks", "table_rows"):
+        entries = item.get(key)
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if isinstance(entry, dict) and isinstance(entry.get("text"), str):
+                parts.append(entry["text"])
+    return "\n".join(parts)
+
+
+def _requested_record_fields(instruction: str) -> frozenset[str]:
+    """Return field classes explicitly requested for each source record."""
+    folded = instruction.casefold()
+    fields: set[str] = set()
+    if re.search(r"\b(?:name|author|full name)\b|姓名|作者", folded):
+        fields.add("name")
+    if re.search(r"\b(?:e[- ]?mail|email|mail address)\b|邮箱|邮件", folded):
+        fields.add("email")
+    if re.search(r"\baffiliation\b|\b(?:institution|organization)\b|机构|单位", folded):
+        fields.add("affiliation")
+    return frozenset(fields)
+
+
+def _observed_record_field_coverage(state: Any) -> dict[str, dict[str, bool]]:
+    """Summarize observed field signals without deriving or supplying values."""
+    coverage: dict[str, dict[str, bool]] = {}
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+                    continue
+                text = _observed_text_for_item(item)
+                if not text:
+                    continue
+                entry = coverage.setdefault(
+                    item["path"], {"name": False, "email": False, "affiliation": False}
+                )
+                entry["email"] |= bool(_EMAIL_OBSERVED_RE.search(text))
+                entry["name"] |= bool(_NAME_OBSERVED_RE.search(text[:12000]))
+                entry["affiliation"] |= bool(_AFFILIATION_OBSERVED_RE.search(text[:12000]))
+    return coverage
+
+
+def _observed_email_values(state: Any) -> set[str]:
+    """Return complete email strings explicitly visible in source text.
+
+    Grouped author prefixes are expanded only for validation.  The adapter
+    never selects one for a row; the model must still provide the value.
+    """
+    values: set[str] = set()
+    grouped = re.compile(
+        r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE
+    )
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                for match in grouped.finditer(text):
+                    domain = match.group(2)
+                    values.update(
+                        f"{prefix.strip()}@{domain}"
+                        for prefix in match.group(1).split(",")
+                        if prefix.strip()
+                    )
+                values.update(
+                    match.group(0)
+                    for match in _EMAIL_OBSERVED_RE.finditer(text)
+                )
+    return {value.casefold() for value in values}
+
+
+def _observed_email_evidence(state: Any) -> list[str]:
+    """Return compact grouped-address evidence for a corrective error."""
+    grouped = re.compile(
+        r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE
+    )
+    evidence: list[str] = []
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                for match in grouped.finditer(text):
+                    value = match.group(0)
+                    if value not in evidence:
+                        evidence.append(value)
+    return evidence
+
+
+def _normalise_person_name(value: str) -> str:
+    """Compare observed/model names without punctuation or spacing noise."""
+    return re.sub(r"[^a-z0-9]", "", value.casefold())
+
+
+def _observed_first_author_email_pairs(state: Any) -> dict[str, str]:
+    """Return high-confidence first-author/email pairs from observed PDF text.
+
+    This is evidence validation only.  It does not add rows or choose values for
+    the model.  The source papers put the author list before the first
+    affiliation and the email prefix list after it; when that shape is not
+    confidently present, the helper returns no pair and leaves the row model
+    owned.
+    """
+    pairs: dict[str, str] = {}
+    grouped = re.compile(r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE)
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                if not text:
+                    continue
+                lines = [line.strip() for line in text.splitlines() if line.strip()]
+                if not lines:
+                    continue
+                affiliation_index = next(
+                    (
+                        index
+                        for index, line in enumerate(lines[:80])
+                        if _AFFILIATION_OBSERVED_RE.search(line)
+                    ),
+                    None,
+                )
+                if affiliation_index is None:
+                    continue
+                author_candidates = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if len(
+                        _NAME_OBSERVED_RE.findall(
+                            re.sub(r"[0-9*†∗]+", " ", line)
+                        )
+                    )
+                    >= 2
+                ]
+                # Paper titles often contain two capitalized phrases.  Author
+                # lines in the observed PDFs carry a numeric or star footnote;
+                # prefer that evidence before the bounded generic fallback.
+                marked_candidates = [
+                    line
+                    for line in author_candidates
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                ]
+                marked_name_lines = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                    and _NAME_OBSERVED_RE.search(re.sub(r"[0-9*†∗]+", " ", line))
+                ]
+                author_line = (
+                    marked_name_lines or marked_candidates or author_candidates or [""]
+                )[0]
+                if not author_line:
+                    continue
+                tokens = re.findall(r"[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?", author_line)
+                if len(tokens) < 2:
+                    continue
+                # Try the common two- and three-token first-author forms.  A
+                # submitted name must match one of these observed prefixes.
+                names = {" ".join(tokens[:2]), " ".join(tokens[:3])}
+                email_match = grouped.search(text)
+                if email_match:
+                    prefixes = [part.strip() for part in email_match.group(1).split(",")]
+                    domain = email_match.group(2)
+                    email = f"{prefixes[0]}@{domain}" if prefixes else ""
+                else:
+                    email_match = _EMAIL_OBSERVED_RE.search(text)
+                    email = email_match.group(0) if email_match else ""
+                if not email:
+                    continue
+                for name in names:
+                    pairs[_normalise_person_name(name)] = email.casefold()
+    return pairs
+
+
+def _observed_first_author_affiliation_pairs(state: Any) -> dict[str, str]:
+    """Return first-author to exact affiliation lines visible in each PDF.
+
+    The returned values are evidence only.  In particular, this helper does not
+    complete a partial affiliation or choose a value for a model row.
+    """
+    pairs: dict[str, str] = {}
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                lines = [line.strip() for line in text.splitlines() if line.strip()]
+                if not lines:
+                    continue
+                affiliation_index = next(
+                    (
+                        index
+                        for index, line in enumerate(lines[:80])
+                        if _AFFILIATION_OBSERVED_RE.search(line)
+                    ),
+                    None,
+                )
+                if affiliation_index is None:
+                    continue
+                marked_name_lines = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                    and _NAME_OBSERVED_RE.search(re.sub(r"[0-9*†∗]+", " ", line))
+                ]
+                author_candidates = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if len(
+                        _NAME_OBSERVED_RE.findall(
+                            re.sub(r"[0-9*†∗]+", " ", line)
+                        )
+                    )
+                    >= 2
+                ]
+                author_line = (
+                    marked_name_lines or author_candidates or [""]
+                )[0]
+                if not author_line:
+                    continue
+                tokens = re.findall(
+                    r"[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?", author_line
+                )
+                if len(tokens) < 2:
+                    continue
+                affiliation = lines[affiliation_index]
+                for name in {" ".join(tokens[:2]), " ".join(tokens[:3])}:
+                    pairs[_normalise_person_name(name)] = affiliation
+    return pairs
+
+
+def _normalise_observed_text(value: str) -> str:
+    """Normalize only layout whitespace for exact observed-value checks."""
+    return re.sub(r"\s+", " ", value.strip()).casefold()
+
+
+def requested_fields_complete(state: Any) -> bool:
+    """Return whether every matched source has all instruction-requested fields."""
+    fields = _requested_record_fields(str(getattr(state, "instruction", "")))
+    if not fields:
+        return False
+    coverage = _observed_record_field_coverage(state)
+    count = expected_record_count(state)
+    if count is None or len(coverage) < count:
+        return False
+    return all(all(entry.get(field, False) for field in fields) for entry in coverage.values())
+
+
+def batch_route_allowed_after_completion(state: Any, action: str) -> bool:
+    """Hide source-reader routes once observed fields satisfy the task."""
+    if not requested_fields_complete(state):
+        return True
+    if action in BATCH_READ_ACTIONS:
+        return False
+    # Before the first successful table creation, the only valid downstream
+    # step is the model-owned workbook mutation.  Keeping filesystem probes
+    # searchable here lets a rejected create call turn into an unrelated
+    # discovery loop instead of the required in-memory row repair and retry.
+    if observed_created_table(state) is None:
+        return action in CREATE_ACTIONS
+    return True
 
 
 def _error_metadata(error: Any) -> tuple[set[str], str]:
@@ -567,6 +868,11 @@ def batch_continuation_action(state: Any) -> str | None:
     projection = _batch_model_projection(latest)
     if not isinstance(projection, dict):
         return None
+    # EOF is not required for field-extraction tasks. Once every matched
+    # source has observed evidence for each requested field, hand off to the
+    # consumer workflow even if the PDFs still contain unread body text.
+    if requested_fields_complete(state):
+        return None
     if not _source_continuation_pending(projection):
         return None
     batch_action = _event_batch_action(latest, getattr(state, "domain", "multi_apps"))
@@ -867,6 +1173,10 @@ def stage_actions(state: Any, actions: Any) -> list[str]:
 
     valid_inspection = _valid_target_inspection(state)
     if valid_inspection is None:
+        if requested_fields_complete(state):
+            # Source fields are complete; keep the optional target probe, but
+            # expose creation immediately so EOF is never a prerequisite.
+            return [INSPECT_ACTION, CREATE_ACTION]
         inspected_attempt = any(
             _event_matches_action(event, state, INSPECT_ACTION)
             and event.step > latest_batch_step
@@ -1185,17 +1495,242 @@ def argument_contract_errors(
     state: Any, action: str, arguments: dict[str, Any]
 ) -> list[str]:
     """Reject incomplete model-selected batch tables without changing arguments."""
+    # Adapter calls arrive here wrapped as ``adapter.call``.  Validate the
+    # public downstream action and its model-owned params without rewriting the
+    # envelope or supplying any cell values.
+    contract_action = action
+    contract_arguments = arguments
+    if action == "adapter.call":
+        nested_action = arguments.get("action")
+        payload = arguments.get("payload")
+        params = payload.get("params") if isinstance(payload, dict) else None
+        if isinstance(nested_action, str) and isinstance(params, dict):
+            contract_action = nested_action
+            contract_arguments = params
+    if contract_action in BATCH_READ_ACTIONS and requested_fields_complete(state):
+        return [
+            "all requested fields are already observed for every source document; "
+            "do not continue PDF/image reading and choose the workbook/table consumer action"
+        ]
+    if contract_action in BATCH_READ_ACTIONS:
+        for event in getattr(state, "events", ()):
+            if not getattr(event, "executed", False):
+                continue
+            try:
+                _domain, prior_action, prior_arguments = effective_adapter_action(
+                    event, getattr(state, "domain", "multi_apps")
+                )
+            except (AttributeError, TypeError, ValueError):
+                continue
+            if prior_action == contract_action and prior_arguments == contract_arguments:
+                return [
+                    "this exact source window was already read successfully; use the observed "
+                    "next_start_char for a new window or proceed to the dependent table action"
+                ]
     count = expected_record_count(state)
     if count is None:
         return []
-    if action == CREATE_ACTION and "rows" in arguments:
-        rows = arguments.get("rows")
+    if contract_action in CREATE_ACTIONS and "rows" in contract_arguments:
+        rows = contract_arguments.get("rows")
         if not isinstance(rows, list) or len(rows) != count:
             return [
                 f"the successful batch reader observed {count} inputs, so rows must contain "
                 f"exactly {count} model-supplied records; no values are supplied by the Runner"
             ]
-        return []
+        errors: list[str] = []
+        if any(
+            isinstance(value, str) and value.strip().casefold() in {"null", "none", "n/a"}
+            for row in rows
+            if isinstance(row, list)
+            for value in row
+        ):
+            errors.append(
+                "spreadsheet rows contain a placeholder value such as null/none/n/a; "
+                "remove the invalid placeholder from the model-supplied row, use the exact "
+                "observed source value or leave only that field genuinely blank, keep one "
+                "row per source document, and retry workbook.create_new without rereading "
+                "the source"
+            )
+        headers = contract_arguments.get("headers")
+        if isinstance(headers, list):
+            name_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(r"(?i)\b(?:name|author|full name)\b|姓名|作者", str(header))
+            ]
+            email_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(r"(?i)\b(?:e[- ]?mail|email|mail address)\b", str(header))
+            ]
+            observed_emails = _observed_email_values(state)
+            if email_columns and observed_emails:
+                invalid_emails = [
+                    str(row[index]).strip()
+                    for row in rows
+                    if isinstance(row, list)
+                    for index in email_columns
+                    if index < len(row)
+                    and isinstance(row[index], str)
+                    and row[index].strip()
+                    and row[index].strip().casefold() not in observed_emails
+                ]
+                if invalid_emails:
+                    evidence = _observed_email_evidence(state)
+                    evidence_hint = (
+                        " Observed grouped address evidence to map by author order: "
+                        + "; ".join(evidence[:8])
+                        + "."
+                        if evidence
+                        else ""
+                    )
+                    errors.append(
+                        "spreadsheet email cells must copy an exact complete address observed "
+                        "in the PDF, including the mapped prefix for grouped addresses; do not "
+                        "derive an address from the author's name or substitute a domain."
+                        + evidence_hint
+                        + " Copy the prefix matching the first author, then retry "
+                        "workbook.create_new without rereading the source"
+                    )
+            affiliation_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(
+                    r"(?i)\b(?:affiliation|institution|organization)\b|机构|单位",
+                    str(header),
+                )
+            ]
+            observed_affiliations = _observed_first_author_affiliation_pairs(state)
+            if name_columns and affiliation_columns and observed_affiliations:
+                mismatched_affiliations: list[str] = []
+                unknown_affiliation_authors: list[str] = []
+                for row in rows:
+                    if not isinstance(row, list):
+                        continue
+                    for name_index in name_columns:
+                        for affiliation_index in affiliation_columns:
+                            if name_index >= len(row) or affiliation_index >= len(row):
+                                continue
+                            name = row[name_index]
+                            affiliation = row[affiliation_index]
+                            if not isinstance(name, str) or not isinstance(affiliation, str):
+                                continue
+                            expected_affiliation = observed_affiliations.get(
+                                _normalise_person_name(name)
+                            )
+                            if expected_affiliation is None:
+                                unknown_affiliation_authors.append(name.strip())
+                            elif _normalise_observed_text(affiliation) != _normalise_observed_text(
+                                expected_affiliation
+                            ):
+                                mismatched_affiliations.append(
+                                    f"{name.strip()} -> {affiliation.strip()} "
+                                    f"(observed: {expected_affiliation})"
+                                )
+                if unknown_affiliation_authors:
+                    errors.append(
+                        "spreadsheet affiliation rows include names that are not observed "
+                        "as a PDF's first author; assemble each row from the same source "
+                        "document. Invalid names: "
+                        + ", ".join(list(dict.fromkeys(unknown_affiliation_authors))[:8])
+                    )
+                if mismatched_affiliations:
+                    errors.append(
+                        "spreadsheet affiliation cells must copy the complete affiliation "
+                        "line observed for that PDF's first author; do not shorten, infer, "
+                        "or replace it. Mismatched rows: "
+                        + "; ".join(mismatched_affiliations[:8])
+                        + ". Retry workbook.create_new without rereading the source."
+                    )
+            # A globally observed address is not enough: a model can still
+            # pair one paper's valid prefix with another paper's co-author.
+            # Validate the assembled first-author tuple against the source
+            # document evidence, while leaving every row value model-owned.
+            observed_pairs = _observed_first_author_email_pairs(state)
+            if name_columns and email_columns and observed_pairs:
+                mismatched_pairs: list[str] = []
+                unknown_authors: list[str] = []
+                for row in rows:
+                    if not isinstance(row, list):
+                        continue
+                    for name_index in name_columns:
+                        for email_index in email_columns:
+                            if name_index >= len(row) or email_index >= len(row):
+                                continue
+                            name = row[name_index]
+                            email = row[email_index]
+                            if not isinstance(name, str) or not isinstance(email, str):
+                                continue
+                            expected_email = observed_pairs.get(_normalise_person_name(name))
+                            if expected_email is None:
+                                unknown_authors.append(name.strip())
+                            elif email.strip().casefold() != expected_email:
+                                mismatched_pairs.append(
+                                    f"{name.strip()} -> {email.strip()} (observed: {expected_email})"
+                                )
+                if unknown_authors:
+                    errors.append(
+                        "spreadsheet rows include names that are not observed as a PDF's "
+                        "first author; do not use a co-author to fill the one-record-per-PDF "
+                        "table. Copy only the first author from each source, then retry "
+                        "workbook.create_new without rereading the source. Invalid names: "
+                        + ", ".join(list(dict.fromkeys(unknown_authors))[:8])
+                        + ". Reuse the exact first-author names visible in the PDF author "
+                        "lines and keep their same-document email mapping."
+                    )
+                if mismatched_pairs:
+                    errors.append(
+                        "spreadsheet rows do not preserve the observed first-author/email "
+                        "assembly; pair each PDF's first author with the first matching "
+                        "email prefix from that same PDF, then retry workbook.create_new "
+                        "without rereading the source. Mismatched rows: "
+                        + "; ".join(mismatched_pairs[:8])
+                    )
+        try:
+            from .calc_semantics import parse_sort_intent, resolve_sort_column
+
+            intent = parse_sort_intent(str(state.instruction))
+            headers = contract_arguments.get("headers")
+            if intent is not None and isinstance(headers, list) and rows and all(
+                isinstance(row, list) for row in rows
+            ):
+                sort_column = resolve_sort_column(
+                    intent,
+                    [str(value) for value in headers],
+                    start_column=0,
+                    width=len(headers),
+                )
+                if sort_column is not None:
+                    values = [row[sort_column] for row in rows if sort_column < len(row)]
+                    normalized = [str(value).strip().casefold() for value in values]
+                    expected = sorted(normalized, reverse=not intent.ascending)
+                    if normalized != expected:
+                        errors.append(
+                            "spreadsheet rows are not in the requested sort order; "
+                            "reorder the model-supplied records by the requested observed sort "
+                            "column, then retry workbook.create_new without rereading the source "
+                            "(or create the table and use table.sort with that observed column)"
+                        )
+        except (ImportError, TypeError, ValueError):
+            pass
+        # The requested "e-mail" field uses the concise Mail header.  Keep
+        # this as a contract correction so an otherwise valid observed tuple
+        # is not silently saved under a mismatched column.
+        if (
+            re.search(r"\be[- ]mail\b", str(state.instruction), re.IGNORECASE)
+            and isinstance(headers, list)
+            and email_columns
+            and any(
+                str(headers[index]).strip().casefold() == "email"
+                for index in email_columns
+            )
+        ):
+            errors.append(
+                "for this e-mail extraction table, use the requested field headers "
+                "['Name', 'Mail', 'Affiliation']; rename the e-mail column from "
+                "Email to Mail and retry workbook.create_new without rereading the source"
+            )
+        return errors
     if action != WRITE_ACTION:
         return []
     expected = expected_header_first_write(state)
@@ -1239,7 +1774,10 @@ def constrain_tool_schema(function: dict[str, Any], state: Any) -> None:
             rows["maxItems"] = count
             rows["description"] = (
                 f"The successful batch reader observed {count} inputs. If rows is supplied, "
-                f"provide exactly {count} complete records. The Runner supplies no cell values."
+                f"provide exactly {count} complete records. First assemble one tuple per PDF "
+                "from that PDF's observed first-author, affiliation, and email-prefix order; "
+                "for {prefix1,prefix2}@domain the first author receives prefix1@domain. "
+                "Do not derive or mix values across PDFs. The Runner supplies no cell values."
             )
         function["description"] += (
             f" The current public batch result contains {count} inputs; a complete one-row-per-input "
@@ -1369,5 +1907,7 @@ __all__ = [
     "pending_producer_actions",
     "observed_created_table",
     "requests_one_record_per_input",
+    "requested_fields_complete",
+    "batch_route_allowed_after_completion",
     "stage_actions",
 ]
