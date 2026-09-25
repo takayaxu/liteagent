@@ -205,6 +205,12 @@ Exact validation command (local HF cache/mirror and Qwen endpoint):
 HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-pdf-authors-95-20260922.json --orders 95 --result-dir src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry8-20260922/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
 ```
 
+### Order 95 PDF Authors (2026-09-25 repair and PASS)
+
+Retry20 passed the original OSWorld evaluator with `status=passed`, `reward=1.0`, and `agent_done`. The minimal repair requires deterministic in-memory assembly after observation: each output row must preserve the same PDF's observed first author, complete email, and complete affiliation; invalid placeholders, guessed/cross-document email values, shortened affiliations, and the `Email` header for an `e-mail` request are rejected without rereading the PDF. The public API replacement remains the two independent generic actions `os.pdf.extract_text_batch` followed by `libreoffice_calc.workbook.create_new`; no combined parser or task route was added.
+
+Implementation commit: `9361c0d` (`fix(order95): validate evidence-derived author assembly`). Focused test: `test_batch_table_stage.py` **58 passed**. The actual retry20 command and evidence paths are recorded in `API_SPLIT_TASK.md`.
+
 ### Order 96 Spreadsheet-to-Writer Transfer (2026-09-24 backfill)
 
 Order 96 (`00fa164e-2612-4439-992e-157d019a8436`) has one historical

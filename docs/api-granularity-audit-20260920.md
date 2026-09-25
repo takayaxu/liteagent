@@ -390,3 +390,16 @@ Historical reproduction command:
 ```text
 PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py --config src/adapter_versions/v2_expanded/experiments/configs/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1.json --result-dir src/adapter_versions/v2_expanded/experiments/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1-run1 --workers 1 --base-urls http://192.168.0.138:8001/v1 --model holo3.1-4b --python /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python --max-steps 100 --max-local-steps 50 --max-agent-seconds 1800 --max-output-tokens 4096 --reasoning-mode thinking --request-timeout 240
 ```
+### Order 95 API State (validated 2026-09-25)
+
+Order 95 now **PASS** after the minimal evidence-assembly repair. The final local-Qwen retry20 returned `status=passed`, `reward=1.0`, and `termination_reason=agent_done`. The result is preserved at `src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00/results.json`.
+
+The API state remains intentionally split and generic:
+
+- `os.pdf.extract_text_batch` remains the bounded, read-only observation API.
+- `libreoffice_calc.workbook.create_new` remains the separate native workbook mutation receiving model-selected headers and rows.
+- The repair adds evidence validation at the generic table contract boundary: after every requested field is observed, rows must preserve each PDF's same-document first-author, complete email, and complete affiliation; placeholder, guessed, cross-document, or shortened values are rejected with a correction message. It does not synthesize values, expose a task-specific parser, combine the two APIs, or reread completed PDFs.
+
+For the task wording `e-mail`, the generic correction requires the concise `Mail` header so the requested field label is preserved. This is a schema/contract correction, not a new API or task route.
+
+Implementation commit: `9361c0d` (`fix(order95): validate evidence-derived author assembly`). Focused check: `58 passed` in `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`; `git diff --check` passed. The exact local-mirror/Qwen validation command is recorded in `API_SPLIT_TASK.md` under the Order 95 repair entry.

@@ -221,3 +221,17 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - 当前结果：`status=passed`、`reward=1.0`。模型先因矛盾的 `select_from="earliest"` 被通用语义校验拒绝，随后用 `select_from="latest"`、`order="ascending"` 查询并用 `workbook.create_new` 写入 5 行和 5 个表头；Adapter 返回 `A1:E6`、30 个单元格并确认已保存。结果见 `src/adapter_versions/v2_expanded/experiments/local-mail-report-91-retry4-20260922/workers/worker-00/results.json`，调用轨迹见同目录 `raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/adapter_calls.jsonl`。
+## Order 95 开发记录（2026-09-25 修复后）
+
+- 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。retry20 只执行一次 `os.pdf.extract_text_batch`，随后调用 `libreoffice_calc.workbook.create_new`，写入 4 篇 PDF 的首作者、完整邮箱和 affiliation；结果文件与 golden 完全一致。
+- 最小可行修复：在观察完成后，创建表格前校验模型组装的每个 tuple 必须来自同一 PDF 的首作者、完整邮箱和完整 affiliation；拒绝猜测邮箱、共同作者、截断 affiliation 和 `null/none/n/a`。对题面使用 “e-mail” 的表格，要求使用 `Name / Mail / Affiliation` 作为字段标题。校验只返回纠正提示，不替模型填值或跨文档拼接。
+- API replacement：保持两个独立 API：`os.pdf.extract_text_batch`（有界、只读观察）和 `libreoffice_calc.workbook.create_new`（模型提供 headers/rows 的原生工作簿创建与保存）。没有新增 PDF-to-workbook 组合 API，也没有任务专用 parser/route。
+- 实现提交：`9361c0d`（`fix(order95): validate evidence-derived author assembly`）。
+- focused check：`PYTHONPATH=src/adapter_versions/v2_expanded pytest -q src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`，结果 **58 passed**；`git diff --check` 通过。
+- 实际单题命令（本地 HF mirror/cache，Qwen endpoint）：
+
+  ```bash
+  HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-pdf-authors-95-retry20-20260925.json --orders 95 --result-dir src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+  ```
+
+- 证据：`src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00/results.json`；最终调用轨迹见同目录 `raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/adapter_calls.jsonl`。
