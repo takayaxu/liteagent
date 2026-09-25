@@ -253,4 +253,4 @@ $PYTHON -m ruff check <changed_python_files>
   HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD:$PWD/../third_party/OSWorld:$PWD/../" /var/lib/liteagent-shared/python-env/bin/python scripts/run_lite_agent_pilot.py --config experiments/configs/local-file-organize-102-20260925.json --orders 102 --result-dir experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
   ```
 
-- 实现提交：见本次修复提交；交由集成人员统一合并。
+- 实现提交：`2eb1acb`（`fix(order102): gate organization after filesystem observation`）；交由集成人员统一合并。

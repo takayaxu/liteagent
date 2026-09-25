@@ -417,5 +417,5 @@ observed sources have moved. No task-specific parser, golden route, or batch
 organization API was added.
 
 Evidence: `src/adapter_versions/v2_expanded/experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`.
-The implementation commit is the current repair commit and is intentionally
-left for the integration owner to merge.
+Implementation commit: `2eb1acb` (`fix(order102): gate organization after filesystem observation`);
+the integration owner should merge it.

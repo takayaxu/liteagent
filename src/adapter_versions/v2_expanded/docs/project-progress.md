@@ -11813,6 +11813,5 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD:$PWD/../third_party/OSWorld:$
 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
 ```
 
-The implementation commit is recorded after this entry is committed; the
-integration owner should merge the resulting commit with the shared LiteAgent
-changes.
+Implementation commit: `2eb1acb` (`fix(order102): gate organization after filesystem observation`).
+The integration owner should merge this commit with the shared LiteAgent changes.
