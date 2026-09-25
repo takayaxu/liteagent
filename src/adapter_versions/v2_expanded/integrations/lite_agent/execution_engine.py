@@ -3,6 +3,7 @@
 from __future__ import annotations
 import copy
 import json
+import re
 import time
 from typing import Any
 import jsonschema
@@ -495,6 +496,37 @@ class ExecutionEngineMixin:
                 semantic_argument_errors = background_argument_contract_errors(
                     state, action, arguments
                 )
+                if action == "adapter.call" and state.domain == "multi_apps":
+                    route = (arguments.get("adapter"), arguments.get("action"))
+                    params = ((arguments.get("payload") or {}).get("params") or {})
+                    organization_intent = bool(
+                        re.search(
+                            r"(?i)\b(?:organize|organization|categorize|classify|"
+                            r"place|put|move|relocate)\b",
+                            state.instruction,
+                        )
+                    )
+                    if (
+                        route == ("os", "filesystem.find")
+                        and organization_intent
+                        and params.get("kind", "file") != "any"
+                    ):
+                        semantic_argument_errors.append(
+                            "filesystem.find must use kind=any for a filesystem organization "
+                            "or classification task so directories are not omitted; retry "
+                            "the same discovery with kind=any before moving any object"
+                        )
+                    observation = state.filesystem_observation_state()
+                    if (
+                        route == ("os", "filesystem.find")
+                        and isinstance(observation, dict)
+                        and observation.get("complete") is True
+                    ):
+                        semantic_argument_errors.append(
+                            "filesystem observation is complete; classify the exact "
+                            "observed entries and call filesystem.rename (or read content "
+                            "only for an ambiguous file) instead of searching again"
+                        )
                 semantic_argument_errors.extend(
                     messages_query_argument_contract_errors(
                         state.instruction, state.domain, action, arguments
@@ -689,6 +721,18 @@ class ExecutionEngineMixin:
                     excluded_routes=excluded_routes,
                     strict_generic=True,
                 )
+                if (
+                    state.domain == "multi_apps"
+                    and batch_table_semantics.requested_fields_complete(state)
+                ):
+                    matches = [
+                        item
+                        for item in matches
+                        if item.get("action") != "adapter.call"
+                        or batch_table_semantics.batch_route_allowed_after_completion(
+                            state, str(item.get("downstream_action", ""))
+                        )
+                    ]
                 state.expanded_actions = list(
                     dict.fromkeys(
                         [*state.expanded_actions, *(item["action"] for item in matches)]

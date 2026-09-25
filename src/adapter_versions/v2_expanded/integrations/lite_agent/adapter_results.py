@@ -2064,7 +2064,13 @@ def filesystem_find_context(result: dict[str, Any]) -> dict[str, Any]:
                 if layered_images_found
                 else ""
             )
-            + "Repeating filesystem.find with different globs does not reveal file contents."
+            + "Repeating filesystem.find with different globs does not reveal file contents. "
+            + (
+                "This search used kind=file and excluded directories; for an organization or "
+                "classification task, follow it once with kind=any before moving objects. "
+                if result.get("kind") == "file"
+                else ""
+            )
         )
     else:
         filter_guidance = {

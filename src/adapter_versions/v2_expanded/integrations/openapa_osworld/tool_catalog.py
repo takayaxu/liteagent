@@ -494,7 +494,8 @@ DOMAIN_SIGNATURES = {
             '"include_hidden"?: bool, '
             '"preserve_layout"?: bool (defaults true; set false for prose)}; returns bounded raw text from the beginning of each '
             "matching PDF extraction, or from start_char when supplied, without modifying "
-            "the files. For subsequent windows use one observed filename and its next_start_char"
+            "the files. For subsequent windows use one observed filename and its next_start_char. "
+            "When the instruction asks for one selected entity per source document, keep one output record per document and do not expand related entities unless requested"
         ),
         "image.extract_text_batch": (
             'params={"input_pattern": image/PDF basename glob, "cwd_source": '

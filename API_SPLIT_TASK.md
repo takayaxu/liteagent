@@ -235,3 +235,22 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - 证据：`src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00/results.json`；最终调用轨迹见同目录 `raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/adapter_calls.jsonl`。
+
+### Order 102（2026-09-25）
+
+- 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`；结果文件为
+  `src/adapter_versions/v2_expanded/experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`。
+- API replacement：保持窄 API 链 `os.filesystem.find(kind=any)`（观察）→可选
+  `os.pdf.extract_text_batch`（歧义内容）→逐项 `os.filesystem.rename`（移动），不新增批量组织 API。
+  新增通用 observation marker 记录已观察条目和 `classify_and_move` 阶段；标记后禁止重复
+  `filesystem.find`，工具面在发现 rename 前只给 `tools_search`，发现后只给 rename，全部完成后只给
+  `propose_done`。分类提示要求仅内容确认的学术论文进 `Paper_reading`，代码项目进 `Projects`，其余进
+  `Miscellaneous`。
+- focused check：`113 passed`（filesystem discovery/context projection）及 compileall 通过。
+- 实际命令：
+
+  ```bash
+  HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD:$PWD/../third_party/OSWorld:$PWD/../" /var/lib/liteagent-shared/python-env/bin/python scripts/run_lite_agent_pilot.py --config experiments/configs/local-file-organize-102-20260925.json --orders 102 --result-dir experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+  ```
+
+- 实现提交：见本次修复提交；交由集成人员统一合并。

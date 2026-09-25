@@ -11778,3 +11778,41 @@ terminal audit and the original evaluator returned `status=passed` with
 `reward=1.0`; no mutation or post-mutation read-back was repeated. The raw
 evidence is preserved at
 `experiments/local-impress-picture-text-60-retry13-20260922/`.
+
+## Order 102 开发记录（2026-09-25）
+
+Order **102**, task `869de13e-bef9-4b91-ba51-f6708c40b096`, passed the original
+OSWorld evaluator with `reward=1.0`, `status=passed`, and
+`termination_reason=agent_done`. The final evidence is preserved at
+`experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`.
+
+The replacement keeps the generic API split: `os.filesystem.find(kind=any)` is
+the bounded observation, `os.pdf.extract_text_batch` is used only for ambiguous
+content, and `os.filesystem.rename` performs each independent move. A runtime
+observation marker now records exact entries and the `classify_and_move` phase;
+after the marker, repeated discovery is rejected, the surface exposes
+`tools_search` only until `filesystem.rename` is discovered, then exposes only
+rename calls until all observed sources move. Once complete, only
+`propose_done` remains. The marker and system guidance distinguish
+content-confirmed academic papers, code-bearing projects, and miscellaneous
+presentations/forms/policy documents.
+
+Focused validation: `113 passed` across the filesystem discovery and context
+projection tests; compileall passed. The exact local-cache/Qwen command was:
+
+```bash
+HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD:$PWD/../third_party/OSWorld:$PWD/../" \
+/var/lib/liteagent-shared/python-env/bin/python scripts/run_lite_agent_pilot.py \
+--config experiments/configs/local-file-organize-102-20260925.json --orders 102 \
+--result-dir experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00 \
+--base-url https://qwen1.jinmaoapi.cc.cd/v1 --model qwen3.5-4b --max-steps 45 \
+--max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 \
+--max-agent-seconds 1200 --max-output-tokens 768 --reasoning-mode non_thinking \
+--request-timeout 240 --model-retries 3 --initial-settle-seconds 10 \
+--action-settle-seconds 2 --evaluator-settle-seconds 5 \
+--evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+The implementation commit is recorded after this entry is committed; the
+integration owner should merge the resulting commit with the shared LiteAgent
+changes.

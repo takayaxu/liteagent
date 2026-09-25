@@ -3281,6 +3281,7 @@ def search_actions(
             query_tokens=query_tokens,
             instruction_tokens=instruction_tokens,
             error_tokens=error_tokens,
+            query=query,
             limit=limit,
             excluded_actions=set(excluded_actions),
             excluded_routes=set(excluded_routes),
@@ -3393,6 +3394,7 @@ def _search_multi_app_actions(
     query_tokens: set[str],
     instruction_tokens: set[str],
     error_tokens: set[str],
+    query: str,
     limit: int,
     excluded_actions: set[str],
     excluded_routes: set[tuple[str, str]],
@@ -3663,6 +3665,18 @@ def _search_multi_app_actions(
                 matches.append((score, route_domain, action))
 
     ranked = sorted(matches, key=lambda item: (-item[0], item[1], item[2]))
+    # An explicit downstream action in the search query is an unambiguous
+    # request for that route. Keep unrelated filesystem routes out of the
+    # result so the model can call the requested action instead of repeating
+    # catalog searches over a noisy multi-route result.
+    explicit_routes = {
+        match.casefold()
+        for match in re.findall(r"(?<![\w.])(?:filesystem\.[a-z_]+)", query.casefold())
+    }
+    if explicit_routes:
+        ranked = [
+            item for item in ranked if item[2].casefold() in explicit_routes
+        ]
     return [
         {
             "action": "adapter.call",

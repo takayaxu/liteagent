@@ -403,3 +403,19 @@ The API state remains intentionally split and generic:
 For the task wording `e-mail`, the generic correction requires the concise `Mail` header so the requested field label is preserved. This is a schema/contract correction, not a new API or task route.
 
 Implementation commit: `9361c0d` (`fix(order95): validate evidence-derived author assembly`). Focused check: `58 passed` in `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`; `git diff --check` passed. The exact local-mirror/Qwen validation command is recorded in `API_SPLIT_TASK.md` under the Order 95 repair entry.
+
+### Order 102 API State (2026-09-25)
+
+Order 102 is **PASS** (`reward=1.0`, `agent_done`). The API state remains split:
+`os.filesystem.find(kind=any)` observes files and directories, optional
+`os.pdf.extract_text_batch` reads ambiguous content, and `os.filesystem.rename`
+moves each source to its category. The generic runtime now records an
+observation-complete marker with exact paths and the next phase
+`classify_and_move`; it rejects all later filesystem searches, narrows the
+surface to rename after route discovery, and exposes only completion after all
+observed sources have moved. No task-specific parser, golden route, or batch
+organization API was added.
+
+Evidence: `src/adapter_versions/v2_expanded/experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`.
+The implementation commit is the current repair commit and is intentionally
+left for the integration owner to merge.

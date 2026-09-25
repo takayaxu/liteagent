@@ -109,6 +109,11 @@ class RuntimeStateCoreMixin:
             limit=limit,
             strict_generic=strict_generic,
         )
+        observation = self.filesystem_observation_state()
+        if observation is not None:
+            # Keep the phase transition ahead of the bounded event transcript;
+            # this is the model-facing state machine edge, not new evidence.
+            summary = [{"filesystem_observation": observation}, *summary]
         # A soft restart replaces only the transient reasoning context.  Keep
         # the compact recovery handoff visible for its bounded follow-up
         # window, while leaving the immutable event ledger untouched underneath.
@@ -120,7 +125,7 @@ class RuntimeStateCoreMixin:
             and not isinstance(pending_audit, dict)
             and not isinstance(pending_terminal, dict)
         ) or limit <= 0:
-            return summary
+            return summary[:limit] if limit > 0 else []
         markers: list[dict[str, Any]] = []
         if isinstance(recovery, dict):
             # Keep the successful mutation ledger in its own bounded marker.
@@ -155,6 +160,100 @@ class RuntimeStateCoreMixin:
         # The limit already bounds recent events. Trimming this chronological
         # summary again would remove the newest result named by the audit marker.
         return [*markers[:limit], *summary]
+
+    def filesystem_observation_state(self) -> dict[str, Any] | None:
+        """Return the completed discovery phase for a file-organization task.
+
+        The marker is derived only from a successful, bounded ``kind=any``
+        result.  It deliberately carries exact observed paths so the next
+        phase can classify and rename those objects without searching again.
+        """
+        if self.domain != "multi_apps" or not re.search(
+            r"(?i)\b(?:organize|organization|categorize|classify|place|put|move|relocate)\b",
+            self.instruction,
+        ):
+            return None
+        for event in reversed(self.successful_adapter_events()):
+            domain, action, arguments = effective_canonical_action(event, self.domain)
+            if (domain, action) != ("os", "filesystem.find"):
+                continue
+            params = arguments.get("params", arguments) if isinstance(arguments, dict) else {}
+            if not isinstance(params, dict) or params.get("kind") != "any":
+                continue
+            marker: dict[str, Any] | None = None
+            for body in self._result_mappings(event.result):
+                nested = body.get("downstream_context")
+                candidate = nested if isinstance(nested, dict) else body
+                if not isinstance(candidate.get("matches"), list):
+                    continue
+                if candidate.get("truncated") is True:
+                    continue
+                matches = [
+                    {
+                        key: item.get(key)
+                        for key in ("path", "name", "kind")
+                        if key in item
+                    }
+                    for item in candidate["matches"]
+                    if isinstance(item, dict) and isinstance(item.get("path"), str)
+                ]
+                roots = params.get("roots")
+                root_list = [str(root) for root in roots] if isinstance(roots, list) else []
+                marker = {
+                    "complete": True,
+                    "observed_roots": root_list,
+                    "observed_entries": matches,
+                    "next_required_phase": "classify_and_move",
+                    "next_required_actions": [
+                        "read content only for ambiguous files",
+                        "filesystem.rename each observed source to its category folder",
+                    ],
+                    "classification_policy": [
+                        "Paper_reading: only files whose observed content is an academic or research paper",
+                        "Projects: directories or files that are clearly coding projects with source code",
+                        "Miscellaneous: every other file, including presentations, spreadsheets, forms, and policy PDFs",
+                    ],
+                    "content_evidence_required": (
+                        "Do not classify a PDF as a paper from its extension or filename; use the observed text."
+                    ),
+                    "forbidden_next_action": "repeat filesystem.find for an observed root",
+                }
+                break
+            if marker is not None:
+                return marker
+        return None
+
+    def filesystem_organization_pending_entries(self) -> list[str]:
+        """Return observed source paths that have not been renamed yet."""
+        marker = self.filesystem_observation_state()
+        if not isinstance(marker, dict) or marker.get("complete") is not True:
+            return []
+        destinations = {"Paper_reading", "Projects", "Miscellaneous"}
+        observed = {
+            str(item.get("path"))
+            for item in marker.get("observed_entries", [])
+            if isinstance(item, dict)
+            and isinstance(item.get("path"), str)
+            and item.get("path")
+            and item["path"].rstrip("/").rsplit("/", 1)[-1] not in destinations
+        }
+        moved: set[str] = set()
+        for event in self.successful_adapter_events():
+            domain, action, arguments = effective_canonical_action(event, self.domain)
+            if (domain, action) != ("os", "filesystem.rename"):
+                continue
+            source = arguments.get("source") if isinstance(arguments, dict) else None
+            if isinstance(source, str):
+                moved.add(source.rstrip("/"))
+        return sorted(path for path in observed if path.rstrip("/") not in moved)
+
+    def filesystem_organization_complete(self) -> bool:
+        marker = self.filesystem_observation_state()
+        return bool(
+            isinstance(marker, dict)
+            and marker.get("complete") is True
+            and not self.filesystem_organization_pending_entries()
+        )
 
     def requires_replan(self) -> bool:
         if not self.events:
@@ -440,7 +539,13 @@ class RuntimeStateCoreMixin:
                 if not isinstance(value, dict):
                     continue
                 mappings.append(value)
-                for key in ("adapter_response", "response", "result"):
+                for key in (
+                    "adapter_response",
+                    "response",
+                    "result",
+                    "context_hint",
+                    "downstream_context",
+                ):
                     child = value.get(key)
                     if isinstance(child, dict):
                         next_pending.append(child)

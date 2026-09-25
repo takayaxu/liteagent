@@ -165,7 +165,27 @@ class ToolSurfaceMixin:
         """
         if state.domain == "multi_apps":
             route_pairs = discovered_adapter_routes(state)
+            if route_pairs and batch_table_semantics.requested_fields_complete(state):
+                route_pairs = [
+                    (adapter, action)
+                    for adapter, action in route_pairs
+                    if batch_table_semantics.batch_route_allowed_after_completion(
+                        state, action
+                    )
+                ]
             adapter_call_name = tool_name("adapter.call")
+            organization_observation = state.filesystem_observation_state()
+            if isinstance(organization_observation, dict) and organization_observation.get(
+                "complete"
+            ) is True:
+                # Once discovery is complete, the only downstream mutation
+                # permitted on this surface is the observed rename operation.
+                if any(action == "filesystem.rename" for _, action in route_pairs):
+                    route_pairs = [
+                        (adapter, action)
+                        for adapter, action in route_pairs
+                        if action == "filesystem.rename"
+                    ]
             if route_pairs:
                 tools = constrain_adapter_call_routes(tools, route_pairs)
             else:
@@ -175,6 +195,19 @@ class ToolSurfaceMixin:
                     if not isinstance(tool.get("function"), dict)
                     or tool["function"].get("name") != adapter_call_name
                 ]
+            observation = state.filesystem_observation_state()
+            if isinstance(observation, dict) and observation.get("complete") is True:
+                for tool in tools:
+                    function = tool.get("function")
+                    if not isinstance(function, dict) or function.get("name") != adapter_call_name:
+                        continue
+                    function["description"] = (
+                        str(function.get("description", ""))
+                        + " Filesystem observation is complete: classify the exact observed "
+                        "entries and move them with filesystem.rename; do not call "
+                        "filesystem.find again for an observed root. Read content only "
+                        "when a file remains ambiguous."
+                    )
             return soft_recovery_tools(tools, state)
         if spreadsheet_open_semantics.gui_request_contract_errors(state):
             tools = [
@@ -492,6 +525,54 @@ class ToolSurfaceMixin:
         )
         if proactive_tools:
             return self._apply_common_tool_constraints(proactive_tools, state)
+        organization_observation = state.filesystem_observation_state()
+        if isinstance(organization_observation, dict) and organization_observation.get(
+            "complete"
+        ) is True:
+            if state.filesystem_organization_complete():
+                completion_tools = self._build_tools(
+                    state.domain,
+                    [],
+                    include_gui=False,
+                    include_control_tools=True,
+                    strict_generic=True,
+                )
+                completion_tools = [
+                    tool
+                    for tool in completion_tools
+                    if isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == "propose_done"
+                ]
+                return self._apply_common_tool_constraints(completion_tools, state)
+            # The initial discovery search usually returns only the find route.
+            # Force one catalog lookup for the mutation route instead of leaving
+            # the model with a stale find schema that it can retry indefinitely.
+            known_routes = discovered_adapter_routes(state)
+            if not any(action == "filesystem.rename" for _, action in known_routes):
+                search_tools = self._build_tools(
+                    state.domain,
+                    [],
+                    include_gui=False,
+                    include_control_tools=True,
+                    strict_generic=True,
+                )
+                search_tools = [
+                    tool
+                    for tool in search_tools
+                    if isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == "tools_search"
+                ]
+                return self._apply_common_tool_constraints(search_tools, state)
+            # While observed entries remain, keep the route on the mutation
+            # schema and suppress search, GUI, and terminal bypasses.
+            rename_tools = self._build_tools(
+                state.domain,
+                ["adapter.call"],
+                include_gui=False,
+                include_control_tools=False,
+                strict_generic=True,
+            )
+            return self._apply_common_tool_constraints(rename_tools, state)
         visual_title_plan = multislide_visual_title_fallback_plan(state)
         if visual_title_plan is not None and next_multislide_visual_title_action(state) is None:
             saves = state.successful_action_events("presentation.save")
