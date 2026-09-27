@@ -523,6 +523,61 @@ def test_export_eml_rejects_existing_entries_without_deleting_or_overwriting(
     assert {path: path.read_bytes() for path in exported} == exported
 
 
+def test_export_eml_exposes_one_visible_folder_and_destination_contract() -> None:
+    action = "messages.export_eml"
+    manifest = THUNDERBIRD_SCHEMAS[action]
+    exposed = _exposed_schema(action)
+
+    assert DIRECT_ACTION_SCHEMAS["thunderbird"][action] == manifest
+    assert set(manifest["properties"]) == {"folder_name", "output_dir"}
+    assert exposed["additionalProperties"] is False
+    assert not list(
+        jsonschema.Draft202012Validator(exposed).iter_errors(
+            {"folder_name": "Inbox", "output_dir": "~/emails.bak"}
+        )
+    )
+    assert list(
+        jsonschema.Draft202012Validator(exposed).iter_errors(
+            {"source": "Mail/Local Folders/Inbox", "destination": "~/emails.bak"}
+        )
+    )
+
+
+def test_export_eml_rejects_mixed_semantic_and_legacy_parameters() -> None:
+    with pytest.raises(
+        ThunderbirdAdapterError, match="exactly one complete parameter pair"
+    ):
+        validate_thunderbird(
+            "messages.export_eml",
+            {
+                "folder_name": "Inbox",
+                "output_dir": "~/emails.bak",
+                "source": "Mail/Local Folders/Inbox",
+                "destination": "~/emails.bak",
+            },
+        )
+
+
+def test_export_eml_resolves_visible_folder_name_in_adapter(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = _profile_with_messages(tmp_path)
+    destination = tmp_path / "emails.bak"
+    actions = ThunderbirdActions(object())
+    monkeypatch.setattr(
+        actions, "_profile_action", lambda operation, _timeout: operation(profile)
+    )
+
+    result = actions.messages_export_eml(
+        {"folder_name": "Archive", "output_dir": str(destination)}, 1
+    )
+
+    assert result["source"].endswith("Mail/Local Folders/Archive")
+    assert result["destination"] == str(destination)
+    assert result["count"] == 2
+    assert sorted(path.suffix for path in destination.iterdir()) == [".eml", ".eml"]
+
+
 @pytest.mark.parametrize(
     ("setting", "value"),
     [("signature_text", "Regards"), ("quote_original_on_reply", True)],

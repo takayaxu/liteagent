@@ -133,6 +133,8 @@ P0 满足至少一项：
 
 `thunderbird.messages.query` Order 91 复核：保留。它是有界只读查询，`select_from` 负责从匹配结果的最新/最早一端选取窗口，`order` 只负责返回顺序；两者不是可合并的异构 mutation。新增的通用 latest-selector 语义拒绝保护只拦截 instruction 明确要求 latest/most-recent 而模型传 `select_from="earliest"` 的矛盾调用，不重写参数或注入任务数据。`libreoffice_calc.workbook.create_new` 同题保留，headers/rows 是显式模型数据且创建后自动保存，不新增宏 API。Order 91 正式 evaluator `status=passed`、`reward=1.0`；focused selector check **27 passed**。源码提交为 `d077b18f02805becaa8f5ff21bb7d1c27b5e8c2c`（`fix(order91): guard latest mail selection semantics`）。
 
+`thunderbird.messages.export_eml` Order 152 复核：保留。公开契约只接受可见的 `folder_name` 和绝对或 `~/` 开头的 `output_dir`，没有消息 selector、排序、转发或其它设置字段；每封消息使用同一导出规则写成独立 `.eml`，并在写入前拒绝已有 `.eml` 冲突。Adapter 内部保留 `source`/`destination` 兼容入口以服务旧调用方，但该低级路径未进入模型 schema，混用两套契约会 fail-closed。新增 focused coverage 验证 schema 不暴露旧字段、混合参数错误和可见文件夹解析；Order 152 的模型端点在本环境无路由，尚无正式 evaluator 结果，不将候选配置标记为通过。
+
 P1 默认不改代码。只有源码证据证明它包含独立决策或异构 mutation 才进入拆分；保留时把理由补到本文件。
 
 ## 旧审计覆盖核对
@@ -419,3 +421,11 @@ organization API was added.
 Evidence: `src/adapter_versions/v2_expanded/experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`.
 Implementation commit: `2eb1acb` (`fix(order102): gate organization after filesystem observation`);
 the integration owner should merge it.
+
+### Order 121 API State (2026-09-27)
+
+Order 121 is **PASS** in the preserved historical audit (`src/adapter_versions/v2_expanded/docs/project-progress.md`, the final Order 121 entry). The task uses the existing narrow pair `libreoffice_calc.workbook.read_file` and `thunderbird.compose.set_recipients`. Neither action is a P0 candidate: the Calc operation is bounded read-only observation, while the Thunderbird operation changes only the already-open compose window's To recipient pills and verifies the resulting accessibility state. `append` and `replace` choose the state transition for that one field; they do not combine independent mail settings, create a draft, or send it.
+
+The current contract keeps the two decisions model-visible and sequential. The spreadsheet reader requires an explicit local path and bounds sheet/range and row/column windows; `range.read` remains the separate choice for an already-open workbook and a single contiguous rectangle. The recipient action requires a non-empty model-selected address array, optionally takes an observed exact subject for compose-window disambiguation, and performs native read-back after each address. Search/recovery checks cover both `workbook.read_file` and `compose.set_recipients`; no task-aware route, answer derivation, or combined spreadsheet-to-mail action was added.
+
+Focused validation on the current checkout passed **156 tests** across recovery surface, active-workbook discovery, spreadsheet-open semantics, and the existing mail selector contract. The historical final audit recorded 8 events and evaluator reward `1.0`; its raw result directory is not present in this source snapshot, so this entry does not claim a new evaluator run.

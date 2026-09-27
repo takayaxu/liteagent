@@ -254,3 +254,19 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 - 实现提交：`2eb1acb`（`fix(order102): gate organization after filesystem observation`）；交由集成人员统一合并。
+
+## Order 152（2026-09-27）
+
+- 题目：`9bc3cc16-074a-45ac-9bdc-b2a362e1daf3`；要求把收件箱全部邮件分别备份为 `.eml` 到用户指定目录。题目定义为 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/9bc3cc16-074a-45ac-9bdc-b2a362e1daf3.json`，历史 baseline/candidate 配置分别为 `generic-only-coverage-order152-v155.json` 和 `generic-only-coverage-order152-export-eml-schema-v156.json`。
+- 人工判断：本题只涉及 `thunderbird.messages.export_eml`。它是一个显式同构批处理事务：一次调用只选择一个可见文件夹和一个输出目录，Adapter 在当前 profile 中解析 mailbox 后逐封写出 `.eml`；输出目录已有 `.eml` 时 fail-closed，不删除或覆盖已有文件。因此按 P1 复核结论保留，不拆成逐邮件 API，也不增加题目专用路由。
+- API state：模型可见 schema 使用 `folder_name` + `output_dir`；runtime validation、dispatch、worker 默认 `exported_eml` verification 和 folder resolver 保持一致。Adapter 仍兼容内部 `source` + `destination` 旧契约，但模型 schema 不暴露它；混用两套参数会返回明确 `INVALID_REQUEST`。
+- focused checks：新增 schema surface、混合参数拒绝和可见文件夹解析覆盖。模型端点 `http://192.168.0.224:8001/v1` 在本环境无路由，未伪造 evaluator 通过记录；待端点恢复后按 candidate 配置单题复跑。
+
+## Order 121（2026-09-27）
+
+- 题目：`f5c13cdd-205c-4719-a562-348ae5cd1d91`。题面要求从付款记录中识别未付款人员，并把对应地址加入已经打开的 Thunderbird 草稿收件人栏；原始题目、配置和历史失败审计见 `src/third_party/OSWorld/evaluation_examples/examples/multi_apps/f5c13cdd-205c-4719-a562-348ae5cd1d91.json`、`src/adapter_versions/v2_expanded/experiments/configs/generic-only-coverage-order121-v126.json` 及 `src/adapter_versions/v2_expanded/docs/project-progress.md` 的 Order 121 条目。
+- 人工轨迹判断：本题只有两个独立动作：`libreoffice_calc.workbook.read_file`（读取模型选定的本地表格）和 `thunderbird.compose.set_recipients`（编辑已打开草稿的 To 字段）。历史失败集中在模型没有先完成表格观察，或没有发现已有收件人编辑路由；没有出现 P0 候选的异构 mutation、批量独立设置或隐式写入。
+- API replacement：两项均保留，不新增组合 API。`workbook.read_file` 只读且限制路径、工作表/范围和行列窗口；需要已打开工作簿的精确单一区域时由模型另行调用 `range.read`。`compose.set_recipients` 只接收一组模型选定的纯地址，`append`/`replace` 仅选择同一 To 字段的状态迁移，支持可选已观察 subject 消歧；worker 只操作地址 pill 并逐项回读，禁止创建或发送消息。搜索目录已包含 spreadsheet/read-file 及 receiver/recipient/draft 术语，恢复面不会把这两个动作合并。
+- 实现提交：本题不需要源码变更；现有窄契约来自导入快照 `b800fd9` 及其后续 Thunderbird 路由提交。新增本记录的提交为当前 Order 121 文档提交。
+- focused check：`PYTHONPATH=src/adapter_versions/v2_expanded python -m pytest -q src/adapter_versions/v2_expanded/tests/test_recovery_surface.py src/adapter_versions/v2_expanded/tests/test_active_workbook_discovery.py src/adapter_versions/v2_expanded/tests/test_spreadsheet_open_semantics.py src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py`，结果 **156 passed**；搜索复核确认表格读取和收件人编辑均能从多应用目录检索到，`git diff --check` 通过。
+- 单题结果：历史正式 Order 121 复跑在 `src/adapter_versions/v2_expanded/docs/project-progress.md` 的最终审计中记录为 evaluator **PASS / 1.0**（8 events，`compose.set_recipients` 追加四个模型选定地址，随后完成提议）；当前 checkout 未携带该历史运行的原始结果目录，因此本次仅复核冻结配置、题目定义、现有轨迹审计和当前契约测试，没有伪造新的 evaluator 结果或改写模型参数。
