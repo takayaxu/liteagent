@@ -544,17 +544,18 @@ def test_export_eml_exposes_one_visible_folder_and_destination_contract() -> Non
 
 
 def test_export_eml_rejects_mixed_semantic_and_legacy_parameters() -> None:
+    actions = ThunderbirdActions(object())
     with pytest.raises(
         ThunderbirdAdapterError, match="exactly one complete parameter pair"
     ):
-        validate_thunderbird(
-            "messages.export_eml",
+        actions.messages_export_eml(
             {
                 "folder_name": "Inbox",
                 "output_dir": "~/emails.bak",
                 "source": "Mail/Local Folders/Inbox",
                 "destination": "~/emails.bak",
             },
+            1,
         )
 
 

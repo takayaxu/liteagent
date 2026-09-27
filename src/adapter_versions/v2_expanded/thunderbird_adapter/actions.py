@@ -246,6 +246,7 @@ class ThunderbirdActions:
     def messages_export_eml(
         self, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
+        validate_action_params("messages.export_eml", params)
         if "folder_name" in params:
             return self._profile_action(
                 lambda profile: export_folder_messages(
