@@ -120,7 +120,7 @@ def test_recipient_search_finds_existing_compose_action(domain, query):
 @pytest.mark.parametrize("domain", ["thunderbird", "multi_apps"])
 @pytest.mark.parametrize("query,action", [
     ("find an email by subject", "messages.query"),
-    ("change email signature", "mail.configure"),
+    ("change email signature", "identity.set_plain_text_signature"),
 ])
 def test_recipient_search_keeps_other_mail_operations_discoverable(domain, query, action):
     matches = search_actions(domain, query, limit=5, strict_generic=True)

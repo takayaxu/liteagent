@@ -12,7 +12,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "description": (
             "Read the current Thunderbird identity keys and their email, display name, "
             "account, server, and hostname mappings without changing profile state. Use the "
-            "exact returned identity value for identity-specific mail.configure settings."
+            "exact returned identity value for identity-specific actions."
         ),
         "properties": {},
         "required": [],
@@ -135,18 +135,17 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["filter"],
     },
-    "mail.configure": {
+    "identity.set_plain_text_signature": {
         "description": (
-            "Change exactly one Thunderbird mail setting. Call this action again for each "
-            "additional setting so every mutation and verification result is independent."
+            "Set one existing Thunderbird identity's plain-text signature. This atomically "
+            "stores the signature text and selects plain-text signature mode."
         ),
         "properties": {
             "identity": {
                 **NONEMPTY_STRING,
                 "description": (
                     "Exact internal Thunderbird identity key returned by identities.query, "
-                    "for example id1. Required when setting signature_text or "
-                    "quote_original_on_reply; an email address is not an identity key."
+                    "for example id1. An email address is not an identity key."
                 ),
             },
             "signature_text": {
@@ -156,55 +155,69 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "For robustness, literal \\n and \\r\\n sequences are also interpreted as line breaks."
                 ),
             },
-            "quote_original_on_reply": {
+        },
+        "required": ["identity", "signature_text"],
+    },
+    "identity.set_reply_quoting": {
+        "description": (
+            "Set whether replies from one existing Thunderbird identity quote the original "
+            "message. This changes no other reply or identity setting."
+        ),
+        "properties": {
+            "identity": {
+                **NONEMPTY_STRING,
+                "description": (
+                    "Exact internal Thunderbird identity key returned by identities.query, "
+                    "for example id1. An email address is not an identity key."
+                ),
+            },
+            "enabled": {
                 "type": "boolean",
                 "description": "Whether replies include the quoted original message.",
             },
-            "automatic_filters_on_subfolders": {
+        },
+        "required": ["identity", "enabled"],
+    },
+    "filters.set_subfolder_application": {
+        "description": (
+            "Set whether incoming message filters run automatically on IMAP subfolders. "
+            "This changes no filter rules."
+        ),
+        "properties": {
+            "enabled": {
                 "type": "boolean",
                 "description": (
                     "Whether incoming message filters run automatically on IMAP subfolders."
                 ),
-            },
-            "unified_inbox": {
-                "type": "boolean",
-                "description": (
-                    "Whether Thunderbird combines account inboxes in Unified Folders view."
-                ),
-            },
-            "dark_mode": {
-                "type": "boolean",
-                "description": "Whether Thunderbird uses its built-in complete dark theme.",
-            },
+            }
         },
-        "required": [],
-        "oneOf": [
-            {"required": ["signature_text"]},
-            {"required": ["quote_original_on_reply"]},
-            {"required": ["automatic_filters_on_subfolders"]},
-            {"required": ["unified_inbox"]},
-            {"required": ["dark_mode"]},
-        ],
-        "allOf": [
-            {
-                "if": {
-                    "anyOf": [
-                        {"required": ["signature_text"]},
-                        {"required": ["quote_original_on_reply"]},
-                    ]
-                },
-                "then": {"required": ["identity"]},
-            },
-            {
-                "if": {"required": ["identity"]},
-                "then": {
-                    "anyOf": [
-                        {"required": ["signature_text"]},
-                        {"required": ["quote_original_on_reply"]},
-                    ]
-                },
-            },
-        ],
+        "required": ["enabled"],
+    },
+    "inbox.set_unified": {
+        "description": (
+            "Set whether Thunderbird combines account inboxes in Unified Folders view. "
+            "This changes only the folder-tree view mode."
+        ),
+        "properties": {
+            "enabled": {
+                "type": "boolean",
+                "description": "Whether the unified inbox view is enabled.",
+            }
+        },
+        "required": ["enabled"],
+    },
+    "theme.set_dark_mode": {
+        "description": (
+            "Set whether Thunderbird uses its built-in complete dark theme. This changes "
+            "only the active theme."
+        ),
+        "properties": {
+            "enabled": {
+                "type": "boolean",
+                "description": "Whether the built-in complete dark theme is enabled.",
+            }
+        },
+        "required": ["enabled"],
     },
     "compose.set_recipients": {
         "description": (

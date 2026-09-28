@@ -14,7 +14,11 @@ MAX_TIMEOUT_MS = 900_000
 DEFAULT_TIMEOUT_MS = 60_000
 ACTIONS = frozenset(
     {
-        "mail.configure",
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+        "filters.set_subfolder_application",
+        "inbox.set_unified",
+        "theme.set_dark_mode",
         "xulstore.update",
         "folders.ensure_local",
         "filters.configure",
@@ -43,15 +47,15 @@ VERIFY_TYPES = frozenset(
     }
 )
 
-MAIL_CONFIGURE_SETTING_FIELDS = frozenset(
-    {
-        "signature_text",
-        "quote_original_on_reply",
-        "automatic_filters_on_subfolders",
-        "unified_inbox",
-        "dark_mode",
-    }
-)
+RETIRED_ACTION_REPLACEMENTS = {
+    "mail.configure": [
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+        "filters.set_subfolder_application",
+        "inbox.set_unified",
+        "theme.set_dark_mode",
+    ]
+}
 
 
 @dataclass(frozen=True)
@@ -107,83 +111,65 @@ def _string_list(
     return value
 
 
+def _reject_unexpected_fields(
+    action: str, params: Mapping[str, Any], allowed: set[str]
+) -> None:
+    unexpected = sorted(set(params).difference(allowed))
+    if unexpected:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            f"{action} received unsupported parameters: {unexpected}",
+            {"unsupported_fields": unexpected, "allowed_fields": sorted(allowed)},
+        )
+
+
+def _validate_identity(params: Mapping[str, Any]) -> None:
+    identity = _string(params, "identity")
+    if not identity.replace("_", "").replace("-", "").isalnum():
+        raise AdapterError(
+            "INVALID_REQUEST", "params.identity contains unsupported characters"
+        )
+
+
+def _retired_action_error(action: str) -> AdapterError:
+    replacements = RETIRED_ACTION_REPLACEMENTS[action]
+    return AdapterError(
+        "UNSUPPORTED_ACTION",
+        f"{action} has been retired; use one single-setting replacement action",
+        {"action": action, "replacement_actions": replacements},
+    )
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    if action in RETIRED_ACTION_REPLACEMENTS:
+        raise _retired_action_error(action)
     if action == "identities.query":
         if params:
             raise AdapterError(
                 "INVALID_REQUEST", "identities.query does not accept parameters"
             )
-    elif action == "mail.configure":
-        unknown_fields = set(params).difference(
-            MAIL_CONFIGURE_SETTING_FIELDS | {"identity"}
-        )
-        if unknown_fields:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "mail.configure received unsupported fields",
-                {
-                    "unsupported_fields": sorted(unknown_fields),
-                    "allowed_setting_fields": sorted(MAIL_CONFIGURE_SETTING_FIELDS),
-                },
-            )
-        settings = MAIL_CONFIGURE_SETTING_FIELDS.intersection(params)
-        if len(settings) != 1:
-            details = {
-                "allowed_setting_fields": sorted(MAIL_CONFIGURE_SETTING_FIELDS),
-                "correct_usage": (
-                    "Call mail.configure once per semantic setting with exactly one "
-                    "setting field."
-                ),
-            }
-            if settings:
-                details["conflicting_fields"] = sorted(settings)
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "mail.configure requires exactly one semantic setting",
-                details,
-            )
-        identity_settings = {"signature_text", "quote_original_on_reply"}.intersection(
-            settings
-        )
-        if identity_settings and "identity" not in params:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params.identity is required for identity-specific mail settings",
-                {"settings": sorted(identity_settings)},
-            )
-        if "identity" in params and not identity_settings:
-            setting = next(iter(settings))
-            raise AdapterError(
-                "INVALID_REQUEST",
-                f"params.identity is not used with params.{setting}",
-                {
-                    "conflicting_fields": ["identity", setting],
-                    "correct_usage": (
-                        "Omit params.identity unless configuring signature_text or "
-                        "quote_original_on_reply."
-                    ),
-                },
-            )
-        if "identity" in params:
-            identity = _string(params, "identity")
-            if not identity.replace("_", "").replace("-", "").isalnum():
-                raise AdapterError(
-                    "INVALID_REQUEST", "params.identity contains unsupported characters"
-                )
-        if "signature_text" in params and not isinstance(params["signature_text"], str):
+    elif action == "identity.set_plain_text_signature":
+        _reject_unexpected_fields(action, params, {"identity", "signature_text"})
+        _validate_identity(params)
+        if "signature_text" not in params:
+            raise AdapterError("INVALID_REQUEST", "params.signature_text is required")
+        if not isinstance(params["signature_text"], str):
             raise AdapterError(
                 "INVALID_REQUEST", "params.signature_text must be a string"
             )
-        for field in (
-            "quote_original_on_reply",
-            "automatic_filters_on_subfolders",
-            "unified_inbox",
-            "dark_mode",
-        ):
-            if field in params and not isinstance(params[field], bool):
-                raise AdapterError(
-                    "INVALID_REQUEST", f"params.{field} must be a boolean"
-                )
+    elif action == "identity.set_reply_quoting":
+        _reject_unexpected_fields(action, params, {"identity", "enabled"})
+        _validate_identity(params)
+        if not isinstance(params.get("enabled"), bool):
+            raise AdapterError("INVALID_REQUEST", "params.enabled must be a boolean")
+    elif action in {
+        "filters.set_subfolder_application",
+        "inbox.set_unified",
+        "theme.set_dark_mode",
+    }:
+        _reject_unexpected_fields(action, params, {"enabled"})
+        if not isinstance(params.get("enabled"), bool):
+            raise AdapterError("INVALID_REQUEST", "params.enabled must be a boolean")
     elif action == "xulstore.update":
         _string_list(params, "keys")
         if "value" not in params:
@@ -366,6 +352,8 @@ def _verification(value: Any) -> list[dict[str, Any]]:
 def parse_action_request(raw: Any) -> ActionRequest:
     data = _mapping(raw, "request")
     action = data.get("action")
+    if action in RETIRED_ACTION_REPLACEMENTS:
+        raise _retired_action_error(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_ACTION", "unsupported Thunderbird action", {"action": action}

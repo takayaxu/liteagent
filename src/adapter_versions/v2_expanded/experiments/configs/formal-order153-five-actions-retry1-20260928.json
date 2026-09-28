@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "experiment_id": "formal-order153-five-actions-retry1-20260928",
+  "status": "frozen",
+  "purpose": "Formal single-task validation after replacing the five-way Thunderbird mail configuration union with independent actions and enforcing live identity preflight. Retry after correcting only the serialized source-seal algorithm string; the first attempt stopped before model or VM startup.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "model": {
+    "requested": "qwen3.5-4b",
+    "base_urls": ["https://qwen.jinmaoapi.cc.cd/v1"],
+    "reasoning_profile": "qwen35_thinking_switch",
+    "reasoning_mode": "non_thinking",
+    "record_actual_model_id": true
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [1920, 1080],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "max_steps": 30,
+    "max_local_steps": 15,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 300,
+    "max_output_tokens": 512,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "model_retries": 3,
+    "reasoning_mode": "non_thinking",
+    "request_timeout": 180.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "task_specific_or_golden_exposed": false,
+    "guest_proxy": false,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true
+  },
+  "condition": {
+    "schema_version": "trusted_generic_only_condition.v1",
+    "enforced": true,
+    "role": "local_single_task_run",
+    "result_directory": "adapter_versions/v2_expanded/experiments/formal-order153-five-actions-retry1-20260928",
+    "source_tree": {
+      "scope_roots": ["integrations", "scripts", "tests", "deployment", "calc_adapter", "chrome_adapter", "gimp_adapter", "impress_adapter", "multi_apps_adapter", "os_adapter", "thunderbird_adapter", "vlc_adapter", "vscode_adapter", "writer_adapter"],
+      "excludes": ["__pycache__", ".pytest_cache", ".ruff_cache", ".venv*", "*.pyc"],
+      "file_count": 552,
+      "total_bytes": 81734168,
+      "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+      "sha256": "b05ca789e239811c5acbaa9b3ff35319c58f944f1ba0aae2168f0366b23f7aae"
+    },
+    "baseline_candidate": false,
+    "promotion_pre_authorized": false
+  },
+  "tasks": [
+    {
+      "order": 153,
+      "source_order": 293,
+      "domain": "thunderbird",
+      "task_id": "3f28fe4f-5d9d-4994-a456-efd78cfae1a3",
+      "source_episode_id": "a3b0797d517f26dd5b8be446",
+      "source_path_class": "task_specific",
+      "execution_class": "task_specific",
+      "pool_order": 153
+    }
+  ]
+}

@@ -1391,12 +1391,12 @@ def requested_cover_image_slide(instruction: str) -> int | None:
     return None
 
 
-def semantic_configuration_action(domain: str, instruction: str) -> str | None:
+def semantic_configuration_actions(domain: str, instruction: str) -> list[str]:
     if domain == "os" and re.search(
         r"(?i)\b(?:notification|notifications|banner|banners|disturb|quiet)\b",
         instruction,
     ):
-        return "notifications.configure"
+        return ["notifications.configure"]
     if domain == "vlc":
         is_global_play_pause = bool(
             re.search(r"(?i)\b(?:hotkey|shortcut|keyboard)\b", instruction)
@@ -1425,29 +1425,35 @@ def semantic_configuration_action(domain: str, instruction: str) -> str | None:
                 is_persistent_interface_setting,
             )
         ):
-            return "preferences.configure"
-        return None
+            return ["preferences.configure"]
+        return []
     if domain != "thunderbird":
-        return None
+        return []
+    actions: list[str] = []
     if re.search(r"(?i)\bsignature\b", instruction):
-        return "mail.configure"
+        actions.append("identity.set_plain_text_signature")
     if re.search(r"(?i)\b(?:unified|combined)\b.{0,40}\binbox(?:es)?\b", instruction):
-        return "mail.configure"
+        actions.append("inbox.set_unified")
     if re.search(r"(?i)\b(?:dark\s+(?:mode|theme)|complete\s+dark)\b", instruction):
-        return "mail.configure"
+        actions.append("theme.set_dark_mode")
     if re.search(
         r"(?i)\b(?:reply|replies|quot(?:e|ed|es|ing))\b", instruction
     ) and re.search(
         r"(?i)\b(?:original|message|mail|quote|quoting)\b|[>]",
         instruction,
     ):
-        return "mail.configure"
+        actions.append("identity.set_reply_quoting")
     if re.search(r"(?i)\bfilters?\b", instruction) and re.search(
         r"(?i)\bsubfolders?\b",
         instruction,
     ):
-        return "mail.configure"
-    return None
+        actions.append("filters.set_subfolder_application")
+    return actions
+
+
+def semantic_configuration_action(domain: str, instruction: str) -> str | None:
+    actions = semantic_configuration_actions(domain, instruction)
+    return actions[0] if actions else None
 
 
 def requested_vscode_settings(instruction: str) -> dict[str, Any] | None:
@@ -1535,17 +1541,13 @@ def instruction_required_actions(
     )
     actions.extend(filesystem_rename_semantics.required_actions(domain, instruction))
     actions.extend(clipboard_path_semantics.required_actions(domain, instruction))
-    semantic_action = semantic_configuration_action(domain, instruction)
-    if semantic_action is not None:
-        if (
-            domain == "thunderbird"
-            and semantic_action == "mail.configure"
-            and re.search(
-                r"(?i)\b(?:signature|reply|replies|quot(?:e|ed|es|ing))\b", instruction
-            )
-        ):
-            actions.append("identities.query")
-        actions.append(semantic_action)
+    configuration_actions = semantic_configuration_actions(domain, instruction)
+    if domain == "thunderbird" and {
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+    }.intersection(configuration_actions):
+        actions.append("identities.query")
+    actions.extend(configuration_actions)
     actions.extend(vscode_configuration_semantics.required_actions(domain, instruction))
     actions.extend(workspace_open_semantics.required_actions(domain, instruction))
     if domain == "libreoffice_calc" and re.search(

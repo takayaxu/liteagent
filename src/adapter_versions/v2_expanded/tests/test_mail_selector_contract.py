@@ -44,6 +44,14 @@ RETIRED_ACTIONS = {
     "ui.open_about_profiles",
 }
 RETIRED_LOW_LEVEL_ACTION = "preferences.update"
+RETIRED_COMBINED_ACTION = "mail.configure"
+MAIL_SETTING_ACTIONS = {
+    "identity.set_plain_text_signature",
+    "identity.set_reply_quoting",
+    "filters.set_subfolder_application",
+    "inbox.set_unified",
+    "theme.set_dark_mode",
+}
 
 
 def _message(
@@ -580,32 +588,38 @@ def test_export_eml_resolves_visible_folder_name_in_adapter(
 
 
 @pytest.mark.parametrize(
-    ("setting", "value"),
-    [("signature_text", "Regards"), ("quote_original_on_reply", True)],
+    ("action", "params", "expected_key"),
+    [
+        (
+            "identity.set_plain_text_signature",
+            {"identity": "id7", "signature_text": "Regards"},
+            "mail.identity.id7.htmlSigText",
+        ),
+        (
+            "identity.set_reply_quoting",
+            {"identity": "id7", "enabled": True},
+            "mail.identity.id7.auto_quote",
+        ),
+    ],
 )
-def test_identity_specific_mail_settings_require_explicit_identity(
-    setting: str, value: object
+def test_identity_setting_contracts_are_independent_and_require_identity(
+    action: str, params: dict[str, object], expected_key: str
 ) -> None:
-    params = {setting: value}
-    manifest = THUNDERBIRD_SCHEMAS["mail.configure"]
-    exposed = _exposed_schema("mail.configure")
+    manifest = THUNDERBIRD_SCHEMAS[action]
+    exposed = _exposed_schema(action)
 
-    assert DIRECT_ACTION_SCHEMAS["thunderbird"]["mail.configure"] == manifest
-    assert exposed["allOf"] == manifest["allOf"]
-    assert list(jsonschema.Draft202012Validator(exposed).iter_errors(params))
-    with pytest.raises(ThunderbirdAdapterError) as validation_error:
-        validate_thunderbird("mail.configure", params)
-    assert validation_error.value.code == "INVALID_REQUEST"
-    with pytest.raises(ThunderbirdAdapterError) as action_error:
-        semantic_preference_update(params)
-    assert action_error.value.code == "INVALID_REQUEST"
+    assert DIRECT_ACTION_SCHEMAS["thunderbird"][action] == manifest
+    assert exposed["required"] == manifest["required"]
+    assert not list(jsonschema.Draft202012Validator(exposed).iter_errors(params))
+    validate_thunderbird(action, params)
+    update = semantic_preference_update(action, params)
+    assert expected_key in update["values"]
 
-    explicit = {**params, "identity": "id7"}
-    assert not list(jsonschema.Draft202012Validator(exposed).iter_errors(explicit))
-    validate_thunderbird("mail.configure", explicit)
-    update = semantic_preference_update(explicit)
-    assert update["values"]
-    assert all(key.startswith("mail.identity.id7.") for key in update["values"])
+    missing_identity = dict(params)
+    missing_identity.pop("identity")
+    assert list(jsonschema.Draft202012Validator(exposed).iter_errors(missing_identity))
+    with pytest.raises(ThunderbirdAdapterError, match="identity"):
+        validate_thunderbird(action, missing_identity)
 
 
 def test_identities_query_exposes_exact_profile_keys_for_mail_configuration(
@@ -657,7 +671,24 @@ def test_identities_query_exposes_exact_profile_keys_for_mail_configuration(
 def test_signature_requires_identity_discovery_before_configuration() -> None:
     assert strict_instruction_required_actions(
         "thunderbird", "Set my email signature to Regards"
-    ) == ["identities.query", "mail.configure"]
+    ) == ["identities.query", "identity.set_plain_text_signature"]
+
+
+def test_multiple_mail_settings_require_independent_actions() -> None:
+    required = strict_instruction_required_actions(
+        "thunderbird",
+        "Set my signature, use a unified inbox, enable complete dark mode, quote the "
+        "original message in replies, and run filters on subfolders.",
+    )
+
+    assert required == [
+        "identities.query",
+        "identity.set_plain_text_signature",
+        "inbox.set_unified",
+        "theme.set_dark_mode",
+        "identity.set_reply_quoting",
+        "filters.set_subfolder_application",
+    ]
 
 
 def _stub_mail_lifecycle(
@@ -673,13 +704,21 @@ def _stub_mail_lifecycle(
     )
 
 
-def test_mail_configure_signature_mutates_and_verifies_preferences_only(
+def test_plain_text_signature_mutates_and_verifies_preferences_only(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     profile = tmp_path / "profile"
     profile.mkdir()
     (profile / "prefs.js").write_text(
-        'user_pref("preserved.preference", true);\n', encoding="utf-8"
+        "\n".join(
+            [
+                'user_pref("mail.account.account7.identities", "id7");',
+                'user_pref("mail.identity.id7.useremail", "person@example.test");',
+                'user_pref("preserved.preference", true);',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
     )
     xulstore = profile / "xulstore.json"
     xulstore.write_text('{"preserved": true}\n', encoding="utf-8")
@@ -688,7 +727,7 @@ def test_mail_configure_signature_mutates_and_verifies_preferences_only(
     _stub_mail_lifecycle(monkeypatch, actions, profile)
     params = {"identity": "id7", "signature_text": "Regards\\nLiuxv"}
 
-    result = actions.mail_configure(params, 30)
+    result = actions.identity_set_plain_text_signature(params, 30)
 
     preferences = read_preferences(profile / "prefs.js")
     assert preferences["preserved.preference"] is True
@@ -696,12 +735,12 @@ def test_mail_configure_signature_mutates_and_verifies_preferences_only(
     assert preferences["mail.identity.id7.htmlSig"] is False
     assert xulstore.read_bytes() == original_xulstore
     assert result["xulstore"] is None
-    specs = _default_specs("mail.configure", params, result)
+    specs = _default_specs("identity.set_plain_text_signature", params, result)
     assert [spec["type"] for spec in specs] == ["preferences"]
     assert thunderbird_verifier.verify_specs(specs)["passed"] is True
 
 
-def test_mail_configure_dark_mode_preserves_unrelated_profile_state(
+def test_dark_mode_action_preserves_unrelated_profile_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     profile = tmp_path / "profile"
@@ -722,9 +761,9 @@ def test_mail_configure_dark_mode_preserves_unrelated_profile_state(
     original_xulstore = xulstore.read_bytes()
     actions = ThunderbirdActions()
     _stub_mail_lifecycle(monkeypatch, actions, profile)
-    params = {"dark_mode": True}
+    params = {"enabled": True}
 
-    result = actions.mail_configure(params, 30)
+    result = actions.theme_set_dark_mode(params, 30)
 
     preferences = read_preferences(preferences_path)
     assert preferences["extensions.activeThemeID"] == (
@@ -733,7 +772,7 @@ def test_mail_configure_dark_mode_preserves_unrelated_profile_state(
     assert preferences["preserved.preference"] is True
     assert xulstore.read_bytes() == original_xulstore
     assert result["xulstore"] is None
-    specs = _default_specs("mail.configure", params, result)
+    specs = _default_specs("theme.set_dark_mode", params, result)
     assert specs == [
         {
             "type": "preferences",
@@ -744,7 +783,7 @@ def test_mail_configure_dark_mode_preserves_unrelated_profile_state(
     assert thunderbird_verifier.verify_specs(specs)["passed"] is True
 
 
-def test_mail_configure_unified_inbox_mutates_and_verifies_xulstore_only(
+def test_unified_inbox_action_mutates_and_verifies_xulstore_only(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     profile = tmp_path / "profile"
@@ -757,9 +796,9 @@ def test_mail_configure_unified_inbox_mutates_and_verifies_xulstore_only(
     (profile / "xulstore.json").write_text("{}\n", encoding="utf-8")
     actions = ThunderbirdActions()
     _stub_mail_lifecycle(monkeypatch, actions, profile)
-    params = {"unified_inbox": True}
+    params = {"enabled": True}
 
-    result = actions.mail_configure(params, 30)
+    result = actions.inbox_set_unified(params, 30)
 
     assert preferences.read_bytes() == original_preferences
     assert result["preferences"] is None
@@ -768,41 +807,70 @@ def test_mail_configure_unified_inbox_mutates_and_verifies_xulstore_only(
         observed["chrome://messenger/content/messenger.xhtml"]["folderTree"]["mode"]
         == "smart"
     )
-    specs = _default_specs("mail.configure", params, result)
+    specs = _default_specs("inbox.set_unified", params, result)
     assert [spec["type"] for spec in specs] == ["json_path"]
     assert thunderbird_verifier.verify_specs(specs)["passed"] is True
 
 
-def test_mail_configure_rejects_multiple_settings_before_mutation(
-    monkeypatch: pytest.MonkeyPatch,
+def test_unknown_identity_is_rejected_before_lifecycle_or_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    params = {
-        "identity": "id7",
-        "signature_text": "Regards",
-        "unified_inbox": True,
-    }
-    exposed = _exposed_schema("mail.configure")
-    assert list(jsonschema.Draft202012Validator(exposed).iter_errors(params))
-
-    with pytest.raises(ThunderbirdAdapterError) as validation_error:
-        validate_thunderbird("mail.configure", params)
-    assert validation_error.value.code == "INVALID_REQUEST"
-    assert validation_error.value.details["conflicting_fields"] == [
-        "signature_text",
-        "unified_inbox",
-    ]
-    assert (
-        "once per semantic setting" in validation_error.value.details["correct_usage"]
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    preferences = profile / "prefs.js"
+    preferences.write_text(
+        "\n".join(
+            [
+                'user_pref("mail.account.account1.identities", "id1");',
+                'user_pref("mail.identity.id1.useremail", "person@example.test");',
+                'user_pref("preserved.preference", true);',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
     )
+    original = preferences.read_bytes()
 
     actions = ThunderbirdActions()
     lifecycle_calls: list[float] = []
+    monkeypatch.setattr(thunderbird_actions, "find_profile", lambda: profile)
     monkeypatch.setattr(
         actions, "stop_thunderbird", lambda timeout: lifecycle_calls.append(timeout)
     )
-    with pytest.raises(ThunderbirdAdapterError):
-        actions.mail_configure(params, 30)
+    with pytest.raises(ThunderbirdAdapterError) as error:
+        actions.identity_set_plain_text_signature(
+            {"identity": "id7", "signature_text": "Regards"}, 30
+        )
+    assert error.value.code == "IDENTITY_NOT_FOUND"
+    assert error.value.details["available_identities"][0]["identity"] == "id1"
     assert lifecycle_calls == []
+    assert preferences.read_bytes() == original
+
+
+def test_combined_mail_configure_is_retired_with_actionable_replacements() -> None:
+    surfaces = (
+        set(THUNDERBIRD_ACTIONS),
+        set(THUNDERBIRD_SCHEMAS),
+        set(DIRECT_ACTION_SCHEMAS["thunderbird"]),
+        set(public_actions("thunderbird")),
+    )
+    assert all(RETIRED_COMBINED_ACTION not in surface for surface in surfaces)
+    assert all(MAIL_SETTING_ACTIONS.issubset(surface) for surface in surfaces)
+
+    request = {
+        "action": RETIRED_COMBINED_ACTION,
+        "params": {"identity": "id1", "signature_text": "Regards"},
+    }
+    with pytest.raises(ThunderbirdAdapterError) as parsed_error:
+        parse_action_request(request)
+    assert parsed_error.value.code == "UNSUPPORTED_ACTION"
+    assert (
+        set(parsed_error.value.details["replacement_actions"]) == MAIL_SETTING_ACTIONS
+    )
+
+    with pytest.raises(ThunderbirdAdapterError) as worker_error:
+        execute_thunderbird(request)
+    assert worker_error.value.code == "UNSUPPORTED_ACTION"
 
 
 class _FakeAccessibleNode:

@@ -36,47 +36,47 @@ def normalize_plain_text_line_breaks(value: str) -> str:
     return value.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\r", "\n")
 
 
-def semantic_preference_update(params: dict[str, Any]) -> dict[str, Any]:
-    identity_settings = {"signature_text", "quote_original_on_reply"}.intersection(
-        params
-    )
-    identity = params.get("identity")
-    if identity_settings and (not isinstance(identity, str) or not identity.strip()):
-        raise AdapterError(
-            "INVALID_REQUEST",
-            "params.identity is required for identity-specific mail settings",
-            {"settings": sorted(identity_settings)},
-        )
-    if isinstance(identity, str):
-        identity = identity.strip()
+SEMANTIC_SETTING_ACTIONS = frozenset(
+    {
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+        "filters.set_subfolder_application",
+        "inbox.set_unified",
+        "theme.set_dark_mode",
+    }
+)
+
+
+def semantic_preference_update(action: str, params: dict[str, Any]) -> dict[str, Any]:
+    identity = str(params.get("identity", "")).strip()
     values: dict[str, Any] = {}
     remove_keys: list[str] = []
-    if "signature_text" in params:
+    if action == "identity.set_plain_text_signature":
         values[f"mail.identity.{identity}.htmlSigText"] = (
             normalize_plain_text_line_breaks(params["signature_text"])
         )
         values[f"mail.identity.{identity}.htmlSig"] = False
-    if "quote_original_on_reply" in params:
-        values[f"mail.identity.{identity}.auto_quote"] = params[
-            "quote_original_on_reply"
-        ]
-    if "automatic_filters_on_subfolders" in params:
-        enabled = params["automatic_filters_on_subfolders"]
+    elif action == "identity.set_reply_quoting":
+        values[f"mail.identity.{identity}.auto_quote"] = params["enabled"]
+    elif action == "filters.set_subfolder_application":
+        enabled = params["enabled"]
         values["mail.server.default.applyIncomingFilters"] = enabled
         if enabled:
             values["mail.imap.use_status_for_biff"] = False
             remove_keys.append("mail.server.default.autosync_offline_stores")
-    if "dark_mode" in params:
+    elif action == "theme.set_dark_mode":
         values["extensions.activeThemeID"] = (
             "firefox-compact-dark@mozilla.org"
-            if params["dark_mode"]
+            if params["enabled"]
             else "default-theme@mozilla.org"
         )
     return {"values": values, "remove_keys": remove_keys}
 
 
-def semantic_xulstore_update(params: dict[str, Any]) -> dict[str, Any] | None:
-    if "unified_inbox" not in params:
+def semantic_xulstore_update(
+    action: str, params: dict[str, Any]
+) -> dict[str, Any] | None:
+    if action != "inbox.set_unified":
         return None
     return {
         "keys": [
@@ -84,7 +84,7 @@ def semantic_xulstore_update(params: dict[str, Any]) -> dict[str, Any] | None:
             "folderTree",
             "mode",
         ],
-        "value": "smart" if params["unified_inbox"] else "all",
+        "value": "smart" if params["enabled"] else "all",
     }
 
 
@@ -159,12 +159,33 @@ class ThunderbirdActions:
             "lifecycle": {"stop": stopped, "start": started},
         }
 
-    def mail_configure(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:
-        validate_action_params("mail.configure", params)
-        preference_update = semantic_preference_update(params)
-        xulstore_update = semantic_xulstore_update(params)
-        stopped = self.stop_thunderbird(min(timeout, 15))
+    @staticmethod
+    def _require_known_identity(profile: Path, identity: str) -> None:
+        discovered = query_identities(profile)["identities"]
+        if identity not in {row["identity"] for row in discovered}:
+            raise AdapterError(
+                "IDENTITY_NOT_FOUND",
+                f"Thunderbird identity does not exist: {identity}",
+                {
+                    "identity": identity,
+                    "available_identities": discovered,
+                    "correct_usage": (
+                        "Call identities.query and use one exact returned identity value."
+                    ),
+                },
+                404,
+            )
+
+    def _configure_semantic_setting(
+        self, action: str, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        validate_action_params(action, params)
+        preference_update = semantic_preference_update(action, params)
+        xulstore_update = semantic_xulstore_update(action, params)
         profile = find_profile()
+        if action.startswith("identity."):
+            self._require_known_identity(profile, params["identity"].strip())
+        stopped = self.stop_thunderbird(min(timeout, 15))
         preference_result = None
         if preference_update["values"] or preference_update["remove_keys"]:
             preference_result = update_preferences(
@@ -180,30 +201,50 @@ class ThunderbirdActions:
                 xulstore_update["value"],
             )
         started = self.start_thunderbird(max(5, timeout - 15))
-        configured = {
-            key: value
-            for key, value in params.items()
-            if key
-            in {
-                "identity",
-                "signature_text",
-                "quote_original_on_reply",
-                "automatic_filters_on_subfolders",
-                "unified_inbox",
-                "dark_mode",
-            }
-        }
-        if "signature_text" in configured:
+        configured = dict(params)
+        if action == "identity.set_plain_text_signature":
             configured["signature_text"] = normalize_plain_text_line_breaks(
                 configured["signature_text"]
             )
         return {
+            "action": action,
             "profile": str(profile),
             "preferences": preference_result,
             "xulstore": xulstore_result,
             "lifecycle": {"stop": stopped, "start": started},
             "configured": configured,
         }
+
+    def identity_set_plain_text_signature(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._configure_semantic_setting(
+            "identity.set_plain_text_signature", params, timeout
+        )
+
+    def identity_set_reply_quoting(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._configure_semantic_setting(
+            "identity.set_reply_quoting", params, timeout
+        )
+
+    def filters_set_subfolder_application(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._configure_semantic_setting(
+            "filters.set_subfolder_application", params, timeout
+        )
+
+    def inbox_set_unified(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._configure_semantic_setting("inbox.set_unified", params, timeout)
+
+    def theme_set_dark_mode(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._configure_semantic_setting("theme.set_dark_mode", params, timeout)
 
     def xulstore_update(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:
         return self._profile_action(
@@ -354,6 +395,15 @@ class ThunderbirdActions:
     def dispatch(
         self, action: str, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
+        if action == "mail.configure":
+            raise AdapterError(
+                "UNSUPPORTED_ACTION",
+                "mail.configure has been retired; use one single-setting replacement action",
+                {
+                    "action": action,
+                    "replacement_actions": sorted(SEMANTIC_SETTING_ACTIONS),
+                },
+            )
         method = getattr(self, action.replace(".", "_"), None)
         if method is None:
             raise AdapterError(

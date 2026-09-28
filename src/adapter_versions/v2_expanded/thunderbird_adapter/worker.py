@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .actions import (
+    SEMANTIC_SETTING_ACTIONS,
     ThunderbirdActions,
     semantic_preference_update,
     semantic_xulstore_update,
@@ -19,8 +20,8 @@ from .verifier import verify_specs
 def _default_specs(
     action: str, params: dict[str, Any], result: dict[str, Any]
 ) -> list[dict[str, Any]]:
-    if action == "mail.configure":
-        update = semantic_preference_update(params)
+    if action in SEMANTIC_SETTING_ACTIONS:
+        update = semantic_preference_update(action, params)
         checks: list[dict[str, Any]] = []
         if update["values"] or update["remove_keys"]:
             checks.append(
@@ -30,7 +31,7 @@ def _default_specs(
                     "absent": update["remove_keys"],
                 }
             )
-        xulstore = semantic_xulstore_update(params)
+        xulstore = semantic_xulstore_update(action, params)
         if xulstore is not None:
             checks.append({"type": "json_path", "path": "xulstore.json", **xulstore})
         return checks

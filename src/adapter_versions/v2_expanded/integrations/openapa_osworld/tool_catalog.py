@@ -509,16 +509,25 @@ DOMAIN_SIGNATURES = {
         "identities.query": (
             "params={}; reads current Thunderbird identity keys and their email, display name, "
             "account, server, and hostname mappings; use the exact returned identity key for "
-            "identity-specific mail.configure settings"
+            "identity-specific actions"
         ),
-        "mail.configure": (
-            'params={"identity"?: exact key returned by identities.query, '
-            '"signature_text"?: str, '
-            '"quote_original_on_reply"?: bool, '
-            '"automatic_filters_on_subfolders"?: bool, "unified_inbox"?: bool, '
-            '"dark_mode"?: bool}; provide exactly one semantic setting per call; '
-            "identity is required and accepted only for signature or reply quoting; call "
-            "identities.query first and use its exact identity value"
+        "identity.set_plain_text_signature": (
+            'params={"identity": exact key returned by identities.query, '
+            '"signature_text": str}; sets one identity plain-text signature atomically'
+        ),
+        "identity.set_reply_quoting": (
+            'params={"identity": exact key returned by identities.query, "enabled": bool}; '
+            "sets whether one identity quotes the original message in replies"
+        ),
+        "filters.set_subfolder_application": (
+            'params={"enabled": bool}; sets whether incoming filters run automatically on '
+            "IMAP subfolders without changing filter rules"
+        ),
+        "inbox.set_unified": (
+            'params={"enabled": bool}; changes only the unified inbox folder-tree view mode'
+        ),
+        "theme.set_dark_mode": (
+            'params={"enabled": bool}; changes only the built-in complete dark theme setting'
         ),
         "folders.ensure_local": 'params={"names": [str]}',
         "filters.configure": (
