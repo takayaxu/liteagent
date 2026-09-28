@@ -432,3 +432,21 @@ Order 121 is **PASS** in the preserved historical audit (`src/adapter_versions/v
 The current contract keeps the two decisions model-visible and sequential. The spreadsheet reader requires an explicit local path and bounds sheet/range and row/column windows; `range.read` remains the separate choice for an already-open workbook and a single contiguous rectangle. The recipient action requires a non-empty model-selected address array, optionally takes an observed exact subject for compose-window disambiguation, and performs native read-back after each address. Search/recovery checks cover both `workbook.read_file` and `compose.set_recipients`; no task-aware route, answer derivation, or combined spreadsheet-to-mail action was added.
 
 Focused validation on the current checkout passed **156 tests** across recovery surface, active-workbook discovery, spreadsheet-open semantics, and the existing mail selector contract. The historical final audit recorded 8 events and evaluator reward `1.0`; its raw result directory is not present in this source snapshot, so this entry does not claim a new evaluator run.
+
+### Order 157 API State (2026-09-28)
+
+Order 157's instruction is to enable Thunderbird's unified inbox view. The required
+replacement is the single-setting `thunderbird.inbox.set_unified(enabled)` action.
+It writes only the native `xulstore.json` folder-tree mode (`smart` when enabled,
+`all` when disabled) and receives a default `json_path` read-back; it does not
+touch preferences or accept any other mail setting. The former `mail.configure`
+facade is retired and returns actionable replacement actions instead of accepting
+the old heterogeneous payload.
+
+The model-visible manifest, runtime validation, dispatch, worker verification and
+catalog surface are aligned on this action. Focused unified-inbox contract checks
+passed (5 tests) and the Thunderbird files passed Ruff. A formal single-task pilot
+was attempted with the preserved Order 157 task definition, but the runner stopped
+before VM launch because a concurrent Order 107 process was changing the shared
+source-tree seal. No evaluator result is claimed; Order 157 remains blocked pending
+a clean, resealed single-task rerun.

@@ -272,3 +272,11 @@ $PYTHON -m ruff check <changed_python_files>
 - 实现提交：`be6c7af`（`fix(order152): validate export eml contract`）；在 action dispatch 入口执行完整参数校验，避免 worker 绕过混合契约拒绝。
 - focused checks：`test_mail_selector_contract.py` **30 passed**；`/opt/anaconda3/bin/ruff check` 对改动 Thunderbird action/test 通过；`git diff --check` 通过。
 - 正式 OSWorld 单题结果：配置 `src/adapter_versions/v2_expanded/experiments/configs/formal-order152-20260927.json`，结果目录 `src/adapter_versions/v2_expanded/experiments/formal-order152-20260927-rerun2/`。原始 evaluator `status=passed`、`reward=1.0`、`termination_reason=agent_done`；模型实际调用 `messages.export_eml(folder_name="Inbox", output_dir="~/emails.bak")`，Adapter 返回 `count=6` 且 `exported_eml` verification 通过。完整轨迹位于 `src/adapter_versions/v2_expanded/experiments/formal-order152-20260927-rerun2/workers/worker-00/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/`，实际 served model 为 `Qwen3.5-9B-Q4_K_M`，thinking mode 为 `non_thinking`。
+
+## Order 157（2026-09-28）
+
+- 题目：`3f49d2cc-f400-4e7d-90cc-9b18e401cc31`；要求在 Thunderbird 中启用 Unified Folders/unified inbox。完整题面来自 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/3f49d2cc-f400-4e7d-90cc-9b18e401cc31.json`。固定 coverage 配置为 `generic-only-coverage-order157-v158.json`；该配置没有保留可审计的原始运行轨迹，因此没有把缺失轨迹当作失败原因或答案证据。
+- 人工判断：本题只涉及原 `thunderbird.mail.configure` 中的 `unified_inbox` 语义。它应独立表达一个 folder-tree view mode mutation，并只更新 `xulstore.json` 的 `messenger.xhtml/folderTree/mode`；不应同时修改 prefs.js 或接受签名、回复引用、过滤器、主题等异构 setting。
+- API replacement：新增模型可见 `thunderbird.inbox.set_unified(enabled)`，并在 schema、runtime validation、dispatch、worker 默认 `json_path` verification 和 catalog action surface 中保持同名窄契约。旧 `mail.configure` 不再接受组合参数，返回带 replacement actions 的 `UNSUPPORTED_ACTION`。本题不新增 task-aware 路由或固定值以外的运行时逻辑。
+- focused checks：本题相关 contract 用例 **5 passed**（unified/combined/identity-setting surface）；Thunderbird action、schema、manifest、worker 和 mail contract 执行 Ruff 通过。整组 mail contract 为 **86 passed，2 个与本题无关的 recovery-surface 失败**，失败来自共享工作树中并行 Order 107 的未提交 generic routing 变更。
+- 单题运行：曾按 `formal-order157-20260928.json` 尝试在 `local-order157-unified-inbox-20260928/` 运行；runner 在启动前因共享工作树并行 Order 107 进程造成 source-tree seal 漂移而拒绝，未产生 evaluator 结果或轨迹，故本题当前记为 blocked，不能宣称 OSWorld PASS。
