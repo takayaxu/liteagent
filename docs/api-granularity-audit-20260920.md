@@ -445,8 +445,15 @@ the old heterogeneous payload.
 
 The model-visible manifest, runtime validation, dispatch, worker verification and
 catalog surface are aligned on this action. Focused unified-inbox contract checks
-passed (5 tests) and the Thunderbird files passed Ruff. A formal single-task pilot
-was attempted with the preserved Order 157 task definition, but the runner stopped
-before VM launch because a concurrent Order 107 process was changing the shared
-source-tree seal. No evaluator result is claimed; Order 157 remains blocked pending
-a clean, resealed single-task rerun.
+passed (5 tests) and the Thunderbird files passed Ruff. The formal single-task
+result is preserved in
+`src/adapter_versions/v2_expanded/experiments/local-order157-unified-inbox-20260928-rerun2/`:
+the original evaluator reports `status=passed`, `reward=1.0`, and
+`termination_reason=agent_done`; `result.txt` contains `1.0`. The complete raw
+trajectory and call evidence are in
+`workers/worker-00/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/`,
+with `adapter_calls.jsonl` showing the successful
+`inbox.set_unified(enabled=true)` call and read-back `mode=smart`. Order 157 is
+therefore **PASS**. A later attempt using the same frozen config and a new output
+directory was correctly rejected before VM launch because that directory was not
+declared by the frozen condition; it did not alter or invalidate the preserved PASS.
