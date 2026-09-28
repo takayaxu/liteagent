@@ -1398,22 +1398,42 @@ ACTION_KEYWORDS = {
         "vision",
         "zoom",
     },
-    ("thunderbird", "mail.configure"): {
+    ("thunderbird", "identity.set_plain_text_signature"): {
         "mail",
         "email",
         "signature",
+        "plain",
+        "text",
+        "identity",
+    },
+    ("thunderbird", "identity.set_reply_quoting"): {
+        "mail",
+        "email",
         "reply",
         "quote",
         "quoting",
+        "original",
+        "identity",
+    },
+    ("thunderbird", "filters.set_subfolder_application"): {
+        "mail",
         "automatic",
         "filter",
         "filters",
         "subfolder",
         "subfolders",
+    },
+    ("thunderbird", "inbox.set_unified"): {
+        "mail",
         "unified",
+        "combined",
         "inbox",
+    },
+    ("thunderbird", "theme.set_dark_mode"): {
+        "mail",
         "dark",
         "theme",
+        "mode",
     },
     ("vlc", "preferences.configure"): {
         "vlc",
