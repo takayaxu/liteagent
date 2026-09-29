@@ -457,3 +457,22 @@ with `adapter_calls.jsonl` showing the successful
 therefore **PASS**. A later attempt using the same frozen config and a new output
 directory was correctly rejected before VM launch because that directory was not
 declared by the frozen condition; it did not alter or invalidate the preserved PASS.
+
+### Order 158 API State (2026-09-29)
+
+Order 158 requires disabling quoted original text in replies. The task uses the
+single-setting `thunderbird.identity.set_reply_quoting(identity, enabled)` action,
+with a preceding read-only `identities.query` to obtain the exact profile identity.
+The replacement writes only `mail.identity.<identity>.auto_quote` in `prefs.js` and
+returns a preference read-back; it does not expose the retired heterogeneous
+`mail.configure` payload or touch unrelated mail settings.
+
+The formal retry is preserved in
+`src/adapter_versions/v2_expanded/experiments/formal-order158-20260929-retry1/`.
+The first attempt is retained as an environment-only Hugging Face timeout in
+`formal-order158-20260929/`; it reached no model action. The successful trajectory
+shows `identities.query -> identity.set_reply_quoting(identity="id1", enabled=false)`
+and verification of `mail.identity.id1.auto_quote=false`. The original evaluator
+reports `status=passed`, `reward=1.0`, and `termination_reason=agent_done`; Order 158
+is **PASS**. Focused mail contract validation passed 32 tests and relevant Python
+files passed Ruff.
