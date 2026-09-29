@@ -233,3 +233,32 @@ Exact historical validation command reconstructed from the frozen config:
 ```text
 PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py --config src/adapter_versions/v2_expanded/experiments/configs/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1.json --result-dir src/adapter_versions/v2_expanded/experiments/holo31-all-roles-order96-optional-format-guidance-retest-20260913-v1-run1 --workers 1 --base-urls http://192.168.0.138:8001/v1 --model holo3.1-4b --python /home/liuhao/computer_use/adapter_versions/v2_expanded/.venv-openapa/bin/python --max-steps 100 --max-local-steps 50 --max-agent-seconds 1800 --max-output-tokens 4096 --reasoning-mode thinking --request-timeout 240
 ```
+
+### Order 107 ECS Rates (2026-09-29)
+
+Order 107 passed the original OSWorld evaluator with `status=passed`,
+`reward=1.0`, and `termination_reason=agent_done`. The successful artifact is
+`src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/results.json`.
+
+The minimal API replacement keeps the workflow generic and split. It uses
+`os.filesystem.find` once to discover the nine PDFs, then calls
+`os.pdf.tables.inspect` once per PDF so each response is bounded and the model
+does not lose the remaining documents to a single oversized response. After
+all nine observations, the Calc consumer remains atomic:
+`libreoffice_calc.workbook.inspect`, `libreoffice_calc.range.read`,
+`libreoffice_calc.range.write`, `libreoffice_calc.range.read`, and
+`libreoffice_calc.workbook.save`. No ECS-specific combined PDF-to-workbook
+mutation, task route, or golden data source was exposed.
+
+Implementation commit: `1f873e3` (`fix(order107): split ECS PDF table observations`).
+Focused validation: `86 passed` in
+`src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`.
+
+Exact OSWorld validation command (Qwen endpoint and local HF mirror):
+
+```text
+HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-ecs-rates-107-retry92-20260929.json --orders 107 --result-dir src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-agent-seconds 1200 --max-no-progress-steps 8 --max-output-tokens 8192 --reasoning-mode non_thinking --temperature 0 --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+The adapter call trace is in
+`src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl`.

@@ -502,3 +502,33 @@ read-backs are in
 `src/adapter_versions/v2_expanded/experiments/local-order160-subfolder-filters-20260929-retry1/workers/worker-00/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/adapter_calls.jsonl`,
 and `result.txt` contains `1.0`. Focused mail contract validation passed 34
 tests and the changed Python files passed Ruff.
+
+### Order 107 API State (2026-09-29)
+
+Order 107 is **PASS** (`status=passed`, `reward=1.0`,
+`termination_reason=agent_done`). The evaluator evidence is preserved at
+`src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/results.json`.
+
+The API state is intentionally decomposed into bounded observation and atomic
+Calc mutations:
+
+- `os.filesystem.find` discovers the PDF inputs once.
+- `os.pdf.tables.inspect` is called once for each of the nine PDFs. This is the
+  bounded continuation unit; a nine-document batch is not exposed because the
+  Qwen response can be interrupted before all source observations are returned.
+- `libreoffice_calc.workbook.inspect` observes the active workbook, followed by
+  `libreoffice_calc.range.read`, `libreoffice_calc.range.write`, a read-back
+  `range.read`, and `libreoffice_calc.workbook.save`.
+
+The generic state machine records completion of all nine structured PDF
+observations, derives the next action from the observation ledger, prevents
+repeated GUI/search/PDF calls, and exposes only the next valid consumer action.
+After the successful write and read-back it exposes save, and after save it
+exposes only `propose_done`. No task-specific parser, combined PDF-to-sheet
+mutation, or golden route was added. The model-visible API replacement is
+therefore a sequence of existing generic actions, with lifecycle gating rather
+than a larger facade.
+
+Implementation commit: `1f873e3` (`fix(order107): split ECS PDF table observations`).
+Focused contract validation: `86 passed` in
+`src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`.
