@@ -691,6 +691,13 @@ def test_multiple_mail_settings_require_independent_actions() -> None:
     ]
 
 
+def test_subfolder_application_does_not_require_a_filter_rule() -> None:
+    assert strict_instruction_required_actions(
+        "thunderbird",
+        "Apply automatic message filters to subfolders.",
+    ) == ["filters.set_subfolder_application"]
+
+
 def _stub_mail_lifecycle(
     monkeypatch: pytest.MonkeyPatch, actions: ThunderbirdActions, profile: Path
 ) -> None:
@@ -810,6 +817,50 @@ def test_unified_inbox_action_mutates_and_verifies_xulstore_only(
     specs = _default_specs("inbox.set_unified", params, result)
     assert [spec["type"] for spec in specs] == ["json_path"]
     assert thunderbird_verifier.verify_specs(specs)["passed"] is True
+
+
+def test_subfolder_filter_action_sets_only_its_preferences(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    profile = tmp_path / "profile"
+    profile.mkdir()
+    preferences = profile / "prefs.js"
+    preferences.write_text(
+        "\n".join(
+            [
+                'user_pref("mail.server.default.applyIncomingFilters", false);',
+                'user_pref("mail.imap.use_status_for_biff", true);',
+                'user_pref("mail.server.default.autosync_offline_stores", true);',
+                'user_pref("preserved.preference", true);',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    actions = ThunderbirdActions()
+    _stub_mail_lifecycle(monkeypatch, actions, profile)
+
+    result = actions.filters_set_subfolder_application({"enabled": True}, 30)
+
+    observed = read_preferences(preferences)
+    assert observed["mail.server.default.applyIncomingFilters"] is True
+    assert observed["mail.imap.use_status_for_biff"] is False
+    assert "mail.server.default.autosync_offline_stores" not in observed
+    assert observed["preserved.preference"] is True
+    specs = _default_specs("filters.set_subfolder_application", {"enabled": True}, result)
+    assert thunderbird_verifier.verify_specs(specs)["passed"] is True
+
+    exposed = _exposed_schema("filters.set_subfolder_application")
+    assert list(
+        jsonschema.Draft202012Validator(exposed).iter_errors(
+            {"enabled": True, "values": {"mail.other": False}}
+        )
+    )
+    with pytest.raises(ThunderbirdAdapterError, match="unsupported parameters"):
+        validate_thunderbird(
+            "filters.set_subfolder_application",
+            {"enabled": True, "values": {"mail.other": False}},
+        )
 
 
 def test_unknown_identity_is_rejected_before_lifecycle_or_mutation(

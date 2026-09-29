@@ -476,3 +476,29 @@ and verification of `mail.identity.id1.auto_quote=false`. The original evaluator
 reports `status=passed`, `reward=1.0`, and `termination_reason=agent_done`; Order 158
 is **PASS**. Focused mail contract validation passed 32 tests and relevant Python
 files passed Ruff.
+### Order 160 API State (2026-09-29)
+
+Order 160 asks Thunderbird to apply existing incoming message filters
+automatically on IMAP subfolders. The task uses the single-setting
+`thunderbird.filters.set_subfolder_application(enabled)` action. It writes only
+the generic preference state required for that setting: enables
+`mail.server.default.applyIncomingFilters`, disables
+`mail.imap.use_status_for_biff`, and removes the conflicting offline-sync
+override. It does not configure any filter rule, create folders, or expose the
+retired `preferences.update`/`mail.configure` facades.
+
+The generic instruction classifier was corrected so wording that only asks to
+apply filters to subfolders does not additionally require `filters.configure`;
+concrete rule criteria or actions still route to the single-rule filter action.
+The model-visible schema, validation, dispatch, default preference
+verification, and focused contract test remain aligned.
+
+The first formal attempt completed the setting but exposed that completion-gate
+misclassification and was retained at
+`src/adapter_versions/v2_expanded/experiments/local-order160-subfolder-filters-20260929/`.
+The retry passed with `status=passed`, `reward=1.0`, and
+`termination_reason=agent_done`; the successful call and three preference
+read-backs are in
+`src/adapter_versions/v2_expanded/experiments/local-order160-subfolder-filters-20260929-retry1/workers/worker-00/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/adapter_calls.jsonl`,
+and `result.txt` contains `1.0`. Focused mail contract validation passed 34
+tests and the changed Python files passed Ruff.

@@ -293,3 +293,26 @@ $PYTHON -m ruff check <changed_python_files>
   ```bash
   HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/formal-order158-20260929.json --orders 158 --result-dir src/adapter_versions/v2_expanded/experiments/formal-order158-20260929-retry1/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 30 --max-local-steps 20 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 600 --max-output-tokens 512 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
   ```
+## Order 160 开发记录（2026-09-29）
+
+- 题目：`08c73485-7c6d-4681-999d-919f5c32dcfa`；要求让 Thunderbird 现有消息过滤器自动应用到 IMAP 子文件夹。
+- API replacement：使用单一 `filters.set_subfolder_application(enabled)`；本题不需要 `filters.configure`。修正通用 Thunderbird 意图识别，避免把“应用现有过滤器到子文件夹”误判为新增具体规则。
+- 结果：首次运行已成功写入并验证三项 preference，但 completion gate 错误要求 `filters.configure`，保留于 `experiments/local-order160-subfolder-filters-20260929/`。修复后 retry1 通过，`status=passed`、`reward=1.0`、`termination_reason=agent_done`；结果见 `experiments/local-order160-subfolder-filters-20260929-retry1/`。
+- focused checks：`test_mail_selector_contract.py` **34 passed**；`/opt/anaconda3/bin/ruff check src/adapter_versions/v2_expanded/integrations/lite_agent/thunderbird_filter_semantics.py src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py` 通过。
+- 实际复跑命令：
+
+  ```bash
+  HF_ENDPOINT=https://hf-mirror.com \
+  PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" \
+  /var/lib/liteagent-shared/python-env/bin/python \
+  src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
+  --config src/adapter_versions/v2_expanded/experiments/configs/local-order160-subfolder-filters-20260929.json \
+  --orders 160 \
+  --result-dir src/adapter_versions/v2_expanded/experiments/local-order160-subfolder-filters-20260929-retry1/workers/worker-00 \
+  --base-url https://qwen1.jinmaoapi.cc.cd/v1 \
+  --model Qwen3.5-9B-Q4_K_M --reasoning-mode non_thinking \
+  --max-steps 30 --max-local-steps 20 --max-soft-restarts 1 \
+  --max-no-progress-steps 8 --max-agent-seconds 600 \
+  --max-output-tokens 512 --top-k 7 --temperature 0 \
+  --request-timeout 240 --model-retries 3
+  ```
