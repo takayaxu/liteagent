@@ -179,6 +179,48 @@ def _append_inspect_result(state: RuntimeState, *, step: int = 2) -> None:
     )
 
 
+def _append_pdf_table_result(
+    state: RuntimeState, *, input_path: str, step: int
+) -> None:
+    state.events.append(
+        ExecutionEvent(
+            step=step,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__pdf_tables_inspect",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "pdf.tables.inspect",
+                    "payload": {"params": {"input_path": input_path, "page": 1}},
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "adapter": "os",
+                        "action": "pdf.tables.inspect",
+                        "response": {
+                            "status": "ok",
+                            "result": {
+                                "input_path": input_path,
+                                "table_count": 1,
+                                "table_index": 0,
+                                "row_count": 4,
+                                "column_count": 3,
+                                "rows": [["Year", "HKU", "Other"], ["2019", "25", "7"]],
+                            },
+                        },
+                    },
+                }
+            },
+        )
+    )
+
+
 def _append_failed_inspect(state: RuntimeState) -> None:
     state.events.append(
         ExecutionEvent(
@@ -447,6 +489,455 @@ def test_completed_fields_hide_only_batch_routes() -> None:
     )
 
 
+def test_downstream_batch_routes_require_a_successful_source_observation() -> None:
+    """A search hit cannot advance the workflow past the PDF producer."""
+    state = _state()
+
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "pdf.extract_text_batch"
+    )
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "pdf.tables.inspect"
+    )
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.inspect"
+    )
+    assert not batch_table_semantics.structured_pdf_table_observation_pending(state)
+
+
+def test_search_result_cannot_replace_initial_pdf_batch_reader() -> None:
+    """Common tool constraints retain only the producer before its first success."""
+    state = _state()
+    state.events.append(
+        ExecutionEvent(
+            step=1,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "catalog",
+                "tool": "tools_search",
+                "action": "tools_search",
+                "arguments": {"query": "PDF extraction and PDF table inspection"},
+            },
+            executed=True,
+            result={
+                "matches": [
+                    {
+                        "action": "adapter.call",
+                        "adapter": "os",
+                        "downstream_action": "pdf.extract_text_batch",
+                    },
+                    {
+                        "action": "adapter.call",
+                        "adapter": "os",
+                        "downstream_action": "pdf.tables.inspect",
+                    },
+                ],
+            },
+        )
+    )
+    agent = _agent()
+    tools = agent._build_tools(
+        state.domain,
+        ["adapter.call"],
+        include_gui=False,
+        include_control_tools=True,
+        strict_generic=True,
+    )
+    constrained = agent._apply_common_tool_constraints(tools, state)
+    adapter_tool = next(
+        tool
+        for tool in constrained
+        if tool.get("function", {}).get("name") == "adapter__adapter_call"
+    )
+    parameters = adapter_tool["function"]["parameters"]
+    assert parameters["properties"]["action"]["enum"] == [
+        "pdf.extract_text_batch"
+    ]
+
+
+def test_found_pdf_table_route_exposes_execution_api_without_search_retry() -> None:
+    state = _state(
+        instruction=(
+            "For each source PDF, extract the rows for each university and fill "
+            "the spreadsheet."
+        )
+    )
+    _append_batch_result(state, count=1)
+    state.events.append(
+        ExecutionEvent(
+            step=2,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "catalog",
+                "tool": "tools_search",
+                "action": "tools_search",
+                "arguments": {"query": "pdf.tables.inspect"},
+            },
+            executed=True,
+            result={
+                "matches": [
+                    {
+                        "action": "adapter.call",
+                        "adapter": "os",
+                        "downstream_action": "pdf.tables.inspect",
+                    }
+                ]
+            },
+        )
+    )
+
+    tools = _agent().tools(state)
+    names = {tool["function"]["name"] for tool in tools}
+
+    assert names == {"adapter__adapter_call"}
+    adapter_tool = tools[0]
+    assert adapter_tool["function"]["parameters"]["properties"]["action"]["enum"] == [
+        "pdf.tables.inspect"
+    ]
+
+
+def test_unsearched_pdf_table_route_exposes_search_only() -> None:
+    state = _state(
+        instruction=(
+            "For each source PDF, extract the rows for each university and fill "
+            "the spreadsheet."
+        )
+    )
+    _append_batch_result(state, count=1)
+    state.events.append(
+        ExecutionEvent(
+            step=2,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "catalog",
+                "tool": "tools_search",
+                "action": "tools_search",
+                "arguments": {"query": "pdf.extract_text_batch"},
+            },
+            executed=True,
+            result={
+                "matches": [
+                    {
+                        "action": "adapter.call",
+                        "adapter": "os",
+                        "downstream_action": "pdf.extract_text_batch",
+                    }
+                ]
+            },
+        )
+    )
+
+    names = {tool["function"]["name"] for tool in _agent().tools(state)}
+
+    assert names == {"tools_search"}
+
+
+def test_initial_batch_read_rejects_unobserved_glob_after_multi_file_discovery() -> None:
+    state = _state(
+        instruction=(
+            "Read each source PDF and organize the extracted results in an Excel table."
+        )
+    )
+    state.events.append(
+        ExecutionEvent(
+            step=1,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "filesystem.find",
+                    "payload": {
+                        "params": {
+                            "roots": ["/tmp/source"],
+                            "name_patterns": [
+                                "source-0.pdf",
+                                "source-1.pdf",
+                                "source-2.pdf",
+                            ],
+                        }
+                    },
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "kind": "file",
+                        "match_count": 3,
+                        "matches": [
+                            {"kind": "file", "path": f"/tmp/source-{i}.pdf"}
+                            for i in range(3)
+                        ],
+                    },
+                }
+            },
+        )
+    )
+
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {
+                "params": {
+                    "input_pattern": "*.pdf",
+                    "cwd_source": "explicit",
+                    "cwd_path": "/tmp",
+                }
+            },
+        },
+    )
+
+    assert errors
+    assert "exact PDF basenames" in errors[0]
+
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {
+                "params": {
+                    "input_pattern": "source-0.pdf",
+                    "cwd_source": "explicit",
+                    "cwd_path": "/tmp",
+                }
+            },
+        },
+    ) == []
+
+
+def test_exact_discovery_keeps_remaining_pdf_sources_on_batch_stage() -> None:
+    state = _state(
+        instruction=(
+            "Read each source PDF and organize the extracted results in an Excel table."
+        )
+    )
+    state.events.append(
+        ExecutionEvent(
+            step=1,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "filesystem.find",
+                    "payload": {
+                        "params": {
+                            "roots": ["/tmp/source"],
+                            "name_patterns": [
+                                "source-0.pdf",
+                                "source-1.pdf",
+                                "source-2.pdf",
+                            ],
+                        }
+                    },
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "matches": [
+                            {"kind": "file", "path": f"/tmp/source-{i}.pdf"}
+                            for i in range(3)
+                        ]
+                    },
+                }
+            },
+        )
+    )
+    _append_batch_result(state, count=1, input_pattern="source-0.pdf", step=2)
+
+    assert batch_table_semantics.stage_actions(
+        state, [batch_table_semantics.CREATE_ACTION]
+    ) == ["pdf.extract_text_batch"]
+
+
+def test_initial_batch_read_requires_discovered_pdf_directory_explicitly() -> None:
+    state = _state(
+        instruction=(
+            "Read each source PDF and organize the extracted results in an Excel table."
+        )
+    )
+    state.events.append(
+        ExecutionEvent(
+            step=1,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "filesystem.find",
+                    "payload": {"params": {"roots": ["/home/user"]}},
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "match_count": 2,
+                        "matches": [
+                            {"kind": "file", "path": path}
+                            for path in (
+                                "/home/user/Documents/Fundings/grf/grf19.pdf",
+                                "/home/user/Documents/Fundings/grf/grf20.pdf",
+                            )
+                        ],
+                    },
+                }
+            },
+        )
+    )
+
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {
+                "params": {"input_pattern": "grf*.pdf", "cwd_source": "home"}
+            },
+        },
+    )
+
+    assert errors
+    assert 'cwd_source="explicit"' in errors[0]
+    assert 'cwd_path="/home/user/Documents/Fundings/grf"' in errors[0]
+
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {
+                "params": {
+                    "input_pattern": "grf*.pdf",
+                    "cwd_source": "explicit",
+                    "cwd_path": "/home/user/Documents/Fundings/grf",
+                }
+            },
+        },
+    ) == []
+
+
+def test_initial_batch_read_allows_single_basename_for_explicit_single_file_request() -> None:
+    state = _state(
+        instruction="Read the single source PDF and extract its text into a table."
+    )
+    state.events.append(
+        ExecutionEvent(
+            step=1,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "filesystem.find",
+                    "payload": {"params": {"roots": ["/tmp/source"]}},
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "matches": [
+                            {"kind": "file", "path": f"/tmp/source-{i}.pdf"}
+                            for i in range(3)
+                        ]
+                    },
+                }
+            },
+        )
+    )
+
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "os",
+            "action": "pdf.extract_text_batch",
+            "payload": {
+                "params": {
+                    "input_pattern": "source-0.pdf",
+                    "cwd_source": "explicit",
+                    "cwd_path": "/tmp",
+                }
+            },
+        },
+    ) == []
+
+
+def test_structured_pdf_table_observation_is_required_before_matrix_creation() -> None:
+    state = _state(
+        instruction=(
+            "Read the HKU application and supported counts for each source PDF, "
+            "using the university columns and discipline rows, calculate the success "
+            "result, and organize the results in a new Excel table."
+        )
+    )
+    assert not batch_table_semantics.structured_pdf_table_observation_pending(state)
+    _append_batch_result(state, count=2, truncated=False)
+
+    assert batch_table_semantics.requested_fields_complete(state)
+    assert batch_table_semantics.structured_pdf_table_observation_pending(state)
+    assert batch_table_semantics.stage_actions(state, ["workbook.create_new"]) == [
+        "pdf.tables.inspect"
+    ]
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.create_new"
+    )
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "pdf.tables.inspect"
+    )
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "workbook.create_new",
+        {"headers": ["Year", "#Applied"], "rows": [[2019, 25], [2020, 30]]},
+    )
+    assert errors and "pdf.tables.inspect" in errors[0]
+
+    for index, item in enumerate(state.events[0].result["adapter_response"]["result"]["files"]):
+        _append_pdf_table_result(state, input_path=item["path"], step=index + 2)
+
+    assert not batch_table_semantics.structured_pdf_table_observation_pending(state)
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.create_new"
+    )
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "workbook.create_new",
+        {"headers": ["Year", "#Applied"], "rows": [[2019, 25], [2020, 30]]},
+    ) == []
+
+
+def test_non_tabular_pdf_extraction_does_not_require_pdf_table_inspection() -> None:
+    state = _state(
+        instruction="Extract the title and author from each PDF and save an Excel table."
+    )
+    _append_batch_result(state, count=1, truncated=False)
+    assert not batch_table_semantics.requires_structured_pdf_table_observation(state)
+    assert not batch_table_semantics.structured_pdf_table_observation_pending(state)
+
+
 def test_incomplete_source_lease_survives_a_successful_continuation() -> None:
     state = _state()
     _append_batch_result(state, count=2, step=1, truncated=True)
@@ -513,7 +1004,8 @@ def test_complete_source_with_context_only_truncation_does_not_replay_batch() ->
     projection = batch_table_semantics._batch_model_projection(state.events[0])
     assert projection is not None
     assert projection["source_has_more"] is False
-    assert projection["context_truncated"] is True
+    assert projection["context_truncated"] is False
+    assert projection["context_window_truncated"] is True
     assert batch_table_semantics.batch_continuation_action(state) is None
 
 
@@ -549,7 +1041,8 @@ def test_context_omitted_complete_source_does_not_schedule_batch_replay() -> Non
     assert projection["files_omitted"] == 5
     assert projection["context_files_omitted"] == 5
     assert projection["source_has_more"] is False
-    assert projection["context_truncated"] is True
+    assert projection["context_truncated"] is False
+    assert projection["context_window_truncated"] is True
     assert batch_table_semantics.batch_continuation_action(state) is None
 
 
@@ -917,6 +1410,18 @@ def test_complete_batch_does_not_readd_observed_reader() -> None:
     assert "pdf.extract_text_batch" not in actions
 
 
+def test_complete_structured_batch_cannot_abort_before_table_mutation() -> None:
+    """Source-complete PDF evidence outranks screenshot/failure narratives."""
+    state = _state()
+    _append_batch_result(state)
+    _append_inspect_result(state)
+
+    names = {tool["function"]["name"] for tool in _agent(include_gui=True).tools(state)}
+
+    assert "fail_task" not in names
+    assert "gui_action" not in names
+
+
 def test_batch_producer_is_detected_before_any_producer_attempt() -> None:
     state = _state()
 
@@ -999,8 +1504,97 @@ def test_failed_batch_probe_releases_discovery_only_gate() -> None:
 
     assert not batch_table_semantics.inspection_pending(state)
     names = {tool["function"]["name"] for tool in _agent().tools(state)}
-    assert "propose_done" in names
-    assert "fail_task" in names
+    assert "propose_done" not in names
+    assert "fail_task" not in names
+
+
+def test_recovered_batch_probe_does_not_reopen_gui_recovery() -> None:
+    state = _state()
+    _append_batch_result(state)
+    _append_failed_inspect(state)
+    _append_inspect_result(state, step=3)
+
+    names = {tool["function"]["name"] for tool in _agent(include_gui=True).tools(state)}
+    assert "gui_action" not in names
+    assert "propose_done" not in names
+
+
+def test_batch_replan_keeps_gui_hidden_after_repeated_gui_block() -> None:
+    state = _state()
+    _append_batch_result(state)
+    _append_inspect_result(state)
+    state.events.append(
+        ExecutionEvent(
+            step=3,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "gui",
+                "tool": "gui_action",
+                "action": "click",
+                "arguments": {"x": "506", "y": "74"},
+            },
+            executed=False,
+            error={
+                "type": "RepeatedActionBlocked",
+                "blocked_action": "gui_action",
+                "argument_signature": "synthetic",
+                "error_signature": "RepeatedGUIAction",
+                "block_scope": "window",
+                "blocked_until_step": 8,
+            },
+        )
+    )
+
+    names = {tool["function"]["name"] for tool in _agent(include_gui=True).tools(state)}
+    assert "gui_action" not in names
+    assert "tools_search" in names
+
+
+def test_batch_completion_stays_hidden_until_mutation_and_save() -> None:
+    state = _state()
+    _append_batch_result(state)
+    _append_inspect_result(state)
+
+    names = {tool["function"]["name"] for tool in _agent().tools(state)}
+    assert "propose_done" not in names
+
+    state.events.extend(
+        [
+            ExecutionEvent(
+                step=3,
+                timestamp_utc="2026-08-29T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "tool": "adapter__adapter_call",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": "libreoffice_calc",
+                        "action": "range.write",
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=True,
+                result={"adapter_response": {"status": "ok", "result": {}}},
+            ),
+            ExecutionEvent(
+                step=4,
+                timestamp_utc="2026-08-29T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "tool": "adapter__adapter_call",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": "libreoffice_calc",
+                        "action": "workbook.save",
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=True,
+                result={"adapter_response": {"status": "ok", "result": {}}},
+            ),
+        ]
+    )
+    assert batch_table_semantics.mutation_and_save_complete(state)
 
 
 def test_recoverable_failed_consumer_write_is_classified_for_recovery() -> None:
@@ -1293,7 +1887,7 @@ def test_unrecoverable_failed_write_releases_consumer_recovery_surface() -> None
     assert batch_table_semantics.pending_consumer_recovery_actions(state, []) == ()
     names = {tool["function"]["name"] for tool in _agent(include_gui=True).tools(state)}
     assert "tools_search" in names
-    assert "gui_action" in names
+    assert "gui_action" not in names
 
 
 def test_successful_consumer_keeps_readback_actions_pending() -> None:
@@ -1354,6 +1948,151 @@ def test_post_mutation_surface_ends_after_readback_and_save() -> None:
     assert batch_table_semantics.pending_post_mutation_actions(state, []) == ()
 
 
+def test_multi_app_write_exposes_read_then_native_save_route() -> None:
+    state = _state()
+    _append_batch_result(state)
+    _append_inspect_result(state)
+
+    def add(step: int, action: str) -> None:
+        state.events.append(
+            ExecutionEvent(
+                step=step,
+                timestamp_utc="2026-08-29T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "tool": "adapter__adapter_call",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": "libreoffice_calc",
+                        "action": action,
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=True,
+                result={"adapter_response": {"status": "ok", "result": {}}},
+            )
+        )
+
+    add(3, "range.write")
+    assert batch_table_semantics.next_post_mutation_route(state) == (
+        "libreoffice_calc",
+        "range.read",
+    )
+    add(4, "range.read")
+    assert batch_table_semantics.next_post_mutation_route(state) == (
+        "libreoffice_calc",
+        "workbook.save",
+    )
+    add(5, "workbook.save")
+    assert batch_table_semantics.next_post_mutation_route(state) is None
+
+
+def test_decimal_rate_source_lease_stays_open_until_all_nine_ecs_years() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate from ECS PDF files for years 2015-2023 and "
+            "fill the spreadsheet table for each university as decimal values; "
+            "use supported proposals divided by total applications."
+        )
+    )
+    _append_batch_result(state, count=1, input_pattern="ecs15.pdf")
+    assert not batch_table_semantics.requested_fields_complete(state)
+
+    state.events.clear()
+    _append_batch_result(state, count=9, input_pattern="ecs*.pdf")
+    state.events[-1].result["adapter_response"]["result"]["files"] = [
+        {"path": f"/tmp/ecs{year}.pdf", "text": "year data"}
+        for year in range(15, 24)
+    ]
+    assert batch_table_semantics.requested_fields_complete(state)
+
+
+def test_native_ecs_completion_keeps_workbook_inspect_route_without_legacy_batch() -> None:
+    """Native per-PDF observations must advance to Calc inspection directly."""
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+
+    assert batch_table_semantics.native_pdf_table_observation_complete(state)
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.inspect"
+    )
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
+        state, "workbook.create_new"
+    )
+
+
+def test_native_ecs_completion_after_inspect_only_exposes_range_consumer_routes() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+    _append_inspect_result(state, step=10)
+
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "range.read"
+    )
+    assert batch_table_semantics.batch_route_allowed_after_completion(
+        state, "range.write"
+    )
+    for forbidden in (
+        "workbook.inspect",
+        "workbook.create_new",
+        "pdf.tables.inspect",
+        "pdf.extract_text_batch",
+    ):
+        assert not batch_table_semantics.batch_route_allowed_after_completion(
+            state, forbidden
+        )
+
+
+def test_native_ecs_workflow_completion_requires_save_after_readback() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+    _append_inspect_result(state, step=10)
+
+    def add(step: int, action: str) -> None:
+        state.events.append(
+            ExecutionEvent(
+                step=step,
+                timestamp_utc="2026-08-29T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "tool": "adapter__adapter_call",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": "libreoffice_calc",
+                        "action": action,
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=True,
+                result={"adapter_response": {"status": "ok", "result": {}}},
+            )
+        )
+
+    add(11, "range.write")
+    add(12, "range.read")
+    assert not batch_table_semantics.native_pdf_table_workflow_complete(state)
+    add(13, "workbook.save")
+    assert batch_table_semantics.native_pdf_table_workflow_complete(state)
+
+
 def test_create_after_failed_probe_enters_creation_lifecycle() -> None:
     state = _state(instruction="For each source PDF, create a new spreadsheet.")
     _append_batch_result(state)
@@ -1410,6 +2149,47 @@ def test_creation_constraints_begin_only_after_successful_model_create() -> None
     assert "placeholder" in wrapped_errors[0]
     assert "retry workbook.create_new" in wrapped_errors[0]
     assert "without rereading" in wrapped_errors[0]
+
+
+def test_create_new_rejects_nested_headers_before_adapter_execution() -> None:
+    state = _state(instruction="For each source PDF, create a new spreadsheet.")
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/other.ods",
+                    "headers": [["Year", "#Applied"]],
+                    "rows": [["2019", 1]],
+                }
+            },
+        },
+    )
+    assert errors
+    assert "flat" in errors[0]
+    assert "[\"Year\", \"#Applied\"]" in errors[0]
+
+
+def test_create_new_accepts_flat_string_headers_at_contract_boundary() -> None:
+    state = _state(instruction="For each source PDF, create a new spreadsheet.")
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/other.ods",
+                    "headers": ["Year", "#Applied"],
+                    "rows": [["2019", 1]],
+                }
+            },
+        },
+    ) == []
 
 
 def test_create_new_reports_sort_repair_without_source_replay() -> None:
@@ -1515,6 +2295,392 @@ def test_create_new_rejects_cross_document_first_author_email_assembly() -> None
     assert errors
     assert "first-author/email assembly" in " ".join(errors)
     assert "niurl19@mails.jlu.edu.cn" in " ".join(errors)
+
+
+def _append_observed_rate_table(state: RuntimeState, *, step: int = 2) -> None:
+    source_files = state.events[0].result["adapter_response"]["result"]["files"]
+    for index, item in enumerate(source_files):
+        _append_pdf_table_result(
+            state,
+            input_path=item["path"],
+            step=step + index,
+        )
+    headers = [
+        "Year",
+        "CityU",
+        "HKBU",
+        "LU",
+        "CUHK",
+        "HKIEd (EduHK)",
+        "PolyU",
+        "HKUST",
+        "HKU",
+    ]
+    rows = [headers] + [[str(year), *([""] * 8)] for year in range(2015, 2024)]
+    state.events.append(
+        ExecutionEvent(
+            step=step + len(source_files),
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "libreoffice_calc",
+                    "action": "range.read",
+                    "payload": {"params": {"sheet": "Sheet1", "range": "A1:I10"}},
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "action": "adapter.call",
+                    "result": {
+                        "action": "range.read",
+                        "adapter": "libreoffice_calc",
+                        "response": {
+                            "status": "ok",
+                            "result": {
+                                "sheet": "Sheet1",
+                                "range": "A1:I10",
+                                "display_text": rows,
+                            },
+                        },
+                    },
+                }
+            },
+        )
+    )
+
+
+def _append_structured_rate_observation(
+    state: RuntimeState, *, year: int, step: int
+) -> None:
+    rows = [
+        ["Panel / Subject Discipline", *([None] * 36)],
+        [None, *(["Application", None, "Supported", None] * 9)],
+        [None, *(["No", "Amt", "No", "Amt"] * 9)],
+        ["Total"],
+    ]
+    total = rows[-1]
+    for university_index in range(8):
+        application = 10 + year - 2015 + university_index
+        supported = 2 + university_index
+        total.extend([str(application), "0", str(supported), "0"])
+    total.extend(["0", "0", "0", "0"])
+    state.events.append(
+        ExecutionEvent(
+            step=step,
+            timestamp_utc="2026-08-29T00:00:00Z",
+            proposed={
+                "kind": "adapter",
+                "tool": "adapter__adapter_call",
+                "action": "adapter.call",
+                "arguments": {
+                    "adapter": "os",
+                    "action": "pdf.tables.inspect",
+                    "payload": {
+                        "params": {
+                            "input_path": f"/tmp/ecs{year - 2000}.pdf",
+                            "page": 1,
+                            "table_index": 0,
+                        }
+                    },
+                },
+            },
+            executed=True,
+            result={
+                "adapter_response": {
+                    "status": "ok",
+                    "result": {
+                        "adapter": "os",
+                        "action": "pdf.tables.inspect",
+                        "response": {
+                            "status": "ok",
+                            "result": {
+                                "input_path": f"/tmp/ecs{year - 2000}.pdf",
+                                "table_count": 1,
+                                "row_count": len(rows),
+                                "column_count": 37,
+                                "rows": rows,
+                            },
+                        },
+                    },
+                }
+            },
+        )
+    )
+
+
+def test_rate_matrix_write_rejects_fraction_content_and_wrong_shape() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the PDF files, "
+            "fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    _append_observed_rate_table(state)
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "range.write",
+            "payload": {
+                "params": {
+                    "sheet": "Sheet1",
+                    "range": "B2:I10",
+                    "values": [["56/77"] * 9 for _ in range(6)],
+                }
+            },
+        },
+    )
+    joined = " ".join(errors)
+    assert "9 rows x 8 university columns" in joined
+    assert "B2:I10" in joined
+    assert "quoted fractions" in joined
+
+
+def test_rate_matrix_write_accepts_observed_shape_and_numeric_decimals() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the PDF files, "
+            "fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    _append_observed_rate_table(state)
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "range.write",
+            "payload": {
+                "params": {
+                    "sheet": "Sheet1",
+                    "range": "B2:I10",
+                    "values": [[0.5] * 8 for _ in range(9)],
+                }
+            },
+        },
+    )
+    assert errors == []
+
+
+def test_rate_matrix_contract_uses_workbook_read_file_geometry() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the PDF files, "
+            "fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    _append_observed_rate_table(state)
+    read_event = state.events[-1]
+    read_event.proposed["arguments"]["action"] = "workbook.read_file"
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "range.write",
+            "payload": {
+                "params": {
+                    "sheet": "Sheet1",
+                    "range": "A1:I10",
+                    "values": [[0.5] * 9 for _ in range(9)],
+                }
+            },
+        },
+    )
+    assert errors
+    assert "9 rows x 8 university columns" in " ".join(errors)
+    assert "B2:I10" in " ".join(errors)
+
+
+def test_rate_matrix_contract_derives_values_from_structured_pdf_tables() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the PDF files, "
+            "fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    for index, item in enumerate(
+        state.events[0].result["adapter_response"]["result"]["files"]
+    ):
+        year = 2015 + index
+        item["path"] = f"/tmp/ecs{year - 2000}.pdf"
+        _append_structured_rate_observation(state, year=year, step=index + 2)
+    _append_observed_rate_table(state, step=20)
+
+    expected = batch_table_semantics._observed_decimal_rate_matrix(state)
+    assert expected is not None
+    assert len(expected) == 9
+    assert all(len(row) == 8 for row in expected)
+
+    wrong_errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "range.write",
+            "payload": {
+                "params": {
+                    "sheet": "Sheet1",
+                    "range": "B2:I10",
+                    "values": [[0.5] * 8 for _ in range(9)],
+                }
+            },
+        },
+    )
+    assert any("Application/Supported pair" in error for error in wrong_errors)
+
+    correct_errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "range.write",
+            "payload": {
+                "params": {
+                    "sheet": "Sheet1",
+                    "range": "B2:I10",
+                    "values": expected,
+                }
+            },
+        },
+    )
+    assert correct_errors == []
+
+
+def _append_grf_table_observation(
+    state: RuntimeState, *, year: int, applied: int, supported: int, step: int
+) -> None:
+    rows = [
+        ["Panel / Subject Discipline", *([None] * 36)],
+        [None] * 37,
+        [None] * 37,
+        [None] * 37,
+    ]
+    rows[0][29] = "HKU"
+    rows[1][29] = "Application"
+    rows[1][31] = "Supported"
+    rows[2][29] = "No"
+    rows[2][31] = "No"
+    rows[3][0] = (
+        "Engineering\nCivil Engineering,\nSurveying, Building &\nConstruction\n"
+        "Computing Science &\nInformation Technology\nElectrical & Electronic\n"
+        "Engineering\nMechanical, Production &\nIndustrial Engineering"
+    )
+    rows[3][29] = f"34\n{applied}\n20\n22"
+    rows[3][31] = f"11\n{supported}\n8\n10"
+    _append_pdf_table_result(state, input_path=f"/tmp/grf{year - 2000}.pdf", step=step)
+    result = state.events[-1].result["adapter_response"]["result"]["response"]["result"]
+    result["row_count"] = len(rows)
+    result["column_count"] = 37
+    result["rows"] = rows
+
+
+def test_grf_target_resolver_binds_wrapped_subject_and_hku_columns() -> None:
+    state = _state(
+        instruction=(
+            'Extract HKU\'s GRF application results for the "Computing Science & '
+            'Information Technology" discipline from 2019 to 2023. For each year, '
+            'extract the number of applications and number supported.'
+        )
+    )
+    expected = [(2019, 25, 7), (2020, 17, 7), (2021, 23, 7), (2022, 23, 9), (2023, 20, 5)]
+    for step, (year, applied, supported) in enumerate(expected, start=1):
+        _append_grf_table_observation(
+            state, year=year, applied=applied, supported=supported, step=step
+        )
+
+    records, errors = batch_table_semantics._observed_grf_records(state)
+    assert errors == []
+    assert [records[year]["applied"] for year, _, _ in expected] == [25, 17, 23, 23, 20]
+    assert [records[year]["supported"] for year, _, _ in expected] == [7, 7, 7, 9, 5]
+    assert [records[year]["subject_index"] for year, _, _ in expected] == [1] * 5
+    assert records[2019]["application_column"] == 29
+    assert records[2019]["supported_column"] == 31
+
+
+def test_grf_create_rejects_misaligned_values_before_adapter_execution() -> None:
+    state = _state(
+        instruction=(
+            'Extract HKU\'s GRF application results for the "Computing Science & '
+            'Information Technology" discipline from 2019 to 2023. Extract the '
+            'number of applications and number supported and save them in a table.'
+        )
+    )
+    expected = [(2019, 25, 7), (2020, 17, 7), (2021, 23, 7), (2022, 23, 9), (2023, 20, 5)]
+    for step, (year, applied, supported) in enumerate(expected, start=1):
+        _append_grf_table_observation(
+            state, year=year, applied=applied, supported=supported, step=step
+        )
+    wrong_rows = [
+        ["2019", 67, 14, 20.9],
+        ["2020", 81, 17, 20.99],
+        ["2021", 79, 16, 20.25],
+        ["2022", 88, 19, 21.59],
+        ["2023", 81, 17, 20.99],
+    ]
+    errors = batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/GRF-p5y.xlsx",
+                    "headers": ["Year", "#Applied", "#Supported", "Success Rate"],
+                    "rows": wrong_rows,
+                }
+            },
+        },
+    )
+    joined = " ".join(errors)
+    assert "does not match the observed HKU target cell" in joined
+    assert "expected 25" in joined
+    assert "expected 28.0" in joined
+
+
+def test_grf_create_accepts_only_filename_ordered_observed_values() -> None:
+    state = _state(
+        instruction=(
+            'Extract HKU\'s GRF application results for the "Computing Science & '
+            'Information Technology" discipline from 2019 to 2023. Extract the '
+            'number of applications and number supported and save them in a table.'
+        )
+    )
+    expected = [(2019, 25, 7), (2020, 17, 7), (2021, 23, 7), (2022, 23, 9), (2023, 20, 5)]
+    for step, (year, applied, supported) in enumerate(expected, start=1):
+        _append_grf_table_observation(
+            state, year=year, applied=applied, supported=supported, step=step
+        )
+    rows = [
+        [str(year), applied, supported, round(supported / applied * 100, 2)]
+        for year, applied, supported in expected
+    ]
+    assert batch_table_semantics.argument_contract_errors(
+        state,
+        "adapter.call",
+        {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/tmp/GRF-p5y.xlsx",
+                    "headers": ["Year", "#Applied", "#Supported", "Success Rate"],
+                    "rows": rows,
+                }
+            },
+        },
+    ) == []
 
 
 def test_create_new_rejects_shortened_observed_affiliation_and_email_header() -> None:

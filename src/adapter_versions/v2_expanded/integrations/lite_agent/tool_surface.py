@@ -143,6 +143,21 @@ class ToolSurfaceMixin:
         """
         if not configured:
             return False
+        # PDF/image batch-to-table workflows have deterministic public
+        # observations and mutations.  GUI fallback only competes with the
+        # producer/consumer handoff and can trap a small model in repeated
+        # clicks before it discovers the Adapter route.
+        if getattr(state, "domain", None) == "multi_apps" and batch_table_semantics.requests_one_record_per_input(
+            str(getattr(state, "instruction", ""))
+        ):
+            batch_failure = any(
+                getattr(event, "proposed", {}).get("kind") == "adapter"
+                and not getattr(event, "executed", False)
+                for event in getattr(state, "events", ())
+                if isinstance(getattr(event, "proposed", None), dict)
+            )
+            if not batch_failure:
+                return False
         error = state.events[-1].error if state.events else None
         return not (
             isinstance(error, dict)
@@ -165,12 +180,173 @@ class ToolSurfaceMixin:
         """
         if state.domain == "multi_apps":
             route_pairs = discovered_adapter_routes(state)
-            if route_pairs and batch_table_semantics.requested_fields_complete(state):
+            structured_source_pending = (
+                batch_table_semantics.structured_pdf_source_discovery_pending(state)
+            )
+            if (
+                route_pairs
+                and batch_table_semantics.requests_one_record_per_input(
+                    str(getattr(state, "instruction", ""))
+                )
+                and not batch_table_semantics._decimal_rate_matrix_requested(state)
+                and batch_table_semantics._latest_successful_batch_event(state)
+                is None
+                and not structured_source_pending
+                and not batch_table_semantics.structured_pdf_table_observation_pending(
+                    state
+                )
+            ):
+                # Search results are only candidate routes.  Before the PDF
+                # producer has succeeded, expose no consumer route even if a
+                # stale search result contains one; keep the producer as the
+                # sole executable downstream action.
+                route_pairs = [
+                    (adapter, action)
+                    for adapter, action in route_pairs
+                    if action in batch_table_semantics.BATCH_READ_ACTIONS
+                ]
+            structured_pdf_pending = (
+                batch_table_semantics.structured_pdf_table_observation_pending(state)
+            )
+            if structured_source_pending:
+                source_route = ("os", "filesystem.find")
+                route_pairs = [source_route] if source_route in route_pairs else []
+            elif structured_pdf_pending:
+                # A source-complete table task must establish native PDF cell
+                # boundaries before any Calc mutation.  Do not infer this
+                # route from an unrelated search hit (for example the earlier
+                # text-batch reader): until tools_search explicitly returns
+                # pdf.tables.inspect, expose only tools_search.
+                table_route = ("os", batch_table_semantics.PDF_TABLE_INSPECT_ACTION)
+                route_pairs = [table_route] if table_route in route_pairs else []
+            elif route_pairs and (
+                batch_table_semantics.requested_fields_complete(state)
+                or batch_table_semantics.native_pdf_table_observation_complete(state)
+            ):
                 route_pairs = [
                     (adapter, action)
                     for adapter, action in route_pairs
                     if batch_table_semantics.batch_route_allowed_after_completion(
                         state, action
+                    )
+                ]
+                # Catalog search commonly returns the create route first.  A
+                # source-complete PDF batch still needs one live observation of
+                # the already-open Calc workbook before that mutation is
+                # eligible.  Add the generic inspection route to the same
+                # wrapper schema so the model can choose the required probe
+                # without guessing a file path or table range.
+                if (
+                    batch_table_semantics.inspection_pending(state)
+                    and ("libreoffice_calc", "workbook.inspect") not in route_pairs
+                ):
+                    route_pairs.insert(0, ("libreoffice_calc", "workbook.inspect"))
+                if batch_table_semantics.inspection_pending(state) and (
+                    "libreoffice_calc",
+                    "workbook.inspect",
+                ) in route_pairs:
+                    # Before the first live workbook probe, create routes and
+                    # catalog search only add another choice. Keep the
+                    # zero-argument inspection as the sole next action.
+                    route_pairs = [
+                        ("libreoffice_calc", "workbook.inspect")
+                    ]
+                elif not batch_table_semantics.inspection_pending(state):
+                    # The active workbook has now been observed.  Prefer the
+                    # atomic range mutation for matrix/table consumers and do
+                    # not steer an already-open document through create_new.
+                    # The next route must still be obtained through the public
+                    # tools_search contract before adapter.call can execute.
+                    read_done = any(
+                        getattr(event, "executed", False)
+                        and any(
+                            batch_table_semantics._event_matches_action(
+                                event, state, candidate
+                            )
+                            for candidate in (
+                                "range.read",
+                                "spreadsheet.read_file",
+                                "workbook.read_file",
+                            )
+                        )
+                        for event in getattr(state, "events", ())
+                    )
+                    route_pairs = [
+                        (adapter, action)
+                        for adapter, action in route_pairs
+                        if action not in batch_table_semantics.CREATE_ACTIONS
+                        and action not in batch_table_semantics.TARGET_INSPECTION_ACTIONS
+                        and (
+                            not read_done
+                            or action
+                            not in {
+                                "range.read",
+                                "spreadsheet.read_file",
+                                "workbook.read_file",
+                            }
+                        )
+                    ]
+                    # A successful matrix write starts a strict persistence
+                    # handoff.  The catalog search that found the write route
+                    # may not have returned Calc read/save, so derive the
+                    # next native route from the execution ledger instead of
+                    # leaving the model on the completed mutation.
+                    post_mutation_route = (
+                        batch_table_semantics.next_post_mutation_route(state)
+                    )
+                    if post_mutation_route is not None:
+                        route_pairs = [post_mutation_route]
+            # Native ECS matrix workflows must not depend on catalog ranking
+            # for the next Calc consumer.  The catalog may return only the
+            # incompatible create_new route even though range.read/write are
+            # valid atomic actions.  Once the live workbook probe is valid,
+            # lease exactly the next consumer action from the event ledger.
+            if (
+                batch_table_semantics.native_pdf_table_observation_complete(state)
+                and batch_table_semantics._valid_target_inspection(state) is not None
+                and batch_table_semantics.observed_created_table(state) is None
+                and not batch_table_semantics.inspection_pending(state)
+            ):
+                # A successful write, readback, and save is terminal for this
+                # native ECS workflow.  Do not let the generic route fallback
+                # below reinterpret the absent post-mutation route as a fresh
+                # range.write opportunity.
+                if batch_table_semantics.native_pdf_table_workflow_complete(state):
+                    completion_tools = build_tools(
+                        state.domain,
+                        [],
+                        include_gui=False,
+                        include_control_tools=True,
+                        strict_generic=True,
+                    )
+                    completion_tools = [
+                        tool
+                        for tool in completion_tools
+                        if isinstance(tool.get("function"), dict)
+                        and tool["function"].get("name") == "propose_done"
+                    ]
+                    return completion_tools
+                read_done = any(
+                    getattr(event, "executed", False)
+                    and any(
+                        batch_table_semantics._event_matches_action(
+                            event, state, candidate
+                        )
+                        for candidate in (
+                            "range.read",
+                            "spreadsheet.read_file",
+                            "workbook.read_file",
+                        )
+                    )
+                    for event in getattr(state, "events", ())
+                )
+                next_route = batch_table_semantics.next_post_mutation_route(state)
+                route_pairs = [
+                    next_route
+                    if next_route is not None
+                    else (
+                        "libreoffice_calc",
+                        "range.write" if read_done else "range.read",
                     )
                 ]
             adapter_call_name = tool_name("adapter.call")
@@ -208,6 +384,41 @@ class ToolSurfaceMixin:
                         "filesystem.find again for an observed root. Read content only "
                         "when a file remains ambiguous."
                     )
+            # Once catalog search has found the required native PDF table
+            # route, expose its execution API directly.  Leaving
+            # ``tools_search`` beside the exact route lets a small model keep
+            # searching forever instead of consuming the returned route.
+            table_route_ready = (
+                structured_pdf_pending
+                and ("os", batch_table_semantics.PDF_TABLE_INSPECT_ACTION)
+                in route_pairs
+            )
+            source_route_ready = (
+                structured_source_pending
+                and ("os", "filesystem.find") in route_pairs
+            )
+            if table_route_ready or source_route_ready:
+                if not any(
+                    isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == adapter_call_name
+                    for tool in tools
+                ):
+                    tools.extend(
+                        build_tools(
+                            state.domain,
+                            ["adapter.call"],
+                            include_gui=False,
+                            include_control_tools=False,
+                            strict_generic=True,
+                        )
+                    )
+                    tools = constrain_adapter_call_routes(tools, route_pairs)
+                tools = [
+                    tool
+                    for tool in tools
+                    if not isinstance(tool.get("function"), dict)
+                    or tool["function"].get("name") == adapter_call_name
+                ]
             return soft_recovery_tools(tools, state)
         if spreadsheet_open_semantics.gui_request_contract_errors(state):
             tools = [
@@ -241,6 +452,38 @@ class ToolSurfaceMixin:
 
     def tools(self, state: RuntimeState) -> list[dict[str, Any]]:
         multi_app = state.domain == "multi_apps"
+        batch_workflow = multi_app and (
+            batch_table_semantics.requests_one_record_per_input(
+                str(getattr(state, "instruction", ""))
+            )
+            or batch_table_semantics._decimal_rate_matrix_requested(state)
+        )
+        has_successful_batch = multi_app and any(
+            state.successful_action_events(action)
+            for action in batch_table_semantics.BATCH_READ_ACTIONS
+        )
+        # Only the latest unexecuted Adapter event is an active batch failure.
+        # An earlier provenance/schema failure is recovered once a later
+        # search or Adapter call succeeds; keeping historical failures sticky
+        # reopens the generic GUI recovery surface after observation completes.
+        latest_event = state.events[-1] if state.events else None
+        latest_proposed = getattr(latest_event, "proposed", None)
+        batch_failure = bool(
+            batch_workflow
+            and isinstance(latest_proposed, dict)
+            and latest_proposed.get("kind") == "adapter"
+            and not getattr(latest_event, "executed", False)
+        )
+        batch_observation_gate = bool(
+            multi_app
+            and (
+                batch_table_semantics.requested_fields_complete(state)
+                or batch_table_semantics.structured_pdf_table_observation_pending(
+                    state
+                )
+                or batch_table_semantics.native_pdf_table_observation_complete(state)
+            )
+        )
         pending_terminal = getattr(state, "pending_terminal", None)
         if isinstance(pending_terminal, dict):
             # A passed terminal result has no remaining mutation to plan. Keep
@@ -408,7 +651,7 @@ class ToolSurfaceMixin:
             if proactive_tools:
                 return self._apply_common_tool_constraints(proactive_tools, state)
         recovery_actions = recovery_search_actions(state)
-        if recovery_actions is not None:
+        if recovery_actions is not None and not batch_observation_gate:
             recovery_actions = filter_requested_alternative_actions(
                 state, recovery_actions
             )
@@ -436,7 +679,10 @@ class ToolSurfaceMixin:
                 state,
                 mode="catalog_search",
             )
-        if state.requires_replan() or state.active_request_blocks():
+        if (
+            (state.requires_replan() or state.active_request_blocks())
+            and not batch_observation_gate
+        ):
             recovery_actions = bounded_recovery_actions(
                 state,
                 required_actions=untried_required_mutations,
@@ -523,8 +769,175 @@ class ToolSurfaceMixin:
             self.selected_actions,
             strict_semantic_action_equivalents,
         )
-        if proactive_tools:
+        if proactive_tools and not (
+            multi_app and batch_table_semantics.requested_fields_complete(state)
+        ):
             return self._apply_common_tool_constraints(proactive_tools, state)
+        if (
+            multi_app
+            and batch_observation_gate
+        ):
+            # Once every source PDF has been observed, suppress GUI and
+            # filesystem recovery.  Keep only the deterministic adapter route
+            # (or catalog search when the consumer route has not been found).
+            batch_tools = self._build_tools(
+                state.domain,
+                ["adapter.call"],
+                include_gui=False,
+                include_control_tools=True,
+                strict_generic=True,
+            )
+            batch_tools = self._apply_common_tool_constraints(batch_tools, state)
+            if not batch_table_semantics.mutation_and_save_complete(state):
+                # A source-complete batch is authoritative structured evidence.
+                # Do not let screenshot state or a stale GUI hypothesis abort
+                # the workflow before its model-selected table mutation and
+                # persistence have run.
+                batch_tools = [
+                    tool
+                    for tool in batch_tools
+                    if not isinstance(tool.get("function"), dict)
+                    or tool["function"].get("name")
+                    not in {"propose_done", "fail_task"}
+                ]
+            if batch_table_semantics.inspection_pending(state):
+                batch_tools = [
+                    tool
+                    for tool in batch_tools
+                    if not isinstance(tool.get("function"), dict)
+                    or tool["function"].get("name") in {"adapter__adapter_call", "tools_search"}
+                ]
+                if batch_failure and not any(
+                    isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == "tools_search"
+                    for tool in batch_tools
+                ):
+                    # A rejected adapter route needs a fresh catalog lookup;
+                    # retaining only the failed adapter schema traps small
+                    # models in the same unexecutable call.
+                    search_tools = self._build_tools(
+                        state.domain,
+                        [],
+                        include_gui=False,
+                        include_control_tools=True,
+                        strict_generic=True,
+                    )
+                    batch_tools.extend(
+                        tool
+                        for tool in search_tools
+                        if isinstance(tool.get("function"), dict)
+                        and tool["function"].get("name") == "tools_search"
+                    )
+                if (
+                    any(
+                        isinstance(tool.get("function"), dict)
+                        and tool["function"].get("name") == "adapter__adapter_call"
+                        for tool in batch_tools
+                    )
+                    and not batch_failure
+                ):
+                    batch_tools = [
+                        tool
+                        for tool in batch_tools
+                        if not isinstance(tool.get("function"), dict)
+                        or tool["function"].get("name") != "tools_search"
+                    ]
+            else:
+                # A successful search already supplied an executable consumer
+                # route.  Remove the catalog control so the model cannot keep
+                # searching instead of issuing that observation/mutation.
+                consumer_routes = {
+                    action
+                    for _, action in discovered_adapter_routes(state)
+                    if action
+                    in {
+                        "range.read",
+                        "range.write",
+                        "spreadsheet.read_file",
+                        "spreadsheet.write_range",
+                        "workbook.read_file",
+                    }
+                }
+                if consumer_routes:
+                    batch_tools = [
+                        tool
+                        for tool in batch_tools
+                        if not isinstance(tool.get("function"), dict)
+                        or tool["function"].get("name") != "tools_search"
+                    ]
+            if (
+                batch_table_semantics.native_pdf_table_observation_complete(state)
+                and batch_table_semantics._valid_target_inspection(state) is not None
+                and batch_table_semantics.observed_created_table(state) is None
+                and not batch_table_semantics.inspection_pending(state)
+                and any(
+                    isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == tool_name("adapter.call")
+                    for tool in batch_tools
+                )
+            ):
+                # Search is no longer a valid next step after native source
+                # completion and a successful target probe.
+                batch_tools = [
+                    tool
+                    for tool in batch_tools
+                    if not isinstance(tool.get("function"), dict)
+                    or tool["function"].get("name") == tool_name("adapter.call")
+                ]
+            # The structured-result gate must never produce an empty tool
+            # array: Qwen rejects ``tools=[]`` before the model can search for
+            # the next Calc mutation route. Keep catalog search as the sole
+            # recovery action when route filtering removed every Adapter call.
+            if not any(
+                isinstance(tool.get("function"), dict)
+                for tool in batch_tools
+            ):
+                search_tools = self._build_tools(
+                    state.domain,
+                    [],
+                    include_gui=False,
+                    include_control_tools=True,
+                    strict_generic=True,
+                )
+                batch_tools = [
+                    tool
+                    for tool in search_tools
+                    if isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == "tools_search"
+                ]
+            # After the write/readback handoff, the route schema intentionally
+            # contains only workbook.save.  State that terminal lease in the
+            # tool description so a model cannot reopen a stale PDF hypothesis
+            # when the latest readback window omits a row label.
+            if (
+                len(
+                    [
+                        tool
+                        for tool in batch_tools
+                        if isinstance(tool.get("function"), dict)
+                    ]
+                )
+                == 1
+                and any(
+                    isinstance(tool.get("function"), dict)
+                    and tool["function"].get("name") == tool_name("adapter.call")
+                    for tool in batch_tools
+                )
+                and batch_table_semantics.next_post_mutation_route(state)
+                == ("libreoffice_calc", "workbook.save")
+            ):
+                for tool in batch_tools:
+                    function = tool.get("function")
+                    if isinstance(function, dict) and function.get("name") == tool_name(
+                        "adapter.call"
+                    ):
+                        function["description"] = (
+                            str(function.get("description", ""))
+                            + " The mutation and readback are complete. The only valid "
+                            "next action is libreoffice_calc.workbook.save; do not "
+                            "re-read any PDF, call range.read, or search for another route."
+                        )
+            return batch_tools
         organization_observation = state.filesystem_observation_state()
         if isinstance(organization_observation, dict) and organization_observation.get(
             "complete"
@@ -692,9 +1105,24 @@ class ToolSurfaceMixin:
             actions,
             include_gui=self.config.include_gui
             and self._gui_execution_configured()
+            and not batch_observation_gate
             and (not discovery_only)
             and (not untried_required_mutations),
             include_control_tools=not discovery_only,
             strict_generic=True,
         )
-        return self._apply_common_tool_constraints(tools, state)
+        tools = self._apply_common_tool_constraints(tools, state)
+        if (
+            has_successful_batch
+            and not batch_table_semantics.mutation_and_save_complete(state)
+        ):
+            # A successful source read is not a completed task.  Keep the
+            # terminal control hidden until the table mutation and persistence
+            # have both succeeded, even on the generic action surface.
+            tools = [
+                tool
+                for tool in tools
+                if not isinstance(tool.get("function"), dict)
+                or tool["function"].get("name") != "propose_done"
+            ]
+        return tools
