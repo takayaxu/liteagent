@@ -262,3 +262,26 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expan
 
 The adapter call trace is in
 `src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl`.
+
+### Order 107 endpoint rerun (2026-10-02)
+
+The requested endpoint `https://qwen.jinmaoapi.cc.cd/v1` was used with the
+local Hugging Face mirror. The original OSWorld evaluator passed with
+`status=passed`, `reward=1.0`, and `termination_reason=agent_done`.
+
+Evidence:
+
+```text
+src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00/results.json
+src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl
+```
+
+The actual validation command was:
+
+```text
+HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-ecs-rates-107-strict-rerun11-20261002.json --orders 107 --result-dir src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 8192 --reasoning-mode non_thinking --temperature 0 --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
+```
+
+The API replacement and implementation commit are unchanged: bounded per-PDF
+observation plus atomic Calc write/read-back/save, from commit `1f873e3`
+(`fix(order107): split ECS PDF table observations`).

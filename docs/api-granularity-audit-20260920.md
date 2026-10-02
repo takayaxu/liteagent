@@ -532,3 +532,20 @@ than a larger facade.
 Implementation commit: `1f873e3` (`fix(order107): split ECS PDF table observations`).
 Focused contract validation: `86 passed` in
 `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`.
+
+### Order 107 endpoint rerun (2026-10-02)
+
+The same generic API replacement was rerun against the requested Qwen endpoint
+`https://qwen.jinmaoapi.cc.cd/v1` with the local Hugging Face mirror. The run
+passed the original OSWorld evaluator with `status=passed`, `reward=1.0`, and
+`termination_reason=agent_done`. Evidence is preserved at
+`src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00/results.json`;
+the adapter trace is in its adjacent `raw/run-1/107-multi_apps-*/adapter_calls.jsonl`.
+
+The observed sequence was one `os.filesystem.find`, nine bounded
+`os.pdf.tables.inspect` calls, `libreoffice_calc.workbook.inspect`, one
+`range.write` to `B2:I10`, one post-write `range.read`, `workbook.save`, and
+`propose_done`. No repeated PDF search or task-specific combined mutation was
+exposed. The implementation remains commit `1f873e3`
+(`fix(order107): split ECS PDF table observations`); this rerun only changed the
+endpoint/configuration and produced no new API surface.
