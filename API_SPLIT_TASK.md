@@ -298,6 +298,7 @@ $PYTHON -m ruff check <changed_python_files>
 - 题目：`08c73485-7c6d-4681-999d-919f5c32dcfa`；要求让 Thunderbird 现有消息过滤器自动应用到 IMAP 子文件夹。
 - API replacement：使用单一 `filters.set_subfolder_application(enabled)`；本题不需要 `filters.configure`。修正通用 Thunderbird 意图识别，避免把“应用现有过滤器到子文件夹”误判为新增具体规则。
 - 结果：首次运行已成功写入并验证三项 preference，但 completion gate 错误要求 `filters.configure`，保留于 `experiments/local-order160-subfolder-filters-20260929/`。修复后 retry1 通过，`status=passed`、`reward=1.0`、`termination_reason=agent_done`；结果见 `experiments/local-order160-subfolder-filters-20260929-retry1/`。
+- 2026-10-02 重跑记录：retry2 因 Docker VM readiness 超时为 `environment_failure`；retry3 因 Thunderbird 窗口未就绪为 `model_protocol_failure`；retry4 发现通用 Runner 收尾读取未初始化的 `route`，虽 Adapter 返回 200 且 preference verification 通过，仍被记录为协议失败。补上 `route = None` 初始化并通过 focused test **5 passed** 后，retry5 正式 evaluator 通过：`status=passed`、`reward=1.0`、`termination_reason=agent_done`、`path_class=generic_api_only`。结果见 `experiments/local-order160-subfolder-filters-20261002-retry5/`，完整调用轨迹见该目录下 `raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/adapter_calls.jsonl`。
 - focused checks：`test_mail_selector_contract.py` **34 passed**；`/opt/anaconda3/bin/ruff check src/adapter_versions/v2_expanded/integrations/lite_agent/thunderbird_filter_semantics.py src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py` 通过。
 - 实际复跑命令：
 
@@ -315,4 +316,17 @@ $PYTHON -m ruff check <changed_python_files>
   --max-no-progress-steps 8 --max-agent-seconds 600 \
   --max-output-tokens 512 --top-k 7 --temperature 0 \
   --request-timeout 240 --model-retries 3
+  ```
+
+## Order 107 开发记录（2026-10-02 endpoint rerun）
+
+- 题目：`881deb30-9549-4583-a841-8270c65f2a17`；从 2015--2023 的 9 份 ECS PDF 读取各校 `Supported/Application`，写入已打开的 `supported_rate.xlsx`。
+- API replacement：保留通用窄链 `os.filesystem.find`（一次发现）→逐文件 `os.pdf.tables.inspect`（9 次有界观察）→`libreoffice_calc.workbook.inspect`→`range.write(B2:I10)`→一次 `range.read` 读回→`workbook.save`→`propose_done`。没有批量 PDF-to-Calc mutation，也没有题目专用解析路由；观察 ledger 完成前不会暴露写入，写入读回后才暴露保存。
+- 正式 OSWorld 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`、`path_class=generic_api_only`。结果文件为 `src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00/results.json`，调用轨迹为同目录 `raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl`，`result.txt` 为 `1.0`。
+- 实现提交：`1f873e3`（`fix(order107): split ECS PDF table observations`）；本次 endpoint/config 复跑无新的 API 行为提交。开发记录和 API 审计同步提交：`cd6273e`（`docs(order107): record qwen endpoint rerun`）。
+- focused check：`PYTHONPATH=src/adapter_versions/v2_expanded pytest -q src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py -k 'ecs or native or strict or pdf_table'`，结果 **11 passed**。完整文件测试另有 2 个旧断言仍期待 `spreadsheet.*` 名称（当前实现已使用 `workbook.create_new`），与 Order 107 无关。
+- 实际命令：
+
+  ```bash
+  HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-ecs-rates-107-strict-rerun11-20261002.json --orders 107 --result-dir src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 8192 --reasoning-mode non_thinking --temperature 0 --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
   ```
