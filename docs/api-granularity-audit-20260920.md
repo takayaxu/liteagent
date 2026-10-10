@@ -476,6 +476,10 @@ and verification of `mail.identity.id1.auto_quote=false`. The original evaluator
 reports `status=passed`, `reward=1.0`, and `termination_reason=agent_done`; Order 158
 is **PASS**. Focused mail contract validation passed 32 tests and relevant Python
 files passed Ruff.
+The 2026-10-03 endpoint retry used `https://qwen.jinmaoapi.cc.cd/v1` and is also
+preserved in `src/adapter_versions/v2_expanded/experiments/formal-order158-20261003-retry3/`;
+it produced the same verified two-action chain and formal evaluator
+`status=passed`, `reward=1.0`, `termination_reason=agent_done`.
 ### Order 160 API State (2026-09-29)
 
 Order 160 asks Thunderbird to apply existing incoming message filters
@@ -549,3 +553,20 @@ The observed sequence was one `os.filesystem.find`, nine bounded
 exposed. The implementation remains commit `1f873e3`
 (`fix(order107): split ECS PDF table observations`); this rerun only changed the
 endpoint/configuration and produced no new API surface.
+
+## 2026-10-10：固定 28 题测试与通过改动提交
+
+本轮完整顺序测试由原始 OSWorld evaluator 判定 **23 通过、5 失败，82.14%**。通过 Order：`20, 41, 42, 47, 52, 53, 54, 59, 60, 67, 68, 81, 83, 95, 96, 121, 152, 153, 154, 157, 158, 159, 160`。失败 Order：`91, 99, 102, 107, 108`，均 reward=0.0、45 步；47、53 虽 stalled_no_progress，正式 evaluator 仍 reward=1.0。本记录只更新本轮回执，不将早先 PASS 改写或当作本轮 PASS。
+
+用户随后授权提交通过题目最后未提交改动。按题目拆分保留：
+
+| Order | 本次提交 | 改动与 API 审计状态 |
+|---:|---|---|
+| 42 | `6985f92` | 内容格式 mutation 限制为 content/body 角色；扁平化模型侧 role-format/background schema；Adapter 原始契约仍校验参数 |
+| 54 | `faecaad` | cleanup 完成后必须保存并回读全部受影响页，再展示原生完成控制；shape.format_text 模型侧 schema 扁平化 |
+| 60 | `82a3dbb` | 图片高度动作绑定实际 presentation 观测；执行前验证目标，只允许匹配当前步骤的几何参数注入 |
+| 121 | `0cb4e62` | 完整源读取后转入 mail-recipient route 发现；保留 workflow_progress，恢复提示使用 workbook.read_file |
+
+其余通过题目已有历史实现提交，本次补充验证回执；158 既有 endpoint 重跑记录一起补交。失败题目和无法独立归属的共享改动未纳入上述实现提交。上述模型 schema/运行流程调整没有新增 Adapter API 或改变本表原始 217 action 计数。本轮分数来自带未提交内容的完整工作区，拆分提交快照未重新评测；提交快照 Python 语法、Ruff 与 whitespace 检查通过。
+
+完整 28 题表、单题回执、提交边界和证据索引见 [本轮提交审计](../src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md)，精简数据见 [JSON 回执](../src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.json)。原始实验内容保持不变。

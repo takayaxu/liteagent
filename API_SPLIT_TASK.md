@@ -293,6 +293,7 @@ $PYTHON -m ruff check <changed_python_files>
   ```bash
   HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/formal-order158-20260929.json --orders 158 --result-dir src/adapter_versions/v2_expanded/experiments/formal-order158-20260929-retry1/workers/worker-00 --base-url https://qwen1.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 30 --max-local-steps 20 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 600 --max-output-tokens 512 --reasoning-mode non_thinking --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
   ```
+- 2026-10-03 endpoint 重跑：使用冻结配置 `src/adapter_versions/v2_expanded/experiments/configs/formal-order158-20261003.json`，将 `base_url` 切换为 `https://qwen.jinmaoapi.cc.cd/v1`。结果位于 `src/adapter_versions/v2_expanded/experiments/formal-order158-20261003-retry3/workers/worker-00/results.json`，完整轨迹位于同目录 `raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/`；模型调用链为 `identities.query -> identity.set_reply_quoting(identity="id1", enabled=false) -> DONE`，Adapter verification 通过，正式 evaluator `status=passed`、`reward=1.0`、`termination_reason=agent_done`、`path_class=generic_api_only`。此前 `formal-order158-20261002-retry2` 的 `model_protocol_failure` 保留为未评分重跑，不影响本 PASS。
 ## Order 160 开发记录（2026-09-29）
 
 - 题目：`08c73485-7c6d-4681-999d-919f5c32dcfa`；要求让 Thunderbird 现有消息过滤器自动应用到 IMAP 子文件夹。
@@ -330,3 +331,10 @@ $PYTHON -m ruff check <changed_python_files>
   ```bash
   HF_ENDPOINT=https://hf-mirror.com PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-ecs-rates-107-strict-rerun11-20261002.json --orders 107 --result-dir src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B-Q4_K_M --max-steps 45 --max-local-steps 25 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 1200 --max-output-tokens 8192 --reasoning-mode non_thinking --temperature 0 --request-timeout 240 --model-retries 3 --initial-settle-seconds 10 --action-settle-seconds 2 --evaluator-settle-seconds 5 --evaluator-file-fetch-attempts 3 --evaluator-file-fetch-delay-seconds 1
   ```
+
+## 2026-10-10 固定 28 题测试及通过改动补交
+
+- 本轮原始 evaluator：23/28 PASS；FAIL：91、99、102、107、108。47、53 的 stalled_no_progress 不影响原始 evaluator reward=1.0。
+- 按用户后续要求补交通过题目未提交代码块：42 `6985f92`、54 `faecaad`、60 `82a3dbb`、121 `0cb4e62`。158 既有 endpoint PASS 回执同步补交。其他通过题目沿用历史实现提交。
+- 完整逐题表、原始结果/轨迹路径与提交边界：[本轮审计](src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md)。失败题和无法独立归属的共享改动保留未提交；不修改原始测试结果和 task.md。
+- 分数来自本轮完整工作区，不是拆分后 commit 的新模型测试。提交快照 Python 语法、Ruff、whitespace 检查通过，未新增测试或复跑 OSWorld。
