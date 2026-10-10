@@ -3786,6 +3786,25 @@ def _strict_generic_schema_overlay(
             "choose cover. With cover, negative x/y or dimensions beyond the slide are "
             "expected centered clipping; do not retry for that geometry."
         )
+    elif domain == "libreoffice_impress" and action in {
+        "slide.format_text_roles",
+        "slides.format_text_roles",
+    }:
+        # Some OpenAI-compatible Qwen tool parsers emit an empty object when a
+        # callable combines required location/role fields with a top-level
+        # anyOf of optional formatting fields. Keep the model-facing contract
+        # flat and require at least one additional property; the Adapter's
+        # runtime validator remains authoritative about which formatting field
+        # was supplied and its value.
+        parameters.pop("anyOf", None)
+        parameters["minProperties"] = len(parameters["required"]) + 1
+    elif domain == "libreoffice_impress" and action == "slide.set_background":
+        # The same Qwen-compatible surface rule applies to the background
+        # action: its color/image and slide/all_slides alternatives are
+        # checked by the Adapter, while the model sees a flat object.
+        parameters.pop("anyOf", None)
+        parameters.pop("oneOf", None)
+        parameters["minProperties"] = 2
     return parameters
 
 
@@ -3867,6 +3886,15 @@ def _adapter_tool(
         if direct_schema is not None
         else f"Exact request contract: {_catalog_signature(domain, action, strict_generic=strict_generic)}."
     )
+    if strict_generic and domain == "libreoffice_impress" and action in {
+        "slide.format_text_roles",
+        "slides.format_text_roles",
+    }:
+        contract = (
+            f"{contract} When an instruction says only \"content\" or \"body\", "
+            "use roles=['content'] (or ['body']); use roles=['all'] only when it "
+            "explicitly requests all/every text or every text box."
+        )
     return {
         "type": "function",
         "function": {

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
 
+from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.completion import CompletionMixin
+from integrations.lite_agent.instruction_semantics import (
+    content_formatting_argument_contract_errors,
+)
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 
 
@@ -325,3 +331,109 @@ def test_later_plural_format_cannot_be_hidden_by_earlier_singular_format() -> No
     gate = CompletionMixin._generic_completion_gate(state)
     assert gate["passed"] is False
     assert any("content-only" in item for item in gate["missing"])
+
+
+@pytest.mark.parametrize(
+    ("action", "location", "roles"),
+    [
+        ("slide.format_text_roles", {"slide": 0}, ["all"]),
+        ("slides.format_text_roles", {"slides": [0]}, ["all"]),
+        ("slide.format_text_roles", {"slide": 0}, ["content", "title"]),
+    ],
+)
+def test_content_only_argument_contract_rejects_non_content_roles(
+    action: str, location: dict[str, Any], roles: list[str]
+) -> None:
+    errors = content_formatting_argument_contract_errors(
+        "Change the font size of the content to 12, and change the font color "
+        "to orange. Change the slide's background to red.",
+        action,
+        {
+            **location,
+            "roles": roles,
+            "font_size": 12,
+            "color": "orange",
+        },
+    )
+
+    assert errors
+    assert "roles=['content']" in errors[0]
+
+
+@pytest.mark.parametrize("role", ["content", "body"])
+def test_content_only_argument_contract_accepts_content_roles(role: str) -> None:
+    assert content_formatting_argument_contract_errors(
+        "Change the font size of the content to 12, and change the font color "
+        "to orange. Change the slide's background to red.",
+        "slide.format_text_roles",
+        {"slide": 0, "roles": [role], "font_size": 12, "color": "orange"},
+    ) == []
+
+
+def test_content_only_argument_contract_does_not_block_all_text_request() -> None:
+    assert content_formatting_argument_contract_errors(
+        "Change every text box to orange and set the slide background to red.",
+        "slide.format_text_roles",
+        {"slide": 0, "roles": ["all"], "color": "orange"},
+    ) == []
+
+
+class _RecordingExecutor:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str, dict[str, Any]]] = []
+
+    def execute(
+        self,
+        domain: str,
+        action: str,
+        arguments: dict[str, Any],
+        _metadata: dict[str, Any],
+    ) -> dict[str, Any]:
+        self.calls.append((domain, action, deepcopy(arguments)))
+        return {"executed": True, "result": {"status": "ok"}}
+
+
+def test_content_only_all_roles_call_is_blocked_before_adapter_execution() -> None:
+    state = RuntimeState(
+        task_id="synthetic-content-role-contract",
+        domain="libreoffice_impress",
+        instruction=(
+            "Change the font size of the content to 12, and change the font color "
+            "to orange. Change the slide's background to red."
+        ),
+        events=[
+            _event(
+                1,
+                "presentation.inspect",
+                {"slides": [0]},
+                {"context_hint": {"slide_count": 1, "slides": [{"slide": 0}]}},
+            )
+        ],
+    )
+    executor = _RecordingExecutor()
+    agent = LiteAgent(
+        LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+        executor,
+        model_client=SimpleNamespace(client=object()),
+    )
+    visible_tools = agent.tools(state)
+
+    event = agent.execute_proposal(
+        state,
+        {
+            "tool": "adapter__slide_format_text_roles",
+            "arguments_raw": json.dumps(
+                {
+                    "slide": 0,
+                    "roles": ["all"],
+                    "font_size": 12,
+                    "color": "orange",
+                }
+            ),
+            "_model_visible_tools": visible_tools,
+        },
+    )
+
+    assert event.executed is False
+    assert "roles=['content']" in event.error["detail"]
+    assert executor.calls == []

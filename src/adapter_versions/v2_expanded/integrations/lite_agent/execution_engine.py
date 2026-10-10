@@ -46,6 +46,7 @@ from .impress_image_insertion import image_insertion_argument_contract_errors
 from .impress_personal_information import personal_information_argument_contract_errors
 from .impress_textboxes import textbox_color_argument_contract_errors
 from .instruction_semantics import (
+    content_formatting_argument_contract_errors,
     messages_query_argument_contract_errors,
     strict_instruction_required_actions,
 )
@@ -530,6 +531,11 @@ class ExecutionEngineMixin:
                 semantic_argument_errors.extend(
                     messages_query_argument_contract_errors(
                         state.instruction, state.domain, action, arguments
+                    )
+                )
+                semantic_argument_errors.extend(
+                    content_formatting_argument_contract_errors(
+                        state.instruction, action, arguments
                     )
                 )
                 semantic_argument_errors.extend(

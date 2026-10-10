@@ -1315,6 +1315,35 @@ def requested_slide_content_formatting(
     }
 
 
+def content_formatting_argument_contract_errors(
+    instruction: str, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    """Reject an all-role mutation when the instruction targets content only.
+
+    The Adapter accepts ``roles=['all']`` by design, so this distinction must be
+    enforced before execution.  Keeping the check here preserves the generic
+    Adapter contract while preventing a model from changing title/table/text
+    roles as a side effect of a content-only request.
+    """
+    if action not in {"slide.format_text_roles", "slides.format_text_roles"}:
+        return []
+    request = requested_slide_content_formatting(instruction)
+    if request is None:
+        return []
+    roles = arguments.get("roles")
+    if (
+        isinstance(roles, list)
+        and roles
+        and all(role in {"content", "body"} for role in roles)
+    ):
+        return []
+    return [
+        "the instruction targets content only; do not use roles=['all'] or include "
+        "title, table, or other text roles; retry slide.format_text_roles with "
+        "roles=['content'] (or ['body']) so every other text role remains unchanged"
+    ]
+
+
 def requested_title_to_notes(instruction: str) -> dict[str, Any] | None:
     if not re.search(
         r"(?i)\b(?:add|copy|put|write)\b.{0,40}\btitle\b.{0,30}\bnotes?\b",
@@ -1867,6 +1896,7 @@ __all__ = [
     "looks_like_personal_information",
     "requested_slide_role_text_formatting",
     "requested_slide_content_formatting",
+    "content_formatting_argument_contract_errors",
     "requested_title_to_notes",
     "requested_all_textbox_color",
     "requested_textbox_font_sizes",
