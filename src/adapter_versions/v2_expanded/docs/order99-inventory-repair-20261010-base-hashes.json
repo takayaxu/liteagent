@@ -1,0 +1,18 @@
+{
+  "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py": {
+    "base_sha256": "87738be45540db01a9d34bd94b71b4a480033ff211f1d1f0e7a4bc54fec33cc4",
+    "updated_sha256": "0dff8d9bd71983e33a41693a311dd9d0ea11788468615db1312b0f85b77896f7"
+  },
+  "src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py": {
+    "base_sha256": "290d09746cbd5dd388d7383e76330ea3aad9ec0ebcd2ccb69b388c9e972be0a2",
+    "updated_sha256": "b2e7995bf24ffc299f1ba7f9ef6a83be6693261030cd4283bef7ee3d95d7665c"
+  },
+  "src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py": {
+    "base_sha256": "f4a7405a20afef4a921e5a872000f65389ab8f335861c383ec778ce57da7de74",
+    "updated_sha256": "1b3c98488148817aeea8650b9db3e078f3c4690d0b9b9659f9c3743011f6493b"
+  },
+  "src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py": {
+    "base_sha256": "1371f3800725ff2dc7122b61c88057509f9baade56270192a13f1f7c0defe602",
+    "updated_sha256": "dcd9b8a18c05c0de5407fcaf62fcf2a9a7d4cc6138e077b7df0482f30c57240b"
+  }
+}

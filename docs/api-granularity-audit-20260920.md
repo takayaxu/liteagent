@@ -594,3 +594,7 @@ endpoint/configuration and produced no new API surface.
 Chrome/GIMP/OS/VS Code/VLC 共 **11 个历史大粒度入口**仍可通过 strict_generic 工具面访问。这些是粒度问题，不一概等同于定制求解器。已拆分的 Calc text_transform、Impress role formatting、Thunderbird 单设置/单过滤器契约仍保留。
 
 先前 107/108 中“没有题目专用解析/组合”的历史描述不能代表当前工作区；当前固定领域解析及参数替换未通过本次通用性复审。原始 evaluator PASS 不替代 API 粒度审查。源码与原始实验保持不变。完整证据、位置与处理建议见 [复审报告](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.md)，公开清单及工具 schema 见 [复审快照](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.json)。
+
+### Order 99：最新 FAIL 的单题修复（2026-10-10）
+
+本轮 45 步纯工具搜索的 FAIL 已按完整模型请求诊断，并在单题重跑中取得 evaluator PASS。保留 `os.pdf.extract_text_batch` 作为有界只读观察，保留显式发现和单对象移动；收窄整理的初始清单参数，同步模型 schema/运行时 validation，并修复对照证据保留、retain 目录契约和拒绝后的恢复。没有新增大粒度 API、golden、任务 ID 路由或答案。完整验证与评分限制、每次结果、增量补丁及共享工作区集成边界见 [Order 99 修复记录](../src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md)。

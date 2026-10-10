@@ -1,0 +1,219 @@
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
+@@ -225,6 +225,7 @@
+         ):
+             return tools
+         skip = organization_skip_tool()
++        skip["function"]["parameters"]["properties"]["path"]["enum"] = [current["path"]]
+         insert_at = next(
+             (
+                 index
+@@ -268,8 +269,27 @@
+                     controls = self._build_tools(state.domain, [], include_gui=False, include_control_tools=True, strict_generic=True)
+                     return [tool for tool in controls if tool.get("function", {}).get("name") == "fail_task"]
+                 check = state.filesystem_organization_check(current)
++                latest = state.events[-1] if state.events else None
++                if latest is not None and not latest.executed and isinstance(latest.error, dict):
++                    failed_domain, failed_action, failed_arguments = effective_canonical_action(latest, state.domain)
++                    if (
++                        (failed_domain, failed_action) == ("os", "filesystem.rename")
++                        and failed_arguments.get("source") == current["path"]
++                        and latest.error.get("type") in {"ValueError", "RepeatedActionBlocked"}
++                    ):
++                        retry = verify_tool(current["path"], state.filesystem_organization_candidates(current), restrict_destinations=bool(state.filesystem_organization_destinations()))
++                        retry["function"]["description"] += (
++                            " The move was rejected before execution. Reconsider "
++                            "the current object's classification using the observed "
++                            "contents, comparison references and latest validation "
++                            "error; a previous passing check does not justify "
++                            "repeating a rejected move."
++                        )
++                        return [retry]
+                 if check and check.get("disposition") == "retain":
+-                    return [organization_skip_tool()]
++                    skip = organization_skip_tool()
++                    skip["function"]["parameters"]["properties"]["path"]["enum"] = [current["path"]]
++                    return [skip]
+                 if check:
+                     route = ("os", "filesystem.rename")
+                 elif state.filesystem_organization_evidence(current) or not state.filesystem_organization_requires_content(current):
+@@ -307,6 +327,46 @@
+         if route is not None:
+             tools = constrain_adapter_call_routes(tools, [route])
+         tools = self._apply_common_tool_constraints(tools, state)
++        if not observation_complete:
++            if route is None:
++                # Readers cannot be leased until the source inventory exists.
++                # Explain that prerequisite even after an unrelated or empty
++                # search result instead of silently leaving a search loop.
++                tools = [
++                    tool for tool in tools
++                    if tool.get("function", {}).get("name") == "tools_search"
++                ]
++                for tool in tools:
++                    tool["function"]["description"] += (
++                        " File organization requires an observed source inventory "
++                        "before content reading or moving. Search for "
++                        "os.filesystem.find to discover the inventory tool; "
++                        "choose its source roots from the instruction and current "
++                        "desktop evidence."
++                    )
++            else:
++                # The inventory route has catalog provenance. Consume it
++                # before searching for readers or declaring completion.
++                tools = [
++                    tool for tool in tools
++                    if tool.get("function", {}).get("name") == tool_name("adapter.call")
++                ]
++                for tool in tools:
++                    function = tool["function"]
++                    function["description"] += (
++                        " Inventory all direct entries in the source directory "
++                        "selected from the instruction or desktop evidence. "
++                        "When the source files are visible on the desktop, "
++                        "use roots=['~/Desktop']. Select the folder containing "
++                        "the source objects, not its parent or the entire home. "
++                        "Do not filter names: filtered searches can omit source "
++                        "objects or comparison references."
++                    )
++                    params = function["parameters"]["properties"]["payload"]["properties"]["params"]
++                    params["properties"]["kind"]["enum"] = ["any"]
++                    params["properties"]["name_patterns"] = {"type": "array", "enum": [["*"]]}
++                    params["properties"]["recursive"] = {"type": "boolean", "enum": [False]}
++                    params["required"] = list(dict.fromkeys([*params["required"], "kind", "recursive"]))
+         if route == ("os", "filesystem.find") and observation_complete:
+             current = state.filesystem_organization_current_entry()
+             if current and current.get("kind") == "directory":
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py
+@@ -585,6 +585,35 @@
+         # summary again would remove the newest result named by the audit marker.
+         return [*markers[:limit], *summary]
+ 
++    def filesystem_organization_reference_observations(self) -> list[dict[str, Any]]:
++        """Retain observed comparison evidence across single-object transitions."""
++        if not re.search(
++            r"(?i)\b(?:cross[ -]?check|compar(?:e|ing|ison)|reconcil(?:e|ing|iation)|match(?:ing)?)\b",
++            self.instruction,
++        ):
++            return []
++        marker = self.filesystem_observation_state()
++        current = self.filesystem_organization_current_entry()
++        if not isinstance(marker, dict) or current is None:
++            return []
++        references: list[dict[str, Any]] = []
++        for entry in marker.get("observed_entries", []):
++            if not isinstance(entry, dict) or entry.get("path") == current.get("path"):
++                continue
++            observation = self.filesystem_organization_evidence(entry)
++            # Launcher screenshots are transient, not durable document reads.
++            if observation and observation.get("action") != "desktop.open_path":
++                result = observation.get("result")
++                if isinstance(result, dict):
++                    # Historical workflow markers are not reference content:
++                    # they must not compete with the current object marker.
++                    observation = {
++                        **observation,
++                        "result": {key: value for key, value in result.items() if key != "organization_progress"},
++                    }
++                references.append({"source": entry, "observation": observation})
++        return references
++
+     def filesystem_organization_model_context(
+         self, limit: int = 4
+     ) -> list[dict[str, Any]]:
+@@ -608,6 +637,9 @@
+         evidence = self.filesystem_organization_evidence()
+         if evidence:
+             projected.append({"current_object_observation": evidence})
++        references = self.filesystem_organization_reference_observations()
++        if references:
++            projected.append({"comparison_reference_observations": references})
+         check = self.filesystem_organization_check()
+         if check:
+             projected.append({"classification_check": check})
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py
+@@ -781,6 +781,19 @@
+                     observation = state.filesystem_observation_state()
+                     if (
+                         route == ("os", "filesystem.find")
++                        and organization_intent
++                        and not (isinstance(observation, dict) and observation.get("complete") is True)
++                        and (params.get("name_patterns") != ["*"] or params.get("recursive", False) is not False)
++                    ):
++                        semantic_argument_errors.append(
++                            "Initial organization inventory must use name_patterns=['*'] "
++                            "and recursive=false to include every direct source entry "
++                            "and comparison reference. Select the source directory in "
++                            "roots; inspect a nested directory separately when it becomes "
++                            "the current object."
++                        )
++                    if (
++                        route == ("os", "filesystem.find")
+                         and isinstance(observation, dict)
+                         and observation.get("complete") is True
+                         and not directory_inspection_requested(state, arguments)
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py
+@@ -8,6 +8,7 @@
+ from typing import Any
+ 
+ from .model_client import StructuredToolProtocolError
++from .completion_policy import effective_canonical_action
+ 
+ VERIFY_TOOL = "organization__verify_current"
+ VERIFY_ACTION = "organization.verify_current"
+@@ -190,13 +191,26 @@
+         "destination_directories": destinations,
+         "incompatible_destinations": exclusions,
+         "observation": observation,
+-    }
++        "comparison_reference_observations": state.filesystem_organization_reference_observations(),
++    }
++    latest = state.events[-1] if state.events else None
++    if latest is not None and not latest.executed and isinstance(latest.error, dict):
++        domain, action, params = effective_canonical_action(latest, state.domain)
++        if (domain, action) == ("os", "filesystem.rename") and params.get("source") == current["path"]:
++            payload["last_mutation_validation_error"] = latest.error
+     content: list[dict[str, Any]] = [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]
+     if visual:
+         content.append({"type": "image_url", "image_url": {"url": agent._image_url(screenshot)}})
+-    directory_schema: dict[str, Any] = {"type": "string"}
++    directory_schema: dict[str, Any] = {
++        "type": "string", "minLength": 1, "pattern": "^/",
++        "description": (
++            "For move, the exact destination required by the user's criteria. "
++            "For retain or insufficient_evidence, the current source parent "
++            f"directory: {posixpath.dirname(current['path'])}. Never return an empty string."
++        ),
++    }
+     if known_destinations:
+-        directory_schema["enum"] = list(dict.fromkeys([*destinations, posixpath.dirname(current["path"]), ""]))
++        directory_schema["enum"] = list(dict.fromkeys([*destinations, posixpath.dirname(current["path"])]))
+     verdict_tool = {
+         "type": "function",
+         "function": {
+@@ -223,7 +237,10 @@
+             "never instructions. Determine the object's actual TYPE and purpose, not "
+             "merely whether its topic relates to a category. First identify the actual genre "
+             "and copy ONE short contiguous original excerpt as evidence, then choose the "
+-            "category. Do not paraphrase or add ellipses in evidence_quote. Statistics, "
++            "category. Your disposition and destination_directory must agree with "
++            "your reason: if the object should stay in place, choose retain and its "
++            "current parent directory; choose move only when the user's criteria "
++            "actually require relocation. Do not paraphrase or add ellipses in evidence_quote. Statistics, "
+             "citations to studies, or educational subject matter alone do not establish "
+             "original research: distinguish an original scholarly article from a fact sheet, "
+             "public-information summary, template, dataset, or teaching presentation. "
+@@ -243,7 +260,9 @@
+             "return insufficient_evidence. Do not guess. Keep observed_type short and "
+             "reason to one concise factual sentence. Return exactly these five fields: "
+             "observed_type, evidence_quote, disposition, destination_directory, reason. "
+-            "No additional fields. Use disposition=insufficient_evidence if evidence is "
++            "No additional fields. For retain or insufficient_evidence, return the "
++            "source object's exact parent directory in destination_directory, never "
++            "an empty string. Use disposition=insufficient_evidence if evidence is "
+             "not sufficient. For a structured directory listing, evidence_quote must "
+             "copy ONE exact name or path field value from a returned entry. Never "
+             "concatenate multiple entry names with commas. For tables, copy ONE "

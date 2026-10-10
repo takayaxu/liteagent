@@ -400,3 +400,11 @@ $PYTHON -m ruff check <changed_python_files>
 - 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/GRF-p5y.xlsx` 及转换后的 `/home/user/Desktop/GRF-p5y-Sheet1.csv` 时返回 404；XLSX 重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；manifest 的 result=[null]。输出缺失或保存路径问题尚未作根因确认。
 - 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
 - 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
+
+## Order 99 本轮修复（2026-10-10）
+
+- 保留 fixed-28 最新原始 FAIL：45 步工具搜索、0 个 Adapter 调用、reward=0.0。完整人工诊断及单题修复见 [Order 99 记录](src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md)。
+- 本题增量：解释 inventory 前置条件并消费发现工具；初始清单全量枚举所选来源目录；对照参考内容跨对象保留；统一 checker retain 目录契约；移动拒绝后重新分类；retain 路径绑定当前对象。保留有界只读 `os.pdf.extract_text_batch`，不新增大粒度 API。
+- `retry3` 正式 evaluator PASS（1.0，25 步，stalled_no_progress）；`retry4` PASS（1.0，45 步，manifest=max_steps）。两轮仍有执行收尾限制，记录中明确区分 evaluator 通过和完整处理证明。最终 `retry5` PASS（1.0，45 步，manifest=max_steps，1386.762 秒）；读取流水与三张发票，仅不匹配发票移动且验证通过，匹配文件保持原位。第三张匹配发票的 checker disposition/理由仍矛盾，未正常 agent_done，此限制已记录。
+- 当前定向检查 70 passed，实际轨迹 contract replay 与 Ruff 通过；不扩建回归、不跑其他 Order。
+- 本工作区存在原有共享改动，本题源码已应用；交付以独立增量补丁及 SHA-256 基线清单保存，避免把其他失败题共享代码混入本题提交。集成说明见本题记录。
