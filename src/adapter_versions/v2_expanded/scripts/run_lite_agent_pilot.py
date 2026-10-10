@@ -75,6 +75,7 @@ from scripts.frozen_condition import (  # noqa: E402
     enforce_runner_condition,
 )
 from scripts.openapa_trajectory import build_trajectory_manifest, write_manifest  # noqa: E402
+from scripts.organization_step_budget import estimate_organization_step_budget  # noqa: E402
 from scripts.office_episode_recovery import (  # noqa: E402
     model_visible_recovery_status,
     recover_office_episode,
@@ -1423,24 +1424,39 @@ def run_task(
             agent_loop_started + args.max_agent_seconds
         )
         office_recoveries_attempted = 0
-        # ``max_steps`` remains the immutable global episode budget.  A target
+        # ``max_steps`` remains the immutable hard global episode budget.  A target
         # condition may additionally provide a smaller local budget so a
         # bounded same-VM soft restart can rebuild context and continue within
         # the same episode.  No VM reset occurs in this loop.
         local_step_limit = getattr(args, "max_local_steps", None) or args.max_steps
         soft_restart_limit = getattr(args, "max_soft_restarts", 1)
         total_steps = 0
+        initial_step_budget = getattr(args, "initial_step_budget", None)
+        initial_step_limit = (
+            initial_step_budget if initial_step_budget is not None else args.max_steps
+        )
+        step_budget = {
+            "policy": (
+                "observed_organization_inventory"
+                if initial_step_budget is not None else "fixed"
+            ),
+            "initial_limit": initial_step_limit,
+            "hard_limit": args.max_steps,
+            "effective_limit": initial_step_limit,
+            "estimate": None,
+        }
+        record["step_budget"] = step_budget
         # A terminal Tool consumes one additional model turn for its audit.
         # Permit that bounded turn even when the normal Tool budget was just
         # exhausted; it does not create a VM reset or a second terminal event.
         terminal_audit_turns_remaining = 1
-        while total_steps < args.max_steps or (
+        while total_steps < step_budget["effective_limit"] or (
             isinstance(getattr(state, "pending_terminal", None), dict)
             and terminal_audit_turns_remaining > 0
         ):
             terminal_audit_turn = (
                 isinstance(getattr(state, "pending_terminal", None), dict)
-                and total_steps >= args.max_steps
+                and total_steps >= step_budget["effective_limit"]
                 and terminal_audit_turns_remaining > 0
             )
             if terminal_audit_turn:
@@ -1681,7 +1697,7 @@ def run_task(
                 }
                 record["runner_termination"] = {
                     "type": "terminal_audit_continuation_budget_exhausted",
-                    "limit_steps": args.max_steps,
+                    "limit_steps": step_budget["effective_limit"],
                     "review_step": step,
                     "selected_tool": selected_tool,
                 }
@@ -1773,6 +1789,17 @@ def run_task(
             after_path.write_bytes(observation_box["value"]["screenshot"])
             event.screenshot_after = after_path.name
             write_event(event_trace, event)
+            if initial_step_budget is not None and step_budget["estimate"] is None:
+                estimate = estimate_organization_step_budget(
+                    state,
+                    used_steps=total_steps,
+                    initial_limit=step_budget["initial_limit"],
+                    hard_limit=args.max_steps,
+                )
+                if estimate is not None:
+                    step_budget["estimate"] = estimate
+                    step_budget["effective_limit"] = estimate["effective_limit"]
+                    logging.info("Observed organization step budget: %s", step_budget)
             if recovery_failure is not None:
                 raise RuntimeError(
                     "Office environment recovery failed at "
@@ -1792,7 +1819,7 @@ def run_task(
             )
             if (
                 recovery_reason is not None
-                and total_steps < args.max_steps
+                and total_steps < step_budget["effective_limit"]
                 and not state.done
                 and not state.failed
                 and not isinstance(getattr(state, "pending_terminal", None), dict)
@@ -1874,6 +1901,24 @@ def run_task(
                 if terminal_action is not None:
                     env.step(terminal_action, 0.1)
                 break
+
+        if (
+            "termination_reason" not in record
+            and total_steps >= step_budget["effective_limit"]
+            and not state.done
+            and not state.failed
+        ):
+            record["termination_reason"] = "step_budget_exhausted"
+            record["runner_termination"] = {
+                "type": "step_budget_exhausted",
+                "limit_steps": step_budget["effective_limit"],
+                "hard_limit_steps": args.max_steps,
+                "global_steps": total_steps,
+                "pending_model_audit": state.pending_model_audit,
+            }
+            terminal_action = osworld_terminal_action("agent_failed")
+            if terminal_action is not None:
+                env.step(terminal_action, 0.1)
 
         record["episode_control"] = {
             "global_steps": total_steps,
@@ -2048,6 +2093,8 @@ def run_task(
         "reasoning_mode": getattr(args, "reasoning_mode", None),
         "gui_enabled": not args.no_gui,
     }
+    if "step_budget" in record:
+        manifest["agent"]["step_budget"] = record["step_budget"]
     write_manifest(task_dir, manifest)
     record["trajectory_manifest"] = str(task_dir / "trajectory_manifest.json")
     if interrupted:
@@ -2073,6 +2120,16 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--orders", type=int, nargs="+", default=None)
     parser.add_argument("--max-steps", type=int, default=30)
+    parser.add_argument(
+        "--initial-step-budget",
+        type=int,
+        default=None,
+        help=(
+            "Opt in to an organization inventory step estimate. Start with this "
+            "budget, extend once after complete source discovery, and never exceed "
+            "the immutable --max-steps hard cap. Other tasks keep the initial budget."
+        ),
+    )
     parser.add_argument(
         "--max-local-steps",
         type=int,
@@ -2179,6 +2236,13 @@ def main() -> None:
     # accepted from the launcher.
     args.runner = Path(__file__).resolve()
     args.python = str(Path(sys.executable).resolve())
+    if args.max_steps < 1:
+        parser.error("max steps must be positive")
+    if (
+        args.initial_step_budget is not None
+        and not 1 <= args.initial_step_budget <= args.max_steps
+    ):
+        parser.error("initial step budget must be between 1 and max steps")
     if args.evaluator_file_fetch_attempts <= 0:
         parser.error("evaluator file fetch attempts must be positive")
     if args.evaluator_file_fetch_delay_seconds < 0:
@@ -2377,6 +2441,7 @@ def main() -> None:
             "agent_fields_projected_in_short_lived_process; evaluator loaded only after episode"
         ),
         "max_steps": args.max_steps,
+        "initial_step_budget": args.initial_step_budget,
         "max_local_steps": args.max_local_steps,
         "max_soft_restarts": args.max_soft_restarts,
         "max_no_progress_steps": args.max_no_progress_steps,
