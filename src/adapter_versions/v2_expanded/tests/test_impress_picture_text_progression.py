@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from integrations.lite_agent import impress_semantics
+from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 
 
@@ -135,6 +140,135 @@ def _tools() -> list[dict[str, Any]]:
         {"function": {"name": "adapter__slide_format_text_roles"}},
         {"function": {"name": "adapter__presentation_save"}},
     ]
+
+
+class _RecordingExecutor:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str, dict[str, Any]]] = []
+
+    def execute(
+        self,
+        domain: str,
+        action: str,
+        arguments: dict[str, Any],
+        _metadata: dict[str, Any],
+    ) -> dict[str, Any]:
+        self.calls.append((domain, action, dict(arguments)))
+        return {"executed": True, "result": {"status": "ok"}}
+
+
+def test_picture_height_step_is_injected_and_validated_before_execution() -> None:
+    state = _state([_inspection()])
+    expected = {
+        "action": "shape.set_geometry",
+        "arguments": {
+            "slide": 2,
+            "selector": {"path": [4]},
+            "height": 20000,
+        },
+    }
+    assert impress_semantics.next_structured_action(state) == expected
+
+    executor = _RecordingExecutor()
+    agent = LiteAgent(
+        LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+        executor,
+        model_client=SimpleNamespace(client=object()),
+    )
+    visible_tools = agent.tools(state)
+    geometry_tool = next(
+        tool
+        for tool in visible_tools
+        if tool["function"]["name"] == "adapter__shape_set_geometry"
+    )
+    assert geometry_tool["function"]["parameters"] == {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": False,
+    }
+
+    event = agent.execute_proposal(
+        state,
+        {
+            "tool": "adapter__shape_set_geometry",
+            "arguments_raw": json.dumps({}),
+            "_model_visible_tools": visible_tools,
+        },
+    )
+
+    assert event.executed is True
+    assert event.proposed["model_arguments"] == {}
+    assert event.proposed["arguments"] == expected["arguments"]
+    assert event.proposed["arguments_source"] == (
+        "instruction_and_presentation_observation"
+    )
+    assert executor.calls == [
+        ("libreoffice_impress", "shape.set_geometry", expected["arguments"])
+    ]
+
+
+def test_picture_height_rejects_a_non_target_selector() -> None:
+    state = _state([_inspection()])
+
+    with pytest.raises(ValueError, match="must match the next"):
+        impress_semantics.validate_arguments(
+            state,
+            "shape.set_geometry",
+            {"slide": 2, "selector": {"path": [5]}, "height": 20000},
+        )
+
+
+def test_order_60_picture_height_targets_foreground_picture_container() -> None:
+    inspection = _inspection()
+    slide = inspection.result["context_hint"]["slides"][0]
+    background = {
+        "path": [1],
+        "name": "Picture 5",
+        "kind": "com.sun.star.drawing.GraphicObjectShape",
+        "x": -1398,
+        "y": -6984,
+        "width": 52776,
+        "height": 19682,
+        "graphic_count": 1,
+    }
+    target = {
+        "path": [2],
+        "name": "Group 6",
+        "kind": "com.sun.star.drawing.GroupShape",
+        "x": 14430,
+        "y": 1820,
+        "width": 21121,
+        "height": 14083,
+        "graphic_count": 1,
+    }
+    unrelated = {
+        "path": [5],
+        "name": "Group 10",
+        "kind": "com.sun.star.drawing.GroupShape",
+        "x": 5870,
+        "y": 17097,
+        "width": 15261,
+        "height": 9073,
+    }
+    slide.update(
+        {
+            "width": 50800,
+            "height": 28575,
+            "picture_containers": [background, target],
+            "graphic_shapes": [background],
+            "all_shapes": [background, target, unrelated],
+        }
+    )
+
+    assert impress_semantics.next_structured_action(_state([inspection])) == {
+        "action": "shape.set_geometry",
+        "arguments": {
+            "slide": 2,
+            "selector": {"path": [2]},
+            "height": 20000,
+        },
+    }
 
 
 def test_picture_success_exposes_only_the_next_text_mutation() -> None:

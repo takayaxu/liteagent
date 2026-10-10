@@ -3786,6 +3786,15 @@ def _strict_generic_schema_overlay(
             "choose cover. With cover, negative x/y or dimensions beyond the slide are "
             "expected centered clipping; do not retry for that geometry."
         )
+    elif domain == "libreoffice_impress" and action == "shape.set_geometry":
+        # Qwen's OpenAI-compatible tool parser can emit an empty object for this
+        # action when its model-facing schema contains nested top-level allOf and
+        # oneOf branches. Present a flat surface while the Adapter keeps enforcing
+        # the exact location, geometry, and mutual-exclusion contract at runtime.
+        parameters.pop("allOf", None)
+        parameters.pop("anyOf", None)
+        parameters.pop("oneOf", None)
+        parameters["minProperties"] = 3
     elif domain == "libreoffice_impress" and action == "shape.format_text":
         # Qwen's OpenAI-compatible tool parser can emit an empty object when the
         # model-facing schema combines the required shape target with a top-level

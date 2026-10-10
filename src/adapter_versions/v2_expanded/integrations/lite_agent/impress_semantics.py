@@ -2428,8 +2428,12 @@ def final_readback_complete(state: Any) -> bool:
 
 def next_structured_action(state: Any) -> dict[str, Any] | None:
     """Return a model-callable step whose arguments are fully observation-derived."""
-    if next_picture_height_action(state) is not None:
-        return None
+    if picture_height_step := next_picture_height_action(state):
+        return (
+            picture_height_step
+            if picture_height_step["action"] == "shape.set_geometry"
+            else None
+        )
     if edge_step := next_picture_edge_action(state):
         return edge_step
     underline = next_textbox_underline_spec(state)

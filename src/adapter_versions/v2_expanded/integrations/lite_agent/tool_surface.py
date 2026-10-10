@@ -431,6 +431,12 @@ class ToolSurfaceMixin:
             function = tool.get("function")
             if not isinstance(function, dict):
                 continue
+            picture_height_step = impress_semantics.next_picture_height_action(state)
+            if (
+                picture_height_step is not None
+                and picture_height_step["action"] == "shape.set_geometry"
+            ):
+                impress_semantics.constrain_tool_schema(function, state)
             batch_table_semantics.constrain_tool_schema(function, state)
             calc_semantics.constrain_sort_tool_schema(function, state)
             calc_semantics.constrain_stacked_aggregate_tool_schema(

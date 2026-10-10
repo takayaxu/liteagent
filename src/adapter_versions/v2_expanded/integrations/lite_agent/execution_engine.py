@@ -12,6 +12,7 @@ from . import (
     calc_semantics,
     completion_recovery,
     impress_cover_semantics,
+    impress_semantics,
     impress_table_row,
     spreadsheet_open_semantics,
     verified_artifact_handoff,
@@ -294,6 +295,37 @@ class ExecutionEngineMixin:
                     raise ValueError(
                         f"action is not in current Top-K exposure: {action}"
                     )
+                structured_impress_step = impress_semantics.next_picture_height_action(
+                    state
+                )
+                if (
+                    state.domain == "libreoffice_impress"
+                    and structured_impress_step is not None
+                    and structured_impress_step["action"] == "shape.set_geometry"
+                ):
+                    if action != structured_impress_step["action"]:
+                        raise ValueError(
+                            "Impress picture-height mutation must use the pending "
+                            f"observation-derived action: {structured_impress_step!r}"
+                        )
+                    if arguments:
+                        raise ValueError(
+                            "Impress picture-height mutation arguments are injected by "
+                            "the Runner; call the constrained tool with no arguments"
+                        )
+                    arguments = copy.deepcopy(structured_impress_step["arguments"])
+                    event.proposed["model_arguments"] = model_arguments
+                    event.proposed["arguments_source"] = (
+                        "instruction_and_presentation_observation"
+                    )
+                    event.proposed["arguments"] = copy.deepcopy(arguments)
+                    if not impress_semantics.validate_arguments(
+                        state, action, arguments
+                    ):
+                        raise ValueError(
+                            "injected Impress picture-height arguments did not match "
+                            "the pending semantic plan"
+                        )
                 if action == "adapter.call" and state.domain == "multi_apps":
                     route = (arguments.get("adapter"), arguments.get("action"))
                     if route not in discovered_adapter_routes(state):
@@ -610,6 +642,14 @@ class ExecutionEngineMixin:
                     arguments != model_arguments
                     or event.proposed.get("arguments_source") is not None
                 ):
+                    structured_impress_injection = bool(
+                        event.proposed.get("arguments_source")
+                        == "instruction_and_presentation_observation"
+                        and structured_impress_step is not None
+                        and action == structured_impress_step["action"]
+                        and arguments == structured_impress_step["arguments"]
+                        and model_arguments == {}
+                    )
                     cleanup_injection = bool(
                         event.proposed.get("arguments_source")
                         == "instruction_and_presentation_observation"
@@ -619,7 +659,8 @@ class ExecutionEngineMixin:
                         and arguments == personal_cleanup_step["arguments"]
                     )
                     if (
-                        not cleanup_injection
+                        not structured_impress_injection
+                        and not cleanup_injection
                     ):
                         raise RuntimeError(
                             "strict generic-only execution cannot rewrite or inject model arguments"
