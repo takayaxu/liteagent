@@ -391,6 +391,62 @@
         "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "244a5f47f25b997f1574a5b3ed19f6dd1c3882a9b4a8acebaef0f4e2eafc3a78"
       },
       "scope": "isolated single-task rerun; original 28-task batch and its score remain unchanged"
+    },
+    {
+      "order": 99,
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 45,
+      "duration_seconds": 1386.762,
+      "termination_reason": null,
+      "manifest_termination_reason": "max_steps",
+      "terminated_by_agent": false,
+      "path_class": "generic_api_only",
+      "experiment_id": "osworld-order99-qwen-20261010-inventory-handoff-retry5",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json",
+      "delivery_commit": "f0afcaa",
+      "evidence_commit": "37202a6",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md",
+      "event_count": 45,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T21:40:31.439163+08:00",
+      "last_event_at": "2026-10-10T21:59:22.006738+08:00",
+      "completed_at": "2026-10-10T13:59:51.068893+00:00",
+      "evidence_sha256": {
+        "results.json": "c3deceea9aac3b6e027c443694d7f87a4473ba5d9dc4aac9aafb85b8e63818ef",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json": "a2bdf6fe42887a3434c964e18e2f9768733d4ab504cae8922c6b3836c1cb7364",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl": "e2b15a2d6445f8d0581f42bcf3c8049e2aede02c135dd64b78323a18d9eabeda",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "91731d70a64aa53e089e7c5ebc331aa8a9ab33accd27b6c2501268139630981a",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "55f301d3fe9544de72a330d4b2d797de74651afb1820db89f2cfcde2b3e8bea1"
+      },
+      "evaluator_artifacts": [
+        {
+          "role": "result",
+          "source": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/337d318b-aa07-4f4f-b763-89d9a2dd013f/Invoice # 243729.pdf",
+          "artifact": "result-00-Invoice # 243729.pdf",
+          "type": "file",
+          "size": 15655,
+          "sha256": "39c23a5792795583184c3694de5b0187d895e6ef75d2e2cbfbdd16b23f1c3594"
+        },
+        {
+          "role": "expected",
+          "source": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/337d318b-aa07-4f4f-b763-89d9a2dd013f/Invoice # 243729 Gold.pdf",
+          "artifact": "expected-00-Invoice # 243729 Gold.pdf",
+          "type": "file",
+          "size": 15655,
+          "sha256": "39c23a5792795583184c3694de5b0187d895e6ef75d2e2cbfbdd16b23f1c3594"
+        }
+      ],
+      "completion_limitation": "第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。",
+      "verification_summary_limitation": "manifest adapter_verifier_passed_calls=0; step 8 nested rename verification_passed=true; original evidence unchanged",
+      "scope": "isolated single-task rerun from shared workspace; delivered as incremental patch; original 28-task batch and score remain unchanged"
     }
   ],
   "latest_results": {
@@ -423,6 +479,62 @@
         "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "244a5f47f25b997f1574a5b3ed19f6dd1c3882a9b4a8acebaef0f4e2eafc3a78"
       },
       "scope": "isolated single-task rerun; original 28-task batch and its score remain unchanged"
+    },
+    "99": {
+      "order": 99,
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 45,
+      "duration_seconds": 1386.762,
+      "termination_reason": null,
+      "manifest_termination_reason": "max_steps",
+      "terminated_by_agent": false,
+      "path_class": "generic_api_only",
+      "experiment_id": "osworld-order99-qwen-20261010-inventory-handoff-retry5",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json",
+      "delivery_commit": "f0afcaa",
+      "evidence_commit": "37202a6",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md",
+      "event_count": 45,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T21:40:31.439163+08:00",
+      "last_event_at": "2026-10-10T21:59:22.006738+08:00",
+      "completed_at": "2026-10-10T13:59:51.068893+00:00",
+      "evidence_sha256": {
+        "results.json": "c3deceea9aac3b6e027c443694d7f87a4473ba5d9dc4aac9aafb85b8e63818ef",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json": "a2bdf6fe42887a3434c964e18e2f9768733d4ab504cae8922c6b3836c1cb7364",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl": "e2b15a2d6445f8d0581f42bcf3c8049e2aede02c135dd64b78323a18d9eabeda",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "91731d70a64aa53e089e7c5ebc331aa8a9ab33accd27b6c2501268139630981a",
+        "raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "55f301d3fe9544de72a330d4b2d797de74651afb1820db89f2cfcde2b3e8bea1"
+      },
+      "evaluator_artifacts": [
+        {
+          "role": "result",
+          "source": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/337d318b-aa07-4f4f-b763-89d9a2dd013f/Invoice # 243729.pdf",
+          "artifact": "result-00-Invoice # 243729.pdf",
+          "type": "file",
+          "size": 15655,
+          "sha256": "39c23a5792795583184c3694de5b0187d895e6ef75d2e2cbfbdd16b23f1c3594"
+        },
+        {
+          "role": "expected",
+          "source": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/337d318b-aa07-4f4f-b763-89d9a2dd013f/Invoice # 243729 Gold.pdf",
+          "artifact": "expected-00-Invoice # 243729 Gold.pdf",
+          "type": "file",
+          "size": 15655,
+          "sha256": "39c23a5792795583184c3694de5b0187d895e6ef75d2e2cbfbdd16b23f1c3594"
+        }
+      ],
+      "completion_limitation": "第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。",
+      "verification_summary_limitation": "manifest adapter_verifier_passed_calls=0; step 8 nested rename verification_passed=true; original evidence unchanged",
+      "scope": "isolated single-task rerun from shared workspace; delivered as incremental patch; original 28-task batch and score remain unchanged"
     }
   }
 }

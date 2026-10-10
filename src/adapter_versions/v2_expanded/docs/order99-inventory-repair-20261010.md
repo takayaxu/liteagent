@@ -69,6 +69,16 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
 
 原始 FAIL、三次主动中断、两次中间 PASS 与最终 PASS 都保留，各轮结果互不覆盖。最终活动源码与增量补丁 SHA-256 一致，未运行其他题目。
 
-交付提交：`f0afcaa`（`fix(order99): package inventory and reconciliation workflow repair`），包含本题独立增量补丁、修复前后 SHA-256、正式验证配置、开发日志与审计。后续记录提交修正补丁的空白上下文表示，不改变活动源码行为。
+交付提交：`f0afcaa`（`fix(order99): package inventory and reconciliation workflow repair`），包含本题独立增量补丁、修复前后 SHA-256、正式验证配置、开发日志与审计。后续证据提交 `37202a6`（`docs(order99): record repair delivery and final evaluator evidence`）修正补丁的空白上下文表示，不改变活动源码行为。
 
 轨迹 manifest 的 adapter_verifier_passed_calls 汇总为 0，但原始第 8 步 rename 返回嵌套 verification_passed=true，且 evaluator result/expected 的 SHA-256 相同；沿用原始文件，不修改汇总计数。
+
+## 本次四处写回的证据入口
+
+[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json)；[原始评分](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt)；[evaluator 产物索引](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json)。
+
+工具事件共 45 条，北京时间 2026-10-10T21:40:31.439163+08:00 至 2026-10-10T21:59:22.006738+08:00；完整运行于北京时间 2026-10-10 21:36:44–21:59:51，含部署。6 个实际 Adapter 调用为 1 次 find、4 次 PDF 读取、1 次 rename。
+
+evaluator result/expected 均为 15655 字节，SHA-256：`39c23a5792795583184c3694de5b0187d895e6ef75d2e2cbfbdd16b23f1c3594`。完整证据 SHA-256 与终止字段同步写入 [批次审计 JSON](osworld-passing-submission-20261010.json) 和 [统一结果 JSON](osworld-task-results-index-20261010.json)。
+
+本次同步 API 审计、正式开发日志、本单题日志、最新结果入口及配套机器可读回执；只校验文档链接、原始证据和 JSON，不新增复跑。原批次仍为 23/28。

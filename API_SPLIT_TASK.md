@@ -403,7 +403,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 > Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
 
-- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md)。
+- 原批次失败事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md)。
 - Task ID：`337d318b-aa07-4f4f-b763-89d9a2dd013f`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，475.856 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 获取目标 PDF 时返回 404；evaluator_artifacts/manifest.json 的 result=[null]，只保存了 expected 文件。当前回执不能证明所有发票已经分类完成；本轮失败不覆盖历史单题 PASS。
@@ -454,3 +454,6 @@ $PYTHON -m ruff check <changed_python_files>
 - 本工作区存在原有共享改动，本题源码已应用；交付以独立增量补丁及 SHA-256 基线清单保存，避免把其他失败题共享代码混入本题提交。集成说明见本题记录。
 
 - Order 99 本题增量交付提交：`f0afcaa`（补丁、基线 hash、配置、开发记录和 API 审计）；活动源码修复已应用在共享工作区，具体集成边界见本题记录。
+- 最终证据写回（该运行于北京时间 2026-10-10 21:59:51 完成）：[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json)；[原始评分](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt)；[evaluator 产物索引](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json)。
+- 原始字段区分：manifest=`max_steps`；results.json termination_reason 未填写（null），terminated_by_agent=false。保留 checker 收尾限制，不记为正常 agent_done。
+- 收尾证据提交 `37202a6`；原始 fixed-28 仍为 23/28，本题后续 PASS 单独登记。

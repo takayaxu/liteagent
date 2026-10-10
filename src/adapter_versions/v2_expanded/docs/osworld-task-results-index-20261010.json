@@ -749,7 +749,13 @@
           "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
           "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "91731d70a64aa53e089e7c5ebc331aa8a9ab33accd27b6c2501268139630981a",
           "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "55f301d3fe9544de72a330d4b2d797de74651afb1820db89f2cfcde2b3e8bea1"
-        }
+        },
+        "terminated_by_agent": false,
+        "path_class": "generic_api_only",
+        "delivery_commit": "f0afcaa",
+        "evidence_commit": "37202a6",
+        "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md",
+        "completion_limitation": "第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。"
       }
     },
     {

@@ -125,6 +125,7 @@
 
 - 本轮批次：FAIL / reward=0.0；[结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；[轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)。
 - 最新已核对运行：PASS / reward=1.0；完成于 2026-10-10T13:59:51.068893+00:00；[结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json)；[轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)。
+- 45 步、1386.762 秒；北京时间 2026-10-10 21:59:51 完成。manifest=`max_steps`，results termination_reason=null，terminated_by_agent=false。第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。见 [单题修复记录](order99-inventory-repair-20261010.md)；交付 `f0afcaa`，证据 `37202a6`。
 
 ### Order 102
 
