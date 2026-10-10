@@ -3684,7 +3684,30 @@ def _search_multi_app_actions(
             if score:
                 matches.append((score, route_domain, action))
 
-    ranked = sorted(matches, key=lambda item: (-item[0], item[1], item[2]))
+    # An application and operation named in the current query take precedence
+    # over context bonuses inferred from the full instruction. Keep other
+    # routes as fallbacks, and retain the existing ranking for unscoped queries.
+    named_domains = {
+        route_domain
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS
+        if _tokens(route_domain).difference({"libreoffice"}).issubset(
+            exact_query_tokens
+        )
+    }
+
+    def query_priority(item: tuple[int, str, str]) -> tuple[int, int, int, str, str]:
+        score, route_domain, action = item
+        operation_matches = len(_tokens(action).intersection(exact_query_tokens))
+        preferred = route_domain in named_domains and operation_matches > 0
+        return (
+            -int(preferred),
+            -operation_matches if preferred else 0,
+            -score,
+            route_domain,
+            action,
+        )
+
+    ranked = sorted(matches, key=query_priority)
     # An explicit downstream action in the search query is an unambiguous
     # request for that route. Keep unrelated filesystem routes out of the
     # result so the model can call the requested action instead of repeating
