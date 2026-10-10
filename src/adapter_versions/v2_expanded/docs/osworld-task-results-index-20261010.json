@@ -782,24 +782,58 @@
         }
       },
       "latest_verified_run": {
-        "status": "failed",
-        "reward": 0.0,
-        "steps": 45,
-        "duration_seconds": 1012.175,
-        "results_termination_reason": null,
-        "manifest_termination_reason": "max_steps",
-        "completed_at": "2026-10-10T07:37:33.520036+00:00",
-        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
-        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
-        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 47,
+        "duration_seconds": 1077.597,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T15:03:38.142188+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
         "sha256": {
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "f0537927ff928d19e6cb9cb429edbfc5056615df53753f4d708b54972a48e206",
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "b3bba54cac360bcfe672816b09ba9e85a84b1c58762adcd903ac226970a515ab",
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "83eed46fcdf70e7bb7353803668bba3badebda7c13faa3c8a4bb08e26d31d802",
-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "7784e7f8bbaad2736813645bd69c199d97b155366913093eb6f90783ea06c9b7"
-        }
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json": "d011e396b82edf1cd853b4bbbbd3d261802fd9ada566f61f790a936b0550e224",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "4a90b7c3074f08cb7fd0bb0a3f2354e53f137ad77f7e92bcbe744b86a7b9887f",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "fbad0a5c2ae577929818f2fe27bf7109e012225fec03c557e07f6c95c75f0165",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "0af3337be5aa79da6fb9d427809ea0e70cd0c2bb866d597af379b305dd46ef7b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "1708fa47b4060ef148f1cb7e04fc899a4286b23b8757cb1ff34f893b325c1d31"
+        },
+        "terminated_by_agent": true,
+        "path_class": "generic_api_only",
+        "implementation_commit": "4894e6f",
+        "initial_log_commit": "20fd8b5",
+        "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md",
+        "step_budget": {
+          "policy": "observed_organization_inventory",
+          "initial_limit": 45,
+          "hard_limit": 75,
+          "effective_limit": 62,
+          "estimate": {
+            "basis": "complete_observed_source_inventory",
+            "observed_at_step": 2,
+            "source_count": 14,
+            "pending_source_count": 14,
+            "phase_steps_per_source": 3,
+            "retry_steps_per_source": 1,
+            "completion_reserve_steps": 4,
+            "estimated_steps": 62,
+            "effective_limit": 62,
+            "estimate_exceeds_hard_limit": false
+          }
+        },
+        "episode_control": {
+          "global_steps": 48,
+          "local_step": 47,
+          "retry": 0,
+          "soft_restart_count": 0,
+          "soft_restart_vm_policy": "preserve_current_vm",
+          "model_audit_count": 47,
+          "model_audit_trace": "model_audits.jsonl",
+          "pending_model_audit": null
+        },
+        "source_integration_limitation": "PASS validates the preserved shared-workspace episode source, not budget commit 4894e6f alone. Singleton wildcard schema and complete-Writer classification fixes remain unstaged in shared files; tool_surface.py changed concurrently after the episode source seal."
       }
     },
     {
@@ -1242,5 +1276,7 @@
         }
       }
     }
-  ]
+  ],
+  "latest_verified_passed": 26,
+  "latest_verified_failed": 2
 }

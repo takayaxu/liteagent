@@ -2,10 +2,17 @@
 
 Date: 2026-10-10 (Asia/Shanghai).
 
+## Latest formal acceptance and writeback
+
+Final run `osworld-order102-qwen-20261010-inventory-step-budget-retry3`: **PASS / reward=1.0**, 47 events, 1077.597 seconds, `agent_done`. Episode started at 2026-10-10 22:45:40 and completed at **23:03:38 Asia/Shanghai** (`2026-10-10T15:03:38.142188+00:00`). Initial 45 → effective 62, hard cap 75; global_steps=48 includes the final audit, 47 completed audits, no pending audit and no soft restart.
+
+[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json)、[事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)、[轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json)、[原始评分](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt)、[evaluator 产物索引](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json)。写回 [API 审计](/home/liuxv/liteagent/docs/api-granularity-audit-20260920.md)、[正式日志](/home/liuxv/liteagent/API_SPLIT_TASK.md#order-102-清单步数预算修复与正式-pass2026-10-10)、[最新结果入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102) 及 [批次/后续审计](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md)。原批次 23/28 与失败原始轨迹保留。
+
+
 ## Preserved failure
 
 - Order 102, `869de13e-bef9-4b91-ba51-f6708c40b096`, multi_apps.
-- Latest failure: `experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/`.
+- Preserved batch failure: `experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/`.
 - This individual episode ran 15:20:41–15:37:33 Asia/Shanghai, 1012.175 seconds, 45 recorded steps, formal evaluator reward **0.0**. The containing batch completed later; its timestamps are not this episode's timestamps.
 - Manually reviewed the complete public task definition, all 45 events, actual reader and move responses, classification checks, saved model requests, call index, model audits, episode controls and original evaluator result. The prior two misclassifications were corrected in this run. Thirteen objects were checked and physically moved; the remaining source was read successfully at step 45.
 - Step 45 returned 8000 characters of PDF content including title, authors and abstract, with Adapter status `ok` and verification passed. Organization progress still reported the current object as unclassified/unmoved. The request index ends at step 45; its model audit remains pending. No classification or move was proposed after that read.
@@ -19,7 +26,7 @@ Date: 2026-10-10 (Asia/Shanghai).
 - The effective episode budget is `min(hard_cap, max(initial_budget, estimate))`. Record policy, original/effective/hard budgets, source counts, observation step, estimate components and whether the estimate exceeds the hard cap in task results and the trajectory manifest. Nested directory inspections and soft restarts cannot recalculate/reset this estimate.
 - Incomplete discovery and unrelated workflows do not trigger estimation. The estimator selects no category, performs no mutation and exposes no task-specific information to the model. Time, no-progress and local recovery limits remain explicit independent bounds.
 - Ordinary budget exhaustion now records `termination_reason=step_budget_exhausted`, used/effective/hard step counts and the pending model audit, and sends an explicit failure episode boundary before the original evaluator runs. Existing terminal outcomes and failure reasons are preserved.
-- Touched files: `scripts/organization_step_budget.py` and only budget-related additions in the already-dirty `scripts/run_lite_agent_pilot.py`. No API changes or replacements are necessary: PDF extraction and all classification/move operations worked in the preserved failure. No frozen v1, pinned evaluator or historical raw evidence is modified.
+- Touched files: `scripts/organization_step_budget.py` and only budget-related additions in the already-dirty `scripts/run_lite_agent_pilot.py`. The budget repair itself requires no API changes or replacements: PDF extraction and all classification/move operations worked in the preserved failure. Follow-up schema and Writer format coverage changes from the later reruns are recorded below. No frozen v1, pinned evaluator or historical raw evidence is modified.
 
 ## Focused verification
 
@@ -42,15 +49,17 @@ Date: 2026-10-10 (Asia/Shanghai).
 - Follow-up config/result: `osworld-order102-qwen-20261010-inventory-step-budget-retry3`; same parameters as retry2. Formal evaluator **PASS, reward 1.0**, 47 recorded events, 1077.597 seconds, termination `agent_done`, no task/evaluator error. Initial 45 -> effective 62 at step 2 for 14 sources; hard cap 75. Final PDF read at step 44, independently checked at step 45 and physically moved at step 46; completion at step 47 confirmed by the following audit. All 14 source moves passed physical verification. The assignment was classified into miscellaneous at step 32 and moved at step 33. Raw result.txt=1.0. No other orders were run.
 - Episode global_steps=48 includes final audit; no soft restart used. Current estimator and classifier source hashes match the passing run. tool_surface.py changed concurrently after the episode seal; the passing result applies to its preserved episode version, while both singleton wildcard schema fixes remain in the current file. Do not overwrite concurrent edits.
 
+Latest formal acceptance command (retry3; earlier attempt caps are recorded above):
+
 ```bash
 HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
   /opt/anaconda3/bin/python3.13 -u src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
-  --config src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget.json \
-  --result-dir src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget \
+  --config src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget-retry3.json \
+  --result-dir src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3 \
   --orders 102 --base-url https://qwen.jinmaoapi.cc.cd/v1 --model Qwen3.5-9B \
   --reasoning-mode non_thinking --max-steps 75 --initial-step-budget 45 \
   --max-local-steps 50 --max-soft-restarts 1 --max-no-progress-steps 8 \
-  --max-agent-seconds 1800 --max-output-tokens 8192 --request-timeout 240 \
+  --max-agent-seconds 1800 --max-output-tokens 512 --request-timeout 240 \
   --model-retries 3 --top-k 7 --temperature 0
 ```
 
@@ -59,3 +68,5 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
 The independent budget commit contains only runner budget hunks, new estimator, this diagnosis and four new single-task configs. The two singleton schema changes and complete-Writer compatibility follow-up remain in the working tree: their containing implementation was already extensively modified/untracked before this task, and staging whole functions/files would absorb prior work. The passing result validates the combined episode source, not the isolated budget commit alone. Preserve these edits for integration.
 
 Budget implementation commit: `4894e6f` (`fix(runner): estimate organization step budget from observed sources`). Scope: seven files, only the isolated budget implementation/config/diagnosis. Auxiliary current-task schema/classification fixes are present but unstaged as described above.
+
+Initial acceptance/implementation-reference log commit: `20fd8b5` (`docs: record order 102 budget repair acceptance and commit`). This writeback changes documentation and result indexes only; no runtime rerun or original evidence mutation.

@@ -1,6 +1,6 @@
 # Order 102：固定 28 题批次失败轨迹（2026-10-10）
 
-> 2026-10-10 入口核对：Order 102 本轮批次为 FAIL；最新已核对运行为 FAIL。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)。下文是本文件所述运行的记录，历史路径不作为最新入口。
+> 2026-10-10 入口更新：Order 102 原批次为 FAIL；后续最新已核对运行为 **PASS / reward=1.0**（23:03:38 北京时间完成）。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[单题修复日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)。下文保留原批次失败记录。
 
 本记录对应固定 28 题测试批次 `osworld-api-split-test-only-20261010-resume1` 的 Order 102，**FAIL / reward=0.0**。此前 `osworld-order102-qwen-20261010-classification-check` 及 retry1–retry8 是历史分类检查运行，不是本轮失败轨迹。
 
@@ -16,3 +16,7 @@
 - 事件文件 SHA-256：`b3bba54cac360bcfe672816b09ba9e85a84b1c58762adcd903ac226970a515ab`。
 
 此次仅补充轨迹入口，未追加、复制或重写原始事件文件，未修复实现、未复跑。
+
+## 后续根因与修复回填
+
+完整轨迹确认：第 45 步成功读取 paper01.pdf，随后全局 max_steps=45 循环结束，未发出第 46 步检验或移动请求；13 个来源已移动，最后一个仍待处理。这是预算截断；原始 results termination_reason=null，manifest=max_steps。清单估算修复及后续辅助修复见上方单题日志，最终 retry3 正式 PASS；失败原始文件与批次成绩保留。

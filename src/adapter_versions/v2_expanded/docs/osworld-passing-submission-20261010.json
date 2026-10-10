@@ -447,6 +447,91 @@
       "completion_limitation": "第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。",
       "verification_summary_limitation": "manifest adapter_verifier_passed_calls=0; step 8 nested rename verification_passed=true; original evidence unchanged",
       "scope": "isolated single-task rerun from shared workspace; delivered as incremental patch; original 28-task batch and score remain unchanged"
+    },
+    {
+      "order": 102,
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 47,
+      "duration_seconds": 1077.597,
+      "termination_reason": "agent_done",
+      "manifest_termination_reason": "agent_done",
+      "terminated_by_agent": true,
+      "path_class": "generic_api_only",
+      "experiment_id": "osworld-order102-qwen-20261010-inventory-step-budget-retry3",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json",
+      "implementation_commit": "4894e6f",
+      "initial_log_commit": "20fd8b5",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md",
+      "event_count": 47,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T22:48:24.949609+08:00",
+      "last_event_at": "2026-10-10T23:03:04.846446+08:00",
+      "completed_at": "2026-10-10T15:03:38.142188+00:00",
+      "evidence_sha256": {
+        "results.json": "d011e396b82edf1cd853b4bbbbd3d261802fd9ada566f61f790a936b0550e224",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "4a90b7c3074f08cb7fd0bb0a3f2354e53f137ad77f7e92bcbe744b86a7b9887f",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "fbad0a5c2ae577929818f2fe27bf7109e012225fec03c557e07f6c95c75f0165",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "0af3337be5aa79da6fb9d427809ea0e70cd0c2bb866d597af379b305dd46ef7b",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "1708fa47b4060ef148f1cb7e04fc899a4286b23b8757cb1ff34f893b325c1d31"
+      },
+      "step_budget": {
+        "policy": "observed_organization_inventory",
+        "initial_limit": 45,
+        "hard_limit": 75,
+        "effective_limit": 62,
+        "estimate": {
+          "basis": "complete_observed_source_inventory",
+          "observed_at_step": 2,
+          "source_count": 14,
+          "pending_source_count": 14,
+          "phase_steps_per_source": 3,
+          "retry_steps_per_source": 1,
+          "completion_reserve_steps": 4,
+          "estimated_steps": 62,
+          "effective_limit": 62,
+          "estimate_exceeds_hard_limit": false
+        }
+      },
+      "episode_control": {
+        "global_steps": 48,
+        "local_step": 47,
+        "retry": 0,
+        "soft_restart_count": 0,
+        "soft_restart_vm_policy": "preserve_current_vm",
+        "model_audit_count": 47,
+        "model_audit_trace": "model_audits.jsonl",
+        "pending_model_audit": null
+      },
+      "runtime_condition_changes_from_batch": {
+        "max_steps": [
+          45,
+          75
+        ],
+        "initial_step_budget": 45,
+        "effective_step_budget": 62,
+        "max_local_steps": [
+          25,
+          50
+        ],
+        "max_agent_seconds": [
+          1200,
+          1800
+        ],
+        "max_output_tokens": [
+          8192,
+          512
+        ]
+      },
+      "source_integration_limitation": "PASS validates the preserved shared-workspace episode source, not budget commit 4894e6f alone. Singleton wildcard schema and complete-Writer classification fixes remain unstaged in shared files; tool_surface.py changed concurrently after the episode source seal.",
+      "scope": "isolated single-task rerun from shared workspace; original 28-task batch and score remain unchanged"
     }
   ],
   "latest_results": {
@@ -535,6 +620,91 @@
       "completion_limitation": "第三张匹配发票的 checker disposition=move 与理由中的匹配/retain 结论矛盾，check 未通过，文件保持原位；未正常 agent_done。",
       "verification_summary_limitation": "manifest adapter_verifier_passed_calls=0; step 8 nested rename verification_passed=true; original evidence unchanged",
       "scope": "isolated single-task rerun from shared workspace; delivered as incremental patch; original 28-task batch and score remain unchanged"
+    },
+    "102": {
+      "order": 102,
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 47,
+      "duration_seconds": 1077.597,
+      "termination_reason": "agent_done",
+      "manifest_termination_reason": "agent_done",
+      "terminated_by_agent": true,
+      "path_class": "generic_api_only",
+      "experiment_id": "osworld-order102-qwen-20261010-inventory-step-budget-retry3",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json",
+      "implementation_commit": "4894e6f",
+      "initial_log_commit": "20fd8b5",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md",
+      "event_count": 47,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T22:48:24.949609+08:00",
+      "last_event_at": "2026-10-10T23:03:04.846446+08:00",
+      "completed_at": "2026-10-10T15:03:38.142188+00:00",
+      "evidence_sha256": {
+        "results.json": "d011e396b82edf1cd853b4bbbbd3d261802fd9ada566f61f790a936b0550e224",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "4a90b7c3074f08cb7fd0bb0a3f2354e53f137ad77f7e92bcbe744b86a7b9887f",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "fbad0a5c2ae577929818f2fe27bf7109e012225fec03c557e07f6c95c75f0165",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "0af3337be5aa79da6fb9d427809ea0e70cd0c2bb866d597af379b305dd46ef7b",
+        "raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "1708fa47b4060ef148f1cb7e04fc899a4286b23b8757cb1ff34f893b325c1d31"
+      },
+      "step_budget": {
+        "policy": "observed_organization_inventory",
+        "initial_limit": 45,
+        "hard_limit": 75,
+        "effective_limit": 62,
+        "estimate": {
+          "basis": "complete_observed_source_inventory",
+          "observed_at_step": 2,
+          "source_count": 14,
+          "pending_source_count": 14,
+          "phase_steps_per_source": 3,
+          "retry_steps_per_source": 1,
+          "completion_reserve_steps": 4,
+          "estimated_steps": 62,
+          "effective_limit": 62,
+          "estimate_exceeds_hard_limit": false
+        }
+      },
+      "episode_control": {
+        "global_steps": 48,
+        "local_step": 47,
+        "retry": 0,
+        "soft_restart_count": 0,
+        "soft_restart_vm_policy": "preserve_current_vm",
+        "model_audit_count": 47,
+        "model_audit_trace": "model_audits.jsonl",
+        "pending_model_audit": null
+      },
+      "runtime_condition_changes_from_batch": {
+        "max_steps": [
+          45,
+          75
+        ],
+        "initial_step_budget": 45,
+        "effective_step_budget": 62,
+        "max_local_steps": [
+          25,
+          50
+        ],
+        "max_agent_seconds": [
+          1200,
+          1800
+        ],
+        "max_output_tokens": [
+          8192,
+          512
+        ]
+      },
+      "source_integration_limitation": "PASS validates the preserved shared-workspace episode source, not budget commit 4894e6f alone. Singleton wildcard schema and complete-Writer classification fixes remain unstaged in shared files; tool_surface.py changed concurrently after the episode source seal.",
+      "scope": "isolated single-task rerun from shared workspace; original 28-task batch and score remain unchanged"
     }
   }
 }

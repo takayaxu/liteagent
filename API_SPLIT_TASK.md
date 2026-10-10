@@ -1,6 +1,6 @@
 # liuxv：大粒度 API 拆分任务
 
-> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99 后续单题 PASS；102、107、108 最新仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
+> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99、102 后续单题 PASS；最新已核对结果 26/28 PASS，仅 107、108 仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
 
 工作分支：`codex/api-split-liuxv`
 
@@ -414,7 +414,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 > Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
-- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[单题最新失败索引](src/adapter_versions/v2_expanded/docs/order102-latest-failure-20261010.md)。此前 classification-check 为历史运行。
+- 原批次失败事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[单题最新失败索引](src/adapter_versions/v2_expanded/docs/order102-latest-failure-20261010.md)。此前 classification-check 为历史运行。
 - Task ID：`869de13e-bef9-4b91-ba51-f6708c40b096`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，1012.175 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 返回的文件目录列表中，学术论文目录缺少 `paper01.pdf`；另两组 coding/miscellaneous 列表与 manifest 中的 expected 列表一致。该具体输出差异导致本轮未通过；后续根因仍需结合事件轨迹分析。
@@ -457,3 +457,17 @@ $PYTHON -m ruff check <changed_python_files>
 - 最终证据写回（该运行于北京时间 2026-10-10 21:59:51 完成）：[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json)；[原始评分](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt)；[evaluator 产物索引](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json)。
 - 原始字段区分：manifest=`max_steps`；results.json termination_reason 未填写（null），terminated_by_agent=false。保留 checker 收尾限制，不记为正常 agent_done。
 - 收尾证据提交 `37202a6`；原始 fixed-28 仍为 23/28，本题后续 PASS 单独登记。
+
+## Order 102 清单步数预算修复与正式 PASS（2026-10-10）
+
+最新正式单题结果：**PASS / reward=1.0**，47 条事件、1077.597 秒，results 与 manifest 均为 `agent_done`；北京时间 2026-10-10 22:45:40–23:03:38（episode 起止）。实验 `osworld-order102-qwen-20261010-inventory-step-budget-retry3`，task `869de13e-bef9-4b91-ba51-f6708c40b096`。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/results.json)、[事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)、[轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json)、[原始评分](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt)、[evaluator 产物索引](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order102-qwen-20261010-inventory-step-budget-retry3/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json)；[单题修复日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md)。
+
+- 根因：保留批次 FAIL（45 步、1012.175 秒、reward=0.0）第 45 步成功读取 paper01.pdf；全局步数耗尽后没有下一次检验/移动请求，results termination_reason=null、manifest=max_steps。完整模型请求、审计、Adapter 返回及 evaluator 差异已逐项核对。
+- 通用修复：新增可选 initial-step-budget，max-steps 始终为硬上限；仅首次完整、去重且排除目标目录的来源清单触发一次估算 `used_steps + pending_sources * (3+1) + 4`。不完整发现、无关任务、嵌套目录与 soft restart 不重置预算；结果/manifest 记录估算和是否截顶。实际耗尽明确记为 step_budget_exhausted 并发出 FAIL 边界。未新增 Adapter action、题目 ID 路由、答案或隐藏移动。
+- 本题复跑过程：首轮/ retry1 为主动诊断中断（reward=null，各 1 条事件），均保留原始记录；发现 schema 的整数组 enum 生成嵌套数组，两个组织发现 schema 改为单一字符串 item enum，运行时仍仅接受 ["*"]。retry2 为正式 FAIL（0.0，48 步、1127.175 秒），最后 PDF 已完成读/检验/移动，剩余错误是完整 Writer 作业说明被误当学术论文；将既有完整 PDF 的主论文兼容性约束扩展到已证实完整的 Writer 读取，部分内容仍独立判定。retry3 正式通过。
+- 通过轨迹：第 2 步观察 14 个来源，初始 45 → 有效 62，硬上限 75；最后 PDF 第 44 步读取、第 45 步独立检验、第 46 步移动且物理验证通过；第 47 步完成、第 48 步仅审计确认。14 个来源移动均验证通过；47 次审计完成、pending_model_audit=null、无 soft restart。manifest adapter_verifier_passed_calls=0 与事件嵌套 verification 的汇总差异保留，不改写原始字段。
+- 条件：Qwen3.5-9B、同 endpoint、non_thinking、temperature=0，新 Docker guest，原始离线 evaluator 在 episode 后加载。相对批次硬上限 45 → 75（初始仍 45）、local 25 → 50、Agent 秒数 1200 → 1800、planner 输出 8192 → 512；checker 512、no-progress=8、soft-restart 上限 1。条件变化显式记账。仅复跑 Order 102。
+- 最小检查：保留清单 replay、硬上限/不收缩/不重估、实际 runner 耗尽分支 mock、singleton schema 接受/拒绝与完整/部分 Writer 兼容性检查；6 个既有目录/清单测试、Ruff、编译及 diff 检查通过。未扩建通用回归或跑其他题。
+- 提交边界：预算实现 `4894e6f`，首轮验收日志 `20fd8b5`。两个 singleton schema 与完整 Writer 分类辅助修复仍在原已修改/未跟踪的共享源码中，未整文件暂存。PASS 验证保存的组合 episode 源码，不能给孤立预算提交或当前全部共享改动背书；tool_surface.py 在 episode source seal 后另有并发修改，详见单题日志。
+
+本次写回 API 审计、正式日志、单题日志、MD/JSON 最新入口和提交审计；原始事件与结果文件不修改。fixed-28 保持 23/28；各题最新已核对结果为 26/28 PASS，仅 107、108 仍 FAIL。
