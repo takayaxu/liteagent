@@ -570,3 +570,7 @@ endpoint/configuration and produced no new API surface.
 其余通过题目已有历史实现提交，本次补充验证回执；158 既有 endpoint 重跑记录一起补交。失败题目和无法独立归属的共享改动未纳入上述实现提交。上述模型 schema/运行流程调整没有新增 Adapter API 或改变本表原始 217 action 计数。本轮分数来自带未提交内容的完整工作区，拆分提交快照未重新评测；提交快照 Python 语法、Ruff 与 whitespace 检查通过。
 
 完整 28 题表、单题回执、提交边界和证据索引见 [本轮提交审计](../src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md)，精简数据见 [JSON 回执](../src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.json)。原始实验内容保持不变。
+
+### 本轮 FAIL 的正式日志回填（2026-10-10）
+
+91、99、102、107、108 的本轮逐题 FAIL 回执已补入 [正式开发日志](../API_SPLIT_TASK.md#2026-10-10-本轮失败题目正式运行日志)。每题记录 task ID、原始 status/reward、45 步、耗时、termination_reason=null、完整轨迹、evaluator 产物与已观察到的输出差异。91/99/108 未获取要求的输出文件；102 学术论文目录缺少 paper01.pdf；107 成功获取表格但对照未通过。上述表现尚未被当作完整根因结论，历史 PASS 与本轮 FAIL 分别保留。本次为日志补交，无 API 修改或新测试。

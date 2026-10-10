@@ -49,3 +49,7 @@
 - 续跑 67–160 共 19 条：`experiments/osworld-api-split-test-only-20261010-resume1/results.json`，metadata.status=completed，runner exit=0。
 - 精简审计回执：`docs/osworld-passing-submission-20261010.json`，包含全部 task ID、reward、终止状态、原始 trajectory_manifest 位置以及两份结果文件 SHA-256；不提交录像或大体积原始结果。
 - 本次单题提交记录：`docs/order42-passing-changes-20261010.md`、`docs/order54-passing-changes-20261010.md`、`docs/order60-passing-changes-20261010.md`、`docs/order121-passing-changes-20261010.md`。记录中的实现提交通过各文件 Git history 可追溯。
+
+## 失败题目正式日志
+
+本轮 91、99、102、107、108 的详细结果已补入 [正式开发日志](../../../../API_SPLIT_TASK.md#2026-10-10-本轮失败题目正式运行日志)，记录原始评分、步数、耗时、终止字段、失败表现和每题完整证据位置。此次只补日志，不做修复或复跑，原始结果保持不变。

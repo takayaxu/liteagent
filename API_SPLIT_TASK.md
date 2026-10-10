@@ -338,3 +338,49 @@ $PYTHON -m ruff check <changed_python_files>
 - 按用户后续要求补交通过题目未提交代码块：42 `6985f92`、54 `faecaad`、60 `82a3dbb`、121 `0cb4e62`。158 既有 endpoint PASS 回执同步补交。其他通过题目沿用历史实现提交。
 - 完整逐题表、原始结果/轨迹路径与提交边界：[本轮审计](src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md)。失败题和无法独立归属的共享改动保留未提交；不修改原始测试结果和 task.md。
 - 分数来自本轮完整工作区，不是拆分后 commit 的新模型测试。提交快照 Python 语法、Ruff、whitespace 检查通过，未新增测试或复跑 OSWorld。
+
+## 2026-10-10 本轮失败题目正式运行日志
+
+本轮是固定 28 题的串行测试；下列 5 题均为原始 OSWorld evaluator `status=failed`、`reward=0.0`，实际步数达到配置的 45 步上限。`termination_reason=null`、`terminated_by_agent=false` 为原始结果字段，不能改记为 agent_done 或 stalled_no_progress。本日志保留既有单题 PASS 历史，同时将本轮结果明确记录为 FAIL；未据此进行修复或重跑。
+
+共同结果文件：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json`，批次 `metadata.status=completed`。使用 `https://qwen.jinmaoapi.cc.cd/v1`、`Qwen3.5-9B`、non_thinking；45 全局步、25 本地步、一次 soft restart、1200 秒 Agent 预算。以下耗时沿用结果文件的 duration_seconds。
+
+### Order 91 — 本轮 FAIL
+
+- Task ID：`d9b7c649-c975-4f53-88f5-940b29c47247`；应用：`multi_apps`。
+- 原始结果：`status=failed`、`reward=0.0`，45 步，644.449 秒；`termination_reason=null`、`terminated_by_agent=false`。
+- 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/report.xlsx` 时返回 404；文件读取重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；evaluator_artifacts/manifest.json 的 result=[null]。这说明本轮未取到要求的结果表格，尚不能仅凭 404 判定文件未生成还是保存路径不一致。
+- 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
+- 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
+
+### Order 99 — 本轮 FAIL
+
+- Task ID：`337d318b-aa07-4f4f-b763-89d9a2dd013f`；应用：`multi_apps`。
+- 原始结果：`status=failed`、`reward=0.0`，45 步，475.856 秒；`termination_reason=null`、`terminated_by_agent=false`。
+- 已观察到的失败表现：evaluator 获取目标 PDF 时返回 404；evaluator_artifacts/manifest.json 的 result=[null]，只保存了 expected 文件。当前回执不能证明所有发票已经分类完成；本轮失败不覆盖历史单题 PASS。
+- 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
+- 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
+
+### Order 102 — 本轮 FAIL
+
+- Task ID：`869de13e-bef9-4b91-ba51-f6708c40b096`；应用：`multi_apps`。
+- 原始结果：`status=failed`、`reward=0.0`，45 步，1012.175 秒；`termination_reason=null`、`terminated_by_agent=false`。
+- 已观察到的失败表现：evaluator 返回的文件目录列表中，学术论文目录缺少 `paper01.pdf`；另两组 coding/miscellaneous 列表与 manifest 中的 expected 列表一致。该具体输出差异导致本轮未通过；后续根因仍需结合事件轨迹分析。
+- 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
+- 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
+
+### Order 107 — 本轮 FAIL
+
+- Task ID：`881deb30-9549-4583-a841-8270c65f2a17`；应用：`multi_apps`。
+- 原始结果：`status=failed`、`reward=0.0`，45 步，505.698 秒；`termination_reason=null`、`terminated_by_agent=false`。
+- 已观察到的失败表现：evaluator 成功取回 `supported_rate.xlsx`，manifest 同时保留 result-00-supported_rate.xlsx 与 expected-00-supported_rate-gt.xlsx，但原始 evaluator 返回 0.0。本轮属于已获取产物但对照检查不通过；尚未逐单元格核对，不将其归因于文件读取 404。
+- 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
+- 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
+
+### Order 108 — 本轮 FAIL
+
+- Task ID：`7e287123-70ca-47b9-8521-47db09b69b14`；应用：`multi_apps`。
+- 原始结果：`status=failed`、`reward=0.0`，45 步，657.675 秒；`termination_reason=null`、`terminated_by_agent=false`。
+- 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/GRF-p5y.xlsx` 及转换后的 `/home/user/Desktop/GRF-p5y-Sheet1.csv` 时返回 404；XLSX 重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；manifest 的 result=[null]。输出缺失或保存路径问题尚未作根因确认。
+- 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
+- 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
