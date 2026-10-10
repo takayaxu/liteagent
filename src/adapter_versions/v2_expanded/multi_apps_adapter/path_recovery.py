@@ -170,7 +170,7 @@ def find_spreadsheet_path_candidates(
         "selection_required": True,
         "explicit_retry_required": True,
         "retry_options": [
-            {"action": "spreadsheet.read_file", "path": path} for path in candidates
+            {"action": "workbook.read_file", "path": path} for path in candidates
         ],
         "scan": scan,
     }

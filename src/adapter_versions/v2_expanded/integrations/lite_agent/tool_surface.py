@@ -180,6 +180,16 @@ class ToolSurfaceMixin:
         """
         if state.domain == "multi_apps":
             route_pairs = discovered_adapter_routes(state)
+            if state.source_read_target_search_complete():
+                # A catalog search after a complete source read may retain
+                # historical reader hits. Once it also found a different
+                # operation, hide those stale reader routes so the model
+                # cannot regress to the already-consumed source phase.
+                route_pairs = [
+                    (adapter, action)
+                    for adapter, action in route_pairs
+                    if action not in state._WORKFLOW_READ_ACTIONS
+                ]
             structured_source_pending = (
                 batch_table_semantics.structured_pdf_source_discovery_pending(state)
             )
@@ -523,6 +533,45 @@ class ToolSurfaceMixin:
                         "The result was already accepted and no further action is needed."
                     )
             return audit_tools
+
+        # A complete source read is a durable phase boundary.  For a
+        # multi-application instruction that still contains an operation verb,
+        # expose the catalog control as the only next action so the model must
+        # discover the owning application's mutation API (for example a mail
+        # recipient writer) instead of replaying the source reader.
+        if state.source_read_handoff_pending():
+            handoff_tools = self._build_tools(
+                state.domain,
+                [],
+                include_gui=False,
+                include_control_tools=True,
+                strict_generic=True,
+            )
+            handoff_tools = [
+                tool
+                for tool in handoff_tools
+                if isinstance(tool.get("function"), dict)
+                and tool["function"].get("name") == "tools_search"
+            ]
+            for tool in handoff_tools:
+                function = tool.get("function")
+                if isinstance(function, dict):
+                    description = str(function.get("description", "")) + (
+                        " The source file has already been found, opened, and read "
+                        "successfully. Its observed contents are retained in "
+                        "workflow_progress. Do not reread it; search for the next "
+                        "requested application action or mutation."
+                    )
+                    if state.requested_mail_recipient_target():
+                        description += (
+                            " This is a mail-recipient write task. Search exactly one "
+                            "of the public target routes: "
+                            "thunderbird.compose.set_recipients or "
+                            "mail.compose_recipients. Do not search Calc or other "
+                            "spreadsheet read/write routes."
+                        )
+                    function["description"] = description
+            return handoff_tools
 
         clipboard_stage = (
             None if multi_app else clipboard_path_semantics.pending_actions(state)

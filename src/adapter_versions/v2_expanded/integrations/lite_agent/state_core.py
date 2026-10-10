@@ -5,6 +5,7 @@ from __future__ import annotations
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -58,7 +59,416 @@ from .runtime_policy import (
 from .request_blocks import request_block_is_stale
 
 
+def normalize_organization_path(value: Any) -> str | None:
+    """Return one lexical path identity shared by discovery, reads, and moves."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return os.path.normpath(os.path.abspath(os.path.expanduser(value.strip())))
+    except (OSError, RuntimeError, ValueError):
+        return value.strip().rstrip("/") or None
+
+
 class RuntimeStateCoreMixin:
+    _MAIL_RECIPIENT_TARGET_ROUTES = frozenset(
+        {
+            ("thunderbird", "compose.set_recipients"),
+            # Kept as a compatibility alias for the Multi-Apps mail facade.
+            ("mail", "compose_recipients"),
+        }
+    )
+    _WORKFLOW_READ_ACTIONS = frozenset(
+        {
+            "workbook.read_file",
+            "spreadsheet.read_file",
+            "document.read_file",
+            "file.read_text",
+            "pdf.extract_text",
+            "pdf.extract_text_batch",
+            "image.extract_text_batch",
+            "table.read",
+            "range.read",
+        }
+    )
+    _WORKFLOW_OPEN_ACTIONS = frozenset(
+        {
+            "desktop.open_path",
+            "workbook.inspect",
+            "document.inspect",
+            "presentation.inspect",
+            "spreadsheet.inspect",
+        }
+    )
+
+    def requested_mail_recipient_target(self) -> bool:
+        """Return whether the instruction asks to write recipients in mail.
+
+        This is deliberately lexical and generic: it identifies the owning
+        application before catalog search without extracting an address or
+        selecting a route on the model's behalf.
+        """
+        if self.domain != "multi_apps":
+            return False
+        text = str(self.instruction or "").casefold()
+        tokens = set(re.findall(r"[a-z0-9]+", text))
+        mail_terms = {"email", "mail", "message", "messages", "draft", "compose"}
+        recipient_terms = {
+            "recipient",
+            "recipients",
+            "receiver",
+            "receivers",
+            "addressee",
+            "addressees",
+            "address",
+            "addresses",
+            "to",
+        }
+        write_terms = {
+            "add",
+            "append",
+            "enter",
+            "fill",
+            "include",
+            "insert",
+            "place",
+            "put",
+            "send",
+            "set",
+            "update",
+            "write",
+        }
+        has_mail = bool(tokens.intersection(mail_terms)) or bool(
+            re.search(r"\be-?mail(?:s|ing)?\b", text)
+        )
+        return bool(
+            has_mail
+            and tokens.intersection(recipient_terms)
+            and tokens.intersection(write_terms)
+        )
+
+    @classmethod
+    def _is_mail_recipient_route(cls, domain: Any, action: Any) -> bool:
+        if not isinstance(domain, str) or not isinstance(action, str):
+            return False
+        normalized = (domain.casefold(), action.casefold())
+        return normalized in {
+            (route_domain.casefold(), route_action.casefold())
+            for route_domain, route_action in cls._MAIL_RECIPIENT_TARGET_ROUTES
+        }
+
+    @classmethod
+    def _catalog_has_mail_recipient_route(cls, matches: Any) -> bool:
+        if not isinstance(matches, list):
+            return False
+        for match in matches:
+            if not isinstance(match, dict):
+                continue
+            adapter = match.get("adapter")
+            downstream = match.get("downstream_action")
+            if cls._is_mail_recipient_route(adapter, downstream):
+                return True
+            action = match.get("action")
+            if isinstance(action, str) and action.casefold() in {
+                "mail.compose_recipients",
+                "thunderbird.compose.set_recipients",
+            }:
+                return True
+        return False
+
+    def _event_is_mail_recipient_route(self, event: Any) -> bool:
+        domain, action, _arguments = effective_canonical_action(event, self.domain)
+        if self._is_mail_recipient_route(domain, action):
+            return True
+        proposed = getattr(event, "proposed", {})
+        if isinstance(proposed, dict):
+            action_value = proposed.get("action")
+            if isinstance(action_value, str) and action_value.casefold() in {
+                "mail.compose_recipients",
+                "thunderbird.compose.set_recipients",
+            }:
+                return True
+        return False
+
+    @staticmethod
+    def _workflow_param_arguments(arguments: Any) -> dict[str, Any]:
+        if not isinstance(arguments, dict):
+            return {}
+        params = arguments.get("params")
+        return params if isinstance(params, dict) else arguments
+
+    @classmethod
+    def _workflow_source_paths(cls, event: Any) -> set[str]:
+        """Extract source identities without retaining the full read body."""
+        _domain, action, arguments = effective_canonical_action(event, "")
+        params = cls._workflow_param_arguments(arguments)
+        paths: set[str] = set()
+        for key in ("path", "input_path", "file_path", "source"):
+            value = params.get(key)
+            if isinstance(value, str) and value.strip() and not any(
+                char in value for char in "*?[]"
+            ):
+                normalized = normalize_organization_path(value)
+                if normalized:
+                    paths.add(normalized)
+        for body in cls._result_mappings(getattr(event, "result", None)):
+            for key in ("path", "input_path", "file_path", "source"):
+                value = body.get(key)
+                if isinstance(value, str) and value.strip():
+                    normalized = normalize_organization_path(value)
+                    if normalized:
+                        paths.add(normalized)
+            files = body.get("files")
+            if isinstance(files, list):
+                for item in files:
+                    if isinstance(item, dict) and isinstance(item.get("path"), str):
+                        normalized = normalize_organization_path(item["path"])
+                        if normalized:
+                            paths.add(normalized)
+        # A successful filesystem.find result may be nested under matches.
+        for body in cls._result_mappings(getattr(event, "result", None)):
+            matches = body.get("matches")
+            if isinstance(matches, list):
+                for item in matches:
+                    value = item.get("path") if isinstance(item, dict) else item
+                    if isinstance(value, str):
+                        normalized = normalize_organization_path(value)
+                        if normalized:
+                            paths.add(normalized)
+        return paths
+
+    @classmethod
+    def _workflow_read_complete(cls, event: Any) -> bool:
+        """Use source-level cursors only; context projection truncation is irrelevant."""
+        found_signal = False
+
+        def visit(value: Any, source_like: bool = False) -> None:
+            nonlocal found_signal
+            if isinstance(value, dict):
+                local_source = source_like or bool(
+                    {
+                        "path",
+                        "input_path",
+                        "source_range",
+                        "returned_range",
+                        "source_rows",
+                        "returned_rows",
+                        "display_text",
+                        "sheets",
+                        "files",
+                    }
+                    & set(value)
+                )
+                for key in (
+                    "source_has_more",
+                    "source_truncated",
+                    "sheets_truncated",
+                ):
+                    if value.get(key) is True:
+                        found_signal = False
+                        raise StopIteration
+                    if key in value and value.get(key) is False:
+                        found_signal = True
+                # ``truncated``/``has_more`` are ambiguous on an outer
+                # transport wrapper. Inspect them only in a source-shaped
+                # object; ``context_truncated`` is intentionally ignored.
+                if local_source:
+                    for key in ("has_more", "truncated"):
+                        if value.get(key) is True:
+                            found_signal = False
+                            raise StopIteration
+                        if key in value and value.get(key) is False:
+                            found_signal = True
+                for child in value.values():
+                    visit(child, local_source)
+            elif isinstance(value, list):
+                for child in value:
+                    visit(child, source_like)
+
+        try:
+            visit(getattr(event, "result", None))
+        except StopIteration:
+            return False
+        return True if not found_signal else found_signal
+
+    def workflow_progress(self) -> dict[str, Any]:
+        """Return a compact, replay-free milestone ledger for model context.
+
+        It is derived from the immutable event ledger on every call, so a soft
+        restart or context compression cannot erase a completed source phase.
+        """
+        discovered: set[str] = set()
+        opened: set[str] = set()
+        read: dict[str, dict[str, Any]] = {}
+        for event in getattr(self, "events", ()):
+            if not getattr(event, "executed", False):
+                continue
+            domain, action, _arguments = effective_canonical_action(event, self.domain)
+            paths = self._workflow_source_paths(event)
+            if action == "filesystem.find":
+                discovered.update(paths)
+            if action in self._WORKFLOW_OPEN_ACTIONS or action in self._WORKFLOW_READ_ACTIONS:
+                opened.update(paths)
+            if action in self._WORKFLOW_READ_ACTIONS:
+                for path in paths or {"<active-source>"}:
+                    read[path] = {
+                        "path": path,
+                        "reader": f"{domain}.{action}" if domain else action,
+                        "complete": self._workflow_read_complete(event),
+                    }
+        if not (discovered or opened or read):
+            return {}
+        read_sources = list(read.values())
+        complete_reads = [item for item in read_sources if item.get("complete")]
+        pending_phase = "source_discovery"
+        if discovered and not opened:
+            pending_phase = "source_open"
+        if opened and not complete_reads:
+            pending_phase = "source_read"
+        if complete_reads:
+            pending_phase = "target_action_discovery"
+        latest_read_step = max(
+            (
+                event.step
+                for event in self.events
+                if getattr(event, "executed", False)
+                and effective_canonical_action(event, self.domain)[1]
+                in self._WORKFLOW_READ_ACTIONS
+            ),
+            default=0,
+        )
+        if any(
+            getattr(event, "executed", False)
+            and getattr(event, "proposed", {}).get("kind") == "adapter"
+            and event.step > latest_read_step
+            and effective_canonical_action(event, self.domain)[1]
+            not in self._WORKFLOW_READ_ACTIONS
+            and effective_canonical_action(event, self.domain)[1]
+            not in {"filesystem.find", *self._WORKFLOW_OPEN_ACTIONS}
+            and (
+                not self.requested_mail_recipient_target()
+                or self._event_is_mail_recipient_route(event)
+            )
+            for event in self.events
+        ):
+            pending_phase = "mutation_complete"
+        return {
+            "discovered_files": sorted(discovered),
+            "opened_sources": sorted(opened),
+            "read_sources": read_sources,
+            "pending_phase": pending_phase,
+        }
+
+    def source_read_handoff_pending(self) -> bool:
+        """Whether a complete source read should hand the model to catalog search."""
+        if self.domain != "multi_apps":
+            return False
+        progress = self.workflow_progress()
+        if progress.get("pending_phase") != "target_action_discovery":
+            return False
+        # A source read is a handoff only while no later non-read route has
+        # succeeded. This keeps read-only tasks eligible for normal completion.
+        latest_read = next(
+            (
+                event
+                for event in reversed(self.events)
+                if getattr(event, "executed", False)
+                and effective_canonical_action(event, self.domain)[1]
+                in self._WORKFLOW_READ_ACTIONS
+            ),
+            None,
+        )
+        if latest_read is None or not self._workflow_read_complete(latest_read):
+            return False
+        latest_read_step = latest_read.step
+        latest_catalog = next(
+            (
+                event
+                for event in reversed(self.events)
+                if getattr(event, "executed", False)
+                and getattr(event, "proposed", {}).get("kind") == "catalog"
+                and event.step > latest_read_step
+            ),
+            None,
+        )
+        if latest_catalog is not None:
+            matches = (
+                latest_catalog.result.get("matches", [])
+                if isinstance(latest_catalog.result, dict)
+                else []
+            )
+            if self.requested_mail_recipient_target():
+                # A Calc or generic writer result is not a valid lease for a
+                # mail recipient task. Keep the search-only surface until the
+                # owning mail route is explicitly returned by the catalog.
+                return not self._catalog_has_mail_recipient_route(matches)
+            # A search that only rediscovered the reader has not advanced the
+            # phase; keep search exposed until a different public operation is
+            # found. A mutation route, however, leases the next phase.
+            if not any(
+                isinstance(match, dict)
+                and match.get("action") == "adapter.call"
+                and match.get("downstream_action") not in self._WORKFLOW_READ_ACTIONS
+                for match in matches
+            ):
+                return True
+            return False
+        if any(
+            getattr(event, "executed", False)
+            and getattr(event, "proposed", {}).get("kind") == "adapter"
+            and event.step > latest_read_step
+            and effective_canonical_action(event, self.domain)[1]
+            not in self._WORKFLOW_READ_ACTIONS
+            and effective_canonical_action(event, self.domain)[1]
+            not in {"filesystem.find", "workbook.inspect"}
+            and (
+                not self.requested_mail_recipient_target()
+                or self._event_is_mail_recipient_route(event)
+            )
+            for event in self.events
+        ):
+            return False
+        # Keep this generic: these are operation words, not a task or target
+        # application name. The catalog still decides the concrete route.
+        if self.requested_mail_recipient_target():
+            return True
+        return bool(
+            re.search(
+                r"(?i)\b(add|append|apply|change|compose|create|delete|edit|enter|fill|insert|move|send|set|update|write|receiver|recipient)\b",
+                str(self.instruction),
+            )
+        )
+
+    def source_read_target_search_complete(self) -> bool:
+        """Return whether catalog search found a post-read non-reader route."""
+        latest_read_step = max(
+            (
+                event.step
+                for event in self.events
+                if getattr(event, "executed", False)
+                and effective_canonical_action(event, self.domain)[1]
+                in self._WORKFLOW_READ_ACTIONS
+            ),
+            default=0,
+        )
+        if not latest_read_step:
+            return False
+        for event in reversed(self.events):
+            if not getattr(event, "executed", False) or event.step <= latest_read_step:
+                continue
+            proposed = getattr(event, "proposed", {})
+            if not isinstance(proposed, dict) or proposed.get("kind") != "catalog":
+                continue
+            matches = event.result.get("matches", []) if isinstance(event.result, dict) else []
+            if self.requested_mail_recipient_target():
+                return self._catalog_has_mail_recipient_route(matches)
+            return any(
+                isinstance(match, dict)
+                and match.get("action") == "adapter.call"
+                and match.get("downstream_action") not in self._WORKFLOW_READ_ACTIONS
+                for match in matches
+            )
+        return False
+
     def begin_same_vm_soft_restart(
         self,
         reason: str,
@@ -110,6 +520,11 @@ class RuntimeStateCoreMixin:
             strict_generic=strict_generic,
         )
         observation = self.filesystem_observation_state()
+        progress = self.workflow_progress()
+        if progress:
+            # This marker is intentionally before ordinary event history. It
+            # is a phase ledger, not a replayable result, and must survive fit.
+            summary = [{"workflow_progress": progress}, *summary]
         if observation is not None:
             # Keep the phase transition ahead of the bounded event transcript;
             # this is the model-facing state machine edge, not new evidence.

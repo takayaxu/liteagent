@@ -247,6 +247,9 @@ _KEY_PRIORITY = {
     # Guidance is useful, but it remains below executable selectors and
     # observed paths for ordinary (non-batch) contexts.
     "guidance": 70,
+    # Phase milestones are derived from the immutable event ledger and are
+    # intentionally retained ahead of ordinary result bodies during fitting.
+    "workflow_progress": 115,
 }
 _UUID_RE = re.compile(
     r"(?i)(?<![0-9a-f])[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
@@ -1393,7 +1396,10 @@ def compact_execution_summary_for_model(
         item
         for item in safe
         if isinstance(item, dict)
-        and isinstance(item.get("recovery_mutation_ledger"), list)
+        and (
+            isinstance(item.get("recovery_mutation_ledger"), list)
+            or isinstance(item.get("workflow_progress"), dict)
+        )
     ]
     protected_size = sum(_json_size(item) for item in protected)
     if protected and protected_size + len(protected) - 1 <= max_chars - 2:
