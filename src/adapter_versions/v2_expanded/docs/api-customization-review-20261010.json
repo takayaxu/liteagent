@@ -1,0 +1,1398 @@
+{
+  "date": "2026-10-10",
+  "timezone": "Asia/Shanghai",
+  "commit": "830d2907321e96982cc3766caf24110a0d792094",
+  "scope": "Current checkout including existing uncommitted implementation; inventory plus focused source/contract review, no GUI/model/evaluator run",
+  "public_action_count": 221,
+  "inventory": [
+    {
+      "domain": "libreoffice_calc",
+      "registered_actions": [
+        "cells.set_formulas",
+        "chart.create",
+        "page.fit_to_pages",
+        "pivot.create",
+        "range.copy",
+        "range.fill_down",
+        "range.format",
+        "range.merge",
+        "range.read",
+        "range.set_decimal_separator",
+        "range.set_scaled_display",
+        "range.set_validation",
+        "range.text_transform",
+        "range.write",
+        "rows.set_hidden",
+        "sheet.copy",
+        "sheet.create",
+        "sheet.move",
+        "sheet.rename",
+        "table.reorder_columns",
+        "table.sort",
+        "view.freeze_panes",
+        "view.freeze_range",
+        "view.set_zoom",
+        "workbook.convert_file",
+        "workbook.create_new",
+        "workbook.export",
+        "workbook.inspect",
+        "workbook.read_file",
+        "workbook.save",
+        "workbook.save_as"
+      ],
+      "public_actions": [
+        "cells.set_formulas",
+        "chart.create",
+        "page.fit_to_pages",
+        "pivot.create",
+        "range.copy",
+        "range.fill_down",
+        "range.format",
+        "range.merge",
+        "range.read",
+        "range.set_decimal_separator",
+        "range.set_scaled_display",
+        "range.set_validation",
+        "range.text_transform",
+        "range.write",
+        "rows.set_hidden",
+        "sheet.copy",
+        "sheet.create",
+        "sheet.move",
+        "sheet.rename",
+        "table.reorder_columns",
+        "table.sort",
+        "view.freeze_panes",
+        "view.freeze_range",
+        "view.set_zoom",
+        "workbook.convert_file",
+        "workbook.create_new",
+        "workbook.export",
+        "workbook.inspect",
+        "workbook.read_file",
+        "workbook.save",
+        "workbook.save_as"
+      ]
+    },
+    {
+      "domain": "libreoffice_impress",
+      "registered_actions": [
+        "audio.insert",
+        "master.set_page_number",
+        "presentation.export",
+        "presentation.inspect",
+        "presentation.save",
+        "presentation.set_page_size",
+        "settings.set",
+        "shape.create_text",
+        "shape.delete",
+        "shape.export_image",
+        "shape.fit_to_slide",
+        "shape.format_text",
+        "shape.insert_image",
+        "shape.set_fill",
+        "shape.set_geometry",
+        "shape.write_text",
+        "shape.write_text_native",
+        "slide.create",
+        "slide.delete",
+        "slide.duplicate",
+        "slide.format_text_roles",
+        "slide.move",
+        "slide.set_background",
+        "slide.set_notes",
+        "slide.set_role_text",
+        "slide.set_transition",
+        "slides.format_text_roles",
+        "table.create",
+        "table.format_text",
+        "table.replace_row",
+        "table.write"
+      ],
+      "public_actions": [
+        "audio.insert",
+        "master.set_page_number",
+        "presentation.export",
+        "presentation.inspect",
+        "presentation.save",
+        "presentation.set_page_size",
+        "settings.set",
+        "shape.create_text",
+        "shape.delete",
+        "shape.export_image",
+        "shape.fit_to_slide",
+        "shape.format_text",
+        "shape.insert_image",
+        "shape.set_fill",
+        "shape.set_geometry",
+        "shape.write_text",
+        "shape.write_text_native",
+        "slide.create",
+        "slide.delete",
+        "slide.duplicate",
+        "slide.format_text_roles",
+        "slide.move",
+        "slide.set_background",
+        "slide.set_notes",
+        "slide.set_role_text",
+        "slide.set_transition",
+        "slides.format_text_roles",
+        "table.create",
+        "table.format_text",
+        "table.replace_row",
+        "table.write"
+      ]
+    },
+    {
+      "domain": "libreoffice_writer",
+      "registered_actions": [
+        "bookmark.create",
+        "cross_reference.insert",
+        "document.add_page_numbers",
+        "document.append_paragraphs",
+        "document.export_pdf",
+        "document.extract_images",
+        "document.insert_page_break",
+        "document.inspect",
+        "document.read_file",
+        "document.remove_highlighting",
+        "document.save",
+        "document.set_font",
+        "document.transform_case",
+        "image.insert_at_cursor",
+        "paragraph.apply_numbering",
+        "paragraph.clear_text",
+        "paragraph.replace_text",
+        "paragraph.set_format",
+        "paragraph.split",
+        "settings.set_default_font",
+        "table.convert_text",
+        "table.insert_after_text",
+        "table.insert_at_cursor",
+        "table.read",
+        "table.set_cell_text_color",
+        "text.find",
+        "text.find_replace",
+        "text.set_format"
+      ],
+      "public_actions": [
+        "bookmark.create",
+        "cross_reference.insert",
+        "document.add_page_numbers",
+        "document.append_paragraphs",
+        "document.export_pdf",
+        "document.extract_images",
+        "document.insert_page_break",
+        "document.inspect",
+        "document.read_file",
+        "document.remove_highlighting",
+        "document.save",
+        "document.set_font",
+        "document.transform_case",
+        "image.insert_at_cursor",
+        "paragraph.apply_numbering",
+        "paragraph.clear_text",
+        "paragraph.replace_text",
+        "paragraph.set_format",
+        "paragraph.split",
+        "settings.set_default_font",
+        "table.convert_text",
+        "table.insert_after_text",
+        "table.insert_at_cursor",
+        "table.read",
+        "table.set_cell_text_color",
+        "text.find",
+        "text.find_replace",
+        "text.set_format"
+      ]
+    },
+    {
+      "domain": "thunderbird",
+      "registered_actions": [
+        "accounts.remove",
+        "attachments.save",
+        "compose.attach",
+        "compose.set_recipients",
+        "contacts.export_csv",
+        "filters.configure",
+        "filters.set_subfolder_application",
+        "folders.ensure_local",
+        "identities.query",
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+        "inbox.set_unified",
+        "messages.export_eml",
+        "messages.query",
+        "theme.set_dark_mode",
+        "ui.prefill_account_setup",
+        "xulstore.update"
+      ],
+      "public_actions": [
+        "accounts.remove",
+        "attachments.save",
+        "compose.attach",
+        "compose.set_recipients",
+        "contacts.export_csv",
+        "filters.configure",
+        "filters.set_subfolder_application",
+        "folders.ensure_local",
+        "identities.query",
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+        "inbox.set_unified",
+        "messages.export_eml",
+        "messages.query",
+        "theme.set_dark_mode",
+        "ui.prefill_account_setup",
+        "xulstore.update"
+      ]
+    },
+    {
+      "domain": "chrome",
+      "registered_actions": [
+        "bookmark.add_current",
+        "bookmark.create_folder",
+        "browser.ensure_running",
+        "browser.inspect",
+        "browser.restart",
+        "extension.load_unpacked",
+        "page.click",
+        "page.fill",
+        "page.goto",
+        "page.press",
+        "page.print_pdf",
+        "page.read",
+        "page.select",
+        "page.snapshot",
+        "page.wait_for",
+        "privacy.delete_cookies",
+        "privacy.delete_history",
+        "settings.set",
+        "shortcut.create_current",
+        "tab.activate",
+        "tab.close",
+        "tab.list",
+        "tab.open",
+        "tab.restore_last_closed"
+      ],
+      "public_actions": [
+        "bookmark.add_current",
+        "bookmark.create_folder",
+        "browser.ensure_running",
+        "browser.inspect",
+        "browser.restart",
+        "extension.load_unpacked",
+        "page.click",
+        "page.fill",
+        "page.goto",
+        "page.press",
+        "page.print_pdf",
+        "page.read",
+        "page.select",
+        "page.snapshot",
+        "page.wait_for",
+        "privacy.delete_cookies",
+        "privacy.delete_history",
+        "settings.set",
+        "shortcut.create_current",
+        "tab.activate",
+        "tab.close",
+        "tab.list",
+        "tab.open",
+        "tab.restore_last_closed"
+      ]
+    },
+    {
+      "domain": "gimp",
+      "registered_actions": [
+        "config.set",
+        "image.adjust",
+        "image.apply_alpha_mask",
+        "image.convert_indexed",
+        "image.crop",
+        "image.export",
+        "image.flip",
+        "image.inspect",
+        "layer.add",
+        "layer.fill",
+        "layer.scale",
+        "layer.translate"
+      ],
+      "public_actions": [
+        "config.set",
+        "image.adjust",
+        "image.apply_alpha_mask",
+        "image.convert_indexed",
+        "image.crop",
+        "image.export",
+        "image.flip",
+        "image.inspect",
+        "layer.add",
+        "layer.fill",
+        "layer.scale",
+        "layer.translate"
+      ]
+    },
+    {
+      "domain": "os",
+      "registered_actions": [
+        "archive.compress_file",
+        "archive.create_extract",
+        "audio.set_volume",
+        "clipboard.get",
+        "clipboard.set",
+        "command.run",
+        "desktop.applications.inspect",
+        "desktop.favorites.list",
+        "desktop.mime_associations.set",
+        "desktop.open_path",
+        "desktop.remove_favorite",
+        "desktop.set_accessibility_scale",
+        "desktop.set_dim_inactive",
+        "desktop.set_setting",
+        "desktop.set_wallpaper",
+        "document.convert",
+        "filesystem.copy",
+        "filesystem.copy_to_directories",
+        "filesystem.create_directory",
+        "filesystem.find",
+        "filesystem.rename",
+        "filesystem.set_permissions",
+        "image.extract_text_batch",
+        "notifications.configure",
+        "package.install_snap",
+        "pdf.extract_text_batch",
+        "pdf.form.fill",
+        "pdf.form.inspect",
+        "pdf.outline.inspect",
+        "pdf.pages.extract",
+        "pdf.tables.inspect",
+        "system.set_timezone",
+        "terminal.default_profile.inspect",
+        "terminal.default_profile.set_setting",
+        "terminal.launch",
+        "terminal.show_output",
+        "text.append_each_line",
+        "trash.list",
+        "trash.restore",
+        "user.ensure_account",
+        "window.capture"
+      ],
+      "public_actions": [
+        "archive.compress_file",
+        "archive.create_extract",
+        "audio.set_volume",
+        "clipboard.get",
+        "clipboard.set",
+        "command.run",
+        "desktop.applications.inspect",
+        "desktop.favorites.list",
+        "desktop.mime_associations.set",
+        "desktop.open_path",
+        "desktop.remove_favorite",
+        "desktop.set_accessibility_scale",
+        "desktop.set_dim_inactive",
+        "desktop.set_setting",
+        "desktop.set_wallpaper",
+        "document.convert",
+        "filesystem.copy",
+        "filesystem.copy_to_directories",
+        "filesystem.create_directory",
+        "filesystem.find",
+        "filesystem.rename",
+        "filesystem.set_permissions",
+        "image.extract_text_batch",
+        "notifications.configure",
+        "package.install_snap",
+        "pdf.extract_text_batch",
+        "pdf.form.fill",
+        "pdf.form.inspect",
+        "pdf.outline.inspect",
+        "pdf.pages.extract",
+        "pdf.tables.inspect",
+        "system.set_timezone",
+        "terminal.default_profile.inspect",
+        "terminal.default_profile.set_setting",
+        "terminal.launch",
+        "terminal.show_output",
+        "text.append_each_line",
+        "trash.list",
+        "trash.restore",
+        "user.ensure_account",
+        "window.capture"
+      ]
+    },
+    {
+      "domain": "vs_code",
+      "registered_actions": [
+        "debug.breakpoint.set",
+        "debug.continue",
+        "debug.session.wait",
+        "debug.start",
+        "debug.stop",
+        "debug.variables.read",
+        "debugging.configure",
+        "diagnostics.configure",
+        "editor.configure",
+        "editor.open_file",
+        "explorer.set_exclusion",
+        "extension.install",
+        "file.create",
+        "file.indent_lines",
+        "file.read_text",
+        "file.replace_literal",
+        "files.configure",
+        "keybindings.ensure",
+        "settings.update",
+        "ui.expand_section",
+        "ui.open_view",
+        "workspace.add_folders",
+        "workspace.find_files",
+        "workspace.inspect",
+        "workspace.open",
+        "workspace.set_folders",
+        "workspace.write"
+      ],
+      "public_actions": [
+        "debug.breakpoint.set",
+        "debug.continue",
+        "debug.session.wait",
+        "debug.start",
+        "debug.stop",
+        "debug.variables.read",
+        "debugging.configure",
+        "diagnostics.configure",
+        "editor.configure",
+        "editor.open_file",
+        "explorer.set_exclusion",
+        "extension.install",
+        "file.create",
+        "file.indent_lines",
+        "file.read_text",
+        "file.replace_literal",
+        "files.configure",
+        "keybindings.ensure",
+        "settings.update",
+        "ui.expand_section",
+        "ui.open_view",
+        "workspace.add_folders",
+        "workspace.find_files",
+        "workspace.inspect",
+        "workspace.open",
+        "workspace.set_folders",
+        "workspace.write"
+      ]
+    },
+    {
+      "domain": "vlc",
+      "registered_actions": [
+        "config.update",
+        "media.extract_audio",
+        "media.extract_frame",
+        "media.extract_subtitles",
+        "media.transcode_clip",
+        "playback.open",
+        "playback.status",
+        "preferences.configure",
+        "window.set_fullscreen"
+      ],
+      "public_actions": [
+        "config.update",
+        "media.extract_audio",
+        "media.extract_frame",
+        "media.extract_subtitles",
+        "media.transcode_clip",
+        "playback.open",
+        "playback.status",
+        "preferences.configure",
+        "window.set_fullscreen"
+      ]
+    },
+    {
+      "domain": "multi_apps",
+      "registered_actions": [
+        "adapter.call"
+      ],
+      "public_actions": [
+        "adapter.call"
+      ]
+    }
+  ],
+  "remaining_broad_api_exposure": [
+    {
+      "domain": "chrome",
+      "action": "settings.set",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__settings_set",
+          "description": "Execute the deterministic chrome.settings.set Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "settings": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "font_size": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "do_not_track": {
+                    "type": "boolean"
+                  },
+                  "safe_browsing": {
+                    "type": "boolean"
+                  },
+                  "profile_name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "search_engine": {
+                    "type": "string",
+                    "enum": [
+                      "bing",
+                      "google"
+                    ]
+                  },
+                  "appearance": {
+                    "type": "string",
+                    "enum": [
+                      "light",
+                      "dark",
+                      "system"
+                    ]
+                  },
+                  "startup_mode": {
+                    "type": "string",
+                    "enum": [
+                      "new_tab",
+                      "continue"
+                    ]
+                  },
+                  "clear_on_exit": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "settings"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "domain": "gimp",
+      "action": "image.adjust",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__image_adjust",
+          "description": "Execute the deterministic gimp.image.adjust Adapter action. Adjust brightness, contrast, or saturation of a local image and save the adjusted image to a different file. Supply at least one adjustment; omitted adjustments are zero. This edits the image file, not an image object's appearance inside a presentation. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "input_path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Exact local source image path, such as a PNG or JPEG; not a presentation path or a file URL. Discover an unknown location with filesystem.find first."
+              },
+              "output_path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Destination for the adjusted image: a different file from input_path. Use PNG, JPEG, or XCF. Existing output files are replaced; the source is retained for verification."
+              },
+              "brightness": {
+                "type": "number",
+                "minimum": -127,
+                "maximum": 127,
+                "description": "Brightness offset: positive values brighten, negative values darken, and zero leaves brightness unchanged. This is GIMP's -127 to 127 scale, not a percent or target brightness. Fractional values are truncated toward zero."
+              },
+              "contrast": {
+                "type": "number",
+                "minimum": -127,
+                "maximum": 127,
+                "description": "Contrast offset: positive increases, negative decreases, zero leaves it unchanged. GIMP's -127 to 127 scale, not percent; fractional values are truncated toward zero."
+              },
+              "saturation": {
+                "type": "number",
+                "minimum": -100,
+                "maximum": 100,
+                "description": "Relative saturation adjustment: positive increases color intensity, negative decreases it, zero leaves it unchanged, and -100 removes color. Fractional amounts are supported."
+              },
+              "open_in_gui": {
+                "type": "boolean",
+                "description": "Defaults to false. True saves a GIMP project and opens it; use an XCF output_path in that mode. For a PNG or JPEG export, omit this field or set it to false."
+              }
+            },
+            "required": [
+              "input_path",
+              "output_path"
+            ],
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "brightness"
+                ]
+              },
+              {
+                "required": [
+                  "contrast"
+                ]
+              },
+              {
+                "required": [
+                  "saturation"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "os",
+      "action": "archive.create_extract",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__archive_create_extract",
+          "description": "Execute the deterministic os.archive.create_extract Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "extract"
+                ],
+                "description": "Use create to build a ZIP and send input_paths (not destination_directory), or use extract to unpack an existing ZIP and send destination_directory (not input_paths)."
+              },
+              "archive_path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?:/|~/).+\\.[zZ][iI][pP]$",
+                "description": "Absolute or ~/ ZIP path selected by the model. In create mode this is the output; in extract mode it must already exist."
+              },
+              "input_paths": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 256,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?:/|~/).*"
+                },
+                "description": "Create mode only: exact existing files or directories to include. Direct files use their basenames unless base_directory is supplied. Do not send this field in extract mode."
+              },
+              "base_directory": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?:/|~/).*",
+                "description": "Create mode only: optional existing directory used to derive relative member paths. Every input_path must be inside it."
+              },
+              "destination_directory": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?:/|~/).*",
+                "description": "Extract mode only: destination directory. Unsafe paths and symbolic-link ZIP members are rejected before extraction. Do not send this field in create mode."
+              },
+              "overwrite": {
+                "type": "boolean",
+                "description": "Replace an existing output ZIP or extracted member only when true; defaults to false."
+              }
+            },
+            "required": [
+              "mode",
+              "archive_path"
+            ],
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "create",
+                      "extract"
+                    ],
+                    "description": "Use create to build a ZIP and send input_paths (not destination_directory), or use extract to unpack an existing ZIP and send destination_directory (not input_paths).",
+                    "const": "create"
+                  },
+                  "archive_path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).+\\.[zZ][iI][pP]$",
+                    "description": "Absolute or ~/ ZIP path selected by the model. In create mode this is the output; in extract mode it must already exist."
+                  },
+                  "input_paths": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 256,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^(?:/|~/).*"
+                    },
+                    "description": "Create mode only: exact existing files or directories to include. Direct files use their basenames unless base_directory is supplied. Do not send this field in extract mode."
+                  },
+                  "base_directory": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).*",
+                    "description": "Create mode only: optional existing directory used to derive relative member paths. Every input_path must be inside it."
+                  },
+                  "destination_directory": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).*",
+                    "description": "Extract mode only: destination directory. Unsafe paths and symbolic-link ZIP members are rejected before extraction. Do not send this field in create mode."
+                  },
+                  "overwrite": {
+                    "type": "boolean",
+                    "description": "Replace an existing output ZIP or extracted member only when true; defaults to false."
+                  }
+                },
+                "required": [
+                  "mode",
+                  "archive_path",
+                  "input_paths"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "create",
+                      "extract"
+                    ],
+                    "description": "Use create to build a ZIP and send input_paths (not destination_directory), or use extract to unpack an existing ZIP and send destination_directory (not input_paths).",
+                    "const": "extract"
+                  },
+                  "archive_path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).+\\.[zZ][iI][pP]$",
+                    "description": "Absolute or ~/ ZIP path selected by the model. In create mode this is the output; in extract mode it must already exist."
+                  },
+                  "input_paths": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 256,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^(?:/|~/).*"
+                    },
+                    "description": "Create mode only: exact existing files or directories to include. Direct files use their basenames unless base_directory is supplied. Do not send this field in extract mode."
+                  },
+                  "base_directory": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).*",
+                    "description": "Create mode only: optional existing directory used to derive relative member paths. Every input_path must be inside it."
+                  },
+                  "destination_directory": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:/|~/).*",
+                    "description": "Extract mode only: destination directory. Unsafe paths and symbolic-link ZIP members are rejected before extraction. Do not send this field in create mode."
+                  },
+                  "overwrite": {
+                    "type": "boolean",
+                    "description": "Replace an existing output ZIP or extracted member only when true; defaults to false."
+                  }
+                },
+                "required": [
+                  "mode",
+                  "archive_path",
+                  "destination_directory"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "os",
+      "action": "desktop.set_accessibility_scale",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__desktop_set_accessibility_scale",
+          "description": "Execute the deterministic os.desktop.set_accessibility_scale Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text_factor": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 3.0,
+                "description": "GNOME desktop text scaling factor selected by the model. 1.0 is normal size; choose a value greater than 1.0 when the user requests larger on-screen text."
+              },
+              "magnifier_factor": {
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 32.0,
+                "description": "GNOME screen magnifier zoom factor selected by the model. A value greater than 1.0 enlarges the visible desktop; this action enables the magnifier and verifies the factor."
+              }
+            },
+            "required": [
+              "text_factor",
+              "magnifier_factor"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "domain": "os",
+      "action": "desktop.set_dim_inactive",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__desktop_set_dim_inactive",
+          "description": "Execute the deterministic os.desktop.set_dim_inactive Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "idle_dim": {
+                "type": "boolean",
+                "description": "Whether GNOME dims the screen while the desktop is inactive."
+              },
+              "idle_delay": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4294967295,
+                "description": "Optional blank-screen delay in seconds. Omit when the instruction only changes dimming."
+              }
+            },
+            "required": [
+              "idle_dim"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "domain": "vs_code",
+      "action": "debugging.configure",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__debugging_configure",
+          "description": "Execute the deterministic vs_code.debugging.configure Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "focus_editor_on_break": {
+                "type": "boolean",
+                "description": "Whether a debugger break moves cursor focus to the editor. Set false to preserve focus in the Debug Console or other current debug view."
+              },
+              "inline_values": {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "off",
+                  "on"
+                ],
+                "description": "Whether variable values appear inline while debugging."
+              },
+              "internal_console": {
+                "type": "string",
+                "enum": [
+                  "neverOpen",
+                  "openOnFirstSessionStart",
+                  "openOnSessionStart"
+                ],
+                "description": "When the internal Debug Console opens automatically."
+              },
+              "open_debug_view": {
+                "type": "string",
+                "enum": [
+                  "neverOpen",
+                  "openOnDebugBreak",
+                  "openOnFirstSessionStart",
+                  "openOnSessionStart"
+                ],
+                "description": "When VS Code opens the Run and Debug view automatically."
+              },
+              "show_breakpoints_in_overview_ruler": {
+                "type": "boolean",
+                "description": "Whether the editor overview ruler shows breakpoints."
+              },
+              "show_inline_breakpoint_candidates": {
+                "type": "boolean",
+                "description": "Whether inline breakpoint candidates are shown in the editor."
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Optional settings.json path; omit for active user settings."
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "focus_editor_on_break"
+                ]
+              },
+              {
+                "required": [
+                  "inline_values"
+                ]
+              },
+              {
+                "required": [
+                  "internal_console"
+                ]
+              },
+              {
+                "required": [
+                  "open_debug_view"
+                ]
+              },
+              {
+                "required": [
+                  "show_breakpoints_in_overview_ruler"
+                ]
+              },
+              {
+                "required": [
+                  "show_inline_breakpoint_candidates"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "vs_code",
+      "action": "editor.configure",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__editor_configure",
+          "description": "Execute the deterministic vs_code.editor.configure Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "wrap_tabs": {
+                "type": "boolean",
+                "description": "Whether editor tabs wrap onto multiple rows when horizontal space is insufficient."
+              },
+              "word_wrap": {
+                "type": "string",
+                "enum": [
+                  "at_column",
+                  "bounded",
+                  "off",
+                  "on"
+                ],
+                "description": "Text wrapping behavior: off, on at the viewport, at_column at the configured column, or bounded at the smaller of viewport and column."
+              },
+              "word_wrap_column": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000,
+                "description": "Positive editor column used by at_column or bounded wrapping. This may also be changed independently of the current word-wrap mode."
+              },
+              "minimap_enabled": {
+                "type": "boolean",
+                "description": "Whether the editor minimap is visible."
+              },
+              "line_numbers": {
+                "type": "string",
+                "enum": [
+                  "interval",
+                  "off",
+                  "on",
+                  "relative"
+                ],
+                "description": "Editor line-number display mode."
+              },
+              "sticky_scroll_enabled": {
+                "type": "boolean",
+                "description": "Whether sticky scopes remain visible at the editor top."
+              },
+              "smooth_scrolling": {
+                "type": "boolean",
+                "description": "Whether editor scrolling is animated smoothly."
+              },
+              "render_whitespace": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "boundary",
+                  "none",
+                  "selection",
+                  "trailing"
+                ],
+                "description": "Which whitespace characters the editor renders visibly."
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Optional settings.json path; omit for active user settings."
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "wrap_tabs"
+                ]
+              },
+              {
+                "required": [
+                  "word_wrap"
+                ]
+              },
+              {
+                "required": [
+                  "word_wrap_column"
+                ]
+              },
+              {
+                "required": [
+                  "minimap_enabled"
+                ]
+              },
+              {
+                "required": [
+                  "line_numbers"
+                ]
+              },
+              {
+                "required": [
+                  "sticky_scroll_enabled"
+                ]
+              },
+              {
+                "required": [
+                  "smooth_scrolling"
+                ]
+              },
+              {
+                "required": [
+                  "render_whitespace"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "vs_code",
+      "action": "files.configure",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__files_configure",
+          "description": "Execute the deterministic vs_code.files.configure Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "auto_save": {
+                "type": "string",
+                "enum": [
+                  "after_delay",
+                  "off",
+                  "on_focus_change",
+                  "on_window_change"
+                ],
+                "description": "Automatic save mode: off, after_delay, on_focus_change, or on_window_change."
+              },
+              "auto_save_delay_ms": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3600000,
+                "description": "Delay in milliseconds used by after_delay autosave; it can be updated independently when that mode is already active."
+              },
+              "trim_trailing_whitespace": {
+                "type": "boolean",
+                "description": "Whether saving removes trailing whitespace."
+              },
+              "insert_final_newline": {
+                "type": "boolean",
+                "description": "Whether saving inserts a final newline when missing."
+              },
+              "trim_final_newlines": {
+                "type": "boolean",
+                "description": "Whether saving removes extra final newlines."
+              },
+              "hot_exit": {
+                "type": "string",
+                "enum": [
+                  "off",
+                  "on_exit",
+                  "on_exit_and_window_close"
+                ],
+                "description": "Whether unsaved editors are restored after exit."
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Optional settings.json path; omit for active user settings."
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "auto_save"
+                ]
+              },
+              {
+                "required": [
+                  "auto_save_delay_ms"
+                ]
+              },
+              {
+                "required": [
+                  "trim_trailing_whitespace"
+                ]
+              },
+              {
+                "required": [
+                  "insert_final_newline"
+                ]
+              },
+              {
+                "required": [
+                  "trim_final_newlines"
+                ]
+              },
+              {
+                "required": [
+                  "hot_exit"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "vs_code",
+      "action": "settings.update",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__settings_update",
+          "description": "Execute the deterministic vs_code.settings.update Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "minProperties": 1,
+                "description": "Exact VS Code setting identifiers mapped to JSON values.",
+                "additionalProperties": true
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Optional settings.json path; omit for the active user settings."
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "domain": "vlc",
+      "action": "preferences.configure",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__preferences_configure",
+          "description": "Execute the deterministic vlc.preferences.configure Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "global_play_pause_hotkey": {
+                "type": "string",
+                "minLength": 1,
+                "description": "VLC global Play/Pause key name, for example Media Play Pause."
+              },
+              "maximum_volume_percent": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 300,
+                "description": "Maximum volume shown by the VLC Qt interface, as a percentage."
+              },
+              "volume_slider_color": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "description": "One #RRGGBB color applied to all VLC volume-slider states."
+              },
+              "minimal_interface": {
+                "type": "boolean",
+                "description": "True hides the normal playback controls in window mode."
+              },
+              "exit_after_playback": {
+                "type": "boolean",
+                "description": "Whether VLC exits automatically when playback ends."
+              },
+              "allow_multiple_instances": {
+                "type": "boolean",
+                "description": "Whether desktop-opened files may start independent VLC instances."
+              },
+              "show_background_cone": {
+                "type": "boolean",
+                "description": "Whether the VLC cone is shown in the empty-player background."
+              },
+              "recording_directory": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^/.*",
+                "description": "Explicit absolute directory where VLC stores recordings, for example /srv/media/captures. Use recording_location instead when the request names a standard user directory without an absolute path."
+              },
+              "recording_location": {
+                "type": "string",
+                "enum": [
+                  "desktop",
+                  "downloads",
+                  "videos",
+                  "music",
+                  "home"
+                ],
+                "description": "Standard directory under the active user's home. Select this when the request says Desktop, Downloads, Videos, Music, or the home directory without giving an absolute path."
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "not": {
+                  "required": [
+                    "recording_directory",
+                    "recording_location"
+                  ]
+                }
+              }
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "global_play_pause_hotkey"
+                ]
+              },
+              {
+                "required": [
+                  "maximum_volume_percent"
+                ]
+              },
+              {
+                "required": [
+                  "volume_slider_color"
+                ]
+              },
+              {
+                "required": [
+                  "minimal_interface"
+                ]
+              },
+              {
+                "required": [
+                  "exit_after_playback"
+                ]
+              },
+              {
+                "required": [
+                  "allow_multiple_instances"
+                ]
+              },
+              {
+                "required": [
+                  "show_background_cone"
+                ]
+              },
+              {
+                "required": [
+                  "recording_directory"
+                ]
+              },
+              {
+                "required": [
+                  "recording_location"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "domain": "vlc",
+      "action": "config.update",
+      "tool": {
+        "type": "function",
+        "function": {
+          "name": "adapter__config_update",
+          "description": "Execute the deterministic vlc.config.update Adapter action. Pass the documented action params directly as top-level tool arguments. Use only documented parameter names.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "minProperties": 1,
+                "description": "VLC preference names mapped to string, integer, or boolean values.",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Optional vlcrc path; omit to update the active user configuration."
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ]
+}

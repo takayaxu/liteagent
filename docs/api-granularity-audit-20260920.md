@@ -574,3 +574,11 @@ endpoint/configuration and produced no new API surface.
 ### 本轮 FAIL 的正式日志回填（2026-10-10）
 
 91、99、102、107、108 的本轮逐题 FAIL 回执已补入 [正式开发日志](../API_SPLIT_TASK.md#2026-10-10-本轮失败题目正式运行日志)。每题记录 task ID、原始 status/reward、45 步、耗时、termination_reason=null、完整轨迹、evaluator 产物与已观察到的输出差异。91/99/108 未获取要求的输出文件；102 学术论文目录缺少 paper01.pdf；107 成功获取表格但对照未通过。上述表现尚未被当作完整根因结论，历史 PASS 与本轮 FAIL 分别保留。本次为日志补交，无 API 修改或新测试。
+
+## 2026-10-10：大粒度与题目定制逻辑复审
+
+当前 checkout 枚举为 **221 个公开 action**（含未提交实现），不能沿用旧 217 的数量结论。定向复审确认：Calc create_new 存在按固定 GRF 表头隐式设置百分比格式；Runner 存在固定 GRF/ECS 年份、学科、表格布局、矩阵计算，以及只需确认即代模型写入的 repair_confirm 宏。它们列为 **4 组 P0 定制/隐藏决策问题**；first-author 领域流程和 Impress 参数注入另列 **2 组 P1 待泛化/复核问题**。没有据此认定 golden 泄漏。
+
+Chrome/GIMP/OS/VS Code/VLC 共 **11 个历史大粒度入口**仍可通过 strict_generic 工具面访问。这些是粒度问题，不一概等同于定制求解器。已拆分的 Calc text_transform、Impress role formatting、Thunderbird 单设置/单过滤器契约仍保留。
+
+先前 107/108 中“没有题目专用解析/组合”的历史描述不能代表当前工作区；当前固定领域解析及参数替换未通过本次通用性复审。原始 evaluator PASS 不替代 API 粒度审查。源码与原始实验保持不变。完整证据、位置与处理建议见 [复审报告](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.md)，公开清单及工具 schema 见 [复审快照](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.json)。
