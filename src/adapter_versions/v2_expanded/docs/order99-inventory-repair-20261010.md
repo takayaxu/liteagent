@@ -66,3 +66,7 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
 第 3、6、9、14 步分别读取流水与全部三张发票。第 8 步只移动唯一金额不匹配的发票，Adapter verification=true；第 12 步显式保留第二张匹配发票。第 13 步过期 reader 路径被拒绝，第 14 步恢复为当前对象并读取成功。第三张发票的 planner 正确请求 retain，但 checker 在理由中确认金额/商户匹配，字段却持续输出 move；两者不同导致 check 不通过，原文件没有移动。该问题仍是 **模型 verdict 自相矛盾造成的收尾限制**；不能将本次 evaluator PASS 记为完整分类状态机正常结束。没有通过解析理由强制改写 verdict，也没有加入题目答案。
 
 原始 FAIL、三次主动中断、两次中间 PASS 与最终 PASS 都保留，各轮结果互不覆盖。最终活动源码与增量补丁 SHA-256 一致，未运行其他题目。
+
+交付提交：`f0afcaa`（`fix(order99): package inventory and reconciliation workflow repair`），包含本题独立增量补丁、修复前后 SHA-256、正式验证配置、开发日志与审计。后续记录提交修正补丁的空白上下文表示，不改变活动源码行为。
+
+轨迹 manifest 的 adapter_verifier_passed_calls 汇总为 0，但原始第 8 步 rename 返回嵌套 verification_passed=true，且 evaluator result/expected 的 SHA-256 相同；沿用原始文件，不修改汇总计数。

@@ -408,3 +408,5 @@ $PYTHON -m ruff check <changed_python_files>
 - `retry3` 正式 evaluator PASS（1.0，25 步，stalled_no_progress）；`retry4` PASS（1.0，45 步，manifest=max_steps）。两轮仍有执行收尾限制，记录中明确区分 evaluator 通过和完整处理证明。最终 `retry5` PASS（1.0，45 步，manifest=max_steps，1386.762 秒）；读取流水与三张发票，仅不匹配发票移动且验证通过，匹配文件保持原位。第三张匹配发票的 checker disposition/理由仍矛盾，未正常 agent_done，此限制已记录。
 - 当前定向检查 70 passed，实际轨迹 contract replay 与 Ruff 通过；不扩建回归、不跑其他 Order。
 - 本工作区存在原有共享改动，本题源码已应用；交付以独立增量补丁及 SHA-256 基线清单保存，避免把其他失败题共享代码混入本题提交。集成说明见本题记录。
+
+- Order 99 本题增量交付提交：`f0afcaa`（补丁、基线 hash、配置、开发记录和 API 审计）；活动源码修复已应用在共享工作区，具体集成边界见本题记录。
