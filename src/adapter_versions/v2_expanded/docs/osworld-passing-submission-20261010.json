@@ -360,5 +360,69 @@
       "new_implementation_commit": null
     }
   ],
-  "validation": "Committed Python syntax, Ruff and commit whitespace checks passed; no rerun of isolated commits."
+  "validation": "Committed Python syntax, Ruff and commit whitespace checks passed; no rerun of isolated commits.",
+  "isolated_reruns": [
+    {
+      "order": 91,
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 5,
+      "duration_seconds": 471.024,
+      "termination_reason": "agent_done",
+      "experiment_id": "osworld-order91-qwen-20261010-query-priority",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json",
+      "implementation_commit": "84a3a4c",
+      "initial_log_commit": "76ab5c3",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md",
+      "event_count": 5,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T21:21:37.448572+08:00",
+      "last_event_at": "2026-10-10T21:23:07.063318+08:00",
+      "evidence_sha256": {
+        "results.json": "5205206e978624bd9b28aec0b27da877b707d8a1019b275c24bdc90d8f82d1c1",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "7b19f3c84b8a20150172c5f64df8b63f4be9c488ed37a2c9f3bd47fc60066aa4",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "244a5f47f25b997f1574a5b3ed19f6dd1c3882a9b4a8acebaef0f4e2eafc3a78"
+      },
+      "scope": "isolated single-task rerun; original 28-task batch and its score remain unchanged"
+    }
+  ],
+  "latest_results": {
+    "91": {
+      "order": 91,
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "domain": "multi_apps",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 5,
+      "duration_seconds": 471.024,
+      "termination_reason": "agent_done",
+      "experiment_id": "osworld-order91-qwen-20261010-query-priority",
+      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json",
+      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+      "event_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+      "score_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt",
+      "evaluator_artifacts_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json",
+      "implementation_commit": "84a3a4c",
+      "initial_log_commit": "76ab5c3",
+      "log_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md",
+      "event_count": 5,
+      "timezone": "Asia/Shanghai",
+      "first_event_at": "2026-10-10T21:21:37.448572+08:00",
+      "last_event_at": "2026-10-10T21:23:07.063318+08:00",
+      "evidence_sha256": {
+        "results.json": "5205206e978624bd9b28aec0b27da877b707d8a1019b275c24bdc90d8f82d1c1",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "7b19f3c84b8a20150172c5f64df8b63f4be9c488ed37a2c9f3bd47fc60066aa4",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+        "raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "244a5f47f25b997f1574a5b3ed19f6dd1c3882a9b4a8acebaef0f4e2eafc3a78"
+      },
+      "scope": "isolated single-task rerun; original 28-task batch and its score remain unchanged"
+    }
+  }
 }

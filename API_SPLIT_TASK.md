@@ -341,13 +341,13 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## 2026-10-10 本轮失败题目正式运行日志
 
-本轮是固定 28 题的串行测试；下列 5 题均为原始 OSWorld evaluator `status=failed`、`reward=0.0`，实际步数达到配置的 45 步上限。`termination_reason=null`、`terminated_by_agent=false` 为原始结果字段，不能改记为 agent_done 或 stalled_no_progress。本日志保留既有单题 PASS 历史，同时将本轮结果明确记录为 FAIL；未据此进行修复或重跑。
+本轮是固定 28 题的串行测试；下列 5 题均为原始 OSWorld evaluator `status=failed`、`reward=0.0`，实际步数达到配置的 45 步上限。`termination_reason=null`、`terminated_by_agent=false` 为原始结果字段，不能改记为 agent_done 或 stalled_no_progress。本日志保留既有单题 PASS 历史，同时将本轮结果明确记录为 FAIL；最初只补日志。后续 Order 91 已完成单题修复并通过，独立结果见下方 PASS 记录，原始批次结果不变。
 
 共同结果文件：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json`，批次 `metadata.status=completed`。使用 `https://qwen.jinmaoapi.cc.cd/v1`、`Qwen3.5-9B`、non_thinking；45 全局步、25 本地步、一次 soft restart、1200 秒 Agent 预算。以下耗时沿用结果文件的 duration_seconds。
 
 ### Order 91 — 本轮 FAIL
 
-- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md)。
+- 修复前失败事件入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题失败日志](src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md)。最新单题结果见下方搜索修复 PASS。
 - Task ID：`d9b7c649-c975-4f53-88f5-940b29c47247`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，644.449 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/report.xlsx` 时返回 404；文件读取重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；evaluator_artifacts/manifest.json 的 result=[null]。这说明本轮未取到要求的结果表格，尚不能仅凭 404 判定文件未生成还是保存路径不一致。
@@ -358,8 +358,10 @@ $PYTHON -m ruff check <changed_python_files>
 
 - 本轮失败根因已核实：45 步全为相同的 Thunderbird 工具搜索，邮件工具虽然注册但被全题关键词触发的文件/Calc 排名加分挤出前六项，未执行任何邮件查询或表格创建。
 - 最小修复：Multi-Apps 搜索优先排列当前查询明确指定的应用及操作名称匹配；未指定应用的搜索保留原排序。API 保留，无新增任务专用逻辑。实现提交：`84a3a4c`。
-- 临时定向 contract 检查 8 项、改动 Python Ruff 和差异检查通过；只复跑 Order 91，正式 evaluator `status=passed`、`reward=1.0`，5 步、`agent_done`。
-- 配置/实际命令/完整证据：[Order 91 修复记录](src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md)。新结果：`src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json`。历史失败证据保持不变。
+- 临时定向 contract 检查 8 项、改动 Python Ruff 和差异检查通过；只复跑 Order 91，正式 evaluator `status=passed`、`reward=1.0`，5 步、471.024 秒、`termination_reason=agent_done`、`terminated_by_agent=true`。模型这次使用精确搜索名，原失败的自然语言搜索词另经 contract 检查确认首位命中。
+- 北京时间：运行开始 2026-10-10 21:15:54；首次工具事件 21:21:37.448572，末次工具事件 21:23:07.063318。部署 OCR 安装超时由 Runner 自动重试成功，只产生一个模型 episode。
+- 最新 [results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json)、[事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)、[评分 result.txt](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt)（1.0）。邮件返回 5 条，Calc 保存 `A1:E6`、30 单元格；正式 evaluator 成功取回 5075 字节文件。
+- 配置/实际命令/完整证据与哈希：[Order 91 单题日志](src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md)。首轮日志提交 `76ab5c3`；[API 审计](docs/api-granularity-audit-20260920.md)、[本轮审计](src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md) 与 [最新结果入口](src/adapter_versions/v2_expanded/docs/index.md) 同步引用这次独立 PASS。历史失败证据保持不变。
 
 ### Order 99 — 本轮 FAIL
 

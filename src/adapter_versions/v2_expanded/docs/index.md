@@ -1,13 +1,14 @@
 # OSWorld API Project
 
-Updated: 2026-09-15
+Updated: 2026-10-10
 
 This is the current documentation entry. Open archive reports only when investigating a specific result.
 
 ## 2026-10-10 固定 28 题运行入口
 
 - 最新批次：23/28 PASS，详见 [正式批次审计](osworld-passing-submission-20261010.md)。
-- 本轮 5 道 FAIL / 0.0 的单题最新轨迹入口：[Order 91](order91-latest-failure-20261010.md)、[Order 99](order99-latest-failure-20261010.md)、[Order 102](order102-latest-failure-20261010.md)、[Order 107](order107-latest-failure-20261010.md)、[Order 108](order108-latest-failure-20261010.md)。其他 classification-check、destination-validation、writeback 等路径保留为历史运行。
+- **Order 91 最新单题结果：PASS / reward=1.0**，5 步、471.024 秒、agent_done；北京时间 2026-10-10 21:21:37–21:23:07 工具事件。见 [单题日志](order91-query-priority-fix-20261010.md)、[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json)、[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)。实现提交 `84a3a4c`；[正式日志](../../../../API_SPLIT_TASK.md#order-91--后续搜索修复-pass2026-10-10)。本次孤立 PASS 不改写原批次分数。
+- 原批次 5 道 FAIL / 0.0 的保留轨迹：[Order 91（修复前）](order91-latest-failure-20261010.md)、[Order 99](order99-latest-failure-20261010.md)、[Order 102](order102-latest-failure-20261010.md)、[Order 107](order107-latest-failure-20261010.md)、[Order 108](order108-latest-failure-20261010.md)。其他 classification-check、destination-validation、writeback 等路径保留为历史运行。
 
 ## Current Operating Context
 

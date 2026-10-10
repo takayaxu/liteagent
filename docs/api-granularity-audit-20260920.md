@@ -575,6 +575,14 @@ endpoint/configuration and produced no new API surface.
 
 91、99、102、107、108 的本轮逐题 FAIL 回执已补入 [正式开发日志](../API_SPLIT_TASK.md#2026-10-10-本轮失败题目正式运行日志)。每题记录 task ID、原始 status/reward、45 步、耗时、termination_reason=null、完整轨迹、evaluator 产物与已观察到的输出差异。91/99/108 未获取要求的输出文件；102 学术论文目录缺少 paper01.pdf；107 成功获取表格但对照未通过。上述表现尚未被当作完整根因结论，历史 PASS 与本轮 FAIL 分别保留。本次为日志补交，无 API 修改或新测试。
 
+### Order 91 后续单题修复与正式 PASS（2026-10-10）
+
+最新单题结果为 **PASS / reward=1.0**：`osworld-order91-qwen-20261010-query-priority`，5 步、471.024 秒、`termination_reason=agent_done`。首次/末次工具事件分别为北京时间 21:21:37、21:23:07。原始批次的 23/28 与本题 FAIL/0.0 保留；这次单题复跑单独记账。
+
+失败根因已从完整轨迹确认：45 步均重复同一 Thunderbird 搜索，公开库中存在 `messages.query`，但全题关键词触发的文件/Calc 排名加分将其挤出前六项。实现提交 `84a3a4c` 仅调整 Multi-Apps 搜索排序，优先当前查询明确指定的应用及操作名称匹配。`thunderbird.messages.query` 与 `libreoffice_calc.workbook.create_new` 继续保留原 API 契约，无新增 action 或题目专用逻辑。8 项临时定向 contract 检查、Ruff 和差异检查通过。
+
+正式 evaluator 成功读取桌面 `report.xlsx`；邮件查询返回最新 5 条并时间升序，工作簿写入 `A1:E6`、30 单元格且已保存。模型这次使用精确工具名；失败中的自然语言搜索词已在定向检查中复现并确认首位命中。新 [结果回执](../src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json)、[单题日志](../src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md)、[正式日志](../API_SPLIT_TASK.md#order-91--后续搜索修复-pass2026-10-10)、[最新入口](../src/adapter_versions/v2_expanded/docs/index.md) 已同步。首轮记录提交 `76ab5c3`。
+
 ## 2026-10-10：大粒度与题目定制逻辑复审
 
 当前 checkout 枚举为 **221 个公开 action**（含未提交实现），不能沿用旧 217 的数量结论。定向复审确认：Calc create_new 存在按固定 GRF 表头隐式设置百分比格式；Runner 存在固定 GRF/ECS 年份、学科、表格布局、矩阵计算，以及只需确认即代模型写入的 repair_confirm 宏。它们列为 **4 组 P0 定制/隐藏决策问题**；first-author 领域流程和 Impress 参数注入另列 **2 组 P1 待泛化/复核问题**。没有据此认定 golden 泄漏。

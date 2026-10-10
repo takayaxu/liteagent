@@ -1,6 +1,24 @@
 # Project Progress
 
-Updated: 2026-09-18
+Updated: 2026-10-10
+
+## 2026-10-10 Order 91 query priority repair passes the original evaluator
+
+The isolated `osworld-order91-qwen-20261010-query-priority` run passed with
+reward 1.0, 5 tool events, 471.024 seconds, and agent_done. Tool events span
+21:21:37–21:23:07 Asia/Shanghai. Implementation commit `84a3a4c` prioritizes
+the application and operation explicitly named in the current Multi-Apps
+catalog query over full-instruction ranking bonuses. API contracts remain
+unchanged. Eight temporary focused contract checks, Ruff, and diff checks passed.
+
+The preserved October 10 batch failure repeated the same Thunderbird catalog
+search for all 45 steps, exposing unrelated filesystem/Calc tools instead of
+the registered mail query. The rerun queried the latest five messages in
+ascending time order, created and saved the desktop report, and received the
+original evaluator's PASS. Its model used exact action names; the original
+natural-language search was separately verified by the focused checks.
+The original batch remains 23/28. See the [single-task log](order91-query-priority-fix-20261010.md),
+[audit](osworld-passing-submission-20261010.md), and [latest result entry](index.md).
 
 ## 2026-09-18 OCR text-click interface replaces model coordinates; affected retries complete
 

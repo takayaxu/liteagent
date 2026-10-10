@@ -1,5 +1,7 @@
 # Order 91：本轮最新失败轨迹（2026-10-10）
 
+**后续单题已修复并正式 PASS / reward=1.0。** 最新结果见 [Order 91 单题日志](order91-query-priority-fix-20261010.md) 与 [results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json)。下面保留修复前最新失败证据；文件名中的 latest-failure 仅指失败记录。
+
 本记录对应固定 28 题测试批次 `osworld-api-split-test-only-20261010-resume1` 的 Order 91，**FAIL / reward=0.0**。其他独立运行或历史 PASS 不代表本轮结果。
 
 - Task ID：`d9b7c649-c975-4f53-88f5-940b29c47247`；应用：`multi_apps`。
@@ -14,4 +16,4 @@
 - 已观察到的失败表现：evaluator 未取得要求的 report.xlsx；产物 manifest 的 result=[null]，取回文件时返回 404。未将该表现直接判为完整根因。
 - 事件文件 SHA-256：`35538edf008b36ef2741c5142b303205f70f12955568bd758523d726fade0ca4`。
 
-此次仅补充单题日志和轨迹入口，未追加、复制或重写原始事件文件，未修复实现、未复跑。
+最初仅补充单题失败日志和轨迹入口。后续完整诊断确认：45 步全部重复同一 Thunderbird 搜索；邮件工具已注册，但被文件/Calc 搜索加分挤出结果，未执行邮件查询或工作簿创建。实现提交 `84a3a4c` 调整通用搜索排序后，单独复跑以 5 步、471.024 秒、agent_done 和 reward=1.0 收尾；完整配置、命令与证据见上方单题日志。原始失败事件及评分未改写。
