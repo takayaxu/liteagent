@@ -4,6 +4,11 @@ Updated: 2026-09-15
 
 This is the current documentation entry. Open archive reports only when investigating a specific result.
 
+## 2026-10-10 固定 28 题运行入口
+
+- 最新批次：23/28 PASS，详见 [正式批次审计](osworld-passing-submission-20261010.md)。
+- Order 102 本轮最新结果为 FAIL / 0.0：[最新失败轨迹入口](order102-latest-failure-20261010.md)。旧 classification-check 路径是历史运行。
+
 ## Current Operating Context
 
 - Active root GOAL: optimize the six identified workflow APIs serially from the recovered

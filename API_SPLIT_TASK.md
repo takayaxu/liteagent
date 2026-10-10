@@ -363,6 +363,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 102 — 本轮 FAIL
 
+- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[单题最新失败索引](src/adapter_versions/v2_expanded/docs/order102-latest-failure-20261010.md)。此前 classification-check 为历史运行。
 - Task ID：`869de13e-bef9-4b91-ba51-f6708c40b096`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，1012.175 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 返回的文件目录列表中，学术论文目录缺少 `paper01.pdf`；另两组 coding/miscellaneous 列表与 manifest 中的 expected 列表一致。该具体输出差异导致本轮未通过；后续根因仍需结合事件轨迹分析。
