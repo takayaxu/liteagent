@@ -57,3 +57,5 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
 ## Commit
 
 The independent budget commit contains only runner budget hunks, new estimator, this diagnosis and four new single-task configs. The two singleton schema changes and complete-Writer compatibility follow-up remain in the working tree: their containing implementation was already extensively modified/untracked before this task, and staging whole functions/files would absorb prior work. The passing result validates the combined episode source, not the isolated budget commit alone. Preserve these edits for integration.
+
+Budget implementation commit: `4894e6f` (`fix(runner): estimate organization step budget from observed sources`). Scope: seven files, only the isolated budget implementation/config/diagnosis. Auxiliary current-task schema/classification fixes are present but unstaged as described above.
