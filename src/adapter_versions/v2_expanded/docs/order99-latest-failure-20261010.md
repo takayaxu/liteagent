@@ -1,4 +1,6 @@
-# Order 99：本轮最新失败轨迹（2026-10-10）
+# Order 99：固定 28 题批次失败轨迹（2026-10-10）
+
+> 2026-10-10 入口核对：Order 99 本轮批次为 FAIL；最新已核对运行为 PASS。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)。下文是本文件所述运行的记录，历史路径不作为最新入口。
 
 本记录对应固定 28 题测试批次 `osworld-api-split-test-only-20261010-resume1` 的 Order 99，**FAIL / reward=0.0**。其他独立运行或历史 PASS 不代表本轮结果。
 

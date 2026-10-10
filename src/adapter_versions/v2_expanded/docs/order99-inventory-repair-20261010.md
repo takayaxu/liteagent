@@ -1,5 +1,7 @@
 # Order 99：清单发现与跨文件对照修复
 
+> 2026-10-10 入口核对：Order 99 本轮批次为 FAIL；最新已核对运行为 PASS。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)。下文是本文件所述运行的记录，历史路径不作为最新入口。
+
 ## 原始失败证据
 
 题目 ID：`337d318b-aa07-4f4f-b763-89d9a2dd013f`。人工完整查看原始任务定义、用户指令、45 步事件、45 份模型请求、调用日志、verification 与 evaluator 产物；题目要求对照发票和银行流水，把不匹配的发票移入用户指定目录。

@@ -1,5 +1,7 @@
 # Codex source development experiment — 2026-09-18
 
+> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99 后续单题 PASS；102、107、108 最新仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
+
 User authorized a source-based Codex test version with automatic incremental
 compilation through `cargo run`. This is a separate development experiment;
 previous evaluation and repair queues remain paused.
@@ -158,6 +160,8 @@ evaluators returned 0. The newly frozen affected-task retries and their outcomes
 
 ### Order 99 Invoice Discrepancy (2026-09-24)
 
+> Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
+
 Order 99 passed the original evaluator with `status=passed` and `reward=1.0`.
 The model extracted the four PDFs, created `~/problematic`, and copied the
 invoice artifacts; the evaluator verified the required
@@ -183,6 +187,8 @@ Result: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-
 
 ### Order 95 PDF Authors (2026-09-24 backfill)
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 Order 95 (`b5062e3e-641c-4e3a-907b-ac864d2e7652`) remains **blocked/failed**.
 The final completed local-Qwen retry (`retry8`) returned `status=failed`,
 `reward=0.0`, and `termination_reason=stalled_no_progress`; the earlier
@@ -207,11 +213,15 @@ HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/pytho
 
 ### Order 95 PDF Authors (2026-09-25 repair and PASS)
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 Retry20 passed the original OSWorld evaluator with `status=passed`, `reward=1.0`, and `agent_done`. The minimal repair requires deterministic in-memory assembly after observation: each output row must preserve the same PDF's observed first author, complete email, and complete affiliation; invalid placeholders, guessed/cross-document email values, shortened affiliations, and the `Email` header for an `e-mail` request are rejected without rereading the PDF. The public API replacement remains the two independent generic actions `os.pdf.extract_text_batch` followed by `libreoffice_calc.workbook.create_new`; no combined parser or task route was added.
 
 Implementation commit: `9361c0d` (`fix(order95): validate evidence-derived author assembly`). Focused test: `test_batch_table_stage.py` **58 passed**. The actual retry20 command and evidence paths are recorded in `API_SPLIT_TASK.md`.
 
 ### Order 96 Spreadsheet-to-Writer Transfer (2026-09-24 backfill)
+
+> Order 96 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-96)；本节保留其原始日期与实验条件。
 
 Order 96 (`00fa164e-2612-4439-992e-157d019a8436`) has one historical
 original-evaluator **PASS**: attempt 76 finished with `reward=1.0`,
@@ -235,6 +245,8 @@ PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$
 ```
 
 ### Order 107 ECS Rates (2026-09-29)
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 **最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 
@@ -266,6 +278,8 @@ The adapter call trace is in
 `src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl`.
 
 ### Order 107 endpoint rerun (2026-10-02)
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 **最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 

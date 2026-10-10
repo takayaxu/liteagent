@@ -1,5 +1,7 @@
 # Order 91 工具搜索最小修复（2026-10-10）
 
+> 2026-10-10 入口核对：Order 91 本轮批次为 FAIL；最新已核对运行为 PASS。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)。下文是本文件所述运行的记录，历史路径不作为最新入口。
+
 ## 最新单题结果入口
 
 **PASS / reward=1.0**，`termination_reason=agent_done`，5 步，471.024 秒。运行开始于北京时间 2026-10-10 21:15:54；工具事件区间为 21:21:37.448572–21:23:07.063318（Asia/Shanghai）。耗时包含初始化/部署等阶段，工具事件区间不等于完整运行耗时。

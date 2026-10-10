@@ -1,5 +1,7 @@
 # liuxv：大粒度 API 拆分任务
 
+> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99 后续单题 PASS；102、107、108 最新仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
+
 工作分支：`codex/api-split-liuxv`
 
 完整复查见 [`docs/api-granularity-audit-20260920.md`](docs/api-granularity-audit-20260920.md)。实际执行边界以 [`task.md`](task.md) 的 28 道固定 Order 为准；除原 Calc、Impress、Writer、Thunderbird 范围外，还包括 `os.pdf.extract_text_batch` 的完整六题组。
@@ -76,6 +78,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 60 开发记录（2026-09-22）
 
+> Order 60 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-60)；本节保留其原始日期与实验条件。
+
 - 题目：`e4ef0baf-4b52-4590-a47e-d4d464cca2d7`；本地缓存输入为
   `src/third_party/OSWorld/cache/e4ef0baf-4b52-4590-a47e-d4d464cca2d7/42_2.pptx`。
 - API replacement：本题仍保持两个独立 mutation，`shape.set_geometry` 负责观察到的图片高度，`slide.format_text_roles` 负责目标页文本格式；没有新增或合并 API。新增的最小修复只收窄 terminal-audit 工具面：已通过的 `propose_done` 只再暴露对应的 `propose_done`（`fail_task` 同理），隐藏 `tools_search`、`presentation.inspect` 和其它 mutation，避免完成后的重复搜索/检查循环。
@@ -101,6 +105,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 67 开发记录（2026-09-22）
 
+> Order 67 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-67)；本节保留其原始日期与实验条件。
+
 - 题目：`0e47de2a-32e0-456c-a366-8c607ef7a9d2`；要求为每页左下角添加页码。复验使用 OSWorld 按原始 URL 命中的 UUID 前缀缓存 DOCX；该原始文件没有页脚，evaluator 回写文件与输入缓存相互独立。
 - API replacement：保留 `document.add_page_numbers`，公开参数仅为必填 `position`。已有原生页码字段只更新对齐、编号类型和 offset；缺少页码字段时在独立页脚段落创建。已有页脚文本、其它字段和未使用页样式保持不变，禁止破坏性 `clear_footer` 类参数。
 - 实现提交：`3d9b616cb172772683672474fd3be0f83b22b6da`（`writer: preserve footer when adding page numbers`）。本次当前源码复验不需要新增 Writer 代码提交。
@@ -124,6 +130,8 @@ $PYTHON -m ruff check <changed_python_files>
 - retry4：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。轨迹为 `document.add_page_numbers(position="bottom_left") -> document.inspect -> propose_done`，completion gate 通过且没有终止审计循环。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-page-numbers-67-split-retry4-20260922/workers/worker-00/results.json`。
 
 ## Order 68 开发记录（2026-09-22）
+
+> Order 68 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-68)；本节保留其原始日期与实验条件。
 
 - 题目：`0e763496-b6bb-4508-a427-fad0b6c3e195`；要求把全文字体改为 `Times New Roman`。输入从非官方镜像预取到 OSWorld 原始 URL 的 UUID 前缀缓存，DOCX SHA-256 为 `76d9039c2b6c86381cbcf1a87178c6c50bbcf9b1e3d651ddb6e9caa189988430`，ZIP 完整性检查通过；评测未访问 Hugging Face 官方站。
 - API replacement：P1 复核结论为保留 `document.set_font(font_name)`，不再拆分。它只接受一个必填字体族字符串，一次调用只表达一条全文字体规则；worker 对正文和表格文本统一写入 `CharFontName`、`CharFontNameAsian`、`CharFontNameComplex`，并通过 `fonts` 原生回读验证。旧 opaque `params` wrapper 已由直接 `font_name` schema 取代，没有第二个同义 action。
@@ -150,6 +158,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 81 开发记录（2026-09-22）
 
+> Order 81 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-81)；本节保留其原始日期与实验条件。
+
 - 题目：`d53ff5ee-3b1a-431e-b2be-30ed2673079b`；要求把 Writer 文档中的全部大写文本转换为小写。输入和 golden 只从本地镜像缓存读取；输入 SHA-256 为 `26932140b262b8886b42d82e3a8acd1e48a4c9c97abe803791e9cf1ab10d3ce8`，golden SHA-256 为 `4bf3cec92ae61e1263f4bd54131c03ec90f6dbc8f70159a3a1fdc6be10cfc19a`，两者均通过 ZIP 完整性检查。
 - API replacement：P1 复核结论为保留 `document.transform_case(mode)`，不拆分 action。`mode` 严格且仅允许 `lower` 或 `title`，一次调用只选择一条互斥的全文同构大小写规则，不含操作数组、范围选择或第二个独立副作用。运行时在自动保存前对正文和表格段落逐项原生回读；任一写入未持久化即返回 `VERIFICATION_FAILED`。
 - 实现提交：`3d98fd27363b13d79754f6af09fd9367e875ae3b`（`fix(order81): verify whole-document case transforms`）。
@@ -174,6 +184,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 当前结果：`status=passed`、`reward=1.0`、`path_class=generic_api_only`；原始 `compare_docx_files` evaluator 返回 `1.0`。第 1 步即调用 `document.transform_case(mode="lower")`，Adapter 返回 `paragraphs_changed=14`、`paragraphs_verified=18` 并成功保存，随后 `document.inspect` 回读为小写。模型之后重复检查并以 `termination_reason=stalled_no_progress` 收尾，但结果文档仍与 golden 匹配。结果见 `src/adapter_versions/v2_expanded/experiments/local-writer-transform-case-81-20260922/workers/worker-00/results.json`。
 
 ## Order 83 开发记录（2026-09-22）
+
+> Order 83 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-83)；本节保留其原始日期与实验条件。
 
 - 题目：`e528b65e-1107-4b8c-8988-490e4fece599`；要求把 Writer 文档中每个单词的首字母改为大写。输入和 golden 只从本地镜像缓存读取；输入 SHA-256 为 `b7a84074837e33be184bac095e0c6824bd818a79791c3358ef2cdcd352f046b4`，golden SHA-256 为 `6b2a1968cd8ba4a91ebf122d11a6168ffdc9fec314e1641b8f635fe7644ad74b`，两者均通过 ZIP 完整性检查。
 - 历史与本题判断：历史 recovery 轨迹已证明模型实际选择 `document.transform_case(mode="title")`；该 action 与 Order 81 的 `lower` 共用同一窄契约和同构全文事务，因此本题不新增、不拆分 API。新增 title-case focused 用例只验证通用的首个英文字母转换和原生回读。
@@ -201,6 +213,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 91 开发记录（2026-09-22）
 
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
+
 - 题目：`d9b7c649-c975-4f53-88f5-940b29c47247`；要求从 Thunderbird `daily` 文件夹提取最新 5 封邮件，按最早到最近排序，在桌面创建 `report.xlsx`，列出 `sender_name`、`sender_address`、`subject`、`CC`、`number_of_attachments`。题面、历史轨迹和最终轨迹均未向模型暴露题目 ID、golden 或 evaluator 内容。
 - 人工轨迹判断：历史失败依次暴露了邮件查询缺失、跨应用结果未保留、Calc 无新建工作簿入口，以及模型混淆“选最新”和“返回排序”。本题实际需要的独立 API 是 `thunderbird.messages.query` 和 `libreoffice_calc.workbook.create_new`；`range.write`、显式 save/save_as 均不是本题必须的额外 mutation。
 - API replacement：保留 `messages.query` 的单一查询契约，强化 `select_from` 与 `order` 的正交语义；新增通用边界校验，指令要求 latest/most-recent 时拒绝 `select_from="earliest"`，要求下一次用 `select_from="latest"`，不改写模型参数、不注入邮件数据。Calc 使用已有 `workbook.create_new`，一次以模型提供的 headers/rows 创建并保存工作簿；未新增宏 API。
@@ -223,6 +237,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 当前结果：`status=passed`、`reward=1.0`。模型先因矛盾的 `select_from="earliest"` 被通用语义校验拒绝，随后用 `select_from="latest"`、`order="ascending"` 查询并用 `workbook.create_new` 写入 5 行和 5 个表头；Adapter 返回 `A1:E6`、30 个单元格并确认已保存。结果见 `src/adapter_versions/v2_expanded/experiments/local-mail-report-91-retry4-20260922/workers/worker-00/results.json`，调用轨迹见同目录 `raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/adapter_calls.jsonl`。
 ## Order 95 开发记录（2026-09-25 修复后）
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 - 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`。retry20 只执行一次 `os.pdf.extract_text_batch`，随后调用 `libreoffice_calc.workbook.create_new`，写入 4 篇 PDF 的首作者、完整邮箱和 affiliation；结果文件与 golden 完全一致。
 - 最小可行修复：在观察完成后，创建表格前校验模型组装的每个 tuple 必须来自同一 PDF 的首作者、完整邮箱和完整 affiliation；拒绝猜测邮箱、共同作者、截断 affiliation 和 `null/none/n/a`。对题面使用 “e-mail” 的表格，要求使用 `Name / Mail / Affiliation` 作为字段标题。校验只返回纠正提示，不替模型填值或跨文档拼接。
 - API replacement：保持两个独立 API：`os.pdf.extract_text_batch`（有界、只读观察）和 `libreoffice_calc.workbook.create_new`（模型提供 headers/rows 的原生工作簿创建与保存）。没有新增 PDF-to-workbook 组合 API，也没有任务专用 parser/route。
@@ -237,6 +253,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 证据：`src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00/results.json`；最终调用轨迹见同目录 `raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/adapter_calls.jsonl`。
 
 ### Order 102（2026-09-25）
+
+> Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
 - 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`；结果文件为
   `src/adapter_versions/v2_expanded/experiments/local-file-organize-102-20260925-retry7-20260925/workers/worker-00/results.json`。
@@ -257,6 +275,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 121（2026-09-27）
 
+> Order 121 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-121)；本节保留其原始日期与实验条件。
+
 - 题目：`f5c13cdd-205c-4719-a562-348ae5cd1d91`。题面要求从付款记录中识别未付款人员，并把对应地址加入已经打开的 Thunderbird 草稿收件人栏；原始题目、配置和历史失败审计见 `src/third_party/OSWorld/evaluation_examples/examples/multi_apps/f5c13cdd-205c-4719-a562-348ae5cd1d91.json`、`src/adapter_versions/v2_expanded/experiments/configs/generic-only-coverage-order121-v126.json` 及 `src/adapter_versions/v2_expanded/docs/project-progress.md` 的 Order 121 条目。
 - 人工轨迹判断：本题只有两个独立动作：`libreoffice_calc.workbook.read_file`（读取模型选定的本地表格）和 `thunderbird.compose.set_recipients`（编辑已打开草稿的 To 字段）。历史失败集中在模型没有先完成表格观察，或没有发现已有收件人编辑路由；没有出现 P0 候选的异构 mutation、批量独立设置或隐式写入。
 - API replacement：两项均保留，不新增组合 API。`workbook.read_file` 只读且限制路径、工作表/范围和行列窗口；需要已打开工作簿的精确单一区域时由模型另行调用 `range.read`。`compose.set_recipients` 只接收一组模型选定的纯地址，`append`/`replace` 仅选择同一 To 字段的状态迁移，支持可选已观察 subject 消歧；worker 只操作地址 pill 并逐项回读，禁止创建或发送消息。搜索目录已包含 spreadsheet/read-file 及 receiver/recipient/draft 术语，恢复面不会把这两个动作合并。
@@ -265,6 +285,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 单题结果：历史正式 Order 121 复跑在 `src/adapter_versions/v2_expanded/docs/project-progress.md` 的最终审计中记录为 evaluator **PASS / 1.0**（8 events，`compose.set_recipients` 追加四个模型选定地址，随后完成提议）；当前 checkout 未携带该历史运行的原始结果目录，因此本次仅复核冻结配置、题目定义、现有轨迹审计和当前契约测试，没有伪造新的 evaluator 结果或改写模型参数。
 
 ## Order 152（2026-09-27）
+
+> Order 152 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-152)；本节保留其原始日期与实验条件。
 
 - 题目：`9bc3cc16-074a-45ac-9bdc-b2a362e1daf3`；要求把收件箱全部邮件分别备份为 `.eml` 到用户指定目录。题目定义为 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/9bc3cc16-074a-45ac-9bdc-b2a362e1daf3.json`，历史 baseline/candidate 配置分别为 `generic-only-coverage-order152-v155.json` 和 `generic-only-coverage-order152-export-eml-schema-v156.json`。
 - 人工判断：本题只涉及 `thunderbird.messages.export_eml`。它是一个显式同构批处理事务：一次调用只选择一个可见文件夹和一个输出目录，Adapter 在当前 profile 中解析 mailbox 后逐封写出 `.eml`；输出目录已有 `.eml` 时 fail-closed，不删除或覆盖已有文件。因此按 P1 复核结论保留，不拆成逐邮件 API，也不增加题目专用路由。
@@ -275,6 +297,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 157（2026-09-28）
 
+> Order 157 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-157)；本节保留其原始日期与实验条件。
+
 - 题目：`3f49d2cc-f400-4e7d-90cc-9b18e401cc31`；要求在 Thunderbird 中启用 Unified Folders/unified inbox。完整题面来自 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/3f49d2cc-f400-4e7d-90cc-9b18e401cc31.json`。固定 coverage 配置为 `generic-only-coverage-order157-v158.json`；该配置没有保留可审计的原始运行轨迹，因此没有把缺失轨迹当作失败原因或答案证据。
 - 人工判断：本题只涉及原 `thunderbird.mail.configure` 中的 `unified_inbox` 语义。它应独立表达一个 folder-tree view mode mutation，并只更新 `xulstore.json` 的 `messenger.xhtml/folderTree/mode`；不应同时修改 prefs.js 或接受签名、回复引用、过滤器、主题等异构 setting。
 - API replacement：新增模型可见 `thunderbird.inbox.set_unified(enabled)`，并在 schema、runtime validation、dispatch、worker 默认 `json_path` verification 和 catalog action surface 中保持同名窄契约。旧 `mail.configure` 不再接受组合参数，返回带 replacement actions 的 `UNSUPPORTED_ACTION`。本题不新增 task-aware 路由或固定值以外的运行时逻辑。
@@ -282,6 +306,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 正式 OSWorld 单题结果：配置 `src/adapter_versions/v2_expanded/experiments/configs/formal-order157-20260928.json`，有效结果目录为 `src/adapter_versions/v2_expanded/experiments/local-order157-unified-inbox-20260928-rerun2/`。原始 evaluator `status=passed`、`reward=1.0`、`termination_reason=agent_done`，`result.txt` 为 `1.0`；模型实际调用 `inbox.set_unified(enabled=true)`，Adapter 通过 `xulstore.json` 的 `chrome://messenger/content/messenger.xhtml/folderTree/mode=smart` verification。完整轨迹位于 `src/adapter_versions/v2_expanded/experiments/local-order157-unified-inbox-20260928-rerun2/workers/worker-00/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/`，其中 `adapter_calls.jsonl` 保留实际调用证据；实际 served model 为 `Qwen3.5-9B-Q4_K_M`，thinking mode 为 `non_thinking`。
 
 ## Order 158（2026-09-29）
+
+> Order 158 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-158)；本节保留其原始日期与实验条件。
 
 - 题目：`f201fbc3-44e6-46fc-bcaa-432f9815454c`；要求关闭 Thunderbird 回复中的原文引用，使回复不再带缩进和 `>`。完整题面和 evaluator 定义来自 `src/third_party/OSWorld/evaluation_examples/examples/thunderbird/f201fbc3-44e6-46fc-bcaa-432f9815454c.json`。
 - 人工轨迹判断：本题只有一个 mutation，目标是现有 identity 的 `mail.identity.<identity>.auto_quote=false`。原组合入口 `mail.configure` 将签名、回复引用、过滤器、Unified Folders 和主题混在同一个 union；本题实际需要的最小 replacement 是 `identity.set_reply_quoting`，并先用只读 `identities.query` 获取精确 profile identity。没有新增题目专用路由或固定答案。
@@ -295,6 +321,8 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 - 2026-10-03 endpoint 重跑：使用冻结配置 `src/adapter_versions/v2_expanded/experiments/configs/formal-order158-20261003.json`，将 `base_url` 切换为 `https://qwen.jinmaoapi.cc.cd/v1`。结果位于 `src/adapter_versions/v2_expanded/experiments/formal-order158-20261003-retry3/workers/worker-00/results.json`，完整轨迹位于同目录 `raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/`；模型调用链为 `identities.query -> identity.set_reply_quoting(identity="id1", enabled=false) -> DONE`，Adapter verification 通过，正式 evaluator `status=passed`、`reward=1.0`、`termination_reason=agent_done`、`path_class=generic_api_only`。此前 `formal-order158-20261002-retry2` 的 `model_protocol_failure` 保留为未评分重跑，不影响本 PASS。
 ## Order 160 开发记录（2026-09-29）
+
+> Order 160 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-160)；本节保留其原始日期与实验条件。
 
 - 题目：`08c73485-7c6d-4681-999d-919f5c32dcfa`；要求让 Thunderbird 现有消息过滤器自动应用到 IMAP 子文件夹。
 - API replacement：使用单一 `filters.set_subfolder_application(enabled)`；本题不需要 `filters.configure`。修正通用 Thunderbird 意图识别，避免把“应用现有过滤器到子文件夹”误判为新增具体规则。
@@ -320,6 +348,8 @@ $PYTHON -m ruff check <changed_python_files>
   ```
 
 ## Order 107 开发记录（2026-10-02 endpoint rerun）
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 **最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 
@@ -349,6 +379,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 91 — 本轮 FAIL
 
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
+
 - 修复前失败事件入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题失败日志](src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md)。最新单题结果见下方搜索修复 PASS。
 - Task ID：`d9b7c649-c975-4f53-88f5-940b29c47247`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，644.449 秒；`termination_reason=null`、`terminated_by_agent=false`。
@@ -357,6 +389,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
 
 ### Order 91 — 后续搜索修复 PASS（2026-10-10）
+
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
 
 - 本轮失败根因已核实：45 步全为相同的 Thunderbird 工具搜索，邮件工具虽然注册但被全题关键词触发的文件/Calc 排名加分挤出前六项，未执行任何邮件查询或表格创建。
 - 最小修复：Multi-Apps 搜索优先排列当前查询明确指定的应用及操作名称匹配；未指定应用的搜索保留原排序。API 保留，无新增任务专用逻辑。实现提交：`84a3a4c`。
@@ -367,6 +401,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 99 — 本轮 FAIL
 
+> Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
+
 - 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md)。
 - Task ID：`337d318b-aa07-4f4f-b763-89d9a2dd013f`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，475.856 秒；`termination_reason=null`、`terminated_by_agent=false`。
@@ -375,6 +411,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
 
 ### Order 102 — 本轮 FAIL
+
+> Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
 - 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[单题最新失败索引](src/adapter_versions/v2_expanded/docs/order102-latest-failure-20261010.md)。此前 classification-check 为历史运行。
 - Task ID：`869de13e-bef9-4b91-ba51-f6708c40b096`；应用：`multi_apps`。
@@ -385,6 +423,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 107 — 本轮 FAIL
 
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
+
 - 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order107-latest-failure-20261010.md)。
 - Task ID：`881deb30-9549-4583-a841-8270c65f2a17`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，505.698 秒；`termination_reason=null`、`terminated_by_agent=false`。
@@ -394,6 +434,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 108 — 本轮 FAIL
 
+> Order 108 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-108)；本节保留其原始日期与实验条件。
+
 - 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order108-latest-failure-20261010.md)。
 - Task ID：`7e287123-70ca-47b9-8521-47db09b69b14`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，657.675 秒；`termination_reason=null`、`terminated_by_agent=false`。
@@ -402,6 +444,8 @@ $PYTHON -m ruff check <changed_python_files>
 - 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
 
 ## Order 99 本轮修复（2026-10-10）
+
+> Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
 
 - 保留 fixed-28 最新原始 FAIL：45 步工具搜索、0 个 Adapter 调用、reward=0.0。完整人工诊断及单题修复见 [Order 99 记录](src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md)。
 - 本题增量：解释 inventory 前置条件并消费发现工具；初始清单全量枚举所选来源目录；对照参考内容跨对象保留；统一 checker retain 目录契约；移动拒绝后重新分类；retain 路径绑定当前对象。保留有界只读 `os.pdf.extract_text_batch`，不新增大粒度 API。

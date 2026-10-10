@@ -1,4 +1,6 @@
-# Order 91：本轮最新失败轨迹（2026-10-10）
+# Order 91：固定 28 题批次失败轨迹（2026-10-10）
+
+> 2026-10-10 入口核对：Order 91 本轮批次为 FAIL；最新已核对运行为 PASS。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)。下文是本文件所述运行的记录，历史路径不作为最新入口。
 
 **后续单题已修复并正式 PASS / reward=1.0。** 最新结果见 [Order 91 单题日志](order91-query-priority-fix-20261010.md) 与 [results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json)。下面保留修复前最新失败证据；文件名中的 latest-failure 仅指失败记录。
 

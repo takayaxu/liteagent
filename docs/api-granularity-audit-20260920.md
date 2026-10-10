@@ -1,5 +1,7 @@
 # 公开 API 粒度复查与拆分清单
 
+> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99 后续单题 PASS；102、107、108 最新仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
+
 日期：2026-09-20
 
 ## 结论
@@ -214,6 +216,8 @@ P1 默认不改代码。只有源码证据证明它包含独立决策或异构 m
 
 ## Order 60 Staging Receipt (2026-09-21)
 
+> Order 60 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-60)；本节保留其原始日期与实验条件。
+
 Order 60 (`e4ef0baf-4b52-4590-a47e-d4d464cca2d7`) retains two independent API
 mutations: `shape.set_geometry` for the observed picture height on slide 3 and
 `slide.format_text_roles` with `roles=["all"]` for slide 6. No new Adapter action,
@@ -285,6 +289,8 @@ does not regress the requested picture-to-text staging.
 
 ### Order 60 Final Staging Surface (2026-09-22)
 
+> Order 60 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-60)；本节保留其原始日期与实验条件。
+
 The two independent mutation APIs remain unchanged: `shape.set_geometry` and
 `slide.format_text_roles`. Commit `7f0d519` adds one-shot post-mutation inspect
 stages and save gating. Commit `4b682a5` prevents a saved, Adapter-verified
@@ -316,6 +322,8 @@ was added.
 
 ### Order 60 Terminal-Audit Repair (2026-09-22)
 
+> Order 60 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-60)；本节保留其原始日期与实验条件。
+
 The API replacement remains unchanged: `shape.set_geometry` and
 `slide.format_text_roles` are still two independent mutations. Commit
 `57d69d3ea127154034cc87ce495914dd225e80b1` changes only the post-completion
@@ -336,6 +344,8 @@ original Order 60 evaluator with `status=passed`, `reward=1.0`, and
 
 ### Order 99 API State (2026-09-24)
 
+> Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
+
 Order 99 is **PASS** (`reward=1.0`). The public generic flow remains split into
 three bounded operations: `os.pdf.extract_text_batch` for observation,
 `os.filesystem.create_directory` for destination preparation, and
@@ -353,6 +363,8 @@ Implementation commit: `97adcf2`.
 Evidence: `src/adapter_versions/v2_expanded/experiments/local-invoice-discrepancy-99-retry8-20260924/workers/worker-00/results.json`.
 
 ### Order 95 API State (backfilled 2026-09-24)
+
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
 
 Order 95 is **BLOCKED/FAIL**. The final completed local-Qwen retry returned
 `reward=0.0` with `termination_reason=stalled_no_progress`; the generic
@@ -377,6 +389,8 @@ HF_ENDPOINT=https://hf-mirror.com /var/lib/liteagent-shared/python-env/bin/pytho
 
 ### Order 96 API State (backfilled 2026-09-24)
 
+> Order 96 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-96)；本节保留其原始日期与实验条件。
+
 Order 96 has a historical original-evaluator **PASS** (`reward=1.0`,
 `agent_done`, 14 steps; result SHA-256
 `36fd81b0da7591e3c9979ba1f5aa21dbe8d17cf21fefec7e9fbeddcb0fb26b90`). The
@@ -397,6 +411,8 @@ PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$
 ```
 ### Order 95 API State (validated 2026-09-25)
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 Order 95 now **PASS** after the minimal evidence-assembly repair. The final local-Qwen retry20 returned `status=passed`, `reward=1.0`, and `termination_reason=agent_done`. The result is preserved at `src/adapter_versions/v2_expanded/experiments/local-pdf-authors-95-retry20-20260925/workers/worker-00/results.json`.
 
 The API state remains intentionally split and generic:
@@ -410,6 +426,8 @@ For the task wording `e-mail`, the generic correction requires the concise `Mail
 Implementation commit: `9361c0d` (`fix(order95): validate evidence-derived author assembly`). Focused check: `58 passed` in `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`; `git diff --check` passed. The exact local-mirror/Qwen validation command is recorded in `API_SPLIT_TASK.md` under the Order 95 repair entry.
 
 ### Order 102 API State (2026-09-25)
+
+> Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
 Order 102 is **PASS** (`reward=1.0`, `agent_done`). The API state remains split:
 `os.filesystem.find(kind=any)` observes files and directories, optional
@@ -427,6 +445,8 @@ the integration owner should merge it.
 
 ### Order 121 API State (2026-09-27)
 
+> Order 121 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-121)；本节保留其原始日期与实验条件。
+
 Order 121 is **PASS** in the preserved historical audit (`src/adapter_versions/v2_expanded/docs/project-progress.md`, the final Order 121 entry). The task uses the existing narrow pair `libreoffice_calc.workbook.read_file` and `thunderbird.compose.set_recipients`. Neither action is a P0 candidate: the Calc operation is bounded read-only observation, while the Thunderbird operation changes only the already-open compose window's To recipient pills and verifies the resulting accessibility state. `append` and `replace` choose the state transition for that one field; they do not combine independent mail settings, create a draft, or send it.
 
 The current contract keeps the two decisions model-visible and sequential. The spreadsheet reader requires an explicit local path and bounds sheet/range and row/column windows; `range.read` remains the separate choice for an already-open workbook and a single contiguous rectangle. The recipient action requires a non-empty model-selected address array, optionally takes an observed exact subject for compose-window disambiguation, and performs native read-back after each address. Search/recovery checks cover both `workbook.read_file` and `compose.set_recipients`; no task-aware route, answer derivation, or combined spreadsheet-to-mail action was added.
@@ -434,6 +454,8 @@ The current contract keeps the two decisions model-visible and sequential. The s
 Focused validation on the current checkout passed **156 tests** across recovery surface, active-workbook discovery, spreadsheet-open semantics, and the existing mail selector contract. The historical final audit recorded 8 events and evaluator reward `1.0`; its raw result directory is not present in this source snapshot, so this entry does not claim a new evaluator run.
 
 ### Order 157 API State (2026-09-28)
+
+> Order 157 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-157)；本节保留其原始日期与实验条件。
 
 Order 157's instruction is to enable Thunderbird's unified inbox view. The required
 replacement is the single-setting `thunderbird.inbox.set_unified(enabled)` action.
@@ -460,6 +482,8 @@ declared by the frozen condition; it did not alter or invalidate the preserved P
 
 ### Order 158 API State (2026-09-29)
 
+> Order 158 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-158)；本节保留其原始日期与实验条件。
+
 Order 158 requires disabling quoted original text in replies. The task uses the
 single-setting `thunderbird.identity.set_reply_quoting(identity, enabled)` action,
 with a preceding read-only `identities.query` to obtain the exact profile identity.
@@ -481,6 +505,8 @@ preserved in `src/adapter_versions/v2_expanded/experiments/formal-order158-20261
 it produced the same verified two-action chain and formal evaluator
 `status=passed`, `reward=1.0`, `termination_reason=agent_done`.
 ### Order 160 API State (2026-09-29)
+
+> Order 160 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-160)；本节保留其原始日期与实验条件。
 
 Order 160 asks Thunderbird to apply existing incoming message filters
 automatically on IMAP subfolders. The task uses the single-setting
@@ -508,6 +534,8 @@ and `result.txt` contains `1.0`. Focused mail contract validation passed 34
 tests and the changed Python files passed Ruff.
 
 ### Order 107 API State (2026-09-29)
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 **最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 
@@ -540,6 +568,8 @@ Focused contract validation: `86 passed` in
 `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`.
 
 ### Order 107 endpoint rerun (2026-10-02)
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 **最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 
@@ -581,6 +611,8 @@ endpoint/configuration and produced no new API surface.
 
 ### Order 91 后续单题修复与正式 PASS（2026-10-10）
 
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
+
 最新单题结果为 **PASS / reward=1.0**：`osworld-order91-qwen-20261010-query-priority`，5 步、471.024 秒、`termination_reason=agent_done`。首次/末次工具事件分别为北京时间 21:21:37、21:23:07。原始批次的 23/28 与本题 FAIL/0.0 保留；这次单题复跑单独记账。
 
 失败根因已从完整轨迹确认：45 步均重复同一 Thunderbird 搜索，公开库中存在 `messages.query`，但全题关键词触发的文件/Calc 排名加分将其挤出前六项。实现提交 `84a3a4c` 仅调整 Multi-Apps 搜索排序，优先当前查询明确指定的应用及操作名称匹配。`thunderbird.messages.query` 与 `libreoffice_calc.workbook.create_new` 继续保留原 API 契约，无新增 action 或题目专用逻辑。8 项临时定向 contract 检查、Ruff 和差异检查通过。
@@ -596,5 +628,7 @@ Chrome/GIMP/OS/VS Code/VLC 共 **11 个历史大粒度入口**仍可通过 stric
 先前 107/108 中“没有题目专用解析/组合”的历史描述不能代表当前工作区；当前固定领域解析及参数替换未通过本次通用性复审。原始 evaluator PASS 不替代 API 粒度审查。源码与原始实验保持不变。完整证据、位置与处理建议见 [复审报告](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.md)，公开清单及工具 schema 见 [复审快照](../src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.json)。
 
 ### Order 99：最新 FAIL 的单题修复（2026-10-10）
+
+> Order 99 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-99)；本节保留其原始日期与实验条件。
 
 本轮 45 步纯工具搜索的 FAIL 已按完整模型请求诊断，并在单题重跑中取得 evaluator PASS。保留 `os.pdf.extract_text_batch` 作为有界只读观察，保留显式发现和单对象移动；收窄整理的初始清单参数，同步模型 schema/运行时 validation，并修复对照证据保留、retain 目录契约和拒绝后的恢复。没有新增大粒度 API、golden、任务 ID 路由或答案。完整验证与评分限制、每次结果、增量补丁及共享工作区集成边界见 [Order 99 修复记录](../src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md)。

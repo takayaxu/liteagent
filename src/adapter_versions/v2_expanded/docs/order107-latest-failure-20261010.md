@@ -1,4 +1,6 @@
-# Order 107：本轮最新失败轨迹（2026-10-10）
+# Order 107：固定 28 题批次失败轨迹（2026-10-10）
+
+> 2026-10-10 入口核对：Order 107 本轮批次为 FAIL；最新已核对运行为 FAIL。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)。下文是本文件所述运行的记录，历史路径不作为最新入口。
 
 本记录对应固定 28 题测试批次 `osworld-api-split-test-only-20261010-resume1` 的 Order 107，**FAIL / reward=0.0**。其他独立运行或历史 PASS 不代表本轮结果。
 

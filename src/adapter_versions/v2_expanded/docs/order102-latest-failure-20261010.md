@@ -1,4 +1,6 @@
-# Order 102：本轮最新失败轨迹（2026-10-10）
+# Order 102：固定 28 题批次失败轨迹（2026-10-10）
+
+> 2026-10-10 入口核对：Order 102 本轮批次为 FAIL；最新已核对运行为 FAIL。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)。下文是本文件所述运行的记录，历史路径不作为最新入口。
 
 本记录对应固定 28 题测试批次 `osworld-api-split-test-only-20261010-resume1` 的 Order 102，**FAIL / reward=0.0**。此前 `osworld-order102-qwen-20261010-classification-check` 及 retry1–retry8 是历史分类检查运行，不是本轮失败轨迹。
 

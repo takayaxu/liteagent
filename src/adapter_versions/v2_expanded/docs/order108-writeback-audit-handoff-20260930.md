@@ -1,5 +1,7 @@
 # Order 108 写回审计与集成交接
 
+> 2026-10-10 入口核对：Order 108 本轮批次为 FAIL；最新已核对运行为 FAIL。[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl)；[完整批次与后续记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-108)。下文是本文件所述运行的记录，历史路径不作为最新入口。
+
 ## 本轮最新失败入口（2026-10-10）
 
 后续固定 28 题批次 Order 108 为 **FAIL / reward=0.0**，45 步，657.675 秒。完整本轮轨迹、评分和原始文件哈希见 [单题最新失败日志](order108-latest-failure-20261010.md)。本文以下内容是此前独立运行/修复历史，不代表本轮最新结果。

@@ -1,8 +1,12 @@
 # Project Progress
 
+> 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99 后续单题 PASS；102、107、108 最新仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
+
 Updated: 2026-10-10
 
 ## 2026-10-10 Order 91 query priority repair passes the original evaluator
+
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
 
 The isolated `osworld-order91-qwen-20261010-query-priority` run passed with
 reward 1.0, 5 tool events, 471.024 seconds, and agent_done. Tool events span
@@ -2806,6 +2810,8 @@ any replay; no next attempt is launched. Counts remain **26 isolated PASS, 18 sk
 
 ## 2026-09-13 16:14 UTC Order 91 numeric-cell usage replay running
 
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
+
 Only the existing `workbook.create_new.rows` description changed: JSON numbers create numeric cells,
 quoted digits remain text, and quantities should retain source numeric types while identifiers retain
 text. The example is synthetic `["item", 7, "007"]`. Direct/forwarded schemas accept that mixed row and
@@ -2830,6 +2836,8 @@ Only **Order 91** is retesting/running. Counts: **26 isolated PASS, 18 skips, 70
 no regression/control or further full evaluation.
 
 ## 2026-09-13 16:08 UTC Order 89 GUI-only PASS; next Order 91
+
+> Order 91 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-91)；本节保留其原始日期与实验条件。
 
 Attempt **69** finalized `2026-09-13T16:05:23.668768+00:00` as original-evaluator **passed / reward1**,
 11 steps / 520.817 seconds, `agent_done`, **gui_only**, zero completion rejections. Supervisor **57014** /
@@ -4158,6 +4166,8 @@ episode. Its [preserved triage](../experiments/work/all-holo-order57-triage-2026
 
 ## 2026-09-13 08:50 UTC Order 54 actual-deleted-object receipt repair launched
 
+> Order 54 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-54)；本节保留其原始日期与实验条件。
+
 Native `shape.delete` feedback now records the object's actual identity before removal, owning slide,
 unchanged requested selector and index-shift guidance while retaining the existing remaining count.
 Owning usage advises keeping slide/selector observations aligned. Native removal and model target choices
@@ -4182,6 +4192,8 @@ Only **Order 54 is retesting/running**. Counts are **21 isolated PASS, 8 skips, 
 pointer remain unchanged. No regression/control, new gate or additional full evaluation was added.
 
 ## 2026-09-13 08:44 UTC Order 46 recovered PASS; Order 54 selected
+
+> Order 54 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-54)；本节保留其原始日期与实验条件。
 
 Attempt **44** finalized at `2026-09-13T08:42:52.431306+00:00` as original-evaluator **PASS**, reward
 **1.0**, six event steps / 168.024 seconds, `agent_done`, with one completion rejection. Supervisor PID
@@ -5057,6 +5069,8 @@ baseline pointer remain unchanged; no regression/control episode, new gate, prom
 
 ## 2026-09-13 03:08 UTC Order 20 direct-transport single-task attempt launched
 
+> Order 20 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-20)；本节保留其原始日期与实验条件。
+
 Original Order 20 completed a model-selected 28-cell text transformation and recovered from explicit
 save-filter errors, but request 8 then exhausted three public-Holo1 HTTP 524 attempts before another proposal.
 The preserved trace demonstrates no new execution/error-delivery defect. This current-task replay adds no
@@ -5079,6 +5093,8 @@ regression episode, new source/test change, gate, promotion or full evaluation w
 95/189 remains immutable. See the [Order 20 report](archive/all-holo-order20-direct-transport-retest-20260913.md).
 
 ## 2026-09-13 03:02 UTC Order 19 scored failure and documented skip; Order 20 selected
+
+> Order 20 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-20)；本节保留其原始日期与实验条件。
 
 Attempt 25 finalized at `2026-09-13T02:59:50.891539+00:00` as original-evaluator **failed**, reward **0.0**,
 26 steps / 336.425 seconds, `stalled_no_progress`. Supervisor PID 25686 and worker PID 25696 both exited
@@ -6162,6 +6178,8 @@ The immutable full-run result stays **95/189** and the promoted baseline pointer
 
 ## 2026-09-12 19:47 UTC Order 42 compatibility repair frozen; affected-only retest launched
 
+> Order 42 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-42)；本节保留其原始日期与实验条件。
+
 The existing completion path now recognizes the declared successful plural role-format action alongside its
 singular form. Focused verification passes 24 tests and Ruff; offline replay of the preserved trajectory
 leaves only save/read-back requirements at step 9 and accepts the saved/read-back state at step 45.
@@ -6230,6 +6248,8 @@ The full run continues with unchanged source. New isolated all-Holo PASS remains
 
 ## 2026-09-12 Order 108 file-read repair complete; retest awaits Qwen service
 
+> Order 108 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-108)；本节保留其原始日期与实验条件。
+
 The latest preserved episode received all 8583 source characters from the
 Adapter but exposed only 3228 to the model. Repeatedly increasing the API
 limit could not repair the downstream 4200-character context cap. The repair
@@ -6254,6 +6274,8 @@ integrated reference and promoted pointer remain unchanged. See the
 [Order 108 report](archive/hybrid-order108-text-window-20260912.md).
 
 ## 2026-09-12 Order 107 native PDF and listener repairs retained; task skipped
+
+> Order 107 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-107)；本节保留其原始日期与实验条件。
 
 Two prior header-projection probes were negative. A new offline check now
 shows that default native PDF detection preserves complete rows, columns
@@ -6319,6 +6341,8 @@ unchanged. See the
 [Order 106 report](archive/hybrid-order106-source-recheck-20260912.md).
 
 ## 2026-09-12 Order 102 filename loss repaired; classification still failed; task skipped
+
+> Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
 Order 102's existing exact-path move API lacked ordinary catalog synonyms;
 the small metadata repair passes 34 discovery/rename-contract checks.
@@ -6537,6 +6561,8 @@ will be restored. Do not repeat Order 2 unchanged.
 
 ## 2026-09-11 Order 95 stopped after shared sanitizer repair
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 Final v5 reached `agent_deadline_exhausted` after 36 actions / 1933.567
 seconds including setup, with final integrity `ok`, worker exit 0, and no
 evaluator result. The first four-file and later long PDF windows were visible
@@ -6550,6 +6576,8 @@ No full-run numerator, gate, baseline or promotion changed.
 
 ## 2026-09-11 Order 95 shared sanitizer repair ready for final verification
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 V4 was intentionally interrupted after 23 actions / 947.49 seconds, reward
 null, with no evaluator or final integrity result. The context projection
 layer no longer hid the first read, but the separate `safety.py` result
@@ -6561,6 +6589,8 @@ new-seal affected-only v5 attempt, then stop this task if it does not pass.
 See the [Order 95 report](archive/hybrid-order95-pdf-reader-retest-20260911.md).
 
 ## 2026-09-11 Order 95 context repair reached evaluator, then found sanitizer false positive
+
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
 
 V3 completed normally with integrity `ok` and reward 0.0 after 54 steps /
 1885.055 seconds. It created the correct four-row sorted workbook. The
@@ -6578,6 +6608,8 @@ No baseline, full run, gate, commit or promotion change.
 
 ## 2026-09-11 Order 95 inherited-window metadata correction
 
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
+
 V2 saw the previously missing email, then lost it on the next context rebuild.
 Stop and preserve the run as interrupted, reward null, 507.059 seconds;
 both processes exited before edits, with no evaluator or final integrity
@@ -6591,6 +6623,8 @@ Recent isolated passes +7, skips +9, current task 95; no new task PASS,
 regression episode, gate, full run, commit or promotion.
 
 ## 2026-09-11 Order 95 complete-window context repair
+
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
 
 The first affected attempt found and executed the PDF reader, but actual
 model requests lost the middle of an 8000-character single-file read. Stop
@@ -6606,6 +6640,8 @@ Recent isolated passes +7, skips +9, current task 95; no new task PASS yet,
 gate, regression episode, full run or change to either baseline reference.
 
 ## 2026-09-11 Order 95 PDF reader usage repair
+
+> Order 95 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-95)；本节保留其原始日期与实验条件。
 
 Select original failed Order 95 after reconciling existing PASS evidence and
 earlier closed investigations. Its preserved September 6 trace reads only
@@ -11628,6 +11664,8 @@ conditions. They do not override the current repair source in
 
 ## 2026-09-21 Order 59 imported Impress title formatting passed
 
+> Order 59 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-59)；本节保留其原始日期与实验条件。
+
 Order **59**, task `4ed5abd0-8b5d-47bd-839f-cacfa15ca37a`, required: `Set the color of titles in slides 2,3,5 as black and underline them.`
 The completed run is recorded at
 `experiments/local-impress-multislide-title-59-retry12-20260921/workers/worker-00/results.json` and finished with
@@ -11684,6 +11722,8 @@ the audit record and are unchanged; this backfill covers the missing development
   `PYTHONPATH="$PWD/src/adapter_versions/v2_expanded:$PWD/src/third_party/OSWorld:$PWD/src" /var/lib/liteagent-shared/python-env/bin/python src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py --config src/adapter_versions/v2_expanded/experiments/configs/local-impress-personal-cleanup-54-current-20260921.json --orders 54 --result-dir src/adapter_versions/v2_expanded/experiments/local-impress-personal-cleanup-54-current-retry15-20260921/workers/worker-00 --base-url https://qwen.jinmaoapi.cc.cd/v1 --max-steps 40 --max-local-steps 20 --max-soft-restarts 1 --max-no-progress-steps 8 --max-agent-seconds 420 --max-output-tokens 512 --reasoning-mode non_thinking --temperature 0 --request-timeout 180`.
 
 ## 2026-09-21 Order 60 picture-to-text staging repair
+
+> Order 60 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-60)；本节保留其原始日期与实验条件。
 
 Order **60**, task `e4ef0baf-4b52-4590-a47e-d4d464cca2d7`, requires two independent mutations:
 `shape.set_geometry` for the observed picture on slide 3 and `slide.format_text_roles` with
@@ -11798,6 +11838,8 @@ evidence is preserved at
 `experiments/local-impress-picture-text-60-retry13-20260922/`.
 
 ## Order 102 开发记录（2026-09-25）
+
+> Order 102 的本轮结果及最新轨迹见 [统一入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md#order-102)；本节保留其原始日期与实验条件。
 
 Order **102**, task `869de13e-bef9-4b91-ba51-f6708c40b096`, passed the original
 OSWorld evaluator with `reward=1.0`, `status=passed`, and

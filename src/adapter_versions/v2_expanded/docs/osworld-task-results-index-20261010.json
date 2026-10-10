@@ -1,0 +1,1240 @@
+{
+  "checked_date": "2026-10-10",
+  "scope": "fixed 28-task batch and later manifest-backed top-level experiment results",
+  "batch_passed": 23,
+  "batch_failed": 5,
+  "tasks": [
+    {
+      "order": 20,
+      "task_id": "a9f325aa-8c05-4e4f-8341-9e4358565f4f",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 8,
+        "duration_seconds": 187.362,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:25:16.511871+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/trajectory_manifest.json": "8bdd4258cd04c2fdc71e3b5708c0ac30dffb52c2238fd0e1cff8b19873116a92",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/lite_agent_events.jsonl": "69dec4d6269c007652160138221ad149030611d49dc75c9a51382eb9fe42002b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/llm_call_log.jsonl": "4826f2e4bc20eeb95cd154ef85b6c1addf9cacdeea2e5e396315e79a07efbff2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/evaluator_artifacts/manifest.json": "89cf3f970b950442f94faa6f0cd4c0b66ece699c55cc0575328d97d973f14325"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 8,
+        "duration_seconds": 187.362,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:25:16.511871+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/trajectory_manifest.json": "8bdd4258cd04c2fdc71e3b5708c0ac30dffb52c2238fd0e1cff8b19873116a92",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/lite_agent_events.jsonl": "69dec4d6269c007652160138221ad149030611d49dc75c9a51382eb9fe42002b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/llm_call_log.jsonl": "4826f2e4bc20eeb95cd154ef85b6c1addf9cacdeea2e5e396315e79a07efbff2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/20-libreoffice_calc-a9f325aa-8c05-4e4f-8341-9e4358565f4f/evaluator_artifacts/manifest.json": "89cf3f970b950442f94faa6f0cd4c0b66ece699c55cc0575328d97d973f14325"
+        }
+      }
+    },
+    {
+      "order": 41,
+      "task_id": "986fc832-6af2-417c-8845-9272b3a1528b",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 7,
+        "duration_seconds": 167.772,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:28:04.558549+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/trajectory_manifest.json": "cadbc399fa46f562aebbc44ee055597f0265eea67260eb4ee901e9202abd63b9",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/lite_agent_events.jsonl": "dc4d60b851eaa7d557df220bbdc2ce4543d8d15bdb546c06110e36f6e665b581",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/llm_call_log.jsonl": "fe4f7dbc8b28e7df11ad1125f6b4032fae1fc864916a86168772a9abff9b0603",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/evaluator_artifacts/manifest.json": "d94100b6b31efb161191fd8f31c172c40ad41925ede10432e66401f7ac40a681"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 7,
+        "duration_seconds": 167.772,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:28:04.558549+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/trajectory_manifest.json": "cadbc399fa46f562aebbc44ee055597f0265eea67260eb4ee901e9202abd63b9",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/lite_agent_events.jsonl": "dc4d60b851eaa7d557df220bbdc2ce4543d8d15bdb546c06110e36f6e665b581",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/llm_call_log.jsonl": "fe4f7dbc8b28e7df11ad1125f6b4032fae1fc864916a86168772a9abff9b0603",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/41-libreoffice_impress-986fc832-6af2-417c-8845-9272b3a1528b/evaluator_artifacts/manifest.json": "d94100b6b31efb161191fd8f31c172c40ad41925ede10432e66401f7ac40a681"
+        }
+      }
+    },
+    {
+      "order": 42,
+      "task_id": "a434992a-89df-4577-925c-0c58b747f0f4",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 8,
+        "duration_seconds": 185.139,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:31:09.972564+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/trajectory_manifest.json": "b9b91850c36468c67b1d3647c865c0712a865a9d28cc613b9b2bce3ecf980147",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/lite_agent_events.jsonl": "00e9df71e3e42691c9fcdd823df83fd21bfd79695149af19430c854c99a53d28",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/llm_call_log.jsonl": "a864fa2059eae3f7cc374c58d6ccf9dfe98ad8225423653331d3491552fcf770",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/evaluator_artifacts/manifest.json": "0583561390ec8bc78551ff8ee208d4fdd4eb249200bd0460a41efde2e1ded288"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 8,
+        "duration_seconds": 185.139,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:31:09.972564+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/trajectory_manifest.json": "b9b91850c36468c67b1d3647c865c0712a865a9d28cc613b9b2bce3ecf980147",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/lite_agent_events.jsonl": "00e9df71e3e42691c9fcdd823df83fd21bfd79695149af19430c854c99a53d28",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/llm_call_log.jsonl": "a864fa2059eae3f7cc374c58d6ccf9dfe98ad8225423653331d3491552fcf770",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/42-libreoffice_impress-a434992a-89df-4577-925c-0c58b747f0f4/evaluator_artifacts/manifest.json": "0583561390ec8bc78551ff8ee208d4fdd4eb249200bd0460a41efde2e1ded288"
+        }
+      }
+    },
+    {
+      "order": 47,
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 22,
+        "duration_seconds": 314.337,
+        "results_termination_reason": "stalled_no_progress",
+        "manifest_termination_reason": "stalled_no_progress",
+        "completed_at": "2026-10-10T04:36:24.603553+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/trajectory_manifest.json": "16a9820653002a458fa119803c8724a48757cbb5758d589bcc67c6cdd074b122",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/lite_agent_events.jsonl": "4107e11d82ade6aa4967373b5a2d169af125ae7e838eb463d5f752d33fc19826",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/llm_call_log.jsonl": "a79d6c238802fa8763b25a7e3c51b918b3bb4e17accfdd90b8a80d1cd8a4a048",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/evaluator_artifacts/manifest.json": "1bf9f8a214d6125775f34118a636ee673f7158777c32f58f655ea9d2216877ee"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 22,
+        "duration_seconds": 314.337,
+        "results_termination_reason": "stalled_no_progress",
+        "manifest_termination_reason": "stalled_no_progress",
+        "completed_at": "2026-10-10T04:36:24.603553+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/trajectory_manifest.json": "16a9820653002a458fa119803c8724a48757cbb5758d589bcc67c6cdd074b122",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/lite_agent_events.jsonl": "4107e11d82ade6aa4967373b5a2d169af125ae7e838eb463d5f752d33fc19826",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/llm_call_log.jsonl": "a79d6c238802fa8763b25a7e3c51b918b3bb4e17accfdd90b8a80d1cd8a4a048",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/47-libreoffice_impress-08aced46-45a2-48d7-993b-ed3fb5b32302/evaluator_artifacts/manifest.json": "1bf9f8a214d6125775f34118a636ee673f7158777c32f58f655ea9d2216877ee"
+        }
+      }
+    },
+    {
+      "order": 52,
+      "task_id": "af2d657a-e6b3-4c6a-9f67-9e3ed015974c",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 7,
+        "duration_seconds": 161.671,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:39:06.684005+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/trajectory_manifest.json": "3ebddfb9c6e8cd43e3ccc186495cb719444d9deffc9f3d607e81fa0e4174ec61",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/lite_agent_events.jsonl": "29b9537a5eca21a9bd577d81145501bcc35135b14c708ef2e03288a53aff87dd",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/llm_call_log.jsonl": "8a08c22903a86be7925fac311371ecea119b8f88825b9b10e56895728dbd05b0",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/evaluator_artifacts/manifest.json": "77b5b06fbcb78ea18dde12440b27324034b8e41351a74fe8abddfbe9ca4d46cd"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 7,
+        "duration_seconds": 161.671,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:39:06.684005+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/trajectory_manifest.json": "3ebddfb9c6e8cd43e3ccc186495cb719444d9deffc9f3d607e81fa0e4174ec61",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/lite_agent_events.jsonl": "29b9537a5eca21a9bd577d81145501bcc35135b14c708ef2e03288a53aff87dd",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/llm_call_log.jsonl": "8a08c22903a86be7925fac311371ecea119b8f88825b9b10e56895728dbd05b0",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/52-libreoffice_impress-af2d657a-e6b3-4c6a-9f67-9e3ed015974c/evaluator_artifacts/manifest.json": "77b5b06fbcb78ea18dde12440b27324034b8e41351a74fe8abddfbe9ca4d46cd"
+        }
+      }
+    },
+    {
+      "order": 53,
+      "task_id": "57667013-ea97-417c-9dce-2713091e6e2a",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 22,
+        "duration_seconds": 329.124,
+        "results_termination_reason": "stalled_no_progress",
+        "manifest_termination_reason": "stalled_no_progress",
+        "completed_at": "2026-10-10T04:44:36.144021+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/trajectory_manifest.json": "00dc8064881c754024ca911c925ee20ba6ab2b26fe2ef85b70f9314eeb22cbaf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/lite_agent_events.jsonl": "617a297d515ea0c1884894c1efa2a18a179f24c838f67dfcb914576ed4fff79a",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/llm_call_log.jsonl": "a271b4f7ed57e9cb7c2cbce8e4ccee2098f21c17f064c309991a209431daae22",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/evaluator_artifacts/manifest.json": "3431ba4e275dd42e099bb31e76896b0a6e42a6313e39380b3529d37868e46e10"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 22,
+        "duration_seconds": 329.124,
+        "results_termination_reason": "stalled_no_progress",
+        "manifest_termination_reason": "stalled_no_progress",
+        "completed_at": "2026-10-10T04:44:36.144021+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/trajectory_manifest.json": "00dc8064881c754024ca911c925ee20ba6ab2b26fe2ef85b70f9314eeb22cbaf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/lite_agent_events.jsonl": "617a297d515ea0c1884894c1efa2a18a179f24c838f67dfcb914576ed4fff79a",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/llm_call_log.jsonl": "a271b4f7ed57e9cb7c2cbce8e4ccee2098f21c17f064c309991a209431daae22",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/53-libreoffice_impress-57667013-ea97-417c-9dce-2713091e6e2a/evaluator_artifacts/manifest.json": "3431ba4e275dd42e099bb31e76896b0a6e42a6313e39380b3529d37868e46e10"
+        }
+      }
+    },
+    {
+      "order": 54,
+      "task_id": "a53f80cd-4a90-4490-8310-097b011433f6",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 16,
+        "duration_seconds": 287.525,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:49:24.015121+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/trajectory_manifest.json": "98f9b15898ba2c2a5d4bc45b558d03cb17a8fe0e2a163ee42298579132d9e4ac",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/lite_agent_events.jsonl": "a34bc9fc598c7e68b17ae73e43bf0278fbd7ff8f15140ceebab84dc021348567",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/llm_call_log.jsonl": "1d1b72e385e77b190ae8f9a20f3b4014b4199d41c936f5d8350473b37bb32bfb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/evaluator_artifacts/manifest.json": "516dda67e6f0cf462bf885dd92429e7082432d7a908fb5946eedb9e60aebd57c"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 16,
+        "duration_seconds": 287.525,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:49:24.015121+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/trajectory_manifest.json": "98f9b15898ba2c2a5d4bc45b558d03cb17a8fe0e2a163ee42298579132d9e4ac",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/lite_agent_events.jsonl": "a34bc9fc598c7e68b17ae73e43bf0278fbd7ff8f15140ceebab84dc021348567",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/llm_call_log.jsonl": "1d1b72e385e77b190ae8f9a20f3b4014b4199d41c936f5d8350473b37bb32bfb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/54-libreoffice_impress-a53f80cd-4a90-4490-8310-097b011433f6/evaluator_artifacts/manifest.json": "516dda67e6f0cf462bf885dd92429e7082432d7a908fb5946eedb9e60aebd57c"
+        }
+      }
+    },
+    {
+      "order": 59,
+      "task_id": "4ed5abd0-8b5d-47bd-839f-cacfa15ca37a",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 5,
+        "duration_seconds": 149.556,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:51:53.941221+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/trajectory_manifest.json": "72e1c586a893b1939743abdc45c173fdc3aacd17867a7c6fac968c2235c71ff6",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/lite_agent_events.jsonl": "e85b95e9e1a9ef7f3c01cd91dff29147d77f60588c46d4d7b491922445b3cb0b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/llm_call_log.jsonl": "b7f0905f3a243990e159124affb22b9b121ac3a68778f429c1db28f117244c82",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/evaluator_artifacts/manifest.json": "35a8e704fd3ae2aeb6d4cb432c1fb8b598bf56e98ff448e27b3b5bc2a4d11879"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 5,
+        "duration_seconds": 149.556,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:51:53.941221+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/trajectory_manifest.json": "72e1c586a893b1939743abdc45c173fdc3aacd17867a7c6fac968c2235c71ff6",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/lite_agent_events.jsonl": "e85b95e9e1a9ef7f3c01cd91dff29147d77f60588c46d4d7b491922445b3cb0b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/llm_call_log.jsonl": "b7f0905f3a243990e159124affb22b9b121ac3a68778f429c1db28f117244c82",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/59-libreoffice_impress-4ed5abd0-8b5d-47bd-839f-cacfa15ca37a/evaluator_artifacts/manifest.json": "35a8e704fd3ae2aeb6d4cb432c1fb8b598bf56e98ff448e27b3b5bc2a4d11879"
+        }
+      }
+    },
+    {
+      "order": 60,
+      "task_id": "e4ef0baf-4b52-4590-a47e-d4d464cca2d7",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 13,
+        "duration_seconds": 264.51,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:56:18.742252+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/trajectory_manifest.json": "33830eb0ab75a6d95eb2e8af234757007db94c6ec4874c3c85e99e6a203d53f6",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/lite_agent_events.jsonl": "3f9e05ff5cf1ae4da695345627916f06cef8c5529a0d1a9626df3a9153ecceda",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/llm_call_log.jsonl": "dbb38dc11b635ea68cacde200add9732f4258c70607a78952cdf608e14716bbb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/evaluator_artifacts/manifest.json": "c3308b78c98c892f87675adbb7651e3749abfb64c5d072dd717f3644e70d4289"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 13,
+        "duration_seconds": 264.51,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T04:56:18.742252+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/results.json": "b93a826278ad580a47981a564e316557a5925fc6a2ff379a8a0ff9932d17a6e3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/trajectory_manifest.json": "33830eb0ab75a6d95eb2e8af234757007db94c6ec4874c3c85e99e6a203d53f6",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/lite_agent_events.jsonl": "3f9e05ff5cf1ae4da695345627916f06cef8c5529a0d1a9626df3a9153ecceda",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/llm_call_log.jsonl": "dbb38dc11b635ea68cacde200add9732f4258c70607a78952cdf608e14716bbb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010/raw/run-1/60-libreoffice_impress-e4ef0baf-4b52-4590-a47e-d4d464cca2d7/evaluator_artifacts/manifest.json": "c3308b78c98c892f87675adbb7651e3749abfb64c5d072dd717f3644e70d4289"
+        }
+      }
+    },
+    {
+      "order": 67,
+      "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 262.598,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:42:14.032123+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/trajectory_manifest.json": "333059a2f172a72d5827dac6140900867087b086c084ac886d1e31f2e1c2d18d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/lite_agent_events.jsonl": "511023a553ac6ca21f491dd8ab62c4666c7b9755c05865139af513c51321e41d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/llm_call_log.jsonl": "559ee26aa32338e80eaf087aa086e9fe8bde6b80c266039a605137c98fb76d53",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/evaluator_artifacts/manifest.json": "59443ad1f3b382bae593f7aacd195297c943fcf3ccb40ff91f7bba48ba6adcc8"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 262.598,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:42:14.032123+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/trajectory_manifest.json": "333059a2f172a72d5827dac6140900867087b086c084ac886d1e31f2e1c2d18d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/lite_agent_events.jsonl": "511023a553ac6ca21f491dd8ab62c4666c7b9755c05865139af513c51321e41d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/llm_call_log.jsonl": "559ee26aa32338e80eaf087aa086e9fe8bde6b80c266039a605137c98fb76d53",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/evaluator_artifacts/manifest.json": "59443ad1f3b382bae593f7aacd195297c943fcf3ccb40ff91f7bba48ba6adcc8"
+        }
+      }
+    },
+    {
+      "order": 68,
+      "task_id": "0e763496-b6bb-4508-a427-fad0b6c3e195",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 162.636,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:44:57.577943+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/trajectory_manifest.json": "8398e37bae7c5f7ee9af5c787bf5e7a65ab37c178fb40087b04d95b55c38a5af",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/lite_agent_events.jsonl": "2ad6c7422a97b35f798bccbc7e4193367c2beb6aeb186fb93cf01b59938387c1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/llm_call_log.jsonl": "471f898cb6355e9fe7d7c7b9368f3a81fdaea8e8b52079f2108530e4d5049af3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/evaluator_artifacts/manifest.json": "83db8b90ffb7cd2907f1729ec17b54d99c4928fc6a2694a7cb323f29916b06de"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 162.636,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:44:57.577943+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/trajectory_manifest.json": "8398e37bae7c5f7ee9af5c787bf5e7a65ab37c178fb40087b04d95b55c38a5af",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/lite_agent_events.jsonl": "2ad6c7422a97b35f798bccbc7e4193367c2beb6aeb186fb93cf01b59938387c1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/llm_call_log.jsonl": "471f898cb6355e9fe7d7c7b9368f3a81fdaea8e8b52079f2108530e4d5049af3",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/68-libreoffice_writer-0e763496-b6bb-4508-a427-fad0b6c3e195/evaluator_artifacts/manifest.json": "83db8b90ffb7cd2907f1729ec17b54d99c4928fc6a2694a7cb323f29916b06de"
+        }
+      }
+    },
+    {
+      "order": 81,
+      "task_id": "d53ff5ee-3b1a-431e-b2be-30ed2673079b",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 218.805,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:48:36.631945+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/trajectory_manifest.json": "a01916e1ed68edefd736f9c6e06241ec0e0b06bc85b08320a39c48457eb8d9ec",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/lite_agent_events.jsonl": "e7e01451a8be051bfd5ed69a649c553bdcf52a8cf64f7674003a284cc8573535",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/llm_call_log.jsonl": "46bdef39f07bccc4ab2d77aa6024a171bd56b907eda6664cbf3709e707ed52a7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/evaluator_artifacts/manifest.json": "b54f8d8ad0e09a407a010879e7b7043bff5189423be0131a748d9a6e9fd81bd6"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 4,
+        "duration_seconds": 218.805,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:48:36.631945+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/trajectory_manifest.json": "a01916e1ed68edefd736f9c6e06241ec0e0b06bc85b08320a39c48457eb8d9ec",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/lite_agent_events.jsonl": "e7e01451a8be051bfd5ed69a649c553bdcf52a8cf64f7674003a284cc8573535",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/llm_call_log.jsonl": "46bdef39f07bccc4ab2d77aa6024a171bd56b907eda6664cbf3709e707ed52a7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/81-libreoffice_writer-d53ff5ee-3b1a-431e-b2be-30ed2673079b/evaluator_artifacts/manifest.json": "b54f8d8ad0e09a407a010879e7b7043bff5189423be0131a748d9a6e9fd81bd6"
+        }
+      }
+    },
+    {
+      "order": 83,
+      "task_id": "e528b65e-1107-4b8c-8988-490e4fece599",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 124.532,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:50:41.414618+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/trajectory_manifest.json": "5d3daa0e0d91717db693f83259a1243318f2d68f18f422d41052ddda88e8f3b1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/lite_agent_events.jsonl": "296e6dc3e2b7114527708cfd0bdaf6281f4f93feaecfc5dd0762571d09167fff",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/llm_call_log.jsonl": "4e1f14c885cd2e30c60059bd6802237960955d9f0d44efe2d1b8c65a5fffd1b1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/evaluator_artifacts/manifest.json": "5612049290ea8c0d70f6634c4e8333f8cdef9a50ce39f77e5f7ab683c3a0116b"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 124.532,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T06:50:41.414618+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/trajectory_manifest.json": "5d3daa0e0d91717db693f83259a1243318f2d68f18f422d41052ddda88e8f3b1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/lite_agent_events.jsonl": "296e6dc3e2b7114527708cfd0bdaf6281f4f93feaecfc5dd0762571d09167fff",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/llm_call_log.jsonl": "4e1f14c885cd2e30c60059bd6802237960955d9f0d44efe2d1b8c65a5fffd1b1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/83-libreoffice_writer-e528b65e-1107-4b8c-8988-490e4fece599/evaluator_artifacts/manifest.json": "5612049290ea8c0d70f6634c4e8333f8cdef9a50ce39f77e5f7ab683c3a0116b"
+        }
+      }
+    },
+    {
+      "order": 91,
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+      "batch": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 644.449,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:01:26.127341+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "29bb3858f8922e40168ec4dacdca95421eb570f179a458ba9a5cd8f30b7d3c7d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "35538edf008b36ef2741c5142b303205f70f12955568bd758523d726fade0ca4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "a94aad29b6801ffb5846c176a8036f24aa8e324e96d3013c3c36f4965a7695cc",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "dce1670aac533a0ca89931eb011cfe9923dc93eb90636b1de84119e811651233"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 5,
+        "duration_seconds": 471.024,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T13:23:45.256062+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json": "5205206e978624bd9b28aec0b27da877b707d8a1019b275c24bdc90d8f82d1c1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "7eee92a84a9abe5fe89f8b2cbed9c8f770c8865580f3c9e23c62c11a8b132c5e",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "7b19f3c84b8a20150172c5f64df8b63f4be9c488ed37a2c9f3bd47fc60066aa4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "02b2b579008ac21242d5994a4ef2c1693eae72926809585291e3696531fab6e1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "244a5f47f25b997f1574a5b3ed19f6dd1c3882a9b4a8acebaef0f4e2eafc3a78"
+        }
+      }
+    },
+    {
+      "order": 95,
+      "task_id": "b5062e3e-641c-4e3a-907b-ac864d2e7652",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 9,
+        "duration_seconds": 344.024,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T07:07:10.777197+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/trajectory_manifest.json": "24f3083626881861c66a59fc1dff3c07cc6a8dbfc61a148717ec106e6228b6f8",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/lite_agent_events.jsonl": "70e92804568a26ab44a68b578e13cba04c4022ccf2d043a5156372c186f06b30",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/llm_call_log.jsonl": "b07004cf73be23983d6fe18477f831a46292d7128406c22aecf36f103b764aff",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/evaluator_artifacts/manifest.json": "f3af2c93d716e52f018e2a1bde6900dec3a482995a13b26d6f976de41f517c9c"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 9,
+        "duration_seconds": 344.024,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T07:07:10.777197+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/trajectory_manifest.json": "24f3083626881861c66a59fc1dff3c07cc6a8dbfc61a148717ec106e6228b6f8",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/lite_agent_events.jsonl": "70e92804568a26ab44a68b578e13cba04c4022ccf2d043a5156372c186f06b30",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/llm_call_log.jsonl": "b07004cf73be23983d6fe18477f831a46292d7128406c22aecf36f103b764aff",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/95-multi_apps-b5062e3e-641c-4e3a-907b-ac864d2e7652/evaluator_artifacts/manifest.json": "f3af2c93d716e52f018e2a1bde6900dec3a482995a13b26d6f976de41f517c9c"
+        }
+      }
+    },
+    {
+      "order": 96,
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 9,
+        "duration_seconds": 333.377,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T07:12:44.474114+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/trajectory_manifest.json": "8efed93a5babd4e36a84dfb6c231164d327211f828cd72fda556549c02710617",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/lite_agent_events.jsonl": "3b5e54642d912370924574aa52c6738a126e6b65dd2ebbfbc262840396733b58",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/llm_call_log.jsonl": "f7f4a17245d1df297d04d8940ea8c322f36e28f608ce9f3877e17de0218a60b0",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/evaluator_artifacts/manifest.json": "4f8f042cef862ac59d67b430c829bb40eae7ba3938e99c30b792da6ec953ed12"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 9,
+        "duration_seconds": 333.377,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T07:12:44.474114+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/trajectory_manifest.json": "8efed93a5babd4e36a84dfb6c231164d327211f828cd72fda556549c02710617",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/lite_agent_events.jsonl": "3b5e54642d912370924574aa52c6738a126e6b65dd2ebbfbc262840396733b58",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/llm_call_log.jsonl": "f7f4a17245d1df297d04d8940ea8c322f36e28f608ce9f3877e17de0218a60b0",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/96-multi_apps-00fa164e-2612-4439-992e-157d019a8436/evaluator_artifacts/manifest.json": "4f8f042cef862ac59d67b430c829bb40eae7ba3938e99c30b792da6ec953ed12"
+        }
+      }
+    },
+    {
+      "order": 99,
+      "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+      "batch": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 475.856,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:20:40.631362+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json": "8f18718df2cae6f6cdaf62148bfeaf5a588e03ea6c1c20dc4979b9d22f00c1de",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl": "7aa5d95d61e352fa87e75f5928e70e187bc53b7e9fcd65e704405ddf20b6d3a8",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "7032f5b56c12e307a72bbef7a731c346af54aaf92ce9f18f3b07d29d13f20f51",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "18ba127297a0ed18e1b99a759bb1d05555579fc8c7256890cab73c22750bf2d6"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 45,
+        "duration_seconds": 1386.762,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T13:59:51.068893+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/results.json": "c3deceea9aac3b6e027c443694d7f87a4473ba5d9dc4aac9aafb85b8e63818ef",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json": "a2bdf6fe42887a3434c964e18e2f9768733d4ab504cae8922c6b3836c1cb7364",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl": "e2b15a2d6445f8d0581f42bcf3c8049e2aede02c135dd64b78323a18d9eabeda",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "91731d70a64aa53e089e7c5ebc331aa8a9ab33accd27b6c2501268139630981a",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-qwen-20261010-inventory-handoff-retry5/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "55f301d3fe9544de72a330d4b2d797de74651afb1820db89f2cfcde2b3e8bea1"
+        }
+      }
+    },
+    {
+      "order": 102,
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "batch": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 1012.175,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:37:33.520036+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "f0537927ff928d19e6cb9cb429edbfc5056615df53753f4d708b54972a48e206",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "b3bba54cac360bcfe672816b09ba9e85a84b1c58762adcd903ac226970a515ab",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "83eed46fcdf70e7bb7353803668bba3badebda7c13faa3c8a4bb08e26d31d802",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "7784e7f8bbaad2736813645bd69c199d97b155366913093eb6f90783ea06c9b7"
+        }
+      },
+      "latest_verified_run": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 1012.175,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:37:33.520036+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/trajectory_manifest.json": "f0537927ff928d19e6cb9cb429edbfc5056615df53753f4d708b54972a48e206",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/lite_agent_events.jsonl": "b3bba54cac360bcfe672816b09ba9e85a84b1c58762adcd903ac226970a515ab",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/llm_call_log.jsonl": "83eed46fcdf70e7bb7353803668bba3badebda7c13faa3c8a4bb08e26d31d802",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096/evaluator_artifacts/manifest.json": "7784e7f8bbaad2736813645bd69c199d97b155366913093eb6f90783ea06c9b7"
+        }
+      }
+    },
+    {
+      "order": 107,
+      "task_id": "881deb30-9549-4583-a841-8270c65f2a17",
+      "batch": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 505.698,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:45:59.666088+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/trajectory_manifest.json": "5397c549a331a2567e348c7f119e1978732787495e047fad17c466741a910a9e",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl": "cb0cb16ebf4d506d90b9f4ad07cf98772b0c553629c344347ad8de16b453c1e7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/llm_call_log.jsonl": "d6497c90cda54c55953e8fbdbe4a4a2223282bbf384093134899185dd23de2e9",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/evaluator_artifacts/manifest.json": "a8d107d13954722c0ebc95989ff6c441dcabff9c2f4f29759edf1c3db9943815"
+        }
+      },
+      "latest_verified_run": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 505.698,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:45:59.666088+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/trajectory_manifest.json": "5397c549a331a2567e348c7f119e1978732787495e047fad17c466741a910a9e",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl": "cb0cb16ebf4d506d90b9f4ad07cf98772b0c553629c344347ad8de16b453c1e7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/llm_call_log.jsonl": "d6497c90cda54c55953e8fbdbe4a4a2223282bbf384093134899185dd23de2e9",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/evaluator_artifacts/manifest.json": "a8d107d13954722c0ebc95989ff6c441dcabff9c2f4f29759edf1c3db9943815"
+        }
+      }
+    },
+    {
+      "order": 108,
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "batch": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 657.675,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:56:57.689648+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/trajectory_manifest.json": "9ccef85585aaeb0ffd56d326eed014d35036f7b8b88eb9a7a99ffae4f0797cf2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl": "963d1074273ccbaeecdb095e007e8bf312341159c268e377709111e245de5da2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/llm_call_log.jsonl": "002fe617cce4cd386a86a56cc2f15e0b67706a82af8909cac6fd5bb4532e526b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/evaluator_artifacts/manifest.json": "166a088bd6174ada2770a94a5e39867e5be5cbdf7dd7c3da8e9f32d42d253d6a"
+        }
+      },
+      "latest_verified_run": {
+        "status": "failed",
+        "reward": 0.0,
+        "steps": 45,
+        "duration_seconds": 657.675,
+        "results_termination_reason": null,
+        "manifest_termination_reason": "max_steps",
+        "completed_at": "2026-10-10T07:56:57.689648+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/trajectory_manifest.json": "9ccef85585aaeb0ffd56d326eed014d35036f7b8b88eb9a7a99ffae4f0797cf2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl": "963d1074273ccbaeecdb095e007e8bf312341159c268e377709111e245de5da2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/llm_call_log.jsonl": "002fe617cce4cd386a86a56cc2f15e0b67706a82af8909cac6fd5bb4532e526b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/evaluator_artifacts/manifest.json": "166a088bd6174ada2770a94a5e39867e5be5cbdf7dd7c3da8e9f32d42d253d6a"
+        }
+      }
+    },
+    {
+      "order": 121,
+      "task_id": "f5c13cdd-205c-4719-a562-348ae5cd1d91",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 6,
+        "duration_seconds": 284.406,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:01:42.984236+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/trajectory_manifest.json": "2711644468665b9dd8545b3788147bb126cbe0773fccddd653a243de3c8a1bf1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/lite_agent_events.jsonl": "2856f3bf2441656d1a54da94f6213f9e8ef1524706dd86f411ab77e0de248181",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/llm_call_log.jsonl": "be56f28a6ef177d08b363042fd1d2511ef53c75217d43df977062f67d404b810",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/evaluator_artifacts/manifest.json": "e976e478d8677f65679c2d8b4cd57d8e4acc6d62954bb2fd378854ccaf51ea15"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 6,
+        "duration_seconds": 284.406,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:01:42.984236+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/trajectory_manifest.json": "2711644468665b9dd8545b3788147bb126cbe0773fccddd653a243de3c8a1bf1",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/lite_agent_events.jsonl": "2856f3bf2441656d1a54da94f6213f9e8ef1524706dd86f411ab77e0de248181",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/llm_call_log.jsonl": "be56f28a6ef177d08b363042fd1d2511ef53c75217d43df977062f67d404b810",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/121-multi_apps-f5c13cdd-205c-4719-a562-348ae5cd1d91/evaluator_artifacts/manifest.json": "e976e478d8677f65679c2d8b4cd57d8e4acc6d62954bb2fd378854ccaf51ea15"
+        }
+      }
+    },
+    {
+      "order": 152,
+      "task_id": "9bc3cc16-074a-45ac-9bdc-b2a362e1daf3",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 124.849,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:03:48.167439+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/trajectory_manifest.json": "244061e3fe1e65d44b3eef15bb437f85133b06d9f14b952b3ff424b46ce6c560",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/lite_agent_events.jsonl": "6f53b166ccae5ca5a5b6d4a21dcd4adfbf26f6a9f5ea547bd6f89c3d8185e8a7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/llm_call_log.jsonl": "6895a69da9a56718155d1152f0f8e860aa826b0adfa68bcd0949d4ba2a3d3a4a",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/evaluator_artifacts/manifest.json": "bed250c6e7c61e32da626774d20f2bf0071b45c484d11404f9ebf31997261fb1"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 124.849,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:03:48.167439+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/trajectory_manifest.json": "244061e3fe1e65d44b3eef15bb437f85133b06d9f14b952b3ff424b46ce6c560",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/lite_agent_events.jsonl": "6f53b166ccae5ca5a5b6d4a21dcd4adfbf26f6a9f5ea547bd6f89c3d8185e8a7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/llm_call_log.jsonl": "6895a69da9a56718155d1152f0f8e860aa826b0adfa68bcd0949d4ba2a3d3a4a",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/152-thunderbird-9bc3cc16-074a-45ac-9bdc-b2a362e1daf3/evaluator_artifacts/manifest.json": "bed250c6e7c61e32da626774d20f2bf0071b45c484d11404f9ebf31997261fb1"
+        }
+      }
+    },
+    {
+      "order": 153,
+      "task_id": "3f28fe4f-5d9d-4994-a456-efd78cfae1a3",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 121.201,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:05:49.635772+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/trajectory_manifest.json": "798f04118bf384fa3d3403cd315dca210f746e984f58d7dfdf3ae994c91b347b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/lite_agent_events.jsonl": "bdad6b675adb1695e2af03cf8fc9870fcab6789e73914291a39f70d6e3e65e1d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/llm_call_log.jsonl": "78e7447f79678303691d3174b29dfd839afec20c681071a75be582a083cfe9b7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/evaluator_artifacts/manifest.json": "3711757ce3a882a89d665fa512dd290dc5718cbd2df3b07424cf053604e87f4f"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 121.201,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:05:49.635772+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/trajectory_manifest.json": "798f04118bf384fa3d3403cd315dca210f746e984f58d7dfdf3ae994c91b347b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/lite_agent_events.jsonl": "bdad6b675adb1695e2af03cf8fc9870fcab6789e73914291a39f70d6e3e65e1d",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/llm_call_log.jsonl": "78e7447f79678303691d3174b29dfd839afec20c681071a75be582a083cfe9b7",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/153-thunderbird-3f28fe4f-5d9d-4994-a456-efd78cfae1a3/evaluator_artifacts/manifest.json": "3711757ce3a882a89d665fa512dd290dc5718cbd2df3b07424cf053604e87f4f"
+        }
+      }
+    },
+    {
+      "order": 154,
+      "task_id": "5203d847-2572-4150-912a-03f062254390",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 125.068,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:07:54.948536+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/trajectory_manifest.json": "d309cf87ac0122dab8575a5112b7419bd344fe9ef6b431794eb2654237321a7b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/lite_agent_events.jsonl": "e2ea41f5f42e79373d72a60bfd320a694f5b3e516a8aa82db02bbe586651f145",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/llm_call_log.jsonl": "8eef51d9cf250e95a1c6577e3ffd6b41861beb599e669ca2074520c53f452f58",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/evaluator_artifacts/manifest.json": "724013a8f083039a27062800864674f6d36fc09e2acc38b7ae0e1659a4f54c8e"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 125.068,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:07:54.948536+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/trajectory_manifest.json": "d309cf87ac0122dab8575a5112b7419bd344fe9ef6b431794eb2654237321a7b",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/lite_agent_events.jsonl": "e2ea41f5f42e79373d72a60bfd320a694f5b3e516a8aa82db02bbe586651f145",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/llm_call_log.jsonl": "8eef51d9cf250e95a1c6577e3ffd6b41861beb599e669ca2074520c53f452f58",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/154-thunderbird-5203d847-2572-4150-912a-03f062254390/evaluator_artifacts/manifest.json": "724013a8f083039a27062800864674f6d36fc09e2acc38b7ae0e1659a4f54c8e"
+        }
+      }
+    },
+    {
+      "order": 157,
+      "task_id": "3f49d2cc-f400-4e7d-90cc-9b18e401cc31",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 110.001,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:09:45.226055+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/trajectory_manifest.json": "6e1836a85a7f15bf1bbc68cf156f9aaf8ff63ae0503e74d8d6c602f259ce5a23",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/lite_agent_events.jsonl": "467381baad0fd7e002baa47a18a90b7c196c006823ec2457fccc497d34184a71",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/llm_call_log.jsonl": "5f23d3a3924772b9cb3e95fe2f380dd84fcea283f615ff072a6a3e8234829019",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/evaluator_artifacts/manifest.json": "cf9334c664cc4462dcb854a53d2a32229b5223bdeb59cc95d38ba9af0b8d5e48"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 110.001,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:09:45.226055+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/trajectory_manifest.json": "6e1836a85a7f15bf1bbc68cf156f9aaf8ff63ae0503e74d8d6c602f259ce5a23",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/lite_agent_events.jsonl": "467381baad0fd7e002baa47a18a90b7c196c006823ec2457fccc497d34184a71",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/llm_call_log.jsonl": "5f23d3a3924772b9cb3e95fe2f380dd84fcea283f615ff072a6a3e8234829019",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/157-thunderbird-3f49d2cc-f400-4e7d-90cc-9b18e401cc31/evaluator_artifacts/manifest.json": "cf9334c664cc4462dcb854a53d2a32229b5223bdeb59cc95d38ba9af0b8d5e48"
+        }
+      }
+    },
+    {
+      "order": 158,
+      "task_id": "f201fbc3-44e6-46fc-bcaa-432f9815454c",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 763.666,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:22:29.132659+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/trajectory_manifest.json": "2ea3f367b40bb77a5a896739b1c29a28a6111c27e0585731778fb2b459fd8ffb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/lite_agent_events.jsonl": "3bfefbe8b3609e676ba5ca4941b6913ef8224cb82b6be722163a8bf303a40e36",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/llm_call_log.jsonl": "8d18c85f233652e00ef4b1c12e20a83d4b96a4260ee37da16e493ddfa1dac437",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/evaluator_artifacts/manifest.json": "10838fbcb60f5f0253064a8b4216da8bb8a1dce7d6f34ec32cd01e1ff3e2dcde"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 3,
+        "duration_seconds": 763.666,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:22:29.132659+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/trajectory_manifest.json": "2ea3f367b40bb77a5a896739b1c29a28a6111c27e0585731778fb2b459fd8ffb",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/lite_agent_events.jsonl": "3bfefbe8b3609e676ba5ca4941b6913ef8224cb82b6be722163a8bf303a40e36",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/llm_call_log.jsonl": "8d18c85f233652e00ef4b1c12e20a83d4b96a4260ee37da16e493ddfa1dac437",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/158-thunderbird-f201fbc3-44e6-46fc-bcaa-432f9815454c/evaluator_artifacts/manifest.json": "10838fbcb60f5f0253064a8b4216da8bb8a1dce7d6f34ec32cd01e1ff3e2dcde"
+        }
+      }
+    },
+    {
+      "order": 159,
+      "task_id": "10a730d5-d414-4b40-b479-684bed1ae522",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 123.161,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:24:32.572447+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/trajectory_manifest.json": "a60d920a55f6188e330c977084138fb93d2069392d36c37d10e36fca66652eae",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/lite_agent_events.jsonl": "6acc2daf94701f1fd6fc3c8d5c32655ed9bc5c65023a0bbd93999a5fbc3ec6ea",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/llm_call_log.jsonl": "07f0684b4823497f88cf58ef13934041da2fc39bbc91d77a3642049bc2783020",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/evaluator_artifacts/manifest.json": "b59e4bfd1ecd30f779645aaadf2181539aa14ee82fb504d9ec78ef9f3248f15b"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 123.161,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:24:32.572447+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/trajectory_manifest.json": "a60d920a55f6188e330c977084138fb93d2069392d36c37d10e36fca66652eae",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/lite_agent_events.jsonl": "6acc2daf94701f1fd6fc3c8d5c32655ed9bc5c65023a0bbd93999a5fbc3ec6ea",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/llm_call_log.jsonl": "07f0684b4823497f88cf58ef13934041da2fc39bbc91d77a3642049bc2783020",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/159-thunderbird-10a730d5-d414-4b40-b479-684bed1ae522/evaluator_artifacts/manifest.json": "b59e4bfd1ecd30f779645aaadf2181539aa14ee82fb504d9ec78ef9f3248f15b"
+        }
+      }
+    },
+    {
+      "order": 160,
+      "task_id": "08c73485-7c6d-4681-999d-919f5c32dcfa",
+      "batch": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 123.239,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:26:36.085946+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/trajectory_manifest.json": "455b2928961ce2d811044f4ae78c9ed7bbe0f1a3beaee79568299546d7451eb4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/lite_agent_events.jsonl": "7de9c60198e1059aa9b4f1f0ec40530b070858e8deb46d0439e8eed03f542a90",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/llm_call_log.jsonl": "94481db4f4880ec4a7615acbca2bd54288b3b4172e3a56a2bb27107787411105",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/evaluator_artifacts/manifest.json": "ace49475732e6acb282f8af5c33b73d63179c087e5747b653a53a310e742bc7f"
+        }
+      },
+      "latest_verified_run": {
+        "status": "passed",
+        "reward": 1.0,
+        "steps": 2,
+        "duration_seconds": 123.239,
+        "results_termination_reason": "agent_done",
+        "manifest_termination_reason": "agent_done",
+        "completed_at": "2026-10-10T08:26:36.085946+00:00",
+        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json",
+        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/trajectory_manifest.json",
+        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/lite_agent_events.jsonl",
+        "sha256": {
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json": "2b40370570af386bc8a771cf6994d7472e6425f8f45a321d2fab8188a8626fe2",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/trajectory_manifest.json": "455b2928961ce2d811044f4ae78c9ed7bbe0f1a3beaee79568299546d7451eb4",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/lite_agent_events.jsonl": "7de9c60198e1059aa9b4f1f0ec40530b070858e8deb46d0439e8eed03f542a90",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/llm_call_log.jsonl": "94481db4f4880ec4a7615acbca2bd54288b3b4172e3a56a2bb27107787411105",
+          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/evaluator_artifacts/manifest.json": "ace49475732e6acb282f8af5c33b73d63179c087e5747b653a53a310e742bc7f"
+        }
+      }
+    }
+  ]
+}
