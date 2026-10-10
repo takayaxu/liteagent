@@ -347,6 +347,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 91 — 本轮 FAIL
 
+- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md)。
 - Task ID：`d9b7c649-c975-4f53-88f5-940b29c47247`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，644.449 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/report.xlsx` 时返回 404；文件读取重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；evaluator_artifacts/manifest.json 的 result=[null]。这说明本轮未取到要求的结果表格，尚不能仅凭 404 判定文件未生成还是保存路径不一致。
@@ -355,6 +356,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 99 — 本轮 FAIL
 
+- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md)。
 - Task ID：`337d318b-aa07-4f4f-b763-89d9a2dd013f`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，475.856 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 获取目标 PDF 时返回 404；evaluator_artifacts/manifest.json 的 result=[null]，只保存了 expected 文件。当前回执不能证明所有发票已经分类完成；本轮失败不覆盖历史单题 PASS。
@@ -372,6 +374,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 107 — 本轮 FAIL
 
+- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order107-latest-failure-20261010.md)。
 - Task ID：`881deb30-9549-4583-a841-8270c65f2a17`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，505.698 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 成功取回 `supported_rate.xlsx`，manifest 同时保留 result-00-supported_rate.xlsx 与 expected-00-supported_rate-gt.xlsx，但原始 evaluator 返回 0.0。本轮属于已获取产物但对照检查不通过；尚未逐单元格核对，不将其归因于文件读取 404。
@@ -380,6 +383,7 @@ $PYTHON -m ruff check <changed_python_files>
 
 ### Order 108 — 本轮 FAIL
 
+- 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order108-latest-failure-20261010.md)。
 - Task ID：`7e287123-70ca-47b9-8521-47db09b69b14`；应用：`multi_apps`。
 - 原始结果：`status=failed`、`reward=0.0`，45 步，657.675 秒；`termination_reason=null`、`terminated_by_agent=false`。
 - 已观察到的失败表现：evaluator 获取 `/home/user/Desktop/GRF-p5y.xlsx` 及转换后的 `/home/user/Desktop/GRF-p5y-Sheet1.csv` 时返回 404；XLSX 重试记录显示两组各 3 次尝试，大小均为 null，未获得有效 ZIP；manifest 的 result=[null]。输出缺失或保存路径问题尚未作根因确认。

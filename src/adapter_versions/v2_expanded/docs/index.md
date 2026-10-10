@@ -7,7 +7,7 @@ This is the current documentation entry. Open archive reports only when investig
 ## 2026-10-10 固定 28 题运行入口
 
 - 最新批次：23/28 PASS，详见 [正式批次审计](osworld-passing-submission-20261010.md)。
-- Order 102 本轮最新结果为 FAIL / 0.0：[最新失败轨迹入口](order102-latest-failure-20261010.md)。旧 classification-check 路径是历史运行。
+- 本轮 5 道 FAIL / 0.0 的单题最新轨迹入口：[Order 91](order91-latest-failure-20261010.md)、[Order 99](order99-latest-failure-20261010.md)、[Order 102](order102-latest-failure-20261010.md)、[Order 107](order107-latest-failure-20261010.md)、[Order 108](order108-latest-failure-20261010.md)。其他 classification-check、destination-validation、writeback 等路径保留为历史运行。
 
 ## Current Operating Context
 

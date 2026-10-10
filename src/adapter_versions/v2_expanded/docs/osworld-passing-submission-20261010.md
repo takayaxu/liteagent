@@ -53,3 +53,7 @@
 ## 失败题目正式日志
 
 本轮 91、99、102、107、108 的详细结果已补入 [正式开发日志](../../../../API_SPLIT_TASK.md#2026-10-10-本轮失败题目正式运行日志)，记录原始评分、步数、耗时、终止字段、失败表现和每题完整证据位置。此次只补日志，不做修复或复跑，原始结果保持不变。
+
+## 五题单题日志入口核对
+
+2026-10-10 核对并补齐：[Order 91](order91-latest-failure-20261010.md)、[Order 99](order99-latest-failure-20261010.md)、[Order 102](order102-latest-failure-20261010.md)、[Order 107](order107-latest-failure-20261010.md)、[Order 108](order108-latest-failure-20261010.md)。五题均以本轮 resume1 目录为事件来源，逐一核对 45 条事件、原始 result.txt=0.0、结果字段及事件 SHA-256。旧单题运行与本轮失败分别保留。
