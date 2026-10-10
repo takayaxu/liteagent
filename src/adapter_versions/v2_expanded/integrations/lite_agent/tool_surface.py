@@ -1040,6 +1040,7 @@ class ToolSurfaceMixin:
             multislide_visual_title_fallback_plan(state) is not None
             and next_multislide_visual_title_action(state) is not None
         )
+        terminal_only = tuple(actions) in {("propose_done",), ("fail_task",)}
         batch_inspection_pending = (
             False if multi_app else batch_table_semantics.inspection_pending(state)
         )
@@ -1105,13 +1106,79 @@ class ToolSurfaceMixin:
             actions,
             include_gui=self.config.include_gui
             and self._gui_execution_configured()
+            and not terminal_only
             and not batch_observation_gate
             and (not discovery_only)
             and (not untried_required_mutations),
             include_control_tools=not discovery_only,
             strict_generic=True,
         )
+        # The cleanup completion gate needs one read-back containing both
+        # formatted title slides and the cleaned personal-information slide.
+        # A generic inspect schema lets a model repeatedly inspect only the
+        # already-verified title pages, so constrain this single final probe to
+        # the exact pages represented by the immutable cleanup plan.
+        if (
+            cleanup_request is not None
+            and tuple(actions) == ("presentation.inspect",)
+            and not state.title_range_personal_info_cleanup_readback_satisfied()
+        ):
+            cleanup_plan = state.title_range_personal_info_cleanup_plan()
+            if isinstance(cleanup_plan, dict):
+                planned_events = [
+                    event
+                    for step in cleanup_plan["steps"]
+                    for event in state.successful_action_events(step["action"])
+                    if event.proposed.get("arguments") == step["arguments"]
+                ]
+                last_mutation = max(
+                    (event.step for event in planned_events), default=-1
+                )
+                saved_after_mutation = any(
+                    is_save(str(event.proposed.get("action", "")))
+                    and event.step > last_mutation
+                    for event in state.successful_adapter_events()
+                )
+                if saved_after_mutation:
+                    required_slides = sorted(
+                        {
+                            *(
+                                int(target["slide"])
+                                for target in cleanup_plan["title_paths"]
+                            ),
+                            int(cleanup_plan["cleanup_slide"]),
+                        }
+                    )
+                    for tool in tools:
+                        function = tool.get("function")
+                        if not isinstance(function, dict) or function.get(
+                            "name"
+                        ) != tool_name("presentation.inspect"):
+                            continue
+                        function["description"] = (
+                            "Final cleanup read-back. Inspect exactly these slide "
+                            f"indices: {required_slides}."
+                        )
+                        function["parameters"] = {
+                            "type": "object",
+                            "properties": {
+                                "slides": {
+                                    "type": "array",
+                                    "const": required_slides,
+                                    "items": {"type": "integer"},
+                                }
+                            },
+                            "required": ["slides"],
+                            "additionalProperties": False,
+                        }
         tools = self._apply_common_tool_constraints(tools, state)
+        if terminal_only:
+            tools = [
+                tool
+                for tool in tools
+                if isinstance(tool.get("function"), dict)
+                and tool["function"].get("name") == actions[0]
+            ]
         if (
             has_successful_batch
             and not batch_table_semantics.mutation_and_save_complete(state)

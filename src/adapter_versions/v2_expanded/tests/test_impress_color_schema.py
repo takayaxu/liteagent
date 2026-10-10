@@ -27,6 +27,35 @@ def _exposed_schema() -> dict:
     return tools[0]["function"]["parameters"]
 
 
+def test_shape_format_text_schema_is_flat_for_qwen_and_keeps_format_requirement() -> None:
+    tools = build_tools(
+        "libreoffice_impress",
+        ["shape.format_text"],
+        include_gui=False,
+        include_control_tools=False,
+        strict_generic=True,
+    )
+    schema = tools[0]["function"]["parameters"]
+
+    assert "anyOf" not in schema
+    assert schema["required"] == ["slide", "selector"]
+    assert schema["minProperties"] == 3
+    jsonschema.Draft202012Validator.check_schema(schema)
+
+    valid = {
+        "slide": 1,
+        "selector": {"path": [0], "name": "Title"},
+        "bold": True,
+    }
+    assert not list(jsonschema.Draft202012Validator(schema).iter_errors(valid))
+    assert list(jsonschema.Draft202012Validator(schema).iter_errors({}))
+    assert list(
+        jsonschema.Draft202012Validator(schema).iter_errors(
+            {"slide": 1, "selector": {"path": [0]}}
+        )
+    )
+
+
 def test_impress_color_schema_is_adapter_owned_and_shared() -> None:
     manifest = STRICT_ACTION_PARAM_SCHEMAS[ACTION]
     direct = DIRECT_ACTION_SCHEMAS["libreoffice_impress"][ACTION]

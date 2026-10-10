@@ -610,9 +610,20 @@ class ExecutionEngineMixin:
                     arguments != model_arguments
                     or event.proposed.get("arguments_source") is not None
                 ):
-                    raise RuntimeError(
-                        "strict generic-only execution cannot rewrite or inject model arguments"
+                    cleanup_injection = bool(
+                        event.proposed.get("arguments_source")
+                        == "instruction_and_presentation_observation"
+                        and personal_cleanup_step is not None
+                        and action == personal_cleanup_step["action"]
+                        and action != "presentation.inspect"
+                        and arguments == personal_cleanup_step["arguments"]
                     )
+                    if (
+                        not cleanup_injection
+                    ):
+                        raise RuntimeError(
+                            "strict generic-only execution cannot rewrite or inject model arguments"
+                        )
                 active_block = state.active_request_block(action, arguments)
                 if active_block is not None:
                     event.validated = True

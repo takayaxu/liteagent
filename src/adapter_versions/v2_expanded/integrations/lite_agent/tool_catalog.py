@@ -3786,6 +3786,14 @@ def _strict_generic_schema_overlay(
             "choose cover. With cover, negative x/y or dimensions beyond the slide are "
             "expected centered clipping; do not retry for that geometry."
         )
+    elif domain == "libreoffice_impress" and action == "shape.format_text":
+        # Qwen's OpenAI-compatible tool parser can emit an empty object when the
+        # model-facing schema combines the required shape target with a top-level
+        # anyOf of optional formatting fields. Keep the callable flat and require
+        # the target plus one formatting field; the Adapter's runtime validator
+        # remains authoritative for field values and selector consistency.
+        parameters.pop("anyOf", None)
+        parameters["minProperties"] = len(parameters["required"]) + 1
     elif domain == "libreoffice_impress" and action in {
         "slide.format_text_roles",
         "slides.format_text_roles",
@@ -3931,9 +3939,15 @@ def build_tools(
     before it has observed application state; the default remains unchanged
     for callers that need the complete control surface.
     """
+    # Control tools are namespaced directly (for example ``propose_done``),
+    # whereas application actions use the ``adapter__`` prefix.  A staged
+    # action selector may return a control name to narrow the next turn; do not
+    # reinterpret that name as an Adapter route.
+    control_action_names = {"tools_search", "propose_done", "fail_task"}
     tools = [
         _adapter_tool(domain, action, strict_generic=strict_generic)
         for action in actions
+        if action not in control_action_names
     ]
     if not include_control_tools:
         return tools

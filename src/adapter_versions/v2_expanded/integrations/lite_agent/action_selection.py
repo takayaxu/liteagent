@@ -23,6 +23,7 @@ from .adapter_results import (
     compact_adapter_body as compact_adapter_body,
 )
 from .completion_policy import (
+    action_is_save,
     completion_claim_contradictions as completion_claim_contradictions,
 )
 from .generic_routing import (
@@ -117,9 +118,30 @@ class ActionSelectionMixin:
                 # be issued before every title and deletion mutation succeeds.
                 return [next_cleanup_step["action"]]
             if state.title_range_personal_info_cleanup_plan() is not None:
-                # Only a fully consumed plan may expose the final save/readback
-                # path. The plan itself remains the source of truth here.
-                return ["presentation.inspect", "presentation.save"]
+                # Once the ordered mutation plan is consumed, force a narrow
+                # persistence handoff. Exposing inspect and save together lets
+                # a model loop on read-only checks forever, as happened on the
+                # Impress personal-information cleanup task.
+                plan = state.title_range_personal_info_cleanup_plan()
+                mutation_events = [
+                    event
+                    for step in plan["steps"]
+                    for event in state.successful_action_events(step["action"])
+                    if event.proposed.get("arguments") == step["arguments"]
+                ]
+                last_mutation = max(
+                    (event.step for event in mutation_events), default=-1
+                )
+                saved_after_mutation = any(
+                    action_is_save(str(event.proposed.get("action", "")))
+                    and event.step > last_mutation
+                    for event in state.successful_adapter_events()
+                )
+                if not saved_after_mutation:
+                    return ["presentation.save"]
+                if not state.title_range_personal_info_cleanup_readback_satisfied():
+                    return ["presentation.inspect"]
+                return ["propose_done"]
             # A missing observation cannot prove cleanup completion.
             return ["presentation.inspect"]
         visual_title_plan = multislide_visual_title_fallback_plan(state)
