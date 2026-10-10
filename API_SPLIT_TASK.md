@@ -354,6 +354,13 @@ $PYTHON -m ruff check <changed_python_files>
 - 完整原始轨迹：`src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/`；任务定义与输入指令可见该目录 `original_instruction.txt`，模型参数/工具/返回可见 `llm_requests/`、`llm_call_log.jsonl`、`lite_agent_events.jsonl`。轨迹索引为 `trajectory_manifest.json`，正式评分为 `result.txt`，evaluator 产物索引为 `evaluator_artifacts/manifest.json`。
 - 本轮处理：只记录测试结果；无本题新修复、API replacement 或复跑提交。相关未提交实现继续保留，不能以历史 PASS 将本次失败标记为完成。
 
+### Order 91 — 后续搜索修复 PASS（2026-10-10）
+
+- 本轮失败根因已核实：45 步全为相同的 Thunderbird 工具搜索，邮件工具虽然注册但被全题关键词触发的文件/Calc 排名加分挤出前六项，未执行任何邮件查询或表格创建。
+- 最小修复：Multi-Apps 搜索优先排列当前查询明确指定的应用及操作名称匹配；未指定应用的搜索保留原排序。API 保留，无新增任务专用逻辑。实现提交：`84a3a4c`。
+- 临时定向 contract 检查 8 项、改动 Python Ruff 和差异检查通过；只复跑 Order 91，正式 evaluator `status=passed`、`reward=1.0`，5 步、`agent_done`。
+- 配置/实际命令/完整证据：[Order 91 修复记录](src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md)。新结果：`src/adapter_versions/v2_expanded/experiments/osworld-order91-qwen-20261010-query-priority/results.json`。历史失败证据保持不变。
+
 ### Order 99 — 本轮 FAIL
 
 - 最新事件轨迹直接入口：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl)；[单题最新失败日志](src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md)。
