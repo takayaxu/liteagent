@@ -321,6 +321,8 @@ $PYTHON -m ruff check <changed_python_files>
 
 ## Order 107 开发记录（2026-10-02 endpoint rerun）
 
+**最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
+
 - 题目：`881deb30-9549-4583-a841-8270c65f2a17`；从 2015--2023 的 9 份 ECS PDF 读取各校 `Supported/Application`，写入已打开的 `supported_rate.xlsx`。
 - API replacement：保留通用窄链 `os.filesystem.find`（一次发现）→逐文件 `os.pdf.tables.inspect`（9 次有界观察）→`libreoffice_calc.workbook.inspect`→`range.write(B2:I10)`→一次 `range.read` 读回→`workbook.save`→`propose_done`。没有批量 PDF-to-Calc mutation，也没有题目专用解析路由；观察 ledger 完成前不会暴露写入，写入读回后才暴露保存。
 - 正式 OSWorld 结果：`status=passed`、`reward=1.0`、`termination_reason=agent_done`、`path_class=generic_api_only`。结果文件为 `src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-strict-rerun11-20261002/workers/worker-00/results.json`，调用轨迹为同目录 `raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/adapter_calls.jsonl`，`result.txt` 为 `1.0`。

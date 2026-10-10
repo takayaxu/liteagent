@@ -509,6 +509,8 @@ tests and the changed Python files passed Ruff.
 
 ### Order 107 API State (2026-09-29)
 
+**最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
+
 Order 107 is **PASS** (`status=passed`, `reward=1.0`,
 `termination_reason=agent_done`). The evaluator evidence is preserved at
 `src/adapter_versions/v2_expanded/experiments/local-ecs-rates-107-retry92-20260929/workers/worker-00/results.json`.
@@ -538,6 +540,8 @@ Focused contract validation: `86 passed` in
 `src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py`.
 
 ### Order 107 endpoint rerun (2026-10-02)
+
+**最新运行更正（2026-10-10）：Order 107 最新已记录结果为 FAIL / reward=0.0，45 步、505.698 秒。** 最新结果：[results.json](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/results.json)；最新事件：[lite_agent_events.jsonl](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-test-only-20261010-resume1/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17/lite_agent_events.jsonl)。下方 2026-10-02 的 local-ecs-rates-107-strict-rerun11 是历史 PASS，不是最新一轮。
 
 The same generic API replacement was rerun against the requested Qwen endpoint
 `https://qwen.jinmaoapi.cc.cd/v1` with the local Hugging Face mirror. The run
