@@ -80,3 +80,5 @@ src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py \
 共享工作区在本题开始前已有其他题未提交改动。本题源码增量已应用，但不能把四个文件整文件提交，否则会混入其他题。增量补丁 [implementation.patch](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/implementation.patch) 与前后 SHA-256 单独交付；应在对应共享基线上应用，当前工作区已经应用，不要重复应用。git apply --cached --check 对 HEAD 的两处路由上下文失败，证明它依赖当前未提交基线，不能将孤立 HEAD 当作本次验收源码。
 
 本次提交只登记本题增量交付、配置、验收日志和本题文档写回。完整批次与历史原始结果不改写；最新 MD/JSON 仅更新 Order 91 或增加本次 followup，不给其他未提交实现背书。提交号见下方收尾回执。
+
+Order 91 本题增量交付提交：`c6698fc`（独立源码补丁、基线哈希、配置、PASS 回执、日志与本题文档增量；四个活动源码文件已应用在共享工作区，未整文件提交）。
