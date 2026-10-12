@@ -1,0 +1,26 @@
+{
+  "scope": "Order 91 only; incremental patch against existing shared worktree, not HEAD",
+  "files": [
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py",
+      "before_sha256": "6ddc6c4dd169ff29e9f2340f3170022361985b5a3810b0e7191c9c6ec78d6d8e",
+      "after_sha256": "0859d0a4446335a08cb30eb0f24fb67f85747e47378726c54016e8d6fd1a9d28"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py",
+      "before_sha256": "30605099b45b24cde0ab84eff41dd19b57a96f6e5616a81a142669dd7cdae668",
+      "after_sha256": "779d5dcdc36f342d587e9dced0f5276e5cb0a4fae0deac4fe3acb72ae48474f1"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/schema.py",
+      "before_sha256": "cf6a8a33265a9642b98849a6e875d46cf74d50d0f5fa6e60216ef75cab67dee5",
+      "after_sha256": "9f17aebeeb07098175cb2bb4168fba1655b341b7c14cffa08f34273f015ad531"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py",
+      "before_sha256": "ac3d3da94b634eacec8293c4ecc37c10e35c251ae06f7f6289a97748cc2f74ec",
+      "after_sha256": "260102ba46496ecd4d1cf93c70278737326567beb56e7e21be6b9684e3ffa93a"
+    }
+  ],
+  "patch_sha256": "6c2c2b5d72a9dcb57a8dfded87844003c550419079fd7c022aeff8a5b774beea"
+}

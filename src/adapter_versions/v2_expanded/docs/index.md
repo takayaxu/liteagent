@@ -1,5 +1,9 @@
 # OSWorld API Project
 
+<!-- order91-create-write-save-20261012 begin -->
+Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21 步、465.449 秒、agent_done；北京时间 2026-10-12 17:37:12 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md)。10 月 12 日完整批次仍保留 25 PASS、2 FAIL、1 未评分，本次单题结果单独登记。
+<!-- order91-create-write-save-20261012 end -->
+
 > 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99、102 后续单题 PASS；最新已核对结果 26/28 PASS，仅 107、108 仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
 
 Updated: 2026-10-10

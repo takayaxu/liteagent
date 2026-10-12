@@ -1,5 +1,9 @@
 # 28 题结果与轨迹统一入口（2026-10-10）
 
+<!-- order91-create-write-save-20261012 begin -->
+Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21 步、465.449 秒、agent_done；北京时间 2026-10-12 17:37:12 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md)。10 月 12 日完整批次仍保留 25 PASS、2 FAIL、1 未评分，本次单题结果单独登记。
+<!-- order91-create-write-save-20261012 end -->
+
 查询本轮结果请使用“固定批次”；查询最新运行请使用“最新已核对运行”。旧开发记录只表示该记录日期的运行条件，不能根据旧 PASS 或文件修改时间选择最新轨迹。
 
 固定批次：23/28 PASS，5 道 FAIL（91、99、102、107、108）。后续 91、99、102 单题 PASS 不改写批次成绩。最新已核对结果为 26/28 PASS，仍失败的是 107、108；这是各题最新运行的汇总，不是一次新批次的成绩。

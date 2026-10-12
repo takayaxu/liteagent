@@ -1,0 +1,148 @@
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py
+@@ -20,6 +20,7 @@
+ from multi_apps_adapter.route_utils import is_route, normalize_route
+ 
+ from .impress_image_insertion import is_sized_image_insertion_instruction
++from .completion_policy import effective_canonical_action
+ from .tool_catalog import (
+     DOWNSTREAM_ADAPTER_DOMAINS,
+     FORBIDDEN_DATASET_ACTIONS,
+@@ -136,6 +137,51 @@
+         if route not in routes:
+             routes.append(route)
+     return routes
++
++
++def created_workbook_routes(state: Any) -> list[tuple[str, str]]:
++    """Expose independent consumers of a confirmed new, unsaved workbook.
++
++    This depends only on executed Adapter state, never on the task instruction.
++    The model still selects every action, cell value, range, and output path.
++    """
++    if getattr(state, "domain", None) != "multi_apps":
++        return []
++    created = False
++    write_attempted = False
++    for event in getattr(state, "events", ()):
++        domain, action, _ = effective_canonical_action(event, state.domain)
++        if domain != "libreoffice_calc":
++            continue
++        if created and action == "range.write":
++            # A failed write may have partial effects; permit a native read.
++            write_attempted = True
++        if not getattr(event, "executed", False):
++            continue
++        result = getattr(event, "result", None)
++        hint = result.get("context_hint", {}) if isinstance(result, dict) else {}
++        context = hint.get("downstream_context", {})
++        if action == "workbook.create_new":
++            created = bool(
++                isinstance(context, dict)
++                and context.get("table_state") == "blank_workbook"
++                and context.get("saved") is False
++                and context.get("sheet")
++            )
++            write_attempted = False
++        elif action in {
++            "workbook.save", "workbook.save_as", "workbook.open",
++            "workbook.read_file", "workbook.convert_file",
++        }:
++            created = False
++        elif action == "workbook.inspect" and isinstance(context, dict) and context.get("url"):
++            created = False
++    if not created:
++        return []
++    actions = ["range.write", "workbook.save_as"]
++    if write_attempted:
++        actions.insert(1, "range.read")
++    return [("libreoffice_calc", action) for action in actions]
+ 
+ 
+ def discovered_adapter_routes(state: Any) -> list[tuple[str, str]]:
+@@ -181,6 +227,9 @@
+             route = ("libreoffice_calc", action)
+             if route not in routes:
+                 routes.append(route)
++    for route in created_workbook_routes(state):
++        if route not in routes:
++            routes.append(route)
+     return routes
+ 
+ 
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
+@@ -27,7 +27,11 @@
+     completion_claim_contradictions as completion_claim_contradictions,
+     effective_canonical_action,
+ )
+-from .generic_routing import discovered_adapter_routes, recovery_search_actions
++from .generic_routing import (
++    created_workbook_routes,
++    discovered_adapter_routes,
++    recovery_search_actions,
++)
+ from .local_file_discovery import (
+     constrain_failed_path_discovery_tools,
+     local_file_discovery_stage_active,
+@@ -453,6 +457,34 @@
+         schema constraints just because the route was recovered.
+         """
+         if state.domain == "multi_apps":
++            workbook_routes = created_workbook_routes(state)
++            if (
++                workbook_routes
++                and not getattr(state, "pending_terminal", None)
++                and not _latest_explicit_search_routes(state)
++            ):
++                # Creating a blank document establishes the editing target.
++                # Offer its independent write/save consumers immediately,
++                # instead of retaining stale readers and repeated inspection.
++                tools = build_tools(
++                    state.domain, ["adapter.call"], include_gui=False,
++                    include_control_tools=True, strict_generic=True,
++                )
++                tools = constrain_adapter_call_routes(tools, workbook_routes)
++                for tool in tools:
++                    function = tool.get("function", {})
++                    if function.get("name") == tool_name("adapter.call"):
++                        function["description"] += (
++                            " The new workbook is already open; use the worksheet name "
++                            "returned by creation. Assemble the requested cell data and "
++                            "write it with range.write; its rectangular range must match "
++                            "the number of rows and columns in values exactly. You may "
++                            "write additional ranges or read back cells. Save with "
++                            "workbook.save_as using your chosen output URL when all "
++                            "requested content is complete. These are independent calls; "
++                            "creating or writing does not save the workbook."
++                        )
++                return soft_recovery_tools(constrain_output_tools(tools, state), state)
+             if pdf_table_selection.active(state):
+                 eligible = pdf_table_selection.allowed_routes(state)
+                 routes = [route for route in discovered_adapter_routes(state) if route in eligible]
+--- a/src/adapter_versions/v2_expanded/calc_adapter/schema.py
++++ b/src/adapter_versions/v2_expanded/calc_adapter/schema.py
+@@ -1112,7 +1112,10 @@
+     if value_rows != target_rows or value_columns != target_columns:
+         raise AdapterError(
+             "RANGE_INVALID",
+-            "typed matrix dimensions do not match the target range. "
++            f"Target range has {target_rows} row(s) and {target_columns} column(s), "
++            f"but values has {value_rows} row(s) and {value_columns} column(s). "
++            "Change the A1 range or the values matrix so both dimensions match "
++            "exactly, then submit a corrected range.write call. No cells were written. "
+             "To write one value into merged cells, target only the top-left cell.",
+             {
+                 "target_rows": target_rows,
+--- a/src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py
++++ b/src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py
+@@ -251,7 +251,8 @@
+             "range": {
+                 **NONEMPTY_STRING,
+                 "description": (
+-                    "Exact A1 destination range. To write one value into merged cells, "
++                    "Exact A1 destination range whose row and column counts match values "
++                    "exactly. Count both endpoints inclusively. To write one value into merged cells, "
+                     "target only the top-left cell and pass one value."
+                 ),
+             },

@@ -471,3 +471,14 @@ $PYTHON -m ruff check <changed_python_files>
 - 提交边界：预算实现 `4894e6f`，首轮验收日志 `20fd8b5`。两个 singleton schema 与完整 Writer 分类辅助修复仍在原已修改/未跟踪的共享源码中，未整文件暂存。PASS 验证保存的组合 episode 源码，不能给孤立预算提交或当前全部共享改动背书；tool_surface.py 在 episode source seal 后另有并发修改，详见单题日志。
 
 本次写回 API 审计、正式日志、单题日志、MD/JSON 最新入口和提交审计；原始事件与结果文件不修改。fixed-28 保持 23/28；各题最新已核对结果为 26/28 PASS，仅 107、108 仍 FAIL。
+
+## Order 91 创建后显式写入与保存正式 PASS（2026-10-12）
+
+Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21 步、465.449 秒、agent_done；北京时间 2026-10-12 17:37:12 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md)。10 月 12 日完整批次仍保留 25 PASS、2 FAIL、1 未评分，本次单题结果单独登记。
+
+- 修复依据：最新批次23步/0.0，创建空表后九次inspect，写入/保存未在工具面交接；后续五列矩阵写六列且重复失败。保留历史结果与轨迹。
+- 本题增量：根据已执行空白未保存工作簿状态展示range.write/workbook.save_as；写入尝试后range.read；模型决定数据、范围、路径。维度拒绝明确目标与矩阵实际行列数，原严格校验保留，不代填参数。保留create_new空表契约及10月10日搜索排序修复。
+- 一次正式单题复跑通过：4创建，5范围失败，6模型纠正表头，7写25格，8–9错误路径保存失败，10–19重复搜索，20模型改正URL并显式保存，21完成；21审计、0soft restart。实际XLSX6×5与邮件查询逐格一致，原evaluator=1.0。
+- 本次固定75步（命令未传initial-step-budget），区别于前次初始45；实际21步。Qwen3.5-9B/non_thinking，8192tokens，temperature0，25本地步、1800秒。实际命令、源码seal、SHA-256与保留限制详见单题日志。
+- 定向contract replay、四文件Ruff及差异检查通过；只跑Order91。共享源码已应用，本题增量补丁与基线hash单独交付，避免整文件混入其他题未提交修改。本次PASS仅代表seal中组合源码。
+- 审计、正式日志、单题日志和最新结果MD/JSON已同步；完整10月12日批次维持25PASS/2FAIL/1未评分。
