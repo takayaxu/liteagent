@@ -61,5 +61,8 @@
     "model_audit_count": 10,
     "model_audit_trace": "model_audits.jsonl",
     "pending_model_audit": null
-  }
+  },
+  "incremental_delivery_commit": "d90bcd0",
+  "closure_record_commit": "8d6662b",
+  "integration_scope": "Activity source applied to shared worktree; commit contains incremental source patch and evidence, not complete shared source files."
 }

@@ -83,3 +83,7 @@ PYTHONPATH=src/adapter_versions/v2_expanded /var/lib/liteagent-shared/python-env
 审计、正式日志、单题日志、统一最新MD/JSON及第二轮followup已写回。批次records及聚合不改写，其他题记录不更新；原始失败轨迹不覆盖。提交号见收尾回执。
 
 Order 91 本题增量交付提交：`d90bcd0`（六文件源码增量补丁、基线hash、配置、PASS回执与日志；活动源码已应用于共享工作区，未整文件提交其他题修改）。
+
+<!-- order91-save-path-writeback-receipt begin -->
+本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
+<!-- order91-save-path-writeback-receipt end -->

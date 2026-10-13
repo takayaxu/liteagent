@@ -1,0 +1,109 @@
+--- a/API_SPLIT_TASK.md
++++ b/API_SPLIT_TASK.md
+@@ -789,3 +789,7 @@
+ - 本题源码已应用在共享工作区；独立增量补丁/hash交付，避免整文件暂存其他题。正式日志、API审计、单题日志、最新结果入口同步；完整批次不改写。
+ 
+ Order 91 本题增量交付提交：`d90bcd0`（六文件源码增量补丁、基线hash、配置、PASS回执与日志；活动源码已应用于共享工作区，未整文件提交其他题修改）。
++
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
+--- a/docs/api-granularity-audit-20260920.md
++++ b/docs/api-granularity-audit-20260920.md
+@@ -950,3 +950,7 @@
+ - 本题源码已应用在共享工作区；独立增量补丁/hash交付，避免整文件暂存其他题。正式日志、API审计、单题日志、最新结果入口同步；完整批次不改写。
+ 
+ Order 91 本题增量交付提交：`d90bcd0`（六文件源码增量补丁、基线hash、配置、PASS回执与日志；活动源码已应用于共享工作区，未整文件提交其他题修改）。
++
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
+--- a/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md
++++ b/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md
+@@ -83,3 +83,7 @@
+ 审计、正式日志、单题日志、统一最新MD/JSON及第二轮followup已写回。批次records及聚合不改写，其他题记录不更新；原始失败轨迹不覆盖。提交号见收尾回执。
+ 
+ Order 91 本题增量交付提交：`d90bcd0`（六文件源码增量补丁、基线hash、配置、PASS回执与日志；活动源码已应用于共享工作区，未整文件提交其他题修改）。
++
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
+--- a/src/adapter_versions/v2_expanded/docs/index.md
++++ b/src/adapter_versions/v2_expanded/docs/index.md
+@@ -3,6 +3,10 @@
+ <!-- order91-save-path-20261013 begin -->
+ Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
+ <!-- order91-save-path-20261013 end -->
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
++
+ 
+ > Order 99 固定最新入口：[order99-latest.md](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-latest.md)，当前 FAIL / reward=0.0，第二轮完整复跑。
+ 
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md
+@@ -3,6 +3,10 @@
+ <!-- order91-save-path-20261013 begin -->
+ Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
+ <!-- order91-save-path-20261013 end -->
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
++
+ 
+ <!-- osworld-full-rerun2-20261012-live begin -->
+ 本轮 osworld-api-split-full-rerun2-20261012：completed，已完成 28/28，PASS=25、FAIL=3、未评分=0。[最新完整批次入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md)；每题原始结果与事件见该表。待运行题保留此前最新结果。
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md
+@@ -3,6 +3,10 @@
+ <!-- order91-save-path-20261013 begin -->
+ Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
+ <!-- order91-save-path-20261013 end -->
++<!-- order91-save-path-writeback-receipt begin -->
++本次写回核对：Order 91 于北京时间 **2026-10-13 10:40:53** 完成，**PASS / 1.0，10 步，359.121 秒，agent_done**。增量补丁与验收证据提交 `d90bcd0`，收尾记录 `8d6662b`；六文件活动源码已应用于共享工作区，提交边界为本题增量补丁。结果、事件、manifest、评分及产物 SHA-256 已逐一复核。正式复跑未触发错误父目录或 filesystem.find，相关分支以旧失败 replay 和定向检查验证；这项验证范围在单题日志保留。历史失败与完整批次记录不覆盖。
++<!-- order91-save-path-writeback-receipt end -->
++
+ 
+ 状态：completed；完成 28/28；PASS 25；FAIL 3；未评分 0；当前题：无。
+ 
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json
+@@ -1012,7 +1012,10 @@
+         },
+         "experiment_id": "osworld-order91-save-path-20261013",
+         "results_termination_reason": "agent_done",
+-        "manifest_termination_reason": "agent_done"
++        "manifest_termination_reason": "agent_done",
++        "incremental_delivery_commit": "d90bcd0",
++        "closure_record_commit": "8d6662b",
++        "integration_scope": "Activity source applied to shared worktree; commit contains incremental source patch and evidence, not complete shared source files."
+       },
+       "latest_attempt": {
+         "order": 91,
+@@ -1077,7 +1080,10 @@
+           "model_audit_count": 10,
+           "model_audit_trace": "model_audits.jsonl",
+           "pending_model_audit": null
+-        }
++        },
++        "incremental_delivery_commit": "d90bcd0",
++        "closure_record_commit": "8d6662b",
++        "integration_scope": "Activity source applied to shared worktree; commit contains incremental source patch and evidence, not complete shared source files."
+       },
+       "attempt_history": [
+         {
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.json
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.json
+@@ -887,7 +887,10 @@
+         "model_audit_count": 10,
+         "model_audit_trace": "model_audits.jsonl",
+         "pending_model_audit": null
+-      }
++      },
++      "incremental_delivery_commit": "d90bcd0",
++      "closure_record_commit": "8d6662b",
++      "integration_scope": "Activity source applied to shared worktree; commit contains incremental source patch and evidence, not complete shared source files."
+     }
+   ]
+ }

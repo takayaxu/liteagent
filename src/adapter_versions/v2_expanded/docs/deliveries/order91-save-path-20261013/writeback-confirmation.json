@@ -1,0 +1,26 @@
+{
+  "order": 91,
+  "recorded_at": "2026-10-13T10:53:53.393054+08:00",
+  "incremental_delivery_commit": "d90bcd0",
+  "closure_record_commit": "8d6662b",
+  "integration_scope": "Activity source applied to shared worktree; commit contains incremental source patch and evidence, not complete shared source files.",
+  "status": "passed",
+  "reward": 1.0,
+  "steps": 10,
+  "duration_seconds": 359.121,
+  "completed_at_shanghai": "2026-10-13T10:40:53.970080+08:00",
+  "termination_reason": "agent_done",
+  "writeback_files": [
+    "/home/liuxv/liteagent/API_SPLIT_TASK.md",
+    "/home/liuxv/liteagent/docs/api-granularity-audit-20260920.md",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/index.md",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.json"
+  ],
+  "original_evidence_hashes_verified": 23,
+  "historical_batch_unchanged": true,
+  "result_receipt": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/result-receipt.json"
+}
