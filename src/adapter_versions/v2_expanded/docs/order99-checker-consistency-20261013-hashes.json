@@ -1,0 +1,7 @@
+{
+  "source": "src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py",
+  "baseline_sha256": "bb9c87de3985f201899c10a9cc82343cf777dae65ce6d66411e9e2b6077aea95",
+  "updated_sha256": "5ea7d793f49a6bcaa35e34d92f67bd7b54a4fea666755a283989a826fbea47e8",
+  "patch_sha256": "67d90200934214c37e0c94dc702705d4325120847ea2b8f74c60f3b479f1704f",
+  "delivery": "Incremental repair on pre-existing shared untracked source; no other task changes included."
+}
