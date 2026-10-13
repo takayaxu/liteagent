@@ -484,3 +484,12 @@ Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21
 - 审计、正式日志、单题日志和最新结果MD/JSON已同步；完整10月12日批次维持25PASS/2FAIL/1未评分。
 
 Order 91 本题增量交付提交：`c6698fc`（独立源码补丁、基线哈希、配置、PASS 回执、日志与本题文档增量；四个活动源码文件已应用在共享工作区，未整文件提交）。
+
+## Order 91 保存父目录发现与恢复正式 PASS（2026-10-13）
+
+Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
+
+- 依据：第二轮35步/0.0，五封邮件已写好但保存猜错父目录；坏URL导致整个save_as被搜索排除，重启后重写又破坏数据。
+- 修复：保存前父目录preflight与可操作反馈；写入后提供filesystem.find；保存失败保留成功数据并优先read/find/save，显式edit搜索仍允许；重复拦截按标准化参数，搜索与调用面保持一致。六文件增量，不合并create/write/save，不代填路径或数据。
+- 正式单题命令、实际调用、Ruff/focused检查、源码seal及证据SHA-256见单题日志。仅跑Order91，当前初始45/硬上限75，与最新批次条件一致。
+- 本题源码已应用在共享工作区；独立增量补丁/hash交付，避免整文件暂存其他题。正式日志、API审计、单题日志、最新结果入口同步；完整批次不改写。

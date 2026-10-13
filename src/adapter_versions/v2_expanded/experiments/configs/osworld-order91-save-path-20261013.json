@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "experiment_id": "osworld-order91-save-path-20261013",
+  "status": "development",
+  "purpose": "Single-task validation of output-parent discovery, exact-argument repeated-request blocks and preserved workbook cells during save recovery.",
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "Qwen3.5-9B",
+    "base_urls": [
+      "https://qwen.jinmaoapi.cc.cd/v1"
+    ],
+    "reasoning_mode": "non_thinking",
+    "reasoning_profile": "qwen35_thinking_switch"
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "max_steps": 75,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 8192,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": false,
+    "gui_enabled": true,
+    "guest_proxy": false,
+    "model_retries": 3,
+    "reasoning_mode": "non_thinking",
+    "max_local_steps": 25,
+    "max_soft_restarts": 1,
+    "request_timeout": 240.0,
+    "initial_settle_seconds": 10.0,
+    "action_settle_seconds": 2.0,
+    "evaluator_settle_seconds": 5.0,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1.0,
+    "task_specific_or_golden_exposed": false,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "non_promotable": true,
+    "initial_step_budget": 45,
+    "concurrency": 1
+  },
+  "tasks": [
+    {
+      "order": 91,
+      "domain": "multi_apps",
+      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247"
+    }
+  ]
+}

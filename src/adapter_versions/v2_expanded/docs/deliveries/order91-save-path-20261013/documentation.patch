@@ -1,0 +1,388 @@
+--- a/API_SPLIT_TASK.md
++++ b/API_SPLIT_TASK.md
+@@ -778,3 +778,12 @@
+ <!-- osworld-full-rerun2-20261012-final-check begin -->
+ 最终核对：28/28，25 PASS、3 FAIL（91、99、108）、0未评分；全部最新入口与本轮证据一致，226个源文件/题目文件哈希未变化。[完整表格](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md)；[核对回执](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/final-log-verification.json)。北京时间2026-10-13完成，本轮未做运行时修复。
+ <!-- osworld-full-rerun2-20261012-final-check end -->
++
++## Order 91 保存父目录发现与恢复正式 PASS（2026-10-13）
++
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++
++- 依据：第二轮35步/0.0，五封邮件已写好但保存猜错父目录；坏URL导致整个save_as被搜索排除，重启后重写又破坏数据。
++- 修复：保存前父目录preflight与可操作反馈；写入后提供filesystem.find；保存失败保留成功数据并优先read/find/save，显式edit搜索仍允许；重复拦截按标准化参数，搜索与调用面保持一致。六文件增量，不合并create/write/save，不代填路径或数据。
++- 正式单题命令、实际调用、Ruff/focused检查、源码seal及证据SHA-256见单题日志。仅跑Order91，当前初始45/硬上限75，与最新批次条件一致。
++- 本题源码已应用在共享工作区；独立增量补丁/hash交付，避免整文件暂存其他题。正式日志、API审计、单题日志、最新结果入口同步；完整批次不改写。
+--- a/docs/api-granularity-audit-20260920.md
++++ b/docs/api-granularity-audit-20260920.md
+@@ -939,3 +939,12 @@
+ <!-- osworld-full-rerun2-20261012-final-check begin -->
+ 最终核对：28/28，25 PASS、3 FAIL（91、99、108）、0未评分；全部最新入口与本轮证据一致，226个源文件/题目文件哈希未变化。[完整表格](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md)；[核对回执](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/final-log-verification.json)。北京时间2026-10-13完成，本轮未做运行时修复。
+ <!-- osworld-full-rerun2-20261012-final-check end -->
++
++## Order 91 保存父目录发现与恢复正式 PASS（2026-10-13）
++
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++
++- 依据：第二轮35步/0.0，五封邮件已写好但保存猜错父目录；坏URL导致整个save_as被搜索排除，重启后重写又破坏数据。
++- 修复：保存前父目录preflight与可操作反馈；写入后提供filesystem.find；保存失败保留成功数据并优先read/find/save，显式edit搜索仍允许；重复拦截按标准化参数，搜索与调用面保持一致。六文件增量，不合并create/write/save，不代填路径或数据。
++- 正式单题命令、实际调用、Ruff/focused检查、源码seal及证据SHA-256见单题日志。仅跑Order91，当前初始45/硬上限75，与最新批次条件一致。
++- 本题源码已应用在共享工作区；独立增量补丁/hash交付，避免整文件暂存其他题。正式日志、API审计、单题日志、最新结果入口同步；完整批次不改写。
+--- a/src/adapter_versions/v2_expanded/docs/index.md
++++ b/src/adapter_versions/v2_expanded/docs/index.md
+@@ -1,4 +1,8 @@
+ # OSWorld API Project
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ > Order 99 固定最新入口：[order99-latest.md](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-latest.md)，当前 FAIL / reward=0.0，第二轮完整复跑。
+ 
+--- a/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md
++++ b/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md
+@@ -1,4 +1,8 @@
+ # Order 91：创建空表后的显式写入与保存（2026-10-12）
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ <!-- order91-latest-rerun-entry begin -->
+ Order 91 本轮最新已完成结果：**failed / reward=0.0**；[单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-full-rerun2-20261012.md)；[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)。下文保留该历史运行的记录。
+--- a/src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md
++++ b/src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md
+@@ -1,4 +1,8 @@
+ # Order 91：固定 28 题批次失败轨迹（2026-10-10）
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ <!-- order91-create-write-save-20261012 begin -->
+ Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21 步、465.449 秒、agent_done；北京时间 2026-10-12 17:37:12 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md)。10 月 12 日完整批次仍保留 25 PASS、2 FAIL、1 未评分，本次单题结果单独登记。
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json
+@@ -977,52 +977,106 @@
+         }
+       },
+       "latest_verified_run": {
+-        "status": "failed",
+-        "reward": 0.0,
+-        "steps": 35,
+-        "duration_seconds": 729.505,
+-        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json",
+-        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+-        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+-        "completed_at": "2026-10-12T14:07:28.277362+00:00",
+-        "sha256": {
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json": "6a5833dabff3439c4e1d32bbfd5384da219404b6687a951ec53bb36175be32ef",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "a8a732f82c67020ced9bbc1298e5af2884c3877edc64455eed24d431b696a523",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "e97004b76bb4184a144400e42aab9e4b0774b7656de89a7d5427591427cc7faf",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "a0be08820d4705e5a344430e04764c953534536227c26364a722c36ecb2e4966",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "dab323449421bf61d1c16c63fd51a280fdd2e882b1b3f765308e36d57ba7dff4"
+-        },
+-        "results_termination_reason": "stalled_no_progress",
+-        "manifest_termination_reason": "stalled_no_progress",
+-        "experiment_id": "osworld-api-split-full-rerun2-20261012"
++        "status": "passed",
++        "reward": 1.0,
++        "steps": 10,
++        "duration_seconds": 359.121,
++        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json",
++        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
++        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
++        "completed_at": "2026-10-13T02:40:53.970080+00:00",
++        "sha256": {
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json": "3ec8f8f1759adc3c3176a2879e605caa6420eff2d36f656a8fcee7f83cc24acd",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/metadata.json": "30f1bddc25fb49ac569a134643c37554f599f95a3b821b22234992c1ac89b4c3",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/runner.log": "fac707ebb673c1a15a10ca42b4d6a67dbb82196c39e0efb0a03bded03c6aed9a",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "967cfd1559d5d7fe2f14257af30ed742f7c9fb92a1c086f803610313fa257b3f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "eaee2914ac6068d7a16c3d573fab6929ad5450467b1511ecba549c84a1d4c53d",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "44ac3030d69451ff74fc832cd7226fc4461dee288b05cacafc586099a954518e",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/model_audits.jsonl": "26486fdca25981b9132c67d340df0f5911800d9b7188696b4baf82e723bcdb4a",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/guest_file_inventory.json": "64dacd385c72833ef35ee61b57fd6d114ea94a209927ca3ff3ee5e0e7266982f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "eb310f733af3ec88a1ed82263de38a259d73f55ba81fb535cb0beb47c466b9b3",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-save-path-20261013.json": "af63868583bf51def38ae86873f61742b80fbf2a0b25249d528a3382537a602b",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/result-00-report.xlsx": "6f221b60b87620f091abc0d16d456ccc40d1a9d4cc06e51288484c15fd7a8b21",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0001_step_001_attempt_1.json": "b5473bda723a94883fb8992dc527ddf4851776eb685ba12b5e9070891ac04792",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0002_step_002_attempt_1.json": "e5e59a43b2da2a68244d614eb9c56e9c8f75d3c6047f40e9f2c606d31cb2adec",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0003_step_003_attempt_1.json": "232208169f016819fcafefe9451762d613ef4d8bfdae48192d88c2670645c827",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0004_step_004_attempt_1.json": "60d0ee7cbe8e3e5702e6d54d4bafcf72320cdef03d89e5ed5f383bf5aa646b8d",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0005_step_005_attempt_1.json": "81eed4e060081c2ccd23ea72d64edcefd8e0fd88a068d88ebf2b44c159dc3df8",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0006_step_006_attempt_1.json": "47abe2f38a26e07b1c7f36b56be9187e31ca915d53fa00da816ba16cb99cd83f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0007_step_007_attempt_1.json": "9ef2152ac8f083a876b12db86a826df056cf6865bd83040c70c79890125d2ffa",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0008_step_008_attempt_1.json": "cd2c6507bf742dfd175f2c57a40d3e78868650480c21e935dded2bb8dafb1c78",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0009_step_009_attempt_1.json": "8caa531b5f72fb2a461703b04f3e5074f0e32023253439a345bff5b6b6307d5c",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0010_step_010_attempt_1.json": "273b9fe0868b2c98d3ecf3f5dcaac39a1c8a0c70e5ab44c4071b2e9a3c55d1fd",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0011_step_011_attempt_1.json": "f6444bc442830aa5732d3884d75a5c5c6f4b0aa23f6403b16811b75ca0753288"
++        },
++        "experiment_id": "osworld-order91-save-path-20261013",
++        "results_termination_reason": "agent_done",
++        "manifest_termination_reason": "agent_done"
+       },
+       "latest_attempt": {
+         "order": 91,
+         "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
+-        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json",
+-        "runner_exit_code": 0,
+-        "recorded_at": "2026-10-12T22:07:31.002858+08:00",
+-        "status": "failed",
+-        "reward": 0.0,
+-        "steps": 35,
+-        "duration_seconds": 729.505,
+-        "termination_reason": "stalled_no_progress",
+-        "terminated_by_agent": false,
+-        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
+-        "manifest_termination_reason": "stalled_no_progress",
+-        "completed_at": "2026-10-12T14:07:28.277362+00:00",
+-        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
+-        "event_count": 35,
+-        "error": null,
+-        "model_request_errors": null,
+-        "sha256": {
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json": "6a5833dabff3439c4e1d32bbfd5384da219404b6687a951ec53bb36175be32ef",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "a8a732f82c67020ced9bbc1298e5af2884c3877edc64455eed24d431b696a523",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "e97004b76bb4184a144400e42aab9e4b0774b7656de89a7d5427591427cc7faf",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "a0be08820d4705e5a344430e04764c953534536227c26364a722c36ecb2e4966",
+-          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "dab323449421bf61d1c16c63fd51a280fdd2e882b1b3f765308e36d57ba7dff4"
++        "experiment_id": "osworld-order91-save-path-20261013",
++        "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json",
++        "runner_exit_code": 0,
++        "recorded_at": "2026-10-13T10:42:27.114126+08:00",
++        "status": "passed",
++        "reward": 1.0,
++        "steps": 10,
++        "duration_seconds": 359.121,
++        "termination_reason": "agent_done",
++        "terminated_by_agent": true,
++        "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
++        "manifest_termination_reason": "agent_done",
++        "started_at": "2026-10-13T02:34:54.849349+00:00",
++        "completed_at": "2026-10-13T02:40:53.970080+00:00",
++        "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
++        "event_count": 10,
++        "error": null,
++        "model_request_errors": null,
++        "sha256": {
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json": "3ec8f8f1759adc3c3176a2879e605caa6420eff2d36f656a8fcee7f83cc24acd",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/metadata.json": "30f1bddc25fb49ac569a134643c37554f599f95a3b821b22234992c1ac89b4c3",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/runner.log": "fac707ebb673c1a15a10ca42b4d6a67dbb82196c39e0efb0a03bded03c6aed9a",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "967cfd1559d5d7fe2f14257af30ed742f7c9fb92a1c086f803610313fa257b3f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "eaee2914ac6068d7a16c3d573fab6929ad5450467b1511ecba549c84a1d4c53d",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "44ac3030d69451ff74fc832cd7226fc4461dee288b05cacafc586099a954518e",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/model_audits.jsonl": "26486fdca25981b9132c67d340df0f5911800d9b7188696b4baf82e723bcdb4a",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/guest_file_inventory.json": "64dacd385c72833ef35ee61b57fd6d114ea94a209927ca3ff3ee5e0e7266982f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "eb310f733af3ec88a1ed82263de38a259d73f55ba81fb535cb0beb47c466b9b3",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-save-path-20261013.json": "af63868583bf51def38ae86873f61742b80fbf2a0b25249d528a3382537a602b",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/result-00-report.xlsx": "6f221b60b87620f091abc0d16d456ccc40d1a9d4cc06e51288484c15fd7a8b21",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0001_step_001_attempt_1.json": "b5473bda723a94883fb8992dc527ddf4851776eb685ba12b5e9070891ac04792",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0002_step_002_attempt_1.json": "e5e59a43b2da2a68244d614eb9c56e9c8f75d3c6047f40e9f2c606d31cb2adec",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0003_step_003_attempt_1.json": "232208169f016819fcafefe9451762d613ef4d8bfdae48192d88c2670645c827",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0004_step_004_attempt_1.json": "60d0ee7cbe8e3e5702e6d54d4bafcf72320cdef03d89e5ed5f383bf5aa646b8d",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0005_step_005_attempt_1.json": "81eed4e060081c2ccd23ea72d64edcefd8e0fd88a068d88ebf2b44c159dc3df8",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0006_step_006_attempt_1.json": "47abe2f38a26e07b1c7f36b56be9187e31ca915d53fa00da816ba16cb99cd83f",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0007_step_007_attempt_1.json": "9ef2152ac8f083a876b12db86a826df056cf6865bd83040c70c79890125d2ffa",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0008_step_008_attempt_1.json": "cd2c6507bf742dfd175f2c57a40d3e78868650480c21e935dded2bb8dafb1c78",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0009_step_009_attempt_1.json": "8caa531b5f72fb2a461703b04f3e5074f0e32023253439a345bff5b6b6307d5c",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0010_step_010_attempt_1.json": "273b9fe0868b2c98d3ecf3f5dcaac39a1c8a0c70e5ab44c4071b2e9a3c55d1fd",
++          "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0011_step_011_attempt_1.json": "f6444bc442830aa5732d3884d75a5c5c6f4b0aa23f6403b16811b75ca0753288"
++        },
++        "step_budget": {
++          "policy": "observed_organization_inventory",
++          "initial_limit": 45,
++          "hard_limit": 75,
++          "effective_limit": 45,
++          "estimate": null
++        },
++        "source_seal_sha256": "0544eb1714cecff77e0d0480c41a9e0594f17c01d03262fcf77a6bae785bb01c",
++        "episode_control": {
++          "global_steps": 11,
++          "local_step": 10,
++          "retry": 0,
++          "soft_restart_count": 0,
++          "soft_restart_vm_policy": "preserve_current_vm",
++          "model_audit_count": 10,
++          "model_audit_trace": "model_audits.jsonl",
++          "pending_model_audit": null
+         }
+       },
+       "attempt_history": [
+@@ -1053,6 +1107,34 @@
+             "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "cfbd1d28812af61660b5f5d68b51dbbde25814a2e2f51548b598de5d99567df7",
+             "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "a5a97b29e1e3cfc5b05bb432fe5ba978e3984382b3e9b2685b07c0fa5c6b6713"
+           }
++        },
++        {
++          "order": 91,
++          "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
++          "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json",
++          "runner_exit_code": 0,
++          "recorded_at": "2026-10-12T22:07:31.002858+08:00",
++          "status": "failed",
++          "reward": 0.0,
++          "steps": 35,
++          "duration_seconds": 729.505,
++          "termination_reason": "stalled_no_progress",
++          "terminated_by_agent": false,
++          "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
++          "manifest_termination_reason": "stalled_no_progress",
++          "completed_at": "2026-10-12T14:07:28.277362+00:00",
++          "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
++          "event_count": 35,
++          "error": null,
++          "model_request_errors": null,
++          "sha256": {
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json": "6a5833dabff3439c4e1d32bbfd5384da219404b6687a951ec53bb36175be32ef",
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "a8a732f82c67020ced9bbc1298e5af2884c3877edc64455eed24d431b696a523",
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "e97004b76bb4184a144400e42aab9e4b0774b7656de89a7d5427591427cc7faf",
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4",
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "a0be08820d4705e5a344430e04764c953534536227c26364a722c36ecb2e4966",
++            "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "dab323449421bf61d1c16c63fd51a280fdd2e882b1b3f765308e36d57ba7dff4"
++          }
+         }
+       ]
+     },
+@@ -2079,8 +2161,8 @@
+       }
+     }
+   ],
+-  "latest_verified_passed": 25,
+-  "latest_verified_failed": 3,
++  "latest_verified_passed": 26,
++  "latest_verified_failed": 2,
+   "current_batch_index": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md",
+   "current_batch_progress": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/progress.json",
+   "latest_attempt_unscored": 0
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md
+@@ -1,4 +1,8 @@
+ # 28 题结果与轨迹统一入口（2026-10-10）
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ <!-- osworld-full-rerun2-20261012-live begin -->
+ 本轮 osworld-api-split-full-rerun2-20261012：completed，已完成 28/28，PASS=25、FAIL=3、未评分=0。[最新完整批次入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md)；每题原始结果与事件见该表。待运行题保留此前最新结果。
+@@ -239,7 +243,7 @@
+ 
+ 
+ <!-- order91-rerun2-current begin -->
+-> 本轮最新尝试（第二轮完整复跑）：**failed / reward=0.0**；[最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-full-rerun2-20261012.md)。下方其余记录为历史运行。
++> Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。 以下保留历史批次。
+ <!-- order91-rerun2-current end -->
+ <!-- order91-current-batch-20261012 begin -->
+ > Order 91 创建、写入、保存独立调用修复：**PASS / reward=1.0**，21 步、465.449 秒、agent_done；北京时间 2026-10-12 17:37:12 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-create-write-save-20261012/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md)。10 月 12 日完整批次仍保留 25 PASS、2 FAIL、1 未评分，本次单题结果单独登记。 以下保留10月10日历史运行。
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261012.md
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261012.md
+@@ -1,4 +1,8 @@
+ # 28 题完整复跑：结果与最新轨迹（2026-10-12）
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ <!-- order67-saved-readback-fix-pass begin -->
+ Order67最小提示修复已正式PASS：reward=1.0，4步，agent_done；8192输出上限不变。新增已保存证据满足保存要求的通用规则，避免重复保存；读回仍由完成门禁保障。[修复记录](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order67-saved-readback-fix-20261012.md) / [最新结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order67-saved-readback-fix-20261012/results.json) / [最新事件](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order67-saved-readback-fix-20261012/raw/run-1/67-libreoffice_writer-0e47de2a-32e0-456c-a366-8c607ef7a9d2/lite_agent_events.jsonl)。原批次统计保留，后续PASS单独记账。
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.json
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.json
+@@ -822,5 +822,72 @@
+         "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-160/raw/run-1/160-thunderbird-08c73485-7c6d-4681-999d-919f5c32dcfa/evaluator_artifacts/manifest.json": "103ba6d2e5ef4a9f39b52d4d38e0a8b3c5e410b062f266007dcce585c9acf492"
+       }
+     }
++  ],
++  "followup_runs": [
++    {
++      "order": 91,
++      "task_id": "d9b7c649-c975-4f53-88f5-940b29c47247",
++      "experiment_id": "osworld-order91-save-path-20261013",
++      "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json",
++      "runner_exit_code": 0,
++      "recorded_at": "2026-10-13T10:42:27.114126+08:00",
++      "status": "passed",
++      "reward": 1.0,
++      "steps": 10,
++      "duration_seconds": 359.121,
++      "termination_reason": "agent_done",
++      "terminated_by_agent": true,
++      "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json",
++      "manifest_termination_reason": "agent_done",
++      "started_at": "2026-10-13T02:34:54.849349+00:00",
++      "completed_at": "2026-10-13T02:40:53.970080+00:00",
++      "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl",
++      "event_count": 10,
++      "error": null,
++      "model_request_errors": null,
++      "sha256": {
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json": "3ec8f8f1759adc3c3176a2879e605caa6420eff2d36f656a8fcee7f83cc24acd",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/metadata.json": "30f1bddc25fb49ac569a134643c37554f599f95a3b821b22234992c1ac89b4c3",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/runner.log": "fac707ebb673c1a15a10ca42b4d6a67dbb82196c39e0efb0a03bded03c6aed9a",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/trajectory_manifest.json": "967cfd1559d5d7fe2f14257af30ed742f7c9fb92a1c086f803610313fa257b3f",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl": "eaee2914ac6068d7a16c3d573fab6929ad5450467b1511ecba549c84a1d4c53d",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_call_log.jsonl": "44ac3030d69451ff74fc832cd7226fc4461dee288b05cacafc586099a954518e",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/model_audits.jsonl": "26486fdca25981b9132c67d340df0f5911800d9b7188696b4baf82e723bcdb4a",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/guest_file_inventory.json": "64dacd385c72833ef35ee61b57fd6d114ea94a209927ca3ff3ee5e0e7266982f",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/manifest.json": "eb310f733af3ec88a1ed82263de38a259d73f55ba81fb535cb0beb47c466b9b3",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-save-path-20261013.json": "af63868583bf51def38ae86873f61742b80fbf2a0b25249d528a3382537a602b",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/evaluator_artifacts/result-00-report.xlsx": "6f221b60b87620f091abc0d16d456ccc40d1a9d4cc06e51288484c15fd7a8b21",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0001_step_001_attempt_1.json": "b5473bda723a94883fb8992dc527ddf4851776eb685ba12b5e9070891ac04792",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0002_step_002_attempt_1.json": "e5e59a43b2da2a68244d614eb9c56e9c8f75d3c6047f40e9f2c606d31cb2adec",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0003_step_003_attempt_1.json": "232208169f016819fcafefe9451762d613ef4d8bfdae48192d88c2670645c827",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0004_step_004_attempt_1.json": "60d0ee7cbe8e3e5702e6d54d4bafcf72320cdef03d89e5ed5f383bf5aa646b8d",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0005_step_005_attempt_1.json": "81eed4e060081c2ccd23ea72d64edcefd8e0fd88a068d88ebf2b44c159dc3df8",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0006_step_006_attempt_1.json": "47abe2f38a26e07b1c7f36b56be9187e31ca915d53fa00da816ba16cb99cd83f",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0007_step_007_attempt_1.json": "9ef2152ac8f083a876b12db86a826df056cf6865bd83040c70c79890125d2ffa",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0008_step_008_attempt_1.json": "cd2c6507bf742dfd175f2c57a40d3e78868650480c21e935dded2bb8dafb1c78",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0009_step_009_attempt_1.json": "8caa531b5f72fb2a461703b04f3e5074f0e32023253439a345bff5b6b6307d5c",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0010_step_010_attempt_1.json": "273b9fe0868b2c98d3ecf3f5dcaac39a1c8a0c70e5ab44c4071b2e9a3c55d1fd",
++        "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/llm_requests/request_0011_step_011_attempt_1.json": "f6444bc442830aa5732d3884d75a5c5c6f4b0aa23f6403b16811b75ca0753288"
++      },
++      "step_budget": {
++        "policy": "observed_organization_inventory",
++        "initial_limit": 45,
++        "hard_limit": 75,
++        "effective_limit": 45,
++        "estimate": null
++      },
++      "source_seal_sha256": "0544eb1714cecff77e0d0480c41a9e0594f17c01d03262fcf77a6bae785bb01c",
++      "episode_control": {
++        "global_steps": 11,
++        "local_step": 10,
++        "retry": 0,
++        "soft_restart_count": 0,
++        "soft_restart_vm_policy": "preserve_current_vm",
++        "model_audit_count": 10,
++        "model_audit_trace": "model_audits.jsonl",
++        "pending_model_audit": null
++      }
++    }
+   ]
+ }
+--- a/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md
++++ b/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-rerun2-20261012.md
+@@ -1,4 +1,8 @@
+ # 28 题第二轮完整复跑：结果与最新轨迹（2026-10-12）
++
++<!-- order91-save-path-20261013 begin -->
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++<!-- order91-save-path-20261013 end -->
+ 
+ 状态：completed；完成 28/28；PASS 25；FAIL 3；未评分 0；当前题：无。
+ 
+@@ -93,7 +97,9 @@
+ 
+ ## Order 91
+ 
+-failed / reward=0.0；[最新正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/results.json)；[最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-api-split-full-rerun2-20261012/order-91/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl)；[单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-full-rerun2-20261012.md)。
++Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
++
++第二轮批次本题仍保留failed/0.0，上表不改写；[保留失败日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-full-rerun2-20261012.md)。
+ 
+ ## Order 95
+ 

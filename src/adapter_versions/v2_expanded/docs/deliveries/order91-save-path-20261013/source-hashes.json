@@ -1,0 +1,36 @@
+{
+  "scope": "Order91 incremental fix against shared worktree",
+  "files": [
+    {
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py",
+      "before_sha256": "7422f16c08c5e3f6d1d40ae87a0cf37c442c6d4cb3e65de73032355977bc4c57",
+      "after_sha256": "748f1fb998ba61c9747e9edba46c5b03c5bb8e7c814a294083051c66b09018da"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/uno_worker.py",
+      "before_sha256": "2598599cdc5836a980c234566c8bc8942613a95d0f8224fcb55a8f8751d9dac6",
+      "after_sha256": "f3d905b96c7d4a2b48de23c430667707144711b78f2939e160acd206ddeb37d0"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py",
+      "before_sha256": "113ca2bfbc32d88f28fd16c67080719895799948e7f45ac47e3028e0476a008c",
+      "after_sha256": "cc9a75a812cbd303bfdfe4d03585d4c41a86265274d227bf7674303c92f44c4e"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py",
+      "before_sha256": "0859d0a4446335a08cb30eb0f24fb67f85747e47378726c54016e8d6fd1a9d28",
+      "after_sha256": "c085c44362c9298d7a83fc64f330e5b1fc6ef5b847ec8bad7e56665cc7c7e973"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py",
+      "before_sha256": "f6785f054c6907584f99222bbd5db6877e0c6c1f1e41cae8483568740657970d",
+      "after_sha256": "dc51a66ac2029556ce3156fda7517fe3fc9bc33ec6bc142fb5b4662636249f66"
+    },
+    {
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py",
+      "before_sha256": "4c7072f87f223a0f94482dbf3323d6cd275a62ff21b03e1283a1ce4808ae8c63",
+      "after_sha256": "d72de4426eb4d03f7941bbedd88fd665db932bc4fbcec3fcf5cd179e9a94a005"
+    }
+  ],
+  "patch_sha256": "6961ef12f406e5495377e9e96b29764d2a9a5a77d763779cd8816777ff8ea708"
+}

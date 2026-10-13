@@ -1,0 +1,220 @@
+--- a/src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py
++++ b/src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py
+@@ -235,7 +235,10 @@
+                 "pattern": r"^(?:.*/)?[^/.][^/]*\.(?:[Oo][Dd][Ss]|[Xx][Ll][Ss][Xx])$",
+                 "description": (
+                     "Output file path or file URL containing a filename and ending in "
+-                    ".ods or .xlsx."
++                    ".ods or .xlsx. The parent must be an existing writable directory. "
++                    "Discover an unknown parent using os.filesystem.find with "
++                    "kind=directory; use its observed path, not a guessed home directory. "
++                    "A save error leaves successful cell writes intact."
+                 ),
+             },
+             "filter_name": {"type": "string", "minLength": 1},
+--- a/src/adapter_versions/v2_expanded/calc_adapter/uno_worker.py
++++ b/src/adapter_versions/v2_expanded/calc_adapter/uno_worker.py
+@@ -1195,9 +1195,31 @@
+ 
+ def _save_as(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
+     doc = session.doc
+-    doc.calculateAll()
+     url = _file_url(params["url"])
+     path = _url_path(url)
++    if path is not None:
++        parent = path.parent
++        exists = parent.exists()
++        is_directory = parent.is_dir()
++        writable = is_directory and os.access(parent, os.W_OK | os.X_OK)
++        if not writable:
++            raise AdapterError(
++                "OUTPUT_PARENT_INVALID",
++                "The output parent must be an existing writable directory. "
++                "No file was saved; existing workbook cells are unchanged. "
++                "Use os.filesystem.find with kind=directory under an observed "
++                "root (~/ means the active user's home), then submit "
++                "workbook.save_as with a corrected params.url. Do not rewrite cells.",
++                {
++                    "path": str(path),
++                    "parent": str(parent),
++                    "parent_exists": exists,
++                    "parent_is_directory": is_directory,
++                    "parent_writable": writable,
++                    "home_directory": str(Path.home()),
++                    "discovery_action": "os.filesystem.find",
++                },
++            )
+     suffix = path.suffix.lower() if path is not None else ""
+     inferred_filter = _NEW_WORKBOOK_FILTERS.get(suffix)
+     requested_filter = params.get("filter_name")
+@@ -1220,10 +1242,17 @@
+     if filter_name:
+         properties.insert(0, _property("FilterName", filter_name))
+     try:
++        doc.calculateAll()
+         doc.storeAsURL(url, tuple(properties))
+     except Exception as exc:
+         raise AdapterError(
+-            "SAVE_FAILED", "LibreOffice failed to save the workbook", str(exc), 500
++            "SAVE_FAILED",
++            "LibreOffice failed to save the workbook. Existing cells remain "
++            "in the active workbook; inspect the destination before retrying "
++            "save_as with corrected arguments. Do not recreate or rewrite cells.",
++            {"url": url, "parent": str(path.parent) if path is not None else None,
++             "discovery_action": "os.filesystem.find", "cause": str(exc)},
++            500,
+         ) from exc
+     return _saved_workbook_result(url)
+ 
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py
+@@ -218,7 +218,11 @@
+         item: dict[str, Any] = {
+             "action": safe_action(block.get("action")),
+             "block_scope": scope if scope in {"window", "episode"} else "window",
+-            "fallback_reason": "choose different arguments or another public action",
++            "request_scope": "exact_normalized_arguments",
++            "fallback_reason": (
++                "only the original argument combination is blocked; "
++                "the same parameterized action remains available with corrected arguments"
++            ),
+         }
+         for key in ("blocked_at_step", "blocked_until_step"):
+             value = block.get(key)
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py
+@@ -7,8 +7,7 @@
+ turns a valid workflow into a Top-K error.  The executor already blocks exact
+ duplicate mutations and the recovery protocol handles repeated failures;
+ this module only removes actions that the state machine has classified as
+-*fully* blocked (for example, a read action for which multiple argument
+-variants have independently failed).
++*fully* blocked (a parameterless action has only one request variant).
+ """
+ 
+ from __future__ import annotations
+@@ -149,6 +148,7 @@
+         return []
+     created = False
+     write_attempted = False
++    save_attempted = False
+     for event in getattr(state, "events", ()):
+         domain, action, _ = effective_canonical_action(event, state.domain)
+         if domain != "libreoffice_calc":
+@@ -156,6 +156,12 @@
+         if created and action == "range.write":
+             # A failed write may have partial effects; permit a native read.
+             write_attempted = True
++        if created and action in {"workbook.save", "workbook.save_as"}:
++            # The model has moved to persistence. A save error leaves the
++            # existing cells intact; expose discovery/read-back rather than
++            # encouraging another write during recovery. Explicit edit
++            # searches can still request a new write lease.
++            save_attempted = True
+         if not getattr(event, "executed", False):
+             continue
+         result = getattr(event, "result", None)
+@@ -169,6 +175,7 @@
+                 and context.get("sheet")
+             )
+             write_attempted = False
++            save_attempted = False
+         elif action in {
+             "workbook.save", "workbook.save_as", "workbook.open",
+             "workbook.read_file", "workbook.convert_file",
+@@ -178,10 +185,15 @@
+             created = False
+     if not created:
+         return []
+-    actions = ["range.write", "workbook.save_as"]
++    actions = ["workbook.save_as"]
++    if not save_attempted:
++        actions.insert(0, "range.write")
+     if write_attempted:
+-        actions.insert(1, "range.read")
+-    return [("libreoffice_calc", action) for action in actions]
++        actions.insert(0, "range.read")
++    routes = [("libreoffice_calc", action) for action in actions]
++    if write_attempted or save_attempted:
++        routes.append(("os", "filesystem.find"))
++    return routes
+ 
+ 
+ def discovered_adapter_routes(state: Any) -> list[tuple[str, str]]:
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py
+@@ -1378,7 +1378,11 @@
+                 and isinstance(route.get("adapter"), str)
+                 and isinstance(route.get("action"), str)
+             ):
+-                routes.add((route["adapter"], route["action"]))
++                schema = DIRECT_ACTION_SCHEMAS.get(route["adapter"], {}).get(route["action"])
++                # Parameterized routes remain discoverable with different
++                # arguments. Only a parameterless route is one exact request.
++                if schema is not None and not schema.get("properties"):
++                    routes.add((route["adapter"], route["action"]))
+         return routes
+ 
+     def active_request_block(
+@@ -1410,21 +1414,11 @@
+ 
+     def blocked_actions(self) -> set[str]:
+         blocked: set[str] = set()
+-        read_only_variants: dict[str, set[str]] = {}
+         for block in self.active_request_blocks().values():
+             action = block["action"]
+             schema = DIRECT_ACTION_SCHEMAS.get(self.domain, {}).get(action)
+             if schema is not None and not schema.get("properties"):
+                 blocked.add(action)
+-            elif is_read_only(action):
+-                read_only_variants.setdefault(action, set()).add(
+-                    block["argument_signature"]
+-                )
+-        blocked.update(
+-            action
+-            for action, variants in read_only_variants.items()
+-            if len(variants) >= 2
+-        )
+         return blocked
+ 
+     def recovery_search_pending_choice(self) -> bool:
+--- a/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
++++ b/src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py
+@@ -477,14 +477,34 @@
+                     if function.get("name") == tool_name("adapter.call"):
+                         function["description"] += (
+                             " The new workbook is already open; use the worksheet name "
+-                            "returned by creation. Assemble the requested cell data and "
+-                            "write it with range.write; its rectangular range must match "
++                            "returned by creation. For any cell edit, range.write's "
++                            "rectangular range must match "
+                             "the number of rows and columns in values exactly. You may "
+-                            "write additional ranges or read back cells. Save with "
++                            "use the currently listed editing or read-back routes. Save with "
+                             "workbook.save_as using your chosen output URL when all "
+                             "requested content is complete. These are independent calls; "
+                             "creating or writing does not save the workbook."
+                         )
++                        if ("os", "filesystem.find") in workbook_routes:
++                            function["description"] += (
++                                " Before saving to an unobserved directory, use "
++                                "os.filesystem.find with kind=directory to discover "
++                                "the requested parent under a model-selected root; "
++                                "~/ denotes the active user's home. Use the returned "
++                                "absolute directory for your chosen filename; do not "
++                                "guess another operating system's home path."
++                            )
++                        if ("libreoffice_calc", "range.write") not in workbook_routes:
++                            function["description"] += (
++                                " Persistence was attempted and has not succeeded. "
++                                "The successful cell writes remain in the current "
++                                "workbook, including after a same-VM restart. A save "
++                                "error does not require recreating or rewriting them. "
++                                "Discover or correct the output parent, optionally "
++                                "read back the existing cells, then retry save_as "
++                                "with a corrected URL. To correct observed cell "
++                                "content, explicitly search for range.write."
++                            )
+                 return soft_recovery_tools(constrain_output_tools(tools, state), state)
+             if pdf_table_selection.active(state):
+                 eligible = pdf_table_selection.allowed_routes(state)
