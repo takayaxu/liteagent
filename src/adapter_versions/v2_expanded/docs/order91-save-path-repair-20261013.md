@@ -81,3 +81,5 @@ PYTHONPATH=src/adapter_versions/v2_expanded /var/lib/liteagent-shared/python-env
 共享工作区有其他题未提交修改。本题六文件增量已应用；[独立源码补丁](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/implementation.patch) 与 [前后基线SHA-256](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/source-hashes.json) 单独交付，不整文件混入其他题。五个模型进程文件hash与本次Runner启动seal一致；Calc worker hash与guest_file_inventory中的实际部署文件一致。当前工作区已应用补丁，集成时不要重复应用；本次PASS对应seal中组合源码，不给全部共享修改背书。
 
 审计、正式日志、单题日志、统一最新MD/JSON及第二轮followup已写回。批次records及聚合不改写，其他题记录不更新；原始失败轨迹不覆盖。提交号见收尾回执。
+
+Order 91 本题增量交付提交：`d90bcd0`（六文件源码增量补丁、基线hash、配置、PASS回执与日志；活动源码已应用于共享工作区，未整文件提交其他题修改）。
