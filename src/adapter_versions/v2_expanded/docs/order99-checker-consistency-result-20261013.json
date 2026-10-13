@@ -1,0 +1,30 @@
+{
+  "order": 99,
+  "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+  "status": "passed",
+  "reward": 1.0,
+  "steps": 18,
+  "duration_seconds": 495.091,
+  "termination_reason": "agent_done",
+  "manifest_termination_reason": "agent_done",
+  "terminated_by_agent": true,
+  "path_class": "generic_api_only",
+  "completed_at": "2026-10-13T11:08:26.751075+08:00",
+  "timezone": "Asia/Shanghai",
+  "event_count": 18,
+  "result_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/results.json",
+  "events_file": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+  "trajectory_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json",
+  "evaluator_manifest": "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json",
+  "delivery_commit": "e6c8e1e",
+  "source_delivery": "Applied active source; isolated incremental patch plus baseline/final SHA-256; pre-existing shared untracked file not staged wholesale.",
+  "sha256": {
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/results.json": "7655deed33f7e75cef815777001ad16fc6fe916e89223bf1f95283dae63bf7f3",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json": "281bdb93a91e2a6d56e6e5d8f504f716b558b75e0d64978fde03db24413fd2ca",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl": "253a551a83fce9aaa87826eec486ce5c0d4d85cbd4c64ebb98790f2086dc04ad",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/llm_call_log.jsonl": "ac531a7b6823f4f46e6572b32b5dbd86438b969e92bf5033facadbf08331a264",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/result.txt": "5717e7c840171019a4eeab5b79a7f894a4986eaff93d04ec5b12c9a189f594bf",
+    "/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/evaluator_artifacts/manifest.json": "7dbb55a28118f30d4f84df739dc855efc01e43991794a3fdaf4aedead51407c0"
+  },
+  "scope": "isolated Order 99 repair; original full batch and raw FAIL evidence unchanged"
+}

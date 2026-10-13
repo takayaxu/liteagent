@@ -48,3 +48,13 @@ HF_ENDPOINT=https://hf-mirror.com PYTHONPATH=src/adapter_versions/v2_expanded \
 ## 交付边界
 
 该源码文件在本次开始时已存在、未跟踪，含此前多个题目的共享依赖；本次实际修复已应用活动源码。交付 [独立增量补丁](order99-checker-consistency-20261013.patch) 和 [修复前后 SHA-256](order99-checker-consistency-20261013-hashes.json)，只包含本次改动，不把整个未跟踪源文件归入本题。不宣称提交裸 HEAD 包含所有工作区运行依赖；评分对应记录的共享工作区。
+
+## 最终回执
+
+**PASS / reward=1.0，18 步，495.091 秒，agent_done，terminated_by_agent=true**；北京时间 2026-10-13T11:08:26.751075+08:00 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl) / [轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json)；[机器可读回执](order99-checker-consistency-result-20261013.json)。
+
+第 7–8 步判定并移动唯一不匹配发票，物理 verification=true。第 10 步执行模型对匹配发票提出 move，checker 独立复核仍坚持有证据的 retain，未被执行模型答案诱导；第 11–12 步模型纠正并保留。第 13 步旧 reader 路径被拒绝，第 14 步恢复。原卡点第 15 步 checker 直接返回 retain，reason 与动作一致；第 16 步成功保留并推进。第 17 步完成声明仍描述未完成工作，被 completion gate 拒绝；第 18 步纠正完成声明后正常结束。无需 soft restart。
+
+实际 6 个 Adapter 调用均返回 ok（find、4 次 PDF 读取、1 次 rename）。manifest 的 adapter_verifier_passed_calls 仍为 0，保留原始汇总字段；第 8 步嵌套物理 verification=true。正式 result.txt=1.0，evaluator 目标 PDF 与 expected SHA-256 相同。
+
+交付提交 `e6c8e1e`。本题补丁已校验：对保存的共享源码基线应用补丁后，SHA-256 与活动修复源码完全一致。仅复跑当前题；两轮完整批次及历史失败、历史 PASS 保持原记录。

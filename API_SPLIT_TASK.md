@@ -1,5 +1,12 @@
 # liuxv：大粒度 API 拆分任务
 
+<!-- order99-checker-consistency-20261013 begin -->
+Order 99 checker 判定/理由一致性修复：**PASS / reward=1.0，18 步，495.091 秒，agent_done**；北京时间 2026-10-13T11:08:26.751075+08:00 完成。原第 15 步的 move/retain 矛盾已消除，第 16 步保留并推进，第 18 步正常完成。schema/提示先给事实理由再给动作；首次判定冲突时最多独立复核一次，只反馈 checker 自己的判定，不泄露执行模型答案、不自动覆盖动作。交付 `e6c8e1e`（独立增量补丁与基线 hash；活动源码已应用）。
+
+[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl) / [轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-checker-consistency-repair-20261013.md) / [固定最新入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-latest.md) / [证据回执](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-checker-consistency-result-20261013.json)。13 项定向检查、4 项临时 contract、真实证据重放与纠错重放、Ruff 通过。原批次 FAIL 与分数保持不变，单题 PASS 独立登记。
+<!-- order99-checker-consistency-20261013 end -->
+
+
 > 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99、102 后续单题 PASS；最新已核对结果 26/28 PASS，仅 107、108 仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
 
 工作分支：`codex/api-split-liuxv`

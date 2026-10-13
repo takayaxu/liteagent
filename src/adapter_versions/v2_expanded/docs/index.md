@@ -1,5 +1,12 @@
 # OSWorld API Project
 
+<!-- order99-checker-consistency-20261013 begin -->
+Order 99 checker 判定/理由一致性修复：**PASS / reward=1.0，18 步，495.091 秒，agent_done**；北京时间 2026-10-13T11:08:26.751075+08:00 完成。原第 15 步的 move/retain 矛盾已消除，第 16 步保留并推进，第 18 步正常完成。schema/提示先给事实理由再给动作；首次判定冲突时最多独立复核一次，只反馈 checker 自己的判定，不泄露执行模型答案、不自动覆盖动作。交付 `e6c8e1e`（独立增量补丁与基线 hash；活动源码已应用）。
+
+[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl) / [轨迹 manifest](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order99-checker-consistency-20261013/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/trajectory_manifest.json) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-checker-consistency-repair-20261013.md) / [固定最新入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-latest.md) / [证据回执](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order99-checker-consistency-result-20261013.json)。13 项定向检查、4 项临时 contract、真实证据重放与纠错重放、Ruff 通过。原批次 FAIL 与分数保持不变，单题 PASS 独立登记。
+<!-- order99-checker-consistency-20261013 end -->
+
+
 <!-- order91-save-path-20261013 begin -->
 Order 91 保存路径发现与恢复修复：**PASS / reward=1.0**，10 步、359.121 秒、agent_done；北京时间 2026-10-13 10:40:53 完成。[正式结果](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/results.json) / [最新事件轨迹](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/experiments/osworld-order91-save-path-20261013/raw/run-1/91-multi_apps-d9b7c649-c975-4f53-88f5-940b29c47247/lite_agent_events.jsonl) / [单题日志](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md)。第二轮完整批次保持原记录，本次单题通过独立登记。
 <!-- order91-save-path-20261013 end -->
