@@ -459,7 +459,15 @@ def strict_semantic_requirement_errors(state: Any) -> list[str]:
             *impress_semantics.completion_missing(state),
         ]
     if state.domain == "multi_apps":
-        return source_execution_semantics.completion_errors(state)
+        errors = list(source_execution_semantics.completion_errors(state))
+        if state.filesystem_move_requested() and not state.filesystem_organization_complete():
+            pending = state.filesystem_organization_pending_entries()
+            errors.append(
+                "filesystem organization is incomplete: every observed source object must be "
+                f"moved with filesystem.rename or explicitly skipped after classification; "
+                f"{len(pending)} object(s) remain pending"
+            )
+        return errors
     if state.domain == "os":
         return [
             *terminal_output_completion_errors(state),

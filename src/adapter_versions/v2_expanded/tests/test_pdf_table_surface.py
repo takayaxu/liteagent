@@ -69,7 +69,8 @@ def test_pdf_table_contract_preserves_model_selected_parameters(forwarded: bool)
     jsonschema.validate(params, direct)
     if forwarded:
         schema = _function(True)["parameters"]
-        nested = schema["oneOf"][0]["properties"]["payload"]["properties"]["params"]
+        route = schema["oneOf"][0] if schema.get("oneOf") else schema
+        nested = route["properties"]["payload"]["properties"]["params"]
         assert nested["properties"] == direct["properties"]
         assert nested["required"] == direct["required"]
         assert nested["additionalProperties"] == direct["additionalProperties"]
@@ -87,6 +88,42 @@ def test_pdf_table_contract_preserves_model_selected_parameters(forwarded: bool)
     assert request.params == original
     assert request.to_worker_payload()["params"] == original
     assert params == original
+
+
+def test_single_forwarded_route_is_flattened_for_small_tool_calling_models() -> None:
+    schema = _function(True)["parameters"]
+
+    assert schema.get("oneOf") is None
+    assert schema["required"] == ["adapter", "action", "payload"]
+    assert schema["properties"]["adapter"]["enum"] == ["os"]
+    assert schema["properties"]["action"]["enum"] == [ACTION]
+    assert schema["properties"]["payload"]["required"] == ["params"]
+
+    arguments = {
+        "adapter": "os",
+        "action": ACTION,
+        "payload": {"params": _params()},
+    }
+    jsonschema.validate(arguments, schema)
+
+
+def test_multiple_forwarded_routes_avoid_nested_union_schema() -> None:
+    tools = constrain_adapter_call_routes(
+        build_tools(
+            "multi_apps",
+            ["adapter.call"],
+            include_gui=False,
+            include_control_tools=False,
+            strict_generic=True,
+        ),
+        [("os", "filesystem.find"), ("os", ACTION)],
+    )
+    schema = tools[0]["function"]["parameters"]
+
+    assert schema.get("oneOf") is None
+    assert schema["required"] == ["adapter", "action", "payload"]
+    assert schema["properties"]["action"]["enum"] == ["filesystem.find", ACTION]
+    assert schema["properties"]["payload"]["required"] == ["params"]
 
 
 def test_pdf_table_worker_default_verification_checks_actual_input_file(

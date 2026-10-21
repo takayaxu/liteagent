@@ -33,6 +33,7 @@ from .generic_completion import (
     strict_completion_phase,
 )
 from . import source_execution_semantics
+from . import completion_review
 
 
 def pending_completion_recovery(events: Iterable[Any]) -> dict[str, Any] | None:
@@ -352,6 +353,16 @@ def strict_proactive_completion_tools(
     semantic_action_equivalents: Callable[[Any], dict[str, set[str]]] | None = None,
 ) -> list[dict[str, Any]] | None:
     """Build the proactive strict completion surface outside the Runtime."""
+    if completion_review.review_ready(state, gate):
+        # Review the final evidence already in context. Additional observation
+        # requires an explicit discrepancy rather than another identical read.
+        controls = build_tools(
+            state.domain, [], include_gui=False, strict_generic=True
+        )
+        return [
+            tool for tool in controls
+            if tool["function"]["name"] in {"propose_done", "fail_task"}
+        ] + [completion_review.revision_tool()]
     # Successful calls do not prove task completion. Only the model's rejected
     # claim starts closing work; a later content change reopens normal tools.
     for event in reversed(state.events):

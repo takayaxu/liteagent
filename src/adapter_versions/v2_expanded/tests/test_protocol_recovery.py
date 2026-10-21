@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import base64
 import json
+import io
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
+from PIL import Image
 
 from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.agent_protocol import AgentProtocolMixin
@@ -28,6 +31,29 @@ from scripts.run_lite_agent_pilot import (
 class NoAdapterExecutor:
     def execute(self, *_args: Any, **_kwargs: Any) -> None:
         raise AssertionError("Adapter execution is not expected")
+
+
+class RecordingAdapterExecutor:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str, dict[str, Any]]] = []
+
+    def execute(self, domain: str, action: str, arguments: dict[str, Any], _context: dict[str, Any]) -> dict[str, Any]:
+        self.calls.append((domain, action, arguments))
+        return {"executed": True, "result": {"status": "ok"}}
+
+
+def test_model_screenshot_is_bounded_before_base64_encoding() -> None:
+    image = Image.new("RGB", (1920, 1080), "white")
+    source = io.BytesIO()
+    image.save(source, format="PNG")
+
+    encoded = AgentProtocolMixin._image_url(source.getvalue())
+
+    assert encoded.startswith("data:image/jpeg;base64,")
+    payload = encoded.split(",", 1)[1]
+    decoded = Image.open(io.BytesIO(base64.b64decode(payload)))
+    assert decoded.size == (1280, 720)
+    assert len(encoded) < len(source.getvalue()) * 2
 
 
 class RecordingModelClient:
@@ -317,6 +343,31 @@ def test_normal_next_action_uses_tool_results_and_screenshot(domain: str) -> Non
     assert messages[2]["content"][1]["image_url"]["url"] == agent._image_url(b"png")
 
 
+def test_deterministic_adapter_turn_omits_repeated_screenshot() -> None:
+    agent = _agent(RecordingModelClient())
+    state = _large_state()
+    messages = agent._messages(
+        state,
+        b"png",
+        tools=[{"function": {"name": "adapter__adapter_call"}}],
+    )
+
+    assert len(messages[2]["content"]) == 1
+    assert messages[2]["content"][0]["type"] == "text"
+
+
+def test_gui_only_turn_keeps_screenshot() -> None:
+    agent = _agent(RecordingModelClient())
+    state = _large_state()
+    messages = agent._messages(
+        state,
+        b"png",
+        tools=[{"function": {"name": "gui_action"}}],
+    )
+
+    assert messages[2]["content"][1]["type"] == "image_url"
+
+
 def test_protocol_recovery_message_is_bounded_and_structured() -> None:
     client = RecordingModelClient()
     agent = _agent(client)
@@ -438,6 +489,129 @@ def test_rejected_model_action_automatically_uses_bounded_recovery() -> None:
     assert len(state_text) < 9_500
     assert "Bounded execution recovery is active" in messages[0]["content"]
     assert "missing required values" not in messages[0]["content"]
+
+
+def test_grf_rejection_supplies_authoritative_row_correction_to_model() -> None:
+    from integrations.lite_agent.recovery_surface import last_failure_summary
+
+    detail = (
+        "GRF row 1 #Applied does not match the observed HKU target cell: expected 25 "
+        "from /home/user/Documents/Fundings/grf/grf19.pdf\n"
+        "GRF row 1 #Supported does not match the observed HKU target cell: expected 7 "
+        "from /home/user/Documents/Fundings/grf/grf19.pdf\n"
+        "GRF row 1 Success Rate does not match the observed HKU target cell: expected 28.0 "
+        "from /home/user/Documents/Fundings/grf/grf19.pdf"
+    )
+    state = RuntimeState(
+        task_id="synthetic-grf-recovery",
+        domain="multi_apps",
+        instruction="Extract the GRF table and save it.",
+        events=[
+            ExecutionEvent(
+                step=1,
+                timestamp_utc="2026-09-29T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "tool": "adapter__adapter_call",
+                    "action": "adapter.call",
+                    "arguments": {"action": "workbook.create_new"},
+                },
+                executed=False,
+                error={"type": "ValidationError", "detail": detail},
+            )
+        ],
+    )
+
+    summary = last_failure_summary(state)
+    assert summary is not None
+    assert "expected 25" in summary["correction"]
+    assert "expected 7" in summary["correction"]
+    assert "expected 28.0" in summary["correction"]
+    assert "/home/user/Documents/Fundings/grf/" not in summary["correction"]
+    assert "grf19.pdf" in summary["correction"]
+
+    system = _agent(RecordingModelClient())._system_message(state)
+    assert "Correction:" in system
+    assert "Apply those expected values exactly" in system
+    assert "expected 25" in system
+    assert "expected 7" in system
+    assert "expected 28.0" in system
+    assert "do not reread the already-observed PDFs" in system
+
+
+def test_repair_confirmation_executes_contract_rows_without_model_rows(monkeypatch) -> None:
+    from integrations.lite_agent import batch_table_semantics
+
+    executor = RecordingAdapterExecutor()
+    agent = LiteAgent(
+        LiteAgentConfig(base_url="http://unused/v1"),
+        executor,  # type: ignore[arg-type]
+    )
+    state = RuntimeState(
+        task_id="synthetic-repair-execution",
+        domain="multi_apps",
+        instruction="Extract the GRF table and save it.",
+        events=[
+            ExecutionEvent(
+                step=1,
+                timestamp_utc="2026-09-30T00:00:00Z",
+                proposed={
+                    "kind": "catalog",
+                    "tool": "tools_search",
+                    "arguments": {"query": "workbook.create_new"},
+                },
+                executed=True,
+                result={
+                    "matches": [
+                        {
+                            "action": "adapter.call",
+                            "adapter": "libreoffice_calc",
+                            "downstream_action": "workbook.create_new",
+                        }
+                    ]
+                },
+            )
+        ],
+    )
+    state.repair_contract = {
+        "id": "grf-workbook-create-repair-2",
+        "repair_action": "adapter.call",
+        "corrected_arguments": {
+            "adapter": "libreoffice_calc",
+            "action": "workbook.create_new",
+            "payload": {
+                "params": {
+                    "output_path": "/home/user/Desktop/GRF-p5y.xlsx",
+                    "headers": ["Year", "#Applied", "#Supported", "Success Rate"],
+                    "rows": [
+                        ["2019", 25, 7, 28.0],
+                        ["2020", 17, 7, 41.18],
+                        ["2021", 23, 7, 30.43],
+                        ["2022", 23, 9, 39.13],
+                        ["2023", 20, 5, 25.0],
+                    ],
+                }
+            },
+        },
+    }
+    monkeypatch.setattr(batch_table_semantics, "argument_contract_errors", lambda *_args: [])
+    visible = agent.tools(state)
+    proposal = {
+        "tool": "repair_confirm",
+        "arguments_raw": json.dumps(
+            {"repair_id": state.repair_contract["id"], "confirm": True}
+        ),
+        "_model_visible_tools": visible,
+    }
+
+    event = agent.execute_proposal(state, proposal)
+
+    assert event.executed is True
+    assert event.proposed["arguments_source"] == "structured_repair_contract"
+    assert executor.calls[0][2]["payload"]["params"]["rows"][1] == [
+        "2020", 17, 7, 41.18
+    ]
+    assert state.repair_contract is None
 
 
 @pytest.mark.parametrize("repeated", [False, True])
@@ -1185,6 +1359,61 @@ def test_schema_hints_describe_type_without_echoing_invalid_value() -> None:
     assert any("values: type must be 'array'" in hint for hint in error.schema_hints)
     assert "native JSON array of concise strings" not in " ".join(error.schema_hints)
     assert "private-value" not in " ".join(error.schema_hints)
+
+
+def test_allowlisted_adapter_route_is_never_rewritten_from_payload_shape() -> None:
+    schema = {
+        "type": "object",
+        "properties": {
+            "adapter": {"type": "string", "enum": ["os"]},
+            "action": {"type": "string", "enum": ["pdf.extract_text_batch"]},
+            "payload": {
+                "type": "object",
+                "properties": {
+                    "params": {
+                        "type": "object",
+                        "properties": {
+                            "input_pattern": {"type": "string"},
+                            "cwd_source": {"type": "string"},
+                        },
+                        "required": ["input_pattern", "cwd_source"],
+                        "additionalProperties": False,
+                    }
+                },
+                "required": ["params"],
+                "additionalProperties": False,
+            },
+        },
+        "required": ["adapter", "action", "payload"],
+        "additionalProperties": False,
+        "x-allowed-routes": [
+            {"adapter": "os", "action": "pdf.extract_text_batch"}
+        ],
+    }
+    arguments = json.dumps(
+        {
+            "adapter": "os",
+            "action": "filesystem.find",
+            "payload": {
+                "params": {
+                    "input_pattern": "*.pdf",
+                    "cwd_source": "home",
+                }
+            },
+        }
+    )
+
+    with pytest.raises(StructuredToolProtocolError, match="allowlist") as raised:
+        _model_client([_tool_call(arguments, "adapter__adapter_call")], "tool_calls").propose(
+            model="qwen3.5-4b",
+            messages=[],
+            tools=_schema_tools("adapter__adapter_call", schema),
+            temperature=0.0,
+            output_token_budget=4096,
+            enable_thinking=True,
+        )
+
+    assert raised.value.allowed_routes == (("os", "pdf.extract_text_batch"),)
 
 
 def test_schema_hints_render_numeric_bounds_as_direct_constraints() -> None:

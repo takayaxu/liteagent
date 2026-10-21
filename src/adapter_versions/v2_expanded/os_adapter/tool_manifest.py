@@ -883,6 +883,8 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "description": (
             "Read one detected table from one page of a PDF as aligned rows and columns. "
             "Preserves merged cells, multirow headers, empty cells and multiline cell text. "
+            "aligned_rows exposes visual subrows aligned using numeric baselines, retaining "
+            "original row_index/subrow_index; ambiguous alignment is reported explicitly. "
             "Use this for tabular data when plain PDF text loses column alignment. "
             "It does not interpret labels, calculate values or modify files. "
             "Scanned images without native table text may yield no table."
@@ -1043,8 +1045,14 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "input_pattern": {
                 **NONEMPTY_STRING,
                 "description": (
-                    "PDF filename or basename glob matched inside the selected directory, for example "
-                    "*.pdf or paper-*.pdf. The action reads matching PDFs without changing them."
+                    "One exact absolute PDF path or a basename glob matched inside the selected directory, "
+                    "for example /home/user/Desktop/paper.pdf, *.pdf, or paper-*.pdf. The action reads "
+                    "matching PDFs without changing them. "
+                    "When filesystem.find has already returned multiple source PDFs for a table or "
+                    "batch request, preserve that source cardinality with a glob covering the full "
+                    "collection; do not narrow the first read to one basename. A single basename is "
+                    "only valid for an explicitly single-file request or a later continuation of one "
+                    "already observed source window."
                 ),
             },
             "cwd_source": {
@@ -1119,8 +1127,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "input_pattern": {
                 **NONEMPTY_STRING,
                 "description": (
-                    "Image or PDF filename/basename glob matched inside the selected directory, for "
-                    "example *.png, scan-*.jpg, or supplied-*. The action performs read-only OCR on "
+                    "One exact absolute image/PDF path or a filename/basename glob matched inside the "
+                    "selected directory, for example /home/user/Desktop/scan.png, *.png, scan-*.jpg, "
+                    "or supplied-*. The action performs read-only OCR on "
                     "matching PNG, JPEG, TIFF, BMP, WebP, and PDF files."
                 ),
             },

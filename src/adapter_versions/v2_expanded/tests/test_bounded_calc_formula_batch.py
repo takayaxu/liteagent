@@ -157,6 +157,18 @@ def test_range_read_accepts_contiguous_a1_ranges(range_value: str) -> None:
     )
 
 
+def test_range_read_rejects_unbounded_model_generated_range() -> None:
+    with pytest.raises(AdapterError) as caught:
+        validate_action_params(
+            "range.read", {"sheet": "Synthetic", "range": "A1:I100000000000000000000"}
+        )
+
+    error = caught.value
+    assert error.code == "INVALID_REQUEST"
+    assert "too large" in error.message
+    assert error.details["rows"] > 1000
+
+
 def test_chart_create_rejects_multi_area_source_range_with_actionable_error() -> None:
     with pytest.raises(AdapterError) as caught:
         validate_action_params(

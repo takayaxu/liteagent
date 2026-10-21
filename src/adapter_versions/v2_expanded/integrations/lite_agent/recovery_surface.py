@@ -72,6 +72,7 @@ _GENERIC_ERROR_MESSAGES = frozenset(
     }
 )
 _ERROR_HINT_MAX_CHARS = 320
+_ERROR_REPAIR_MAX_CHARS = 2_400
 _PATH_LIKE = re.compile(r"(?:(?:file://|https?://|~/|/)[^\s,;)]{2,})")
 
 
@@ -176,6 +177,16 @@ def _safe_error_hint(error: Any) -> str | None:
         if not isinstance(nested, dict):
             break
         current = nested
+    return None
+
+
+def _safe_error_repair(error: Any) -> str | None:
+    """Keep bounded validation detail; the model submits its own corrected call."""
+    if not isinstance(error, dict):
+        return None
+    detail = error.get("detail")
+    if isinstance(detail, str) and "source evidence" in detail.casefold():
+        return detail[:_ERROR_REPAIR_MAX_CHARS]
     return None
 
 
@@ -292,9 +303,11 @@ def _safe_label(
 def last_failure_summary(state: Any) -> dict[str, Any] | None:
     """Extract coarse, non-sensitive failure metadata from the event ledger.
 
-    Values, paths, URLs, task identifiers, and nested error bodies are omitted.
-    The summary is useful to lexical retrieval and recovery guidance while
-    remaining independent of a particular task or expected answer.
+    Values, paths, URLs, task identifiers, and nested error bodies are omitted
+    except for bounded source-evidence validation details explicitly
+    recognized by ``_safe_error_repair``.  The summary is useful to lexical
+    retrieval and recovery guidance while remaining independent of hidden
+    evaluator state.
     """
     for event in reversed(list(getattr(state, "events", ()) or ())):
         if getattr(event, "executed", False):
@@ -333,12 +346,15 @@ def last_failure_summary(state: Any) -> dict[str, Any] | None:
             action, FORBIDDEN_DATASET_ACTIONS
         ):
             action_label = "public_action"
-        return {
+        summary = {
             "action": action_label,
             "error_type": _error_type(underlying),
             "argument_fields": fields[:16],
             **({"error_hint": hint} if (hint := _safe_error_hint(underlying)) else {}),
         }
+        if repair := _safe_error_repair(underlying):
+            summary["correction"] = repair
+        return summary
     return None
 
 

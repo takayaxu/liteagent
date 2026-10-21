@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import time
+import re
 from contextlib import redirect_stdout
 from typing import Any
 
@@ -151,6 +152,7 @@ def inspect_pdf_table(params: dict[str, Any], timeout: float) -> dict[str, Any]:
                 "next_row_offset": row_offset + len(selected) if truncated else None,
                 "truncated": truncated,
                 "bbox": list(table.bbox),
+                "aligned_rows": _aligned_rows(document[page_number - 1], table, row_offset, len(selected)),
             }
         )
         return result
@@ -165,3 +167,53 @@ def inspect_pdf_table(params: dict[str, Any], timeout: float) -> dict[str, Any]:
         ) from exc
     finally:
         document.close()
+
+
+def _aligned_rows(page: Any, table: Any, offset: int, count: int) -> list[dict[str, Any]]:
+    """Expose visual subrows using numeric baselines, without interpreting labels."""
+    result = []
+    for row_index in range(offset, offset + count):
+        cells = table.rows[row_index].cells
+        lines_by_cell = []
+        anchors = []
+        for cell in cells:
+            lines = []
+            if cell is not None:
+                x0, y0, x1, y1 = cell
+                for block in page.get_text("dict", clip=cell).get("blocks", []):
+                    for line in block.get("lines", []):
+                        text = "".join(span["text"] for span in line["spans"]).strip()
+                        bbox = line["bbox"]
+                        center = (bbox[1] + bbox[3]) / 2
+                        if text and y0 <= center < y1 and x0 <= (bbox[0] + bbox[2]) / 2 < x1:
+                            lines.append((center, text))
+                numeric = [(y, text) for y, text in lines if re.fullmatch(r"[+-]?[\d,]+(?:\.\d+)?%?", text)]
+                if numeric:
+                    anchors.extend(y for y, _ in numeric)
+            lines_by_cell.append(lines)
+        if not anchors:
+            continue
+        baselines = []
+        for y in sorted(anchors):
+            if not baselines or y - baselines[-1] > 2:
+                baselines.append(y)
+        values = [[None if cell is None else "" for cell in cells] for _ in baselines]
+        ambiguous = False
+        for column, lines in enumerate(lines_by_cell):
+            for y, text in lines:
+                distances = sorted((abs(y - anchor), index) for index, anchor in enumerate(baselines))
+                if re.fullmatch(r"[+-]?[\d,]+(?:\.\d+)?%?", text):
+                    if len(distances) > 1 and abs(distances[0][0] - distances[1][0]) < 0.5:
+                        ambiguous = True
+                    index = distances[0][1]
+                else:
+                    # Wrapped label continuations belong to the preceding
+                    # numeric baseline, not whichever baseline is nearest.
+                    index = max((i for i, anchor in enumerate(baselines) if anchor <= y + 2), default=0)
+                values[index][column] = " ".join(filter(None, [values[index][column], text]))
+        if ambiguous:
+            result.append({"row_index": row_index, "ambiguous": True, "reason": "text lies between numeric baselines"})
+        else:
+            for subrow, (baseline, row) in enumerate(zip(baselines, values)):
+                result.append({"row_index": row_index, "subrow_index": subrow, "baseline_y": round(baseline, 2), "values": row})
+    return result

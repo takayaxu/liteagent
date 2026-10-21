@@ -3,6 +3,45 @@ from __future__ import annotations
 from typing import Any
 
 
+ORGANIZATION_SKIP_TOOL_NAME = "organization__skip_current"
+ORGANIZATION_SKIP_ACTION = "organization.skip_current"
+
+
+def organization_skip_tool() -> dict[str, Any]:
+    """Return the runner-owned transition for retaining the current object."""
+    return {
+        "type": "function",
+        "function": {
+            "name": ORGANIZATION_SKIP_TOOL_NAME,
+            "description": (
+                "Retain the exact current organization object after its independent "
+                "classification and current-location compliance check has passed "
+                "without changing the guest filesystem, then continue with the next "
+                "unresolved object. Reading alone never permits skipping. The object's "
+                "current location must already satisfy the user's requirements."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(?:/.+|~/.+)$",
+                        "description": "Exact path of the current observed object.",
+                    },
+                    "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Short factual reason the object is retained.",
+                    },
+                },
+                "required": ["path", "reason"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
 def filesystem_rename_context(
     result: dict[str, Any], verification: Any
 ) -> dict[str, Any]:

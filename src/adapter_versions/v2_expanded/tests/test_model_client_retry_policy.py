@@ -10,7 +10,14 @@ from openai import APITimeoutError, OpenAI
 from integrations.lite_agent.model_client import (
     StructuredToolModelClient,
     _aggregate_stream_response,
+    _same_served_model,
 )
+
+
+def test_response_model_may_omit_only_quantization_suffix() -> None:
+    assert _same_served_model("Qwen3.5-9B-Q4_K_M", "Qwen3.5-9B")
+    assert not _same_served_model("Qwen3.5-9B-Q4_K_M", "Qwen3.5-4B")
+    assert not _same_served_model("Qwen3.5-9B", "Qwen3.5-4B")
 
 
 def test_streamed_tool_call_deltas_are_aggregated() -> None:

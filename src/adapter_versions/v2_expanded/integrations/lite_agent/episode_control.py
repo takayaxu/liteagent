@@ -20,7 +20,7 @@ from .completion_policy import (
 from .recovery_surface import last_failure_summary
 
 
-CONTROL_TOOL_NAMES = frozenset({"tools_search", "propose_done", "fail_task"})
+CONTROL_TOOL_NAMES = frozenset({"tools_search", "propose_done", "fail_task", "completion_revise"})
 _MUTATION_LEDGER_LIMIT = 32
 _MUTATION_ARGUMENT_BUDGET = 900
 # Keep the restart handoff for three model decisions after the first audited
@@ -235,7 +235,7 @@ def recovery_summary(
 
 
 def mark_tool_result_for_audit(state: Any, event: Any) -> dict[str, Any]:
-    """Mark every executed/rejected Tool result as awaiting model audit.
+    """Mark action results for audit without recursively auditing inspections.
 
     Control Tools and application Tools share this transition.  The Runner
     must call :func:`record_model_audit` only after the next Qwen response has
@@ -247,6 +247,30 @@ def mark_tool_result_for_audit(state: Any, event: Any) -> dict[str, Any]:
     )
     tool = _tool_name(event)
     is_control = tool in CONTROL_TOOL_NAMES
+    _domain, action, _arguments = effective_canonical_action(event, state.domain)
+    if (
+        _proposal(event).get("kind") == "adapter"
+        and getattr(event, "executed", False)
+        and not getattr(event, "error", None)
+        and action.endswith(".inspect")
+        and action_is_read_only(action)
+    ):
+        # The proposal that selected this observation already audited the
+        # previous result. Keep the observation in the ledger, but do not
+        # create another audit obligation solely for reading it.
+        if hasattr(event, "audit_required"):
+            event.audit_required = False
+        if hasattr(event, "audit_completed"):
+            event.audit_completed = False
+        if hasattr(event, "audit_tool"):
+            event.audit_tool = None
+        _refresh_recovery_projection(state)
+        return {
+            "event_step": step_value,
+            "tool": tool,
+            "tool_class": "observation",
+            "status": "not_required",
+        }
     if hasattr(event, "audit_required"):
         event.audit_required = True
     if hasattr(event, "audit_completed"):

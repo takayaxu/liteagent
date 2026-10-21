@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 from integrations.lite_agent import batch_table_semantics
+from integrations.lite_agent import adapter_results
 from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 
@@ -2038,7 +2039,9 @@ def test_native_ecs_completion_after_inspect_only_exposes_range_consumer_routes(
         _append_structured_rate_observation(state, year=year, step=index)
     _append_inspect_result(state, step=10)
 
-    assert batch_table_semantics.batch_route_allowed_after_completion(
+    # After the live workbook probe, the native PDF matrix is already the
+    # source of truth; exposing another read only invites an unbounded retry.
+    assert not batch_table_semantics.batch_route_allowed_after_completion(
         state, "range.read"
     )
     assert batch_table_semantics.batch_route_allowed_after_completion(
@@ -2443,7 +2446,7 @@ def test_rate_matrix_write_rejects_fraction_content_and_wrong_shape() -> None:
     assert "quoted fractions" in joined
 
 
-def test_rate_matrix_write_accepts_observed_shape_and_numeric_decimals() -> None:
+def test_rate_matrix_write_rejects_numeric_shape_without_observation_derived_values() -> None:
     state = _state(
         instruction=(
             "Extract the pass rate for each university and each year from the PDF files, "
@@ -2467,7 +2470,9 @@ def test_rate_matrix_write_accepts_observed_shape_and_numeric_decimals() -> None
             },
         },
     )
-    assert errors == []
+    assert errors
+    assert "parsed in order" in " ".join(errors)
+    assert "do not submit a guessed or uniform matrix" in " ".join(errors)
 
 
 def test_rate_matrix_contract_uses_workbook_read_file_geometry() -> None:
@@ -2555,6 +2560,191 @@ def test_rate_matrix_contract_derives_values_from_structured_pdf_tables() -> Non
         },
     )
     assert correct_errors == []
+
+
+def test_rate_matrix_schema_binds_values_to_observation_derived_const() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+    _append_observed_rate_table(state, step=20)
+    expected = batch_table_semantics._observed_decimal_rate_matrix(state)
+    assert expected is not None
+    function = {
+        "name": "adapter__adapter_call",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "object",
+                    "properties": {
+                        "params": {
+                            "type": "object",
+                            "properties": {
+                                "sheet": {"type": "string"},
+                                "range": {"type": "string"},
+                                "values": {"type": "array"},
+                            },
+                        }
+                    },
+                }
+            },
+        },
+    }
+
+    batch_table_semantics.constrain_tool_schema(function, state)
+
+    values = function["parameters"]["properties"]["payload"]["properties"]["params"][
+        "properties"
+    ]["values"]
+    assert values["const"] == [
+        [round(float(value), 6) for value in row] for row in expected
+    ]
+
+
+def test_rate_matrix_target_and_schema_bind_after_workbook_inspect_only() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+    _append_inspect_result(state, step=20)
+    inspect_result = state.events[-1].result["adapter_response"]["result"]["response"]["result"]
+    inspect_result["sheets"] = [
+        {
+            "name": "Sheet1",
+            "used_range": {
+                "start_row": 0,
+                "start_column": 0,
+                "end_row": 9,
+                "end_column": 8,
+            },
+        }
+    ]
+
+    expected = batch_table_semantics._observed_decimal_rate_matrix(state)
+    target = batch_table_semantics._observed_decimal_rate_target(state)
+    assert expected is not None
+    assert target == {
+        "sheet": "Sheet1",
+        "range": "B2:I10",
+        "record_count": 9,
+        "column_count": 8,
+        "headers": [],
+    }
+    function = {
+        "name": "adapter__adapter_call",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "object",
+                    "properties": {
+                        "params": {
+                            "type": "object",
+                            "properties": {
+                                "sheet": {"type": "string"},
+                                "range": {"type": "string"},
+                                "values": {"type": "array"},
+                            },
+                        }
+                    },
+                }
+            },
+        },
+    }
+    batch_table_semantics.constrain_tool_schema(function, state)
+    values = function["parameters"]["properties"]["payload"]["properties"]["params"][
+        "properties"
+    ]["values"]
+    assert values["const"] == [
+        [round(float(value), 6) for value in row] for row in expected
+    ]
+
+
+def test_completed_ecs_projection_carries_all_years_in_compact_handoff() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    events = []
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+        event = state.events[-1]
+        rows = event.result["adapter_response"]["result"]["response"]["result"]["rows"]
+        event.result = {
+            "context_hint": {
+                "downstream_context": {
+                    "observation_type": "pdf_table",
+                    "input_path": f"/tmp/ecs{year - 2000}.pdf",
+                    "row_count": len(rows),
+                    "column_count": 37,
+                    "rows": rows,
+                }
+            }
+        }
+        events.append((event, f"/tmp/ecs{year - 2000}.pdf"))
+
+    projected = adapter_results._compact_completed_ecs_table_events(
+        state.events, "multi_apps"
+    )
+    latest = next(event for event in projected if event.step == 9)
+    aggregate = latest.result["context_hint"]["downstream_context"][
+        "ecs_structured_observations"
+    ]
+    assert len(aggregate) == 9
+    assert [item["input_path"] for item in aggregate] == [
+        f"/tmp/ecs{year - 2000}.pdf" for year in range(2015, 2024)
+    ]
+    assert all(
+        len(item["application_no"]) == 8
+        and len(item["supported_no"]) == 8
+        and item["calculation"] == "supported_no / application_no"
+        for item in aggregate
+    )
+
+
+def test_rate_matrix_rejects_nonadjacent_application_supported_header() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    for index, year in enumerate(range(2015, 2024), start=1):
+        _append_structured_rate_observation(state, year=year, step=index)
+    # In the second university block, swap the two semantic headers.  Fixed
+    # offsets must not turn that malformed observation into a plausible ratio.
+    table_event = state.events[2]
+    rows = table_event.result["adapter_response"]["result"]["response"]["result"]["rows"]
+    rows[1][5], rows[1][7] = rows[1][7], rows[1][5]
+
+    assert batch_table_semantics._observed_decimal_rate_matrix(state) is None
+
+
+def test_rate_matrix_does_not_fall_back_to_flattened_text() -> None:
+    state = _state(
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS PDF "
+            "files, fill the spreadsheet, and enter the values as decimals."
+        )
+    )
+    _append_batch_result(state, count=9)
+    for item in state.events[0].result["adapter_response"]["result"]["files"]:
+        item["text"] = "Total 10 0 2 0 10 0 2 0 10 0 2 0"
+    assert batch_table_semantics._observed_decimal_rate_matrix(state) is None
 
 
 def _append_grf_table_observation(
