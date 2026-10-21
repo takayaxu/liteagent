@@ -1,0 +1,21 @@
+[
+  "python3",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_calc_text_transform_contract.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_impress_single_role_rule.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_impress_multislide_shared_rule.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_impress_role_text_split.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_writer_page_numbers.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_writer_transform_case.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_completion_observed_mismatch_recovery.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_pdf_records_atomic_workflow.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py",
+  "/home/liuxv/liteagent-integration-worktrees/api-split-20261021/src/adapter_versions/v2_expanded/tests/test_workflow_progress_handoff.py"
+]

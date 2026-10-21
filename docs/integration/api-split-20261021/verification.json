@@ -1,0 +1,38 @@
+{
+  "integration_commit": "1bcf3718d1b8ec65c31c792ef29c8d65fe303745",
+  "import_baseline": "b800fd9c8861528bc5dc0c204c88a84163835769",
+  "development_commit": "026e829e7626d1a0880e5fb365de219039df577c",
+  "included_files": 91,
+  "development_runtime_unchanged": true,
+  "development_runtime_sha256": "8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b",
+  "integration_worktree_clean": true,
+  "evaluator_commit_not_in_integration_history": true,
+  "diff_check": "passed",
+  "ruff": {
+    "exit_code": 0,
+    "files_checked": 91,
+    "diagnostic_count": 0,
+    "rules": {}
+  },
+  "focused_tests": {
+    "modules": 13,
+    "passed": 171,
+    "failed": 8,
+    "failures_reproduce_on_development_source": true
+  },
+  "structural_checks": {
+    "integration_paths_match_development_source": true,
+    "excluded_evaluator_changes": true,
+    "absolute_symlinks": [],
+    "unchanged_baseline_relative_symlinks": [
+      {
+        "path": "src/adapter_versions/v2_expanded/third_party",
+        "target": "../../third_party"
+      }
+    ],
+    "diff_check_exit_code": 0,
+    "strip_src_prefix_p2_patch_check": "passed",
+    "strip_src_prefix_p2_applied_files_match": true
+  },
+  "acceptance_status": "integration_candidate_with_existing_test_failures"
+}

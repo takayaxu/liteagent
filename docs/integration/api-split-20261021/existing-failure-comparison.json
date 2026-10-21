@@ -1,0 +1,24 @@
+{
+  "exit_code": 1,
+  "integration_failed_tests": [
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_calc_save_recovery_keeps_zero_argument_in_place_save[True]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_multi_apps_persistence_keeps_discovered_reads_without_new_routes",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[False]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[True]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_discovered_calc_routes_are_exposed_only_through_adapter_call",
+    "src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py::test_ratio_matrix_is_model_selected_read_only_and_write_stays_model_owned",
+    "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_grf_rejection_supplies_authoritative_row_correction_to_model",
+    "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_repair_confirmation_executes_contract_rows_without_model_rows"
+  ],
+  "development_failed_tests": [
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_calc_save_recovery_keeps_zero_argument_in_place_save[True]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_multi_apps_persistence_keeps_discovered_reads_without_new_routes",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[False]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[True]",
+    "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_discovered_calc_routes_are_exposed_only_through_adapter_call",
+    "src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py::test_ratio_matrix_is_model_selected_read_only_and_write_stays_model_owned",
+    "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_grf_rejection_supplies_authoritative_row_correction_to_model",
+    "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_repair_confirmation_executes_contract_rows_without_model_rows"
+  ],
+  "same_failures": true
+}

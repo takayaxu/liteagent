@@ -1,0 +1,891 @@
+{
+  "import_baseline": "b800fd9c8861528bc5dc0c204c88a84163835769",
+  "development_commit": "026e829e7626d1a0880e5fb365de219039df577c",
+  "development_branch": "codex/api-split-liuxv",
+  "integration_branch": "codex/integration-api-split-20261021",
+  "integration_worktree": "/home/liuxv/liteagent-integration-worktrees/api-split-20261021",
+  "development_source_seal": {
+    "scope_roots": [
+      "integrations",
+      "scripts",
+      "tests",
+      "deployment",
+      "calc_adapter",
+      "chrome_adapter",
+      "gimp_adapter",
+      "impress_adapter",
+      "multi_apps_adapter",
+      "os_adapter",
+      "thunderbird_adapter",
+      "vlc_adapter",
+      "vscode_adapter",
+      "writer_adapter"
+    ],
+    "excludes": [
+      "__pycache__",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".venv*",
+      "*.pyc"
+    ],
+    "file_count": 562,
+    "total_bytes": 82214256,
+    "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+    "sha256": "8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b"
+  },
+  "baseline_commit_026e829_files_included": [
+    "src/adapter_versions/v2_expanded/calc_adapter/schema.py",
+    "src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py",
+    "src/adapter_versions/v2_expanded/calc_adapter/uno_worker.py",
+    "src/adapter_versions/v2_expanded/impress_adapter/uno_worker.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/adapter_executor.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/adapter_results.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/agent.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/agent_protocol.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/batch_table_semantics.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/completion_recovery.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/completion_review.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/context_projection.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/episode_control.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/filesystem_contexts.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/local_file_discovery.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/model_client.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/pdf_table_selection.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/recovery_surface.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/request_blocks.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/search_recovery_tools.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/semantic_requirements.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/stall_policy.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/state_model.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/table_ratio_compute.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_catalog.py",
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py",
+    "src/adapter_versions/v2_expanded/integrations/openapa_osworld/tool_catalog.py",
+    "src/adapter_versions/v2_expanded/os_adapter/actions.py",
+    "src/adapter_versions/v2_expanded/os_adapter/pdf_tables.py",
+    "src/adapter_versions/v2_expanded/os_adapter/schema.py",
+    "src/adapter_versions/v2_expanded/os_adapter/tool_manifest.py",
+    "src/adapter_versions/v2_expanded/scripts/evaluation_boundary.py",
+    "src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py",
+    "src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py",
+    "src/adapter_versions/v2_expanded/tests/test_active_workbook_discovery.py",
+    "src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py",
+    "src/adapter_versions/v2_expanded/tests/test_bounded_calc_formula_batch.py",
+    "src/adapter_versions/v2_expanded/tests/test_bounded_os_vlc_decomposition.py",
+    "src/adapter_versions/v2_expanded/tests/test_calc_create_new_overwrite.py",
+    "src/adapter_versions/v2_expanded/tests/test_context_projection.py",
+    "src/adapter_versions/v2_expanded/tests/test_filesystem_move_discovery.py",
+    "src/adapter_versions/v2_expanded/tests/test_model_client_retry_policy.py",
+    "src/adapter_versions/v2_expanded/tests/test_model_result_feedback.py",
+    "src/adapter_versions/v2_expanded/tests/test_pdf_records_atomic_workflow.py",
+    "src/adapter_versions/v2_expanded/tests/test_pdf_table_surface.py",
+    "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py",
+    "src/adapter_versions/v2_expanded/tests/test_recovery_surface.py",
+    "src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py",
+    "src/adapter_versions/v2_expanded/writer_adapter/tool_manifest.py"
+  ],
+  "included": [
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/schema.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/tool_manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/calc_adapter/uno_worker.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/impress_adapter/schema.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/impress_adapter/tool_manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/impress_adapter/uno_worker.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/action_selection.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/adapter_executor.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/adapter_results.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/agent.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/agent_protocol.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/batch_table_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/completion_policy.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/completion_recovery.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/completion_review.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/context_projection.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/episode_control.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/execution_engine.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/filesystem_contexts.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/generic_routing.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/impress_personal_information.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/impress_role_formatting.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/impress_role_text_update.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/impress_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/impress_textboxes.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/instruction_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/local_file_discovery.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/matching_row_transfer_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/model_client.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/organization_validation.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/pdf_table_selection.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/recovery_surface.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/request_blocks.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/search_recovery_tools.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/semantic_requirements.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/stall_policy.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/standard_location_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/state_core.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/state_model.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/table_ratio_compute.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/thunderbird_filter_semantics.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_catalog.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/lite_agent/tool_surface.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/integrations/openapa_osworld/tool_catalog.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/multi_apps_adapter/path_recovery.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/os_adapter/actions.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/os_adapter/pdf_tables.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/os_adapter/schema.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/os_adapter/tool_manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/scripts/evaluation_boundary.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/scripts/organization_step_budget.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/scripts/supervise_lite_agent_parallel.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_active_workbook_discovery.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_batch_table_stage.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_bounded_calc_formula_batch.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_bounded_os_vlc_decomposition.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_calc_create_new_overwrite.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_calc_text_transform_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_context_projection.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_filesystem_move_discovery.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_cleanup_completion.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_color_schema.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_multislide_shared_rule.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_picture_text_progression.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_role_text_split.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_single_role_rule.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_impress_textbox_color_progression.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_mail_selector_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_model_client_retry_policy.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_model_result_feedback.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_pdf_records_atomic_workflow.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_pdf_table_surface.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_recovery_surface.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/tests/test_strict_impress_completion.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_workflow_progress_handoff.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_writer_page_numbers.py"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/tests/test_writer_transform_case.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/actions.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/filter_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/profile.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/schema.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/tool_manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/verifier.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/thunderbird_adapter/worker.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/writer_adapter/schema.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/writer_adapter/tool_manifest.py"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/writer_adapter/uno_worker.py"
+    }
+  ],
+  "excluded_tracked_changes": [
+    {
+      "status": "A",
+      "path": "API_SPLIT_TASK.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "DEPLOYMENT_STATUS.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "README.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "bin/check.sh",
+      "reason": "Local environment or repository-specific management is outside integration scope"
+    },
+    {
+      "status": "M",
+      "path": "bin/run-liteagent.sh",
+      "reason": "Local environment or repository-specific management is outside integration scope"
+    },
+    {
+      "status": "A",
+      "path": "docs/api-granularity-audit-20260920.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "requirements-liteagent.txt",
+      "reason": "Local environment or repository-specific management is outside integration scope"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/api-customization-review-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/docs/codex-qwen-development-20260918.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/documentation.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/implementation.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/result-receipt.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/runner-source-seal.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-create-write-save-20261012/source-hashes.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/documentation.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/implementation.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/result-receipt.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/runner-source-seal.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/source-hashes.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/writeback-confirmation.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/deliveries/order91-save-path-20261013/writeback-confirmation.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/docs/index.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order102-classification-check-fix-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order102-latest-failure-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order102-step-budget-fix-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order107-latest-failure-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order108-latest-failure-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order108-writeback-audit-handoff-20260930.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order121-passing-changes-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order42-passing-changes-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order54-passing-changes-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order60-passing-changes-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order91-create-write-save-20261012.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order91-latest-failure-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order91-query-priority-fix-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order91-save-path-repair-20261013.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-checker-consistency-20261013-hashes.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-checker-consistency-20261013.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-checker-consistency-repair-20261013.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-checker-consistency-result-20261013.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-destination-validation-20261009.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010-base-hashes.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-inventory-repair-20261010.patch",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-latest-failure-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/order99-latest.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/osworld-passing-submission-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.json",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "M",
+      "path": "src/adapter_versions/v2_expanded/docs/project-progress.md",
+      "reason": "Development documentation and history are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/formal-order153-five-actions-20260928.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/formal-order153-five-actions-retry1-20260928.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/formal-order153-five-actions-retry2-20260928.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/formal-order153-five-actions-retry3-20260928.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/formal-order158-20260929.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-file-organize-102-20260925.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-filter-configure-154-split-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-impress-role-41-split-retry1-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-impress-textbox-color-53-current-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-impress-textbox-color-53-current-retry1-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-order160-subfolder-filters-20260929.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-pdf-authors-95-retry20-20260925.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-preferences-update-159-retired-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-set-role-text-47-baseline-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-set-role-text-47-split-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-set-role-text-52-split-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-set-role-text-52-split-retry1-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-set-role-text-52-split-retry2-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/local-writer-page-numbers-67-split-retry3-20260920.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget-retry1.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget-retry2.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget-retry3.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order102-qwen-20261010-inventory-step-budget.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-create-write-save-20261012.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-qwen-20261010-query-priority.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order91-save-path-20261013.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order99-checker-consistency-20261013.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/experiments/configs/osworld-order99-qwen-20261010-inventory-handoff.json",
+      "reason": "Experiment configuration, results and artifacts are outside integration commit"
+    },
+    {
+      "status": "A",
+      "path": "src/adapter_versions/v2_expanded/scripts/build_order107_overall_reference.py",
+      "reason": "All changes introduced by evaluator commit 1142019 are excluded"
+    },
+    {
+      "status": "A",
+      "path": "src/third_party/OSWorld/evaluation_examples/assets/order107-supported-rate-overall.xlsx",
+      "reason": "All changes introduced by evaluator commit 1142019 are excluded"
+    },
+    {
+      "status": "M",
+      "path": "src/third_party/OSWorld/evaluation_examples/examples/multi_apps/881deb30-9549-4583-a841-8270c65f2a17.json",
+      "reason": "All changes introduced by evaluator commit 1142019 are excluded"
+    },
+    {
+      "status": "A",
+      "path": "task.md",
+      "reason": "Development documentation and history are outside integration commit"
+    }
+  ],
+  "untracked_not_included": [
+    "MERGE_REVIEW.md",
+    "bin/run-osworld.py"
+  ],
+  "external_symlink": "src/adapter_versions/v2_expanded/src is absent and not included",
+  "main_repository_path_mapping": {
+    "local": "src/adapter_versions/v2_expanded/",
+    "upstream": "adapter_versions/v2_expanded/",
+    "apply_command": "git apply --check -p2 /absolute/path/api-split.patch; git apply -p2 /absolute/path/api-split.patch"
+  },
+  "patch_sha256": "a50bec1104ade0575564f06ebb251325b5d2d6d24d249b1ac324fd42a956809b",
+  "integration_commit": "1bcf3718d1b8ec65c31c792ef29c8d65fe303745"
+}

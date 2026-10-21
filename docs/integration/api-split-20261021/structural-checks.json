@@ -1,0 +1,14 @@
+{
+  "integration_paths_match_development_source": true,
+  "excluded_evaluator_changes": true,
+  "absolute_symlinks": [],
+  "unchanged_baseline_relative_symlinks": [
+    {
+      "path": "src/adapter_versions/v2_expanded/third_party",
+      "target": "../../third_party"
+    }
+  ],
+  "diff_check_exit_code": 0,
+  "strip_src_prefix_p2_patch_check": "passed",
+  "strip_src_prefix_p2_applied_files_match": true
+}

@@ -1,0 +1,3 @@
+# Preserve diff context and raw check output in the archived integration delivery.
+docs/integration/api-split-20261021/*.patch -whitespace
+docs/integration/api-split-20261021/*.log -whitespace

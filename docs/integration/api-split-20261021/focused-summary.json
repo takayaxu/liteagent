@@ -1,0 +1,18 @@
+{
+  "exit_code": 1,
+  "test_modules": [
+    "test_calc_text_transform_contract.py",
+    "test_impress_single_role_rule.py",
+    "test_impress_multislide_shared_rule.py",
+    "test_impress_role_text_split.py",
+    "test_writer_page_numbers.py",
+    "test_writer_transform_case.py",
+    "test_mail_selector_contract.py",
+    "test_generic_completion_save_recovery.py",
+    "test_completion_observed_mismatch_recovery.py",
+    "test_table_ratio_compute.py",
+    "test_pdf_records_atomic_workflow.py",
+    "test_protocol_recovery.py",
+    "test_workflow_progress_handoff.py"
+  ]
+}

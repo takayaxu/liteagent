@@ -1,0 +1,409 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_calc_save_recovery_keeps_zero_argument_in_place_save[True] ________
+
+forwarded = True
+
+    @pytest.mark.parametrize("forwarded", [False, True])
+    def test_calc_save_recovery_keeps_zero_argument_in_place_save(forwarded):
+        if forwarded:
+            tools = _strict_proactive(
+                _state([
+                    _calc_write(),
+                    _catalog_event(2, [("libreoffice_calc", "workbook.save")]),
+                    _rejected_completion(3),
+                ])
+            )
+            function = next(
+                tool["function"] for tool in tools
+                if tool["function"]["name"] == "adapter__adapter_call"
+            )
+            route = next(
+>               item for item in function["parameters"]["oneOf"]
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                if item["properties"]["action"]["enum"] == ["workbook.save"]
+            )
+E           KeyError: 'oneOf'
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:196: KeyError
+____ test_multi_apps_persistence_keeps_discovered_reads_without_new_routes _____
+
+    def test_multi_apps_persistence_keeps_discovered_reads_without_new_routes():
+        state = _state(
+            [
+                _calc_write(),
+                _catalog_event(
+                    2,
+                    [
+                        ("libreoffice_calc", "workbook.save"),
+                        ("libreoffice_calc", "workbook.inspect"),
+                        ("libreoffice_calc", "range.write"),
+                        ("libreoffice_writer", "document.inspect"),
+                    ],
+                ),
+                _rejected_completion(3),
+            ]
+        )
+        tools = completion_recovery._multi_apps_completion_tools(
+            state, STRICT_COMPLETION_PERSIST
+        )
+    
+>       assert _advertised_routes(tools) == {
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+            ("libreoffice_calc", "workbook.save"),
+            ("libreoffice_calc", "workbook.inspect"),
+        }
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:252: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tools = [{'function': {'description': 'Execute the deterministic multi_apps.adapter.call Adapter action. Call one model-select...ties': {'reason': {'minLength': 1, 'type': 'string'}}, 'required': ['reason'], 'type': 'object'}}, 'type': 'function'}]
+
+    def _advertised_routes(tools: list[dict[str, Any]] | None) -> set[tuple[str, str]]:
+        adapter_call = next(
+            tool
+            for tool in tools or []
+            if tool["function"]["name"] == "adapter__adapter_call"
+        )
+>       alternatives = adapter_call["function"]["parameters"]["oneOf"]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'oneOf'
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:150: KeyError
+_ test_source_output_recovery_keeps_discovered_route_across_adapter_owners[False] _
+
+captured = False
+
+    @pytest.mark.parametrize("captured", [False, True])
+    def test_source_output_recovery_keeps_discovered_route_across_adapter_owners(
+        captured: bool,
+    ) -> None:
+        source_path, output_path = "/tmp/source.py", "/tmp/result.txt"
+        state = _state(
+            [
+                _catalog_event(1, [
+                    ("vs_code", "file.read_text"),
+                    ("vs_code", "file.replace_literal"),
+                    ("os", "command.run"),
+                    ("os", "filesystem.find"),
+                    ("libreoffice_writer", "document.save"),
+                ]),
+                _adapter_call_event(2, "vs_code", "file.read_text", {"path": source_path},
+                                    result={"path": source_path, "verification": {"passed": True}}),
+                _adapter_call_event(3, "vs_code", "file.replace_literal",
+                                    {"path": source_path, "old": "pass", "new": "print(1)"},
+                                    result={"path": source_path, "verification": {"passed": True}}),
+            ]
+        )
+        state.instruction = "Complete source.py and save its output as result.txt."
+        capture_params = {
+            "argv": ["python3", source_path], "stdout_path": output_path,
+            "cwd_source": "home", "provenance": "none",
+        }
+        if captured:
+            state.events.append(_adapter_call_event(
+                4, "os", "command.run", capture_params,
+                result={"stdout_path": output_path, "verification": {"passed": True}},
+            ))
+        phase = STRICT_COMPLETION_READBACK if captured else STRICT_COMPLETION_PERSIST
+        tools = completion_recovery._multi_apps_completion_tools(state, phase)
+        required_route = ("vs_code", "file.read_text") if captured else ("os", "command.run")
+>       assert required_route in _advertised_routes(tools)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:302: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tools = [{'function': {'description': 'Execute the deterministic multi_apps.adapter.call Adapter action. Call one model-select...ties': {'reason': {'minLength': 1, 'type': 'string'}}, 'required': ['reason'], 'type': 'object'}}, 'type': 'function'}]
+
+    def _advertised_routes(tools: list[dict[str, Any]] | None) -> set[tuple[str, str]]:
+        adapter_call = next(
+            tool
+            for tool in tools or []
+            if tool["function"]["name"] == "adapter__adapter_call"
+        )
+>       alternatives = adapter_call["function"]["parameters"]["oneOf"]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'oneOf'
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:150: KeyError
+_ test_source_output_recovery_keeps_discovered_route_across_adapter_owners[True] _
+
+captured = True
+
+    @pytest.mark.parametrize("captured", [False, True])
+    def test_source_output_recovery_keeps_discovered_route_across_adapter_owners(
+        captured: bool,
+    ) -> None:
+        source_path, output_path = "/tmp/source.py", "/tmp/result.txt"
+        state = _state(
+            [
+                _catalog_event(1, [
+                    ("vs_code", "file.read_text"),
+                    ("vs_code", "file.replace_literal"),
+                    ("os", "command.run"),
+                    ("os", "filesystem.find"),
+                    ("libreoffice_writer", "document.save"),
+                ]),
+                _adapter_call_event(2, "vs_code", "file.read_text", {"path": source_path},
+                                    result={"path": source_path, "verification": {"passed": True}}),
+                _adapter_call_event(3, "vs_code", "file.replace_literal",
+                                    {"path": source_path, "old": "pass", "new": "print(1)"},
+                                    result={"path": source_path, "verification": {"passed": True}}),
+            ]
+        )
+        state.instruction = "Complete source.py and save its output as result.txt."
+        capture_params = {
+            "argv": ["python3", source_path], "stdout_path": output_path,
+            "cwd_source": "home", "provenance": "none",
+        }
+        if captured:
+            state.events.append(_adapter_call_event(
+                4, "os", "command.run", capture_params,
+                result={"stdout_path": output_path, "verification": {"passed": True}},
+            ))
+        phase = STRICT_COMPLETION_READBACK if captured else STRICT_COMPLETION_PERSIST
+        tools = completion_recovery._multi_apps_completion_tools(state, phase)
+        required_route = ("vs_code", "file.read_text") if captured else ("os", "command.run")
+>       assert required_route in _advertised_routes(tools)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:302: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tools = [{'function': {'description': 'Execute the deterministic multi_apps.adapter.call Adapter action. Call one model-select...ties': {'reason': {'minLength': 1, 'type': 'string'}}, 'required': ['reason'], 'type': 'object'}}, 'type': 'function'}]
+
+    def _advertised_routes(tools: list[dict[str, Any]] | None) -> set[tuple[str, str]]:
+        adapter_call = next(
+            tool
+            for tool in tools or []
+            if tool["function"]["name"] == "adapter__adapter_call"
+        )
+>       alternatives = adapter_call["function"]["parameters"]["oneOf"]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'oneOf'
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:150: KeyError
+______ test_discovered_calc_routes_are_exposed_only_through_adapter_call _______
+
+    def test_discovered_calc_routes_are_exposed_only_through_adapter_call() -> None:
+        state = _state(
+            [
+                _calc_write(),
+                _catalog_event(
+                    2,
+                    [
+                        ("libreoffice_calc", "workbook.save"),
+                        ("libreoffice_calc", "workbook.inspect"),
+                        ("libreoffice_writer", "document.save"),
+                    ],
+                ),
+                _rejected_completion(3),
+            ]
+        )
+    
+        tools = _strict_proactive(state)
+    
+        assert _tool_names(tools) == {
+            "adapter__adapter_call",
+            "tools_search",
+            "fail_task",
+        }
+>       assert _advertised_routes(tools) == {
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+            ("libreoffice_calc", "workbook.save"),
+            ("libreoffice_calc", "workbook.inspect"),
+        }
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:347: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tools = [{'function': {'description': 'Execute the deterministic multi_apps.adapter.call Adapter action. Call one model-select...ties': {'reason': {'minLength': 1, 'type': 'string'}}, 'required': ['reason'], 'type': 'object'}}, 'type': 'function'}]
+
+    def _advertised_routes(tools: list[dict[str, Any]] | None) -> set[tuple[str, str]]:
+        adapter_call = next(
+            tool
+            for tool in tools or []
+            if tool["function"]["name"] == "adapter__adapter_call"
+        )
+>       alternatives = adapter_call["function"]["parameters"]["oneOf"]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'oneOf'
+
+src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py:150: KeyError
+__ test_ratio_matrix_is_model_selected_read_only_and_write_stays_model_owned ___
+
+    def test_ratio_matrix_is_model_selected_read_only_and_write_stays_model_owned() -> None:
+        state = RuntimeState(
+            task_id="synthetic-ratio",
+            domain="multi_apps",
+            instruction=(
+                "For each year and university, fill the open spreadsheet with the decimal "
+                "Supported/Application success rate for Computing Science & Information Technology."
+            ),
+        )
+        paths = ["/tmp/report25.pdf", "/tmp/report26.pdf"]
+        state.events.append(_event(1, "filesystem.find", {}, {
+            "matches": [{"path": path, "kind": "file"} for path in paths]
+        }))
+        for index, path in enumerate(paths, start=2):
+            rows = [
+                ["Subject", "Uni A", None, None, None, "Uni B", None, None, None],
+                [None, "Application", None, "Supported", None,
+                 "Application", None, "Supported", None],
+                [None, "No", "Amt", "No", "Amt", "No", "Amt", "No", "Amt"],
+                ["Engineering\nCivil Engineering\nComputing Science & Information Technology",
+                 f"5\n{10 + index}", "0", "1\n6", "0",
+                 f"2\n{20 + index}", "0", "0\n11", "0"],
+            ]
+            state.events.append(_event(index, "pdf.tables.inspect", {"input_path": path}, {
+                "input_path": path, "table_count": 1, "row_count": 4,
+                "column_count": 9, "rows": rows,
+            }))
+        state.events.append(_event(4, "workbook.inspect", {}, {
+            "sheets": [{"name": "Sheet1", "used_range": {
+                "start_row": 0, "end_row": 2, "start_column": 0, "end_column": 2,
+            }}]
+        }))
+        state.events.append(_event(5, "range.read", {"sheet": "Sheet1", "range": "A1:C3"}, {
+            "sheet": "Sheet1", "range": "A1:C3",
+            "display_text": [["Year", "Uni A", "Uni B"], ["2025", "", ""], ["2026", "", ""]],
+        }))
+        agent = LiteAgent(
+            LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+            _NoAdapter(),  # type: ignore[arg-type]
+        )
+        assert batch_table_semantics._decimal_rate_matrix_requested(state)
+        assert batch_table_semantics._observed_pdf_source_paths(state) == tuple(paths)
+>       assert batch_table_semantics.native_pdf_table_observation_complete(state)
+E       AssertionError: assert False
+E        +  where False = <function native_pdf_table_observation_complete at 0x7feff5010fe0>(RuntimeState(task_id='synthetic-ratio', domain='multi_apps', instruction='For each year and university, fill the open ...erminal=None, terminal_confirmation=False, filesystem_organization_ledger={}, filesystem_organization_active_path=None))
+E        +    where <function native_pdf_table_observation_complete at 0x7feff5010fe0> = batch_table_semantics.native_pdf_table_observation_complete
+
+src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py:71: AssertionError
+______ test_grf_rejection_supplies_authoritative_row_correction_to_model _______
+
+    def test_grf_rejection_supplies_authoritative_row_correction_to_model() -> None:
+        from integrations.lite_agent.recovery_surface import last_failure_summary
+    
+        detail = (
+            "GRF row 1 #Applied does not match the observed HKU target cell: expected 25 "
+            "from /home/user/Documents/Fundings/grf/grf19.pdf\n"
+            "GRF row 1 #Supported does not match the observed HKU target cell: expected 7 "
+            "from /home/user/Documents/Fundings/grf/grf19.pdf\n"
+            "GRF row 1 Success Rate does not match the observed HKU target cell: expected 28.0 "
+            "from /home/user/Documents/Fundings/grf/grf19.pdf"
+        )
+        state = RuntimeState(
+            task_id="synthetic-grf-recovery",
+            domain="multi_apps",
+            instruction="Extract the GRF table and save it.",
+            events=[
+                ExecutionEvent(
+                    step=1,
+                    timestamp_utc="2026-09-29T00:00:00Z",
+                    proposed={
+                        "kind": "adapter",
+                        "tool": "adapter__adapter_call",
+                        "action": "adapter.call",
+                        "arguments": {"action": "workbook.create_new"},
+                    },
+                    executed=False,
+                    error={"type": "ValidationError", "detail": detail},
+                )
+            ],
+        )
+    
+        summary = last_failure_summary(state)
+        assert summary is not None
+>       assert "expected 25" in summary["correction"]
+                                ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'correction'
+
+src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py:527: KeyError
+______ test_repair_confirmation_executes_contract_rows_without_model_rows ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feff2c996e0>
+
+    def test_repair_confirmation_executes_contract_rows_without_model_rows(monkeypatch) -> None:
+        from integrations.lite_agent import batch_table_semantics
+    
+        executor = RecordingAdapterExecutor()
+        agent = LiteAgent(
+            LiteAgentConfig(base_url="http://unused/v1"),
+            executor,  # type: ignore[arg-type]
+        )
+        state = RuntimeState(
+            task_id="synthetic-repair-execution",
+            domain="multi_apps",
+            instruction="Extract the GRF table and save it.",
+            events=[
+                ExecutionEvent(
+                    step=1,
+                    timestamp_utc="2026-09-30T00:00:00Z",
+                    proposed={
+                        "kind": "catalog",
+                        "tool": "tools_search",
+                        "arguments": {"query": "workbook.create_new"},
+                    },
+                    executed=True,
+                    result={
+                        "matches": [
+                            {
+                                "action": "adapter.call",
+                                "adapter": "libreoffice_calc",
+                                "downstream_action": "workbook.create_new",
+                            }
+                        ]
+                    },
+                )
+            ],
+        )
+        state.repair_contract = {
+            "id": "grf-workbook-create-repair-2",
+            "repair_action": "adapter.call",
+            "corrected_arguments": {
+                "adapter": "libreoffice_calc",
+                "action": "workbook.create_new",
+                "payload": {
+                    "params": {
+                        "output_path": "/home/user/Desktop/GRF-p5y.xlsx",
+                        "headers": ["Year", "#Applied", "#Supported", "Success Rate"],
+                        "rows": [
+                            ["2019", 25, 7, 28.0],
+                            ["2020", 17, 7, 41.18],
+                            ["2021", 23, 7, 30.43],
+                            ["2022", 23, 9, 39.13],
+                            ["2023", 20, 5, 25.0],
+                        ],
+                    }
+                },
+            },
+        }
+        monkeypatch.setattr(batch_table_semantics, "argument_contract_errors", lambda *_args: [])
+        visible = agent.tools(state)
+        proposal = {
+            "tool": "repair_confirm",
+            "arguments_raw": json.dumps(
+                {"repair_id": state.repair_contract["id"], "confirm": True}
+            ),
+            "_model_visible_tools": visible,
+        }
+    
+        event = agent.execute_proposal(state, proposal)
+    
+>       assert event.executed is True
+E       AssertionError: assert False is True
+E        +  where False = ExecutionEvent(step=2, timestamp_utc='2026-10-21T14:10:45.891565+00:00', proposed={'tool': 'repair_confirm', 'argument...re=None, screenshot_after=None, audit_required=False, audit_completed=False, audit_tool=None, local_step=None, retry=0).executed
+
+src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py:609: AssertionError
+=========================== short test summary info ============================
+FAILED src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_calc_save_recovery_keeps_zero_argument_in_place_save[True]
+FAILED src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_multi_apps_persistence_keeps_discovered_reads_without_new_routes
+FAILED src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[False]
+FAILED src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_source_output_recovery_keeps_discovered_route_across_adapter_owners[True]
+FAILED src/adapter_versions/v2_expanded/tests/test_generic_completion_save_recovery.py::test_discovered_calc_routes_are_exposed_only_through_adapter_call
+FAILED src/adapter_versions/v2_expanded/tests/test_table_ratio_compute.py::test_ratio_matrix_is_model_selected_read_only_and_write_stays_model_owned
+FAILED src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_grf_rejection_supplies_authoritative_row_correction_to_model
+FAILED src/adapter_versions/v2_expanded/tests/test_protocol_recovery.py::test_repair_confirmation_executes_contract_rows_without_model_rows
+8 failed in 1.35s
