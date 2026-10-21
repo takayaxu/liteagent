@@ -90,9 +90,8 @@ python3 -m venv .venv
 python -m pip install -r requirements-liteagent.txt
 ```
 
-完整 OSWorld 任务还需要 Docker、`/dev/kvm`、共享 guest、一个 OpenAI
-兼容模型 endpoint，以及任务配置。模型地址和密钥通过环境变量提供，不能
-写进 README 或源码：
+完整 OSWorld 任务还需要 Docker、`/dev/kvm`、共享 guest 和一个 OpenAI
+兼容模型 endpoint。模型地址和密钥通过环境变量提供，不能写进 README 或源码：
 
 ```bash
 export QWEN_BASE_URL='http://MODEL_HOST:8001/v1'
@@ -100,7 +99,22 @@ export QWEN_MODEL='Qwen3.5-9B'
 export QWEN_API_KEY='EMPTY'
 ```
 
-运行单个任务的通用形式（需自行提供可运行配置）：
+默认的本地串行配置位于 `configs/single-task-v3-thinking.json`：它固定冻结
+v3 源码、Qwen3.5-9B thinking、每题 100 步和 1800 秒，并配置完整的工具调用
+结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
+在调用结束处停止生成，客户端仍检查恰好一个完整工具调用并执行参数 schema 校验。
+
+依次运行指定 OSWorld 题目：
+
+```bash
+HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py --orders 13 15 27 47 76
+```
+
+运行器会核对当前 LiteAgent 源码与配置中的冻结 v3 摘要，按顺序运行题目，并将
+独立源码快照、配置、命令、日志和结果写入 `../liteagent-local-runs/`。可使用
+`--config /path/to/config.json` 指定另一份配置。
+
+直接调用单题或自定义任务配置时，仍可使用通用形式：
 
 ```bash
 ./bin/run-liteagent.sh \

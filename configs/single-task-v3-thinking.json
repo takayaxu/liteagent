@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "experiment_id": "v3-thinking-serial",
+  "status": "development",
+  "purpose": "Local serial OSWorld runs using original frozen v3, Qwen3.5-9B thinking, 100 steps, 1800 seconds per task.",
+  "sources": {
+    "baseline_candidate": false,
+    "resume": false,
+    "baseline_source_commit": "da003732c6836e86bc2c4a3df5100c3d11ea1782",
+    "baseline_source_sha256": "8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b",
+    "completion_protocol": "original frozen v3; no subsequent repair modules"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "Qwen3.5-9B",
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch",
+    "base_urls": [
+      "https://qwen.jinmaoapi.cc.cd/v1"
+    ]
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "max_steps": 100,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 8192,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "gui_enabled": true,
+    "guest_proxy": false,
+    "model_retries": 3,
+    "reasoning_mode": "thinking",
+    "tool_call_stop_sequence": "\n</function>\n</tool_call>",
+    "max_local_steps": 100,
+    "max_soft_restarts": 1,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "task_specific_or_golden_exposed": false,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "non_promotable": true,
+    "initial_step_budget": 100,
+    "concurrency": 1,
+    "no_mid_run_condition_changes": true,
+    "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain."
+  },
+  "tasks": [
+    {
+      "order": 13,
+      "domain": "libreoffice_calc",
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "source_order": 89
+    },
+    {
+      "order": 15,
+      "domain": "libreoffice_calc",
+      "task_id": "347ef137-7eeb-4c80-a3bb-0951f26a8aff",
+      "source_order": 92
+    },
+    {
+      "order": 27,
+      "domain": "libreoffice_calc",
+      "task_id": "3a7c8185-25c1-4941-bd7b-96e823c9f21f",
+      "source_order": 106
+    },
+    {
+      "order": 47,
+      "domain": "libreoffice_impress",
+      "task_id": "08aced46-45a2-48d7-993b-ed3fb5b32302",
+      "source_order": 135
+    },
+    {
+      "order": 76,
+      "domain": "libreoffice_writer",
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "source_order": 167
+    }
+  ]
+}
