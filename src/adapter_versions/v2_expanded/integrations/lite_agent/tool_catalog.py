@@ -2085,6 +2085,8 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                 "The range must be a single "
                 "rectangle such as F3:F20; do not join non-contiguous ranges with commas. "
                 "Issue separate range.read calls when disjoint regions must be checked. "
+                "Keep each read bounded to at most 1000 rows and 10000 cells; use the "
+                "smallest observed rectangle and never invent a very large row number. "
                 "The result includes cell_addresses aligned one-for-one with the returned "
                 "display_text, formulas, and kinds matrices; use cell_addresses[i][j] as "
                 "the exact A1 address for each observed cell. Native date cells also "
@@ -3550,7 +3552,43 @@ def _search_multi_app_actions(
             and query_tokens.intersection({"file", "files", "project", "vscode"})
         )
     )
+    # An active-workbook query is an observation request.  The word ``path``
+    # describes the identity returned by inspection; it is not a request to
+    # search the filesystem or to supply a path argument to tools_search.
+    active_workbook_search = bool(
+        search_tokens.intersection(
+            {"workbook", "spreadsheet", "worksheet", "calc"}
+        )
+        and search_tokens.intersection(
+            {"active", "current", "open", "identity", "path", "ranges", "read"}
+        )
+    )
+    local_file_read_search = bool(
+        search_tokens.intersection({"read", "extract"})
+        and search_tokens.intersection({"local", "file", "csv", "spreadsheet"})
+        and not search_tokens.intersection({"copy", "move", "write", "rename"})
+    )
+    local_file_path_search = bool(
+        search_tokens.intersection({"find", "locate", "search"})
+        and search_tokens.intersection(
+            {"file", "files", "path", "folder", "directory"}
+        )
+    )
     pdf_split_search = _pdf_split_intent(search_tokens)
+    # Small models sometimes carry over the generic ``filesystem.read_file``
+    # name from an earlier tool vocabulary when the requested sources are PDFs.
+    # In that context the public, bounded reader is the OS PDF extractor. Keep
+    # this alias narrow so ordinary filesystem reads retain their normal routes.
+    pdf_read_alias_search = bool(
+        search_tokens.intersection({"read", "extract", "file", "filesystem"})
+        and search_tokens.intersection({"pdf", "pdfs"})
+        and query_tokens.intersection({"filesystem", "read_file", "read", "file"})
+    )
+    decimal_rate_write_search = bool(
+        search_tokens.intersection({"pdf", "pdfs"})
+        and search_tokens.intersection({"spreadsheet", "workbook", "calc", "sheet"})
+        and query_tokens.intersection({"write", "cell", "cells", "range"})
+    )
     desktop_association_search = _desktop_association_intent(search_tokens)
     file_organization_search = bool(
         search_tokens.intersection(
@@ -3663,6 +3701,21 @@ def _search_multi_app_actions(
                 action,
             ) == ("vs_code", "workspace.find_files"):
                 score += 5000
+            if active_workbook_search and (route_domain, action) == (
+                "libreoffice_calc",
+                "workbook.inspect",
+            ):
+                score += 5000
+            if local_file_read_search:
+                score += {
+                    ("libreoffice_calc", "workbook.read_file"): 5000,
+                    ("os", "filesystem.find"): 4500,
+                }.get((route_domain, action), 0)
+            if local_file_path_search and (route_domain, action) == (
+                "os",
+                "filesystem.find",
+            ):
+                score += 5000
             if desktop_association_search:
                 score += {
                     ("os", "desktop.applications.inspect"): 5000,
@@ -3673,6 +3726,11 @@ def _search_multi_app_actions(
                     ("os", "pdf.outline.inspect"): 5000,
                     ("os", "filesystem.find"): 4500,
                     ("os", "pdf.pages.extract"): 4000,
+                }.get((route_domain, action), 0)
+            if pdf_read_alias_search:
+                score += {
+                    ("os", "pdf.extract_text_batch"): 7000,
+                    ("os", "filesystem.find"): 3500,
                 }.get((route_domain, action), 0)
             if file_organization_search:
                 score += {
@@ -3712,13 +3770,63 @@ def _search_multi_app_actions(
     # request for that route. Keep unrelated filesystem routes out of the
     # result so the model can call the requested action instead of repeating
     # catalog searches over a noisy multi-route result.
+    # Treat an explicitly named downstream action as an exact route request.
+    # Search queries often carry incidental location fields (for example
+    # ``path=...``); those fields must not make a Calc ``range.read`` request
+    # resolve to the path-based ``workbook.read_file`` route.
+    explicit_actions = {
+        action.casefold()
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS
+        for action in public_actions(route_domain)
+        if re.search(
+            rf"(?<![\w.]){re.escape(action.casefold())}(?![\w.])",
+            query.casefold(),
+        )
+    }
     explicit_routes = {
         match.casefold()
         for match in re.findall(r"(?<![\w.])(?:filesystem\.[a-z_]+)", query.casefold())
     }
-    if explicit_routes:
+    explicit_actions.update(explicit_routes)
+    # ``filesystem.read_file`` is not a public route in the strict generic
+    # catalog. When it is the model's stale alias for a PDF read, preserve the
+    # explicit-route narrowing while redirecting it to the real PDF reader.
+    if pdf_read_alias_search and "filesystem.read_file" in explicit_actions:
+        explicit_actions.add("pdf.extract_text_batch")
+    if decimal_rate_write_search and not explicit_actions:
+        # Once a PDF-to-rate-table task asks for a write-like operation, do not
+        # expose another read route that lets a small model reopen the already
+        # observed workbook with an invented oversized A1 range.
+        # An explicit public action in the model's query is authoritative: a
+        # query for ``range.read`` must never be rewritten to ``range.write``
+        # merely because the surrounding instruction is a rate-table task.
+        explicit_actions = {"range.write"}
+    # Small models sometimes describe the active-workbook read as
+    # ``workbook.read``.  With an explicit sheet/range and no path this is the
+    # cell reader, not the file reader; keep the next surface read-only.
+    if (
+        re.search(r"(?<![\w.])workbook\.read(?![\w.])", query.casefold())
+        and "path=" not in query.casefold()
+        and re.search(r"\bsheet\s*=", query.casefold())
+        and re.search(r"\brange\s*=", query.casefold())
+    ):
+        explicit_actions.add("range.read")
+    # An explicitly named public route is an unambiguous discovery request,
+    # even when its identifier has no lexical overlap with the normalized
+    # contract tokens (for example ``workbook.create_new``).  Keep it in the
+    # result so discovery cannot return an empty set for a valid route.
+    if explicit_actions:
+        ranked_keys = {(item[1], item[2]) for item in ranked}
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS:
+            for action in public_actions(route_domain):
+                if action.casefold() in explicit_actions and (
+                    route_domain,
+                    action,
+                ) not in ranked_keys:
+                    ranked.append((0, route_domain, action))
+    if explicit_actions:
         ranked = [
-            item for item in ranked if item[2].casefold() in explicit_routes
+            item for item in ranked if item[2].casefold() in explicit_actions
         ]
     return [
         {

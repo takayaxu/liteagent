@@ -821,7 +821,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-no-progress-steps", type=int, default=8)
     parser.add_argument("--max-agent-seconds", type=float, default=300.0)
     parser.add_argument("--top-k", type=int, default=7)
-    parser.add_argument("--max-output-tokens", type=int, default=512)
+    parser.add_argument("--max-output-tokens", type=int, default=4096)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--request-timeout", type=float, default=180.0)
     parser.add_argument("--model-retries", type=int, default=3)

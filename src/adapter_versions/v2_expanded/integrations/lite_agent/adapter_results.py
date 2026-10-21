@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -57,6 +58,187 @@ _TABLE_ROW_NUMBER_RE = re.compile(
     r"(?<![A-Za-z0-9])[+-]?(?:\d[\d,]*(?:\.\d+)?%?)(?![A-Za-z0-9])"
 )
 _TABLE_ROW_SUMMARY_LABELS = ("subtotal", "total", "summary", "overall", "result")
+
+
+def _ecs_table_context(result: Any) -> dict[str, Any] | None:
+    """Find the native ECS table context inside a wrapped Adapter result."""
+    pending = [result]
+    for _depth in range(10):
+        if not pending:
+            break
+        next_pending: list[Any] = []
+        for value in pending:
+            if isinstance(value, dict):
+                if (
+                    isinstance(value.get("rows"), list)
+                    and isinstance(value.get("input_path"), str)
+                    and value.get("observation_type") == "pdf_table"
+                ):
+                    return value
+                next_pending.extend(value.values())
+            elif isinstance(value, list):
+                next_pending.extend(value)
+        pending = next_pending
+    return None
+
+
+def _compact_ecs_rows(rows: list[Any]) -> list[Any]:
+    """Keep headers and the discipline row needed for the ECS rate matrix."""
+    selected: list[Any] = []
+    for index, row in enumerate(rows):
+        if index < 3:
+            selected.append(row)
+            continue
+        label = str(row[0] if isinstance(row, list) and row else "")
+        normalized = re.sub(r"\s+", "", label).casefold()
+        if (
+            ("computingscience" in normalized or "computerscience" in normalized)
+            and "informationtechnology" in normalized
+        ) or normalized == "total":
+            selected.append(row)
+    return selected
+
+
+def _ecs_observation_aggregate(
+    table_events: list[tuple[Any, str]],
+) -> list[dict[str, Any]]:
+    """Build a small authoritative handoff from all observed ECS tables.
+
+    The complete event ledger remains unchanged.  The model-facing handoff
+    retains the aligned headers and only the requested discipline/total row so
+    all years survive the prompt budget without replaying nine full tables.
+    """
+    aggregate: list[dict[str, Any]] = []
+    for event, path in table_events:
+        context = _ecs_table_context(getattr(event, "result", None))
+        rows = context.get("rows") if isinstance(context, dict) else None
+        if not isinstance(rows, list) or not rows:
+            continue
+        header_index = next(
+            (
+                index
+                for index, row in enumerate(rows[:4])
+                if isinstance(row, list)
+                and sum(
+                    str(value or "").strip().casefold() == "application"
+                    for value in row
+                )
+                == 9
+            ),
+            None,
+        )
+        if header_index is None:
+            continue
+        header = rows[header_index]
+        applications = [
+            index
+            for index, value in enumerate(header)
+            if str(value or "").strip().casefold() == "application"
+        ]
+        supported = [
+            index
+            for index, value in enumerate(header)
+            if str(value or "").strip().casefold() == "supported"
+        ]
+        if len(applications) != 9 or len(supported) != 9:
+            continue
+        pairs = [
+            (applications[index], supported[index])
+            for index in range(8)
+            if supported[index] == applications[index] + 2
+        ]
+        if len(pairs) != 8:
+            continue
+        target = next(
+            (
+                row
+                for row in rows
+                if isinstance(row, list)
+                and row
+                and (
+                    (
+                        ("computing science" in str(row[0]).casefold()
+                         or "computer science" in str(row[0]).casefold())
+                        and "information technology" in str(row[0]).casefold()
+                    )
+                    or re.sub(r"\s+", "", str(row[0])).casefold() == "total"
+                )
+            ),
+            None,
+        )
+        if not isinstance(target, list):
+            continue
+        target_label = str(target[0]).casefold()
+        # The numeric cells use the four-discipline order, while the label may
+        # wrap one discipline across multiple visual lines.  Computing/
+        # Computer Science is therefore ordinal position 1, not its physical
+        # line number in the wrapped label.
+        discipline_index = (
+            1
+            if (
+                ("computing science" in target_label or "computer science" in target_label)
+                and "information technology" in target_label
+            )
+            else None
+        )
+
+        def numeric_lines(value: Any) -> list[int] | None:
+            lines = str(value).splitlines() if isinstance(value, str) else [value]
+            parsed: list[int] = []
+            for line in lines:
+                match = re.fullmatch(r"\s*([0-9][0-9,]*)\s*", str(line))
+                if match is None:
+                    return None
+                parsed.append(int(match.group(1).replace(",", "")))
+            return parsed or None
+
+        application_no: list[int] = []
+        supported_no: list[int] = []
+        valid = True
+        for application_column, supported_column in pairs:
+            application_values = numeric_lines(target[application_column])
+            supported_values = numeric_lines(target[supported_column])
+            if discipline_index is not None:
+                if (
+                    application_values is None
+                    or supported_values is None
+                    or discipline_index >= len(application_values)
+                    or discipline_index >= len(supported_values)
+                ):
+                    valid = False
+                    break
+                application_values = [application_values[discipline_index]]
+                supported_values = [supported_values[discipline_index]]
+            if (
+                application_values is None
+                or supported_values is None
+                or len(application_values) != 1
+                or len(supported_values) != 1
+            ):
+                valid = False
+                break
+            application_no.append(application_values[0])
+            supported_no.append(supported_values[0])
+        if not valid:
+            continue
+        aggregate.append(
+            {
+                "input_path": path,
+                "row_count": context.get("row_count"),
+                "column_count": context.get("column_count"),
+                "universities": [
+                    rows[0][application_column]
+                    if isinstance(rows[0], list) and application_column < len(rows[0])
+                    else None
+                    for application_column, _supported_column in pairs
+                ],
+                "application_no": application_no,
+                "supported_no": supported_no,
+                "application_supported_columns": [list(pair) for pair in pairs],
+                "calculation": "supported_no / application_no",
+            }
+        )
+    return aggregate
 
 
 def utc_now() -> str:
@@ -573,6 +755,8 @@ def execution_context_summary(
     strict_generic: bool = False,
 ) -> list[dict[str, Any]]:
     """Compatibility wrapper for the bounded execution transcript."""
+    events = _compact_redundant_pdf_text_events(events, domain)
+    events = _compact_completed_ecs_table_events(events, domain)
     return _summarize_events(
         events,
         domain,
@@ -580,6 +764,151 @@ def execution_context_summary(
         strict_generic=strict_generic,
         context_hint_for_model=context_hint_for_model,
     )
+
+
+def _compact_redundant_pdf_text_events(
+    events: list[Any], domain: str
+) -> list[Any]:
+    """Drop flat PDF text after the same source has a table observation.
+
+    A PDF is often read once to discover its page/table and then inspected
+    structurally.  Replaying both full observations gives the model two
+    copies of the same source and encourages it to reconcile flattened text
+    instead of using the authoritative cell matrix.  The immutable event
+    ledger remains untouched; only the model-facing receipt is shortened.
+    """
+    if domain != "multi_apps" or not isinstance(events, list):
+        return events
+    from posixpath import basename
+
+    table_paths: set[str] = set()
+    text_events: list[tuple[int, str]] = []
+    for index, event in enumerate(events):
+        if not getattr(event, "executed", False):
+            continue
+        proposed = getattr(event, "proposed", {})
+        arguments = proposed.get("arguments") if isinstance(proposed, dict) else None
+        action = arguments.get("action") if isinstance(arguments, dict) else None
+        payload = arguments.get("payload") if isinstance(arguments, dict) else None
+        params = payload.get("params") if isinstance(payload, dict) else None
+        if not isinstance(params, dict):
+            continue
+        if action == "pdf.tables.inspect":
+            input_path = params.get("input_path")
+            if isinstance(input_path, str):
+                table_paths.add(basename(input_path))
+        elif action == "pdf.extract_text_batch":
+            pattern = params.get("input_pattern")
+            if isinstance(pattern, str):
+                text_events.append((index, pattern))
+    if not table_paths or not text_events:
+        return events
+    compacted = list(events)
+    for index, pattern in text_events:
+        source_name = basename(pattern)
+        # A wildcard batch text read is superseded as soon as native table
+        # observation starts. Keeping its full text alongside the current
+        # table body would replay every PDF into each Qwen request. Single-file
+        # reads retain the historical basename guard.
+        if not any(char in pattern for char in "*?[") and source_name not in table_paths:
+            continue
+        event = compacted[index]
+        compacted_event = copy.copy(event)
+        compacted_event.result = {
+            "context_hint": {
+                "downstream_action": "pdf.extract_text_batch",
+                "observation_type": "text_batch_superseded_by_native_pdf_table",
+                "input_pattern": pattern,
+                "source_text_omitted_after_structured_table": True,
+            }
+        }
+        compacted[index] = compacted_event
+    return compacted
+
+
+def _compact_completed_ecs_table_events(
+    events: list[Any], domain: str
+) -> list[Any]:
+    """Drop repeated native PDF table bodies after the 9-year source is complete.
+
+    The immutable event ledger keeps every table row.  The model only needs the
+    source paths and the authoritative matrix handoff once all ECS years have
+    been inspected; replaying nine large table bodies causes Qwen requests to
+    exceed the provider's practical context/transport budget.
+    """
+    if domain != "multi_apps" or not isinstance(events, list):
+        return events
+    table_events: list[tuple[Any, str]] = []
+    for event in events:
+        if not getattr(event, "executed", False):
+            continue
+        proposed = getattr(event, "proposed", {})
+        arguments = proposed.get("arguments") if isinstance(proposed, dict) else None
+        nested_action = arguments.get("action") if isinstance(arguments, dict) else None
+        payload = arguments.get("payload") if isinstance(arguments, dict) else None
+        params = payload.get("params") if isinstance(payload, dict) else None
+        input_path = params.get("input_path") if isinstance(params, dict) else None
+        if nested_action != "pdf.tables.inspect" or not isinstance(input_path, str):
+            continue
+        match = re.search(r"(?i)(?:^|/)ecs\s*(1[5-9]|2[0-3])(?:\.pdf)?$", input_path)
+        if match:
+            table_events.append((event, input_path))
+    years = {re.search(r"(?i)ecs\s*(1[5-9]|2[0-3])", path).group(1) for _, path in table_events}
+    if not years:
+        return events
+    compacted = []
+    table_ids = {id(event): path for event, path in table_events}
+    latest_event = max(table_events, key=lambda item: item[0].step)[0]
+    latest_table_id = id(latest_event)
+    aggregate = _ecs_observation_aggregate(table_events)
+    for event in events:
+        path = table_ids.get(id(event))
+        if path is None:
+            compacted.append(event)
+            continue
+        if id(event) == latest_table_id:
+            # Keep one compact, all-years handoff on the latest observation so
+            # the next workbook mutation can consume every source row after
+            # older event bodies are elided from the prompt.
+            latest_result = copy.deepcopy(getattr(event, "result", None))
+            context = _ecs_table_context(latest_result)
+            if isinstance(context, dict):
+                if isinstance(context.get("rows"), list):
+                    context["rows"] = _compact_ecs_rows(context["rows"])
+                context["ecs_structured_observations"] = aggregate
+                context["ecs_observation_count"] = len(aggregate)
+                context["guidance"] = (
+                    "ecs_structured_observations is the complete cross-year handoff. "
+                    "For each input_path, use the observed application_no and "
+                    "supported_no arrays in university order; compute each "
+                    "university's supported_no divided by application_no before writing. "
+                    "application_supported_columns proves the adjacent header pairs."
+                )
+            compacted_event = copy.copy(event)
+            compacted_event.result = latest_result
+            compacted.append(compacted_event)
+            continue
+        # Shallow-copy the event so the audit ledger and stored result remain
+        # untouched while the model projection sees only the current PDF's
+        # full table body. Previous observations remain available to the
+        # server-side matrix assembler through the immutable event ledger.
+        from dataclasses import replace
+
+        compacted.append(
+            replace(
+                event,
+                result={
+                    "context_hint": {
+                        "downstream_action": "pdf.tables.inspect",
+                        "observation_type": "complete_native_pdf_table",
+                        "input_path": path,
+                        "source_observation_complete": True,
+                        "rows_omitted_after_next_pdf": True,
+                    }
+                },
+            )
+        )
+    return compacted
 
 
 def has_passed_verification(value: Any) -> bool:
@@ -1348,6 +1677,7 @@ def pdf_text_batch_context(result: dict[str, Any]) -> dict[str, Any]:
     files = [item for item in raw_files or [] if isinstance(item, dict)]
     selected = files[:TEXT_BATCH_CONTEXT_MAX_FILES]
     context: dict[str, Any] = {
+        "observation_type": "text_batch",
         "input_directory": result.get("input_directory"),
         "input_pattern": result.get("input_pattern"),
         "start_page": result.get("start_page"),
@@ -1424,7 +1754,278 @@ def pdf_text_batch_context(result: dict[str, Any]) -> dict[str, Any]:
             "bounded model-context budget."
         )
     )
+    billing_guidance = _billing_reconciliation_guidance(context["files"])
+    if billing_guidance:
+        context["guidance"] += " " + billing_guidance
     return context
+
+
+def _billing_reconciliation_guidance(files: list[dict[str, Any]]) -> str:
+    """Add generic evidence rules for invoice and statement comparisons."""
+    corpus = " ".join(
+        str(item.get(key, ""))
+        for item in files
+        for key in ("path", "text")
+    ).casefold()
+    if not any(
+        token in corpus
+        for token in ("invoice", "statement", "balance due", "transaction")
+    ):
+        return ""
+    return (
+        "For invoice/statement reconciliation, match each invoice to a statement "
+        "transaction using normalized merchant or description and the invoice total "
+        "versus the transaction amount. A different invoice date and payment or posting "
+        "date is timing evidence only and is not, by itself, a discrepancy. Mark an "
+        "invoice as unmatched only when the amount or the normalized transaction "
+        "description does not match; then create the requested destination directory "
+        "and move only those exact source files one at a time."
+    )
+
+
+_BILLING_STOP_WORDS = frozenset(
+    {
+        "account",
+        "balance",
+        "bill",
+        "due",
+        "invoice",
+        "inc",
+        "llc",
+        "limited",
+        "statement",
+        "the",
+        "total",
+        "transaction",
+    }
+)
+
+
+def _billing_text_batch_files(value: Any, depth: int = 0) -> list[dict[str, Any]]:
+    """Find bounded PDF text files inside an Adapter result envelope."""
+    if depth > 8:
+        return []
+    if isinstance(value, dict):
+        files = value.get("files")
+        if isinstance(files, list) and any(
+            isinstance(item, dict) and isinstance(item.get("text"), str)
+            for item in files
+        ):
+            return [item for item in files if isinstance(item, dict)]
+        found: list[dict[str, Any]] = []
+        for child in value.values():
+            found.extend(_billing_text_batch_files(child, depth + 1))
+        return found
+    if isinstance(value, list):
+        found = []
+        for child in value:
+            found.extend(_billing_text_batch_files(child, depth + 1))
+        return found
+    return []
+
+
+def _billing_tokens(value: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", value.casefold())
+        if len(token) > 2 and not token.isdigit() and token not in _BILLING_STOP_WORDS
+    }
+
+
+def _billing_amounts(value: str) -> set[float]:
+    amounts: set[float] = set()
+    for raw in re.findall(
+        r"(?<![\w/])(?:us\s*\$|\$)?\s*([0-9][\d,]*\.\d{2})(?![\w/])",
+        value,
+        re.I,
+    ):
+        try:
+            amounts.add(round(float(raw.replace(",", "")), 2))
+        except ValueError:
+            continue
+    return amounts
+
+
+def _billing_invoice_total(text: str) -> float | None:
+    labelled = re.findall(
+        r"(?is)(?:balance\s+due|invoice\s+total|amount\s+due|grand\s+total)"
+        r"[^\d$]{0,80}(?:us\s*\$|\$)?\s*([0-9][\d,]*(?:\.\d{1,2})?)",
+        text,
+    )
+    if not labelled:
+        return None
+    try:
+        return round(float(labelled[-1].replace(",", "")), 2)
+    except ValueError:
+        return None
+
+
+def _billing_invoice_merchant(text: str) -> set[str]:
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    # Invoice templates commonly put the supplier and the word "Invoice" on
+    # the same line, or put a standalone Invoice heading before the supplier.
+    # Prefer the supplier text adjacent to that heading so bill-to addresses
+    # and invoice numbers cannot become the merchant identity.
+    for line in lines[:12]:
+        lowered = line.casefold()
+        if "statement" in lowered:
+            continue
+        if "invoice" in lowered:
+            prefix = re.split(r"\binvoice\b", line, maxsplit=1, flags=re.I)[0]
+            tokens = _billing_tokens(prefix.split(",", 1)[0])
+            if tokens:
+                return tokens
+            continue
+        if line.lstrip().startswith("#") or re.match(r"(?i)^\s*[a-z]*\d[\w-]*$", line):
+            continue
+        candidate = line.split(",", 1)[0]
+        tokens = _billing_tokens(line)
+        if len(tokens) >= 2 and not re.search(
+            r"(?i)^(?:date|payment\s+terms|due|issued|bill\s+to|ship\s+to|po\s+number)",
+            line,
+        ):
+            return _billing_tokens(candidate) or tokens
+    return set()
+
+
+def _billing_statement_transactions(text: str) -> list[tuple[set[str], set[float]]]:
+    transactions: list[tuple[set[str], set[float]]] = []
+    for line in text.splitlines():
+        amounts = _billing_amounts(line)
+        if not amounts:
+            continue
+        # Strip the leading statement date before extracting the description.
+        # Splitting at the first number would otherwise discard every row
+        # because the date itself starts with a number.
+        description = re.sub(
+            r"^\s*(?:\d{2,4}[/-]\d{1,2}[/-]\d{1,4}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\s+",
+            "",
+            line,
+            count=1,
+        )
+        description = re.split(
+            r"\$|(?<![\w.])[0-9][\d,]*(?:\.\d{1,2})?",
+            description,
+            maxsplit=1,
+        )[0]
+        tokens = _billing_tokens(description)
+        if tokens:
+            transactions.append((tokens, amounts))
+    return transactions
+
+
+def billing_reconciliation_argument_errors(
+    state: Any, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    """Reject billing renames for matched invoices or the source statement.
+
+    This is a generic execution guard. It relies only on the instruction and
+    successful model-visible PDF observations already present in the event
+    ledger; it never uses task ids, evaluator state, or expected filenames.
+    """
+    instruction = str(getattr(state, "instruction", "")).casefold()
+    if not (
+        "invoice" in instruction
+        and any(token in instruction for token in ("statement", "transaction", "discrepanc", "match"))
+    ):
+        return []
+    if action != "adapter.call" or not isinstance(arguments, dict):
+        return []
+    nested = arguments
+    if arguments.get("action") == "adapter.call":
+        outer_payload = arguments.get("payload")
+        nested = (
+            outer_payload.get("params")
+            if isinstance(outer_payload, dict)
+            else {}
+        )
+    nested_action = nested.get("action") if isinstance(nested, dict) else None
+    nested_adapter = nested.get("adapter") if isinstance(nested, dict) else None
+    payload = nested.get("payload") if isinstance(nested, dict) else None
+    params = payload.get("params") if isinstance(payload, dict) else None
+    if nested_adapter != "os" or nested_action != "filesystem.rename" or not isinstance(params, dict):
+        return []
+    source = params.get("source")
+    if not isinstance(source, str):
+        return []
+
+    observations: list[dict[str, Any]] = []
+    for event in getattr(state, "events", ()):
+        if not getattr(event, "executed", False):
+            continue
+        proposed = getattr(event, "proposed", {})
+        if not isinstance(proposed, dict) or proposed.get("action") != "adapter.call":
+            continue
+        event_arguments = proposed.get("arguments")
+        if not isinstance(event_arguments, dict):
+            continue
+        event_nested = event_arguments
+        if event_arguments.get("action") == "adapter.call":
+            event_payload = event_arguments.get("payload")
+            event_nested = (
+                event_payload.get("params")
+                if isinstance(event_payload, dict)
+                else {}
+            )
+        if (
+            not isinstance(event_nested, dict)
+            or event_nested.get("adapter") != "os"
+            or event_nested.get("action") != "pdf.extract_text_batch"
+        ):
+            continue
+        observations.extend(_billing_text_batch_files(getattr(event, "result", None)))
+    if not observations:
+        return []
+
+    statements: list[tuple[set[str], list[tuple[set[str], set[float]]]]] = []
+    invoices: dict[str, tuple[float, set[str]]] = {}
+    for item in observations:
+        path = item.get("path")
+        text = item.get("text")
+        if not isinstance(path, str) or not isinstance(text, str):
+            continue
+        corpus = f"{path} {text}".casefold()
+        if "statement" in corpus or "transactions" in corpus or "bank-statement" in corpus:
+            statements.append((_billing_tokens(text), _billing_statement_transactions(text)))
+        elif "invoice" in corpus or "balance due" in corpus or "invoice total" in corpus:
+            total = _billing_invoice_total(text)
+            if total is not None:
+                # Keep both the preferred supplier heading and the bounded
+                # invoice text as matching evidence. Templates vary in where
+                # they place the supplier line; the full-text token set still
+                # excludes generic accounting stop words and catches the
+                # product/merchant wording used by the statement row.
+                merchant = _billing_invoice_merchant(text)
+                # Prefer the supplier heading as the merchant identity.  The
+                # remaining invoice text contains products, addresses, and
+                # bill-to data that must not make a weak token intersection
+                # look like a merchant match.
+                invoices[path] = (total, merchant or _billing_tokens(text))
+    if not statements or not invoices:
+        return [
+            "BILLING_RECONCILIATION_INCOMPLETE: do not move any invoice until the full bank statement and all invoice totals and merchant descriptions are observed"
+        ]
+
+    statement_rows = [row for _, rows in statements for row in rows]
+    source_invoice = next((path for path in invoices if path == source), None)
+    if source_invoice is None:
+        if "statement" in source.casefold() or "bank" in source.casefold():
+            return [
+                "BILLING_STATEMENT_NOT_MOVABLE: this reconciliation task moves only unmatched invoice files; never move the bank statement"
+            ]
+        return [
+            "BILLING_UNCONFIRMED_SOURCE_NOT_MOVABLE: source is not an observed invoice with a complete amount-and-merchant reconciliation; do not move it"
+        ]
+    total, merchant = invoices[source_invoice]
+    matched = any(
+        total in amounts and bool(merchant) and merchant <= row_tokens
+        for row_tokens, amounts in statement_rows
+    )
+    if matched:
+        return [
+            "BILLING_MATCHED_INVOICE_NOT_MOVABLE: the invoice amount and merchant match a statement transaction; move only an invoice with a confirmed amount or merchant mismatch"
+        ]
+    return []
 
 
 def _text_batch_observation(value: dict[str, Any]) -> bool:
@@ -1871,6 +2472,21 @@ def text_batch_context_for_model(
                 break
         if removed:
             continue
+        # Preserve every observed file handle before omitting files. Text and
+        # derived table rows are recoverable detail; the exact path is not.
+        cleared_detail = False
+        for file in context["files"]:
+            if isinstance(file.get("chunks"), list) and file["chunks"]:
+                file["chunks"].clear()
+                file["chunk_count"] = 0
+                file["context_truncated"] = True
+                file["context_has_more"] = True
+                cleared_detail = True
+            if isinstance(file.get("table_rows"), list) and file["table_rows"]:
+                file["table_rows"].clear()
+                cleared_detail = True
+        if cleared_detail:
+            continue
         if len(context["files"]) > 1:
             context["files"].pop(len(context["files"]) // 2)
             context["files_omitted"] += 1
@@ -1924,23 +2540,57 @@ def text_batch_context_for_model(
             or file.get("context_truncated")
             or chunk_context_more
         )
+        source_more = bool(file.get("source_has_more"))
         file["context_has_more"] = file_context_more
-        file["context_truncated"] = file_context_more
-        file["has_more"] = bool(file.get("source_has_more") or file_context_more)
-    context["context_truncated"] = bool(
+        # A bounded model preview is not a source continuation.  Keep the
+        # preview fact under an explicit name and reserve ``has_more`` for
+        # unread source windows.
+        file["context_truncated"] = file_context_more if source_more else False
+        file["has_more"] = source_more
+    context["source_has_more"] = bool(
+        context.get("source_has_more")
+        or any(bool(file.get("source_has_more")) for file in context["files"])
+    )
+    context["context_window_truncated"] = bool(
         context.get("context_files_omitted")
         or any(
             file.get("context_has_more") or file.get("context_truncated")
             for file in context["files"]
         )
     )
+    context["context_truncated"] = bool(
+        context["source_has_more"] and context["context_window_truncated"]
+    )
+    context["has_more"] = bool(context["source_has_more"])
+    # The final metadata fields are part of the advertised budget too. Release
+    # optional envelope fields after adding them so the hard bound remains
+    # true, without changing source continuation facts.
+    while len(json.dumps(context, ensure_ascii=False, default=str)) > max_chars:
+        guidance = context.get("guidance")
+        if isinstance(guidance, str) and guidance:
+            context["guidance"] = guidance[:-64]
+            continue
+        before = len(json.dumps(context, ensure_ascii=False, default=str))
+        _slim_batch_optional_fields(context)
+        after = len(json.dumps(context, ensure_ascii=False, default=str))
+        if after < before:
+            continue
+        break
     context["source_has_more"] = bool(
         context.get("source_has_more")
         or any(bool(file.get("source_has_more")) for file in context["files"])
     )
-    context["has_more"] = bool(
-        context["source_has_more"] or context["context_truncated"]
+    context["context_window_truncated"] = bool(
+        context.get("context_files_omitted")
+        or any(
+            file.get("context_has_more") or file.get("context_truncated")
+            for file in context["files"]
+        )
     )
+    context["context_truncated"] = bool(
+        context["source_has_more"] and context["context_window_truncated"]
+    )
+    context["has_more"] = bool(context["source_has_more"])
     return context
 
 
@@ -2851,7 +3501,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
         }
     if domain == "os" and action == "pdf.tables.inspect":
         context = {key: value for key, value in result.items() if key != "bbox"}
-        context["context_char_budget"] = 12_000
+        context["context_char_budget"] = 20_000
         context["observation_type"] = "pdf_table"
         context["merged_cells"] = [
             [cell[key] for key in ("row", "column", "row_span", "column_span")]
@@ -2861,7 +3511,10 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             "rows[i][j] is table row row_offset+i, column j (zero-based). "
             "merged_cells entries are [row, column, row_span, column_span] in the full table; "
             "covered positions remain null. Empty strings are empty cells; newlines stay inside "
-            "one cell and are not separate table rows. Read all header levels to identify columns. "
+            "one cell and are not separate table rows. aligned_rows exposes visual subrows "
+            "aligned by numeric baselines, with original row_index and subrow_index. "
+            "Use their complete labels, not newline counts, to select a subrow; ambiguous "
+            "entries cannot support a write. Read all header levels to identify columns. "
             "If context_truncated=true, only leading complete rows may be visible: repeat the "
             "same row_offset with smaller max_rows before using next_row_offset. Otherwise "
             "next_row_offset continues the source window when truncated=true."
@@ -3270,7 +3923,8 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "The header row was saved. Continue with a model-selected range.write "
                 "for the data rows, then call workbook.save."
                 if result.get("table_state") == "header_only"
-                else "The workbook was created and saved with the selected table state."
+                else "A blank unsaved workbook was created. Write cells with range.write, "
+                "set display with range.format, and save with workbook.save_as."
             )
         }
     if domain == "libreoffice_calc" and action == "workbook.inspect":

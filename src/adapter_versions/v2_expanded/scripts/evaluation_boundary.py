@@ -160,18 +160,27 @@ def evaluator_cache_resources(evaluator_task: dict[str, Any]) -> list[tuple[str,
     return list(dict.fromkeys(resources))
 
 
+def _resource_url(url: str) -> str:
+    """Use the configured Hugging Face mirror for OSWorld resource files."""
+    endpoint = os.environ.get("HF_ENDPOINT", "").strip().rstrip("/")
+    if endpoint and endpoint != "https://huggingface.co" and "huggingface.co" in url:
+        return url.replace("https://huggingface.co", endpoint, 1)
+    return url
+
+
 def _download_cached_resource(url: str, destination: Path, attempts: int = 6) -> None:
     if destination.is_file() and destination.stat().st_size > 0:
         return
     destination.parent.mkdir(parents=True, exist_ok=True)
     last_error: Exception | None = None
+    resource_url = _resource_url(url)
     for attempt in range(1, attempts + 1):
         temporary = destination.with_name(
             f".{destination.name}.part-{os.getpid()}-{attempt}"
         )
         try:
             with requests.get(
-                url,
+                resource_url,
                 stream=True,
                 timeout=(30, 600),
                 headers={"User-Agent": "OSWorld-local-prefetch/1.0"},
@@ -182,7 +191,7 @@ def _download_cached_resource(url: str, destination: Path, attempts: int = 6) ->
                         if chunk:
                             output.write(chunk)
             if not temporary.is_file() or temporary.stat().st_size == 0:
-                raise RuntimeError(f"empty download: {url}")
+                raise RuntimeError(f"empty download: {resource_url}")
             temporary.replace(destination)
             return
         except Exception as exc:
@@ -190,7 +199,7 @@ def _download_cached_resource(url: str, destination: Path, attempts: int = 6) ->
             temporary.unlink(missing_ok=True)
             if attempt < attempts:
                 time.sleep(min(2**attempt, 20))
-    raise RuntimeError(f"failed to prefetch {url}: {last_error}")
+    raise RuntimeError(f"failed to prefetch {resource_url}: {last_error}")
 
 
 def prefetch_resources(

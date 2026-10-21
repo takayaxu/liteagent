@@ -16,9 +16,12 @@ from . import (
     impress_table_row,
     spreadsheet_open_semantics,
     verified_artifact_handoff,
+    table_ratio_compute,
+    pdf_table_selection,
 )
 from .adapter_results import (
     adapter_context_hint as adapter_context_hint,
+    billing_reconciliation_argument_errors,
     compact_adapter_body as compact_adapter_body,
     utc_now,
 )
@@ -63,7 +66,7 @@ from .generic_routing import (
     recovery_blocked_actions,
 )
 from .recovery_surface import last_failure_summary
-from .request_blocks import request_block_is_stale
+from .request_blocks import request_block_is_stale, is_tools_search_provenance_error
 from .context_projection import safe_action
 from .safety import sanitize_agent_visible_result, sanitize_gui_result_for_model
 from .tool_catalog import (
@@ -82,6 +85,13 @@ from .runtime_policy import (
     error_signature,
 )
 from .state_model import ExecutionEvent, RuntimeState
+from .state_core import normalize_organization_path
+from .filesystem_contexts import (
+    ORGANIZATION_SKIP_ACTION,
+    ORGANIZATION_SKIP_TOOL_NAME,
+    organization_skip_tool,
+)
+from .organization_validation import VERIFY_ACTION, VERIFY_TOOL, check_classification, current_review_tool, directory_inspection_requested
 
 
 def _strict_search_semantic_actions(state: RuntimeState) -> list[str]:
@@ -105,6 +115,91 @@ def _is_read_only_adapter_event(event: Any, default_domain: str) -> bool:
     return is_read_only(action) or command_is_read_only(action, arguments)
 
 
+def _organization_route_lease(
+    state: RuntimeState, route: tuple[Any, Any], arguments: dict[str, Any] | None = None
+) -> bool:
+    """Allow only the phase-specific routes synthesized by the file workflow."""
+    if not state.filesystem_move_requested():
+        return False
+    observation = state.filesystem_observation_state()
+    if not isinstance(observation, dict) or observation.get("complete") is not True:
+        return False
+    current = state.filesystem_organization_current_entry()
+    pending_paths = set(state.filesystem_organization_pending_entries())
+    if route == ("os", "filesystem.find"):
+        return directory_inspection_requested(state, arguments or {})
+    if route == ("os", "filesystem.rename"):
+        if current is None:
+            return False
+        check = state.filesystem_organization_check(current)
+        return bool(check and check.get("disposition") == "move")
+    # A model may choose an owning reader that is semantically equivalent for
+    # the current object (for example the text reader for a document).  The
+    # important protocol invariant is one exact current source and successful
+    # content evidence before the move, not a PDF-only route name.
+    if route not in {
+        ("os", "pdf.extract_text_batch"),
+        ("os", "image.extract_text_batch"),
+        ("os", "desktop.open_path"),
+        ("vs_code", "file.read_text"),
+        ("libreoffice_writer", "document.read_file"),
+        ("libreoffice_calc", "workbook.read_file"),
+    }:
+        return False
+    params = (
+        (arguments or {}).get("payload", {}).get("params", {})
+        if isinstance((arguments or {}).get("payload"), dict)
+        else {}
+    )
+    requested = None
+    if isinstance(params, dict):
+        requested = params.get("input_path") or params.get("path") or params.get("file_path")
+        if requested is None:
+            pattern = params.get("input_pattern")
+            if isinstance(pattern, str) and not any(char in pattern for char in "*?[]"):
+                requested = pattern
+    requested_path = normalize_organization_path(requested)
+    current = state.filesystem_organization_current_entry()
+    current_path = normalize_organization_path(current.get("path")) if current else None
+    if requested_path not in pending_paths or requested_path != current_path:
+        return False
+    active_path = normalize_organization_path(
+        getattr(state, "filesystem_organization_active_path", None)
+    )
+    if active_path is None:
+        # Lock the first explicitly selected pending object for this turn.
+        state.filesystem_organization_active_path = requested_path
+        return True
+    return requested_path == active_path
+
+
+def _validate_organization_skip(
+    state: RuntimeState, arguments: dict[str, Any]
+) -> None:
+    """Validate a runner-only retain transition against the current object."""
+    if not state.filesystem_move_requested():
+        raise ValueError("organization.skip_current requires a filesystem organization task")
+    observation = state.filesystem_observation_state()
+    if not isinstance(observation, dict) or observation.get("complete") is not True:
+        raise ValueError("filesystem observation must complete before skipping an object")
+    current = state.filesystem_organization_current_entry()
+    if current is None:
+        raise ValueError("there is no unresolved organization object to skip")
+    path = arguments.get("path")
+    reason = arguments.get("reason")
+    if not isinstance(path, str) or not path.strip():
+        raise ValueError("organization.skip_current requires one exact path")
+    if any(char in path for char in "*?[]"):
+        raise ValueError("organization.skip_current requires an exact path, not a glob")
+    if normalize_organization_path(path) != normalize_organization_path(current.get("path")):
+        raise ValueError("organization.skip_current path must match the current object")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("organization.skip_current requires a factual reason")
+    check = state.filesystem_organization_check(current)
+    if not check or check.get("disposition") != "retain" or check.get("destination_directory") != str(path).rsplit("/", 1)[0]:
+        raise ValueError("organization.skip_current requires a passed independent classification and current-location compliance check")
+
+
 def _model_visible_recovery_blocks(
     blocks: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -123,7 +218,11 @@ def _model_visible_recovery_blocks(
         item: dict[str, Any] = {
             "action": safe_action(block.get("action")),
             "block_scope": scope if scope in {"window", "episode"} else "window",
-            "fallback_reason": "choose different arguments or another public action",
+            "request_scope": "exact_normalized_arguments",
+            "fallback_reason": (
+                "only the original argument combination is blocked; "
+                "the same parameterized action remains available with corrected arguments"
+            ),
         }
         for key in ("blocked_at_step", "blocked_until_step"):
             value = block.get(key)
@@ -267,6 +366,9 @@ class ExecutionEngineMixin:
             screenshot_before=screenshot_before,
         )
         tool = proposal.get("tool")
+        repair_confirmed = False
+        organization_skip_handled = False
+        organization_check_handled = False
         if tool == "propose_done":
             event.proposed["kind"] = "completion"
         try:
@@ -276,14 +378,73 @@ class ExecutionEngineMixin:
             model_arguments = copy.deepcopy(arguments)
             event.parsed = True
             event.proposed["arguments"] = arguments
-            action = action_from_tool_name(state.domain, str(tool))
+            if tool in {table_ratio_compute.TOOL_NAME, pdf_table_selection.TOOL_NAME}:
+                action = None
+            elif tool == "repair_confirm":
+                raise ValueError("repair_confirm is retired; submit corrected model-owned arguments through the original public API")
+            else:
+                action = action_from_tool_name(state.domain, str(tool))
+            if tool == VERIFY_TOOL:
+                current = state.filesystem_organization_current_entry()
+                if current is None:
+                    raise ValueError("there is no current source object to verify")
+                expected = current_review_tool(state, current)
+                validate_model_visible_tool_arguments([expected], VERIFY_TOOL, arguments)
+                if model_visible_tools is not None:
+                    validate_model_visible_tool_arguments(model_visible_tools, VERIFY_TOOL, arguments)
+                event.proposed.update({"kind": "organization", "action": VERIFY_ACTION})
+                event.validated = True
+                event.result = check_classification(self, state, arguments, screenshot or self._latest_screenshot)
+                event.proposed["checker_diagnostics"] = event.result.pop("_checker_diagnostics", [])
+                event.executed = True
+                organization_check_handled = True
+            if tool == ORGANIZATION_SKIP_TOOL_NAME:
+                jsonschema.validate(
+                    arguments,
+                    organization_skip_tool()["function"]["parameters"],
+                )
+                if model_visible_tools is not None:
+                    if not isinstance(model_visible_tools, list):
+                        raise ValueError("captured model-visible tools must be an array")
+                    validate_model_visible_tool_arguments(
+                        model_visible_tools, str(tool), arguments
+                    )
+                _validate_organization_skip(state, arguments)
+                event.proposed.update(
+                    {"kind": "organization", "action": ORGANIZATION_SKIP_ACTION}
+                )
+                event.validated = True
+                event.executed = True
+                event.result = {
+                    "status": "ok",
+                    "executed": True,
+                    "path": normalize_organization_path(arguments["path"]),
+                    "disposition": "skipped",
+                    "reason": arguments["reason"],
+                }
+                state.filesystem_organization_active_path = None
+                organization_skip_handled = True
+            if tool in {table_ratio_compute.TOOL_NAME, pdf_table_selection.TOOL_NAME}:
+                computation = pdf_table_selection if tool == pdf_table_selection.TOOL_NAME else table_ratio_compute
+                expected = computation.tool(state)
+                jsonschema.validate(arguments, expected["function"]["parameters"])
+                if model_visible_tools is not None:
+                    validate_model_visible_tool_arguments(
+                        model_visible_tools, str(tool), arguments
+                    )
+                event.proposed.update(
+                    {"kind": "computation", "action": computation.ACTION}
+                )
+                event.validated = True
+                event.result = computation.compute(state, arguments)
+                event.executed = True
             if action:
                 if action in FORBIDDEN_DATASET_ACTIONS:
                     raise ValueError(
                         f"task-specific Adapter action is disabled in strict mode: {action}"
                     )
                 event.proposed.update({"kind": "adapter", "action": action})
-                if model_visible_tools is not None:
+                if model_visible_tools is not None and not repair_confirmed:
                     if not isinstance(model_visible_tools, list):
                         raise ValueError(
                             "captured model-visible tools must be an array"
@@ -299,7 +460,8 @@ class ExecutionEngineMixin:
                     state
                 )
                 if (
-                    state.domain == "libreoffice_impress"
+                    not repair_confirmed
+                    and state.domain == "libreoffice_impress"
                     and structured_impress_step is not None
                     and structured_impress_step["action"] == "shape.set_geometry"
                 ):
@@ -326,9 +488,87 @@ class ExecutionEngineMixin:
                             "injected Impress picture-height arguments did not match "
                             "the pending semantic plan"
                         )
+                # The post-execution filesystem bookkeeping below also inspects
+                # this value for direct adapter actions; keep it defined outside
+                # the multi-app-only route validation branch.
+                route = None
                 if action == "adapter.call" and state.domain == "multi_apps":
                     route = (arguments.get("adapter"), arguments.get("action"))
-                    if route not in discovered_adapter_routes(state):
+                    if pdf_table_selection.active(state):
+                        if route not in pdf_table_selection.allowed_routes(state):
+                            raise ValueError(f"route prerequisites are not satisfied for {route!r}; eligible_routes={sorted(pdf_table_selection.allowed_routes(state))!r}. {pdf_table_selection.stage_hint(state)} No mutation executed.")
+                        if route not in discovered_adapter_routes(state):
+                            raise ValueError(f"multi_apps.adapter.call requires a matching public tools_search result before execution; required_search={route[0]}.{route[1]}; no mutation executed")
+                        if route == ("libreoffice_calc", "range.format"):
+                            errors = pdf_table_selection.format_errors(state, arguments.get("payload", {}).get("params", {}))
+                            if errors:
+                                raise ValueError("; ".join(errors))
+                    derived_post_mutation_route = (
+                        batch_table_semantics.next_post_mutation_route(state)
+                    )
+                    native_consumer_route = (
+                        arguments.get("adapter") == "libreoffice_calc"
+                        and arguments.get("action")
+                        in {
+                            "range.read",
+                            "range.write",
+                            "spreadsheet.read_file",
+                            "spreadsheet.write_range",
+                            "workbook.read_file",
+                        }
+                        and batch_table_semantics.native_pdf_table_observation_complete(
+                            state
+                        )
+                        and batch_table_semantics._valid_target_inspection(state)
+                        is not None
+                        and batch_table_semantics.observed_created_table(state) is None
+                        and not batch_table_semantics.inspection_pending(state)
+                    )
+                    organization_route_lease = _organization_route_lease(
+                        state, route, arguments
+                    )
+                    if (
+                        route is not None
+                        and state.requested_mail_recipient_target()
+                        and state.source_read_handoff_pending()
+                        and not state._is_mail_recipient_route(*route)
+                    ):
+                        raise ValueError(
+                            "mail recipient target is still awaiting a public "
+                            "tools_search result for "
+                            "thunderbird.compose.set_recipients or "
+                            "mail.compose_recipients"
+                        )
+                    organization_reader_route = route in {
+                        ("os", "pdf.extract_text_batch"),
+                        ("os", "image.extract_text_batch"),
+                        ("os", "desktop.open_path"),
+                        ("vs_code", "file.read_text"),
+                        ("libreoffice_writer", "document.read_file"),
+                        ("libreoffice_calc", "workbook.read_file"),
+                    }
+                    if (
+                        (
+                            state.filesystem_move_requested()
+                            and route
+                            in {
+                                ("os", "pdf.extract_text_batch"),
+                                ("os", "filesystem.rename"),
+                            }
+                            and not organization_route_lease
+                            and not organization_reader_route
+                        )
+                        or (
+                            route not in discovered_adapter_routes(state)
+                            and route != derived_post_mutation_route
+                            and not native_consumer_route
+                            and not organization_route_lease
+                            and not (
+                                state.filesystem_move_requested()
+                                and (organization_reader_route or route == ("os", "filesystem.rename"))
+                            )
+                        )
+                    ):
                         raise ValueError(
                             "multi_apps.adapter.call requires a matching public "
                             "tools_search result before execution"
@@ -379,7 +619,7 @@ class ExecutionEngineMixin:
                 named_table_step = None
                 image_edge_step = None
                 table_edge_step = None
-                personal_cleanup_step = None
+                personal_cleanup_step = state.next_title_range_personal_info_cleanup_action()
                 role_text_step = None
                 content_format_step = None
                 calc_summary_step = None
@@ -472,6 +712,7 @@ class ExecutionEngineMixin:
                 if (
                     personal_cleanup_step is not None
                     and action == personal_cleanup_step["action"]
+                    and action != "presentation.inspect"
                 ):
                     arguments = copy.deepcopy(personal_cleanup_step["arguments"])
                     event.proposed["arguments_source"] = (
@@ -532,13 +773,7 @@ class ExecutionEngineMixin:
                 if action == "adapter.call" and state.domain == "multi_apps":
                     route = (arguments.get("adapter"), arguments.get("action"))
                     params = ((arguments.get("payload") or {}).get("params") or {})
-                    organization_intent = bool(
-                        re.search(
-                            r"(?i)\b(?:organize|organization|categorize|classify|"
-                            r"place|put|move|relocate)\b",
-                            state.instruction,
-                        )
-                    )
+                    organization_intent = state.filesystem_move_requested()
                     if (
                         route == ("os", "filesystem.find")
                         and organization_intent
@@ -552,14 +787,115 @@ class ExecutionEngineMixin:
                     observation = state.filesystem_observation_state()
                     if (
                         route == ("os", "filesystem.find")
+                        and organization_intent
+                        and not (isinstance(observation, dict) and observation.get("complete") is True)
+                        and (params.get("name_patterns") != ["*"] or params.get("recursive", False) is not False)
+                    ):
+                        semantic_argument_errors.append(
+                            "Initial organization inventory must use name_patterns=['*'] "
+                            "and recursive=false to include every direct source entry "
+                            "and comparison reference. Select the source directory in "
+                            "roots; inspect a nested directory separately when it becomes "
+                            "the current object."
+                        )
+                    if (
+                        route == ("os", "filesystem.find")
                         and isinstance(observation, dict)
                         and observation.get("complete") is True
+                        and not directory_inspection_requested(state, arguments)
                     ):
                         semantic_argument_errors.append(
                             "filesystem observation is complete; classify the exact "
-                            "observed entries and call filesystem.rename (or read content "
-                            "only for an ambiguous file) instead of searching again"
+                            "observed entries and call filesystem.rename with exact source "
+                            "and destination paths (the destination parent is created by "
+                            "rename when absent), or read content only for an ambiguous "
+                            "file; for a current source directory, inspect only its exact root "
+                            "with kind=any, name_patterns=['*'], recursive=true, max_depth=1..4, "
+                            "max_results=1..200. Do not rediscover the source inventory."
                         )
+                    if route == ("os", "filesystem.rename"):
+                        rename_params = params if isinstance(params, dict) else {}
+                        source = rename_params.get("source")
+                        destination = rename_params.get("destination")
+                        if not isinstance(source, str) or not isinstance(destination, str):
+                            semantic_argument_errors.append(
+                                "filesystem.rename moves exactly one object; source and "
+                                "destination must each be one concrete path string"
+                            )
+                        elif any(char in source or char in destination for char in "*?[]"):
+                            semantic_argument_errors.append(
+                                "filesystem.rename requires exact source and destination "
+                                "paths; globs and multi-file patterns are not allowed"
+                            )
+                        elif organization_intent and isinstance(observation, dict) and observation.get(
+                            "complete"
+                        ) is True:
+                            pending_paths = set(state.filesystem_organization_pending_entries())
+                            current = state.filesystem_organization_current_entry()
+                            normalized_source = normalize_organization_path(source)
+                            check = state.filesystem_organization_check(current)
+                            if normalized_source not in pending_paths or (
+                                current is not None
+                                and normalized_source
+                                != normalize_organization_path(current.get("path"))
+                            ):
+                                semantic_argument_errors.append(
+                                    "filesystem.rename source must exactly match the current "
+                                    "observed, not-yet-moved object"
+                                )
+                            elif normalized_source in state.filesystem_organization_destinations():
+                                semantic_argument_errors.append(
+                                    "destination category directories are protected and cannot be moved as source objects"
+                                )
+                            elif current and state.filesystem_organization_unverified_move(current):
+                                semantic_argument_errors.append(
+                                    "a previous move executed but physical verification failed; do not repeat the mutation or advance this object"
+                                )
+                            elif not check or check.get("disposition") != "move":
+                                semantic_argument_errors.append(
+                                    "filesystem.rename requires a passed independent classification check for this object"
+                                )
+                            elif normalize_organization_path(destination.rsplit("/", 1)[0]) != check.get("destination_directory"):
+                                semantic_argument_errors.append(
+                                    "filesystem.rename destination must match the independently verified category directory"
+                                )
+                            elif destination.rsplit("/", 1)[-1] != source.rsplit("/", 1)[-1]:
+                                semantic_argument_errors.append(
+                                    "filesystem.rename destination must preserve the exact "
+                                    "source basename; move one observed file at a time"
+                                )
+                            elif normalize_organization_path(destination) == normalized_source:
+                                semantic_argument_errors.append(
+                                    "filesystem.rename destination must differ from source; "
+                                    "use organization__skip_current to classify an object "
+                                    "that should remain in place"
+                                )
+                    elif organization_intent and organization_reader_route:
+                        current = state.filesystem_organization_current_entry()
+                        read_params = params if isinstance(params, dict) else {}
+                        requested = (
+                            read_params.get("input_path")
+                            or read_params.get("path")
+                            or read_params.get("file_path")
+                        )
+                        if requested is None:
+                            pattern = read_params.get("input_pattern")
+                            if isinstance(pattern, str) and not any(char in pattern for char in "*?[]"):
+                                requested = pattern
+                            else:
+                                semantic_argument_errors.append(
+                                    "organization readers must process exactly one current object; "
+                                "use its exact normalized absolute path, never a basename or wildcard"
+                                )
+                        if current is not None and requested is not None:
+                            current_path = normalize_organization_path(current.get("path"))
+                            if normalize_organization_path(requested) != current_path:
+                                semantic_argument_errors.append(
+                                    "content reader must target the exact normalized path of the current organization object"
+                                )
+                semantic_argument_errors.extend(
+                    billing_reconciliation_argument_errors(state, action, arguments)
+                )
                 semantic_argument_errors.extend(
                     messages_query_argument_contract_errors(
                         state.instruction, state.domain, action, arguments
@@ -659,7 +995,8 @@ class ExecutionEngineMixin:
                         and arguments == personal_cleanup_step["arguments"]
                     )
                     if (
-                        not structured_impress_injection
+                        not repair_confirmed
+                        and not structured_impress_injection
                         and not cleanup_injection
                     ):
                         raise RuntimeError(
@@ -717,6 +1054,19 @@ class ExecutionEngineMixin:
                         )
                     )
                 )
+                latest_result = state.events[-1].result if state.events else None
+                observation_retry = bool(
+                    current_identity[:2] == ("os", "desktop.open_path")
+                    and state.filesystem_move_requested()
+                    and isinstance(latest_result, dict)
+                    and latest_result.get("evidence_sufficient") is False
+                    and sum(
+                        previous.executed
+                        and effective_canonical_action(previous, state.domain)[:2] == ("os", "desktop.open_path")
+                        and effective_canonical_action(previous, state.domain)[2].get("path") == current_identity[2].get("path")
+                        for previous in state.events
+                    ) < 3
+                )
                 if (
                     duplicate is not None
                     # Removing a shape shifts collection positions: the same
@@ -729,6 +1079,7 @@ class ExecutionEngineMixin:
                         )
                     )
                     and not mutation_after_duplicate
+                    and not observation_retry
                     and not spreadsheet_open_semantics.inspection_retry_required(
                         state, action, arguments
                     )
@@ -744,8 +1095,38 @@ class ExecutionEngineMixin:
                     {"task_id": state.task_id, "step": event.step},
                 )
                 event.executed = bool(result.get("executed"))
+                if event.executed and isinstance(result.get("organization_inventory"), list) and not isinstance(state.filesystem_organization_inventory, list):
+                    # This is an internal server-side ledger; it is deliberately
+                    # not copied into event.result/model context.
+                    state.filesystem_organization_inventory = copy.deepcopy(
+                        result["organization_inventory"]
+                    )
+                if event.executed and route == ("os", "filesystem.rename"):
+                    # A successful classification+move completes the active
+                    # object and advances the per-object workflow.
+                    state.filesystem_organization_active_path = None
                 event.result = result.get("result") if event.executed else None
                 event.error = result.get("error") if not event.executed else None
+            elif tool == "completion_revise":
+                from . import completion_review
+
+                if not completion_review.review_ready(
+                    state, self._generic_completion_gate(state)
+                ):
+                    raise ValueError("completion_revise requires active completion review")
+                validate_model_visible_tool_arguments(
+                    [completion_review.revision_tool()], tool, arguments
+                )
+                if model_visible_tools is not None:
+                    validate_model_visible_tool_arguments(model_visible_tools, tool, arguments)
+                event.validated = True
+                event.executed = True
+                event.proposed["kind"] = "completion_review"
+                event.result = {
+                    "phase": "correction",
+                    "discrepancy": arguments,
+                    "guidance": "Correct the observed mismatch using public tools, then save and read back the changed result before completion review.",
+                }
             elif tool == "tools_search":
                 event.validated = True
                 active_blocks = state.active_request_blocks()
@@ -765,9 +1146,16 @@ class ExecutionEngineMixin:
                     else None
                 )
                 search_limit = 5 if active_blocks else 6
+                query = str(arguments["query"])
+                explicit_catalog_route = bool(
+                    re.search(
+                        r"(?<![\w.])(?:[a-z_][\w]*\.)+[a-z_][\w]*(?![\w.])",
+                        query.casefold(),
+                    )
+                )
                 matches = search_actions(
                     state.domain,
-                    arguments["query"],
+                    query,
                     limit=search_limit,
                     instruction=state.instruction,
                     stage_actions=self.selected_actions(state),
@@ -779,18 +1167,279 @@ class ExecutionEngineMixin:
                     excluded_routes=excluded_routes,
                     strict_generic=True,
                 )
+                # Batch PDF workflows have a state-derived observation lease:
+                # while native table observations are still missing, a free
+                # form Qwen search (for example "close the file manager" or
+                # "set a cell") can otherwise rank the workbook consumer and
+                # leave the model looping on an unrelated route.  Search
+                # results must reflect the current observation-derived next
+                # step, independent of the wording chosen by the model.
+                if state.domain == "multi_apps":
+                    if (
+                        batch_table_semantics.structured_pdf_source_discovery_pending(
+                            state
+                        )
+                    ):
+                        matches = search_actions(
+                            state.domain,
+                            "filesystem.find",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("downstream_action") == "filesystem.find"
+                        ]
+                    elif (
+                        batch_table_semantics.structured_pdf_table_observation_pending(
+                            state
+                        )
+                    ):
+                        matches = search_actions(
+                            state.domain,
+                            "pdf.tables.inspect",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("downstream_action")
+                            == batch_table_semantics.PDF_TABLE_INSPECT_ACTION
+                        ]
+                    elif batch_table_semantics._decimal_rate_next_write_target(state) is not None:
+                        matches = search_actions(
+                            state.domain,
+                            "libreoffice_calc range.write",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item for item in matches
+                            if item.get("adapter") == "libreoffice_calc"
+                            and item.get("downstream_action") == "range.write"
+                        ]
+                    elif (
+                        batch_table_semantics.native_pdf_table_observation_complete(state)
+                        and batch_table_semantics._observed_decimal_rate_matrix(state) is not None
+                        and batch_table_semantics.next_post_mutation_route(state)
+                        == ("libreoffice_calc", "workbook.save")
+                    ):
+                        matches = search_actions(
+                            state.domain,
+                            "libreoffice_calc workbook.save",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item for item in matches
+                            if item.get("adapter") == "libreoffice_calc"
+                            and item.get("downstream_action") == "workbook.save"
+                        ]
+                    elif (
+                        not explicit_catalog_route
+                        and batch_table_semantics.new_workbook_consumer_pending(state)
+                    ):
+                        # The source records are complete and the instruction
+                        # explicitly requests a new output workbook. Lease the
+                        # create route directly instead of probing a live Calc
+                        # document that is not part of this workflow.
+                        matches = search_actions(
+                            state.domain,
+                            "libreoffice_calc.workbook.create_new",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("adapter") == "libreoffice_calc"
+                            and item.get("downstream_action") == "workbook.create_new"
+                        ]
+                    elif (
+                        not explicit_catalog_route
+                        and batch_table_semantics.native_pdf_table_observation_complete(
+                            state
+                        )
+                    ) and not any(
+                        batch_table_semantics._event_matches_action(
+                            event, state, "workbook.inspect"
+                        )
+                        and getattr(event, "executed", False)
+                        for event in getattr(state, "events", ())
+                    ):
+                        # Once all PDFs are observed, the next lease is the
+                        # zero-argument live Calc workbook inspection.  This
+                        # prevents another natural-language search from
+                        # reopening source extraction or selecting create_new.
+                        matches = search_actions(
+                            state.domain,
+                            "libreoffice_calc.workbook.inspect",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("adapter") == "libreoffice_calc"
+                            and item.get("downstream_action") == "workbook.inspect"
+                        ]
+                    elif (
+                        not explicit_catalog_route
+                        and (
+                            batch_table_semantics.requested_fields_complete(state)
+                            or batch_table_semantics.native_pdf_table_observation_complete(
+                                state
+                            )
+                        )
+                        and not batch_table_semantics.inspection_pending(state)
+                        and batch_table_semantics.observed_created_table(state) is None
+                        and any(
+                            batch_table_semantics._event_matches_action(
+                                event, state, "workbook.inspect"
+                            )
+                            for event in getattr(state, "events", ())
+                            if getattr(event, "executed", False)
+                        )
+                    ):
+                        # The live workbook identity has been observed, but no
+                        # mutation has occurred yet.  Keep the next planning
+                        # step observation-derived as well: a natural-language
+                        # GUI search must not reopen create_new or filesystem
+                        # discovery; it must return the bounded range reader.
+                        matches = search_actions(
+                            state.domain,
+                            "libreoffice_calc.range.read",
+                            limit=search_limit,
+                            instruction=state.instruction,
+                            stage_actions=self.selected_actions(state),
+                            semantic_actions=_strict_search_semantic_actions(state),
+                            recent_error=json.dumps(
+                                previous_error, ensure_ascii=False, default=str
+                            ),
+                            excluded_actions=excluded_actions,
+                            excluded_routes=excluded_routes,
+                            strict_generic=True,
+                        )
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("adapter") == "libreoffice_calc"
+                            and item.get("downstream_action") == "range.read"
+                        ]
+                    if (
+                        not explicit_catalog_route
+                        and state.domain == "multi_apps"
+                        and (
+                            batch_table_semantics.requested_fields_complete(state)
+                            or batch_table_semantics.native_pdf_table_observation_complete(
+                                state
+                            )
+                        )
+                    ):
+                        matches = [
+                            item
+                            for item in matches
+                            if item.get("action") != "adapter.call"
+                            or batch_table_semantics.batch_route_allowed_after_completion(
+                                state, str(item.get("downstream_action", ""))
+                            )
+                        ]
+                        # If the model searched for an optional source-inspection
+                        # route after the batch is complete, the stage filter may
+                        # intentionally remove every match. Re-run discovery for
+                        # the generic workbook consumer so the model can continue
+                        # without repeating an already-complete source search.
+                        if (
+                            not explicit_catalog_route
+                            and not matches
+                            and batch_table_semantics.observed_created_table(state) is None
+                        ):
+                            matches = search_actions(
+                                state.domain,
+                                "workbook.create_new",
+                                limit=search_limit,
+                                instruction=state.instruction,
+                                stage_actions=self.selected_actions(state),
+                                semantic_actions=_strict_search_semantic_actions(state),
+                                strict_generic=True,
+                            )
                 if (
                     state.domain == "multi_apps"
-                    and batch_table_semantics.requested_fields_complete(state)
+                    and not explicit_catalog_route
+                    and state.requested_mail_recipient_target()
+                    and state.source_read_handoff_pending()
                 ):
+                    # During the post-read mail lease, unrelated Calc or
+                    # spreadsheet matches are not actionable discovery. Keep
+                    # the model on the exact owning application until the
+                    # recipient writer route is returned.
                     matches = [
                         item
                         for item in matches
-                        if item.get("action") != "adapter.call"
-                        or batch_table_semantics.batch_route_allowed_after_completion(
-                            state, str(item.get("downstream_action", ""))
-                        )
+                        if state._catalog_has_mail_recipient_route([item])
                     ]
+                eligible_search_routes = None
+                if pdf_table_selection.active(state):
+                    eligible_search_routes = pdf_table_selection.allowed_routes(state)
+                    exact_eligible_query = any(query.casefold() == f"{adapter}.{downstream}".casefold() for adapter, downstream in eligible_search_routes)
+                    if exact_eligible_query:
+                        # Resolve the model's exact eligible public route without
+                        # legacy instruction ranking or unrelated stage filters.
+                        matches = search_actions(state.domain, query, limit=search_limit, strict_generic=True)
+                    elif not explicit_catalog_route and len(eligible_search_routes) == 1:
+                        adapter, downstream_action = next(iter(eligible_search_routes))
+                        matches = search_actions(state.domain, f"{adapter}.{downstream_action}", limit=search_limit, strict_generic=True)
+                    matches = [item for item in matches if (item.get("adapter"), item.get("downstream_action")) in eligible_search_routes]
                 state.expanded_actions = list(
                     dict.fromkeys(
                         [*state.expanded_actions, *(item["action"] for item in matches)]
@@ -806,6 +1455,8 @@ class ExecutionEngineMixin:
                     "status": "ok",
                     "executed": True,
                     "matches": visible_matches,
+                    "eligible_routes": [f"{adapter}.{downstream}" for adapter, downstream in sorted(eligible_search_routes)] if eligible_search_routes is not None else None,
+                    "next_step_hint": pdf_table_selection.stage_hint(state) if eligible_search_routes is not None else None,
                     "recovery": {
                         "trigger": "repeated_action" if active_blocks else None,
                         "excluded_actions": sorted(
@@ -987,6 +1638,12 @@ class ExecutionEngineMixin:
                     }
                 else:
                     state.failed = True
+            elif (
+                organization_skip_handled
+                or organization_check_handled
+                or tool in {table_ratio_compute.TOOL_NAME, pdf_table_selection.TOOL_NAME}
+            ):
+                pass
             else:
                 raise ValueError(f"unknown or unavailable tool: {tool}")
         except RepeatedRequestBlocked as exc:
@@ -999,16 +1656,28 @@ class ExecutionEngineMixin:
                 )
                 state.completion_rejections += 1
             else:
+                if tool == VERIFY_TOOL and callable(getattr(exc, "trace_record", None)):
+                    event.proposed["checker_failure_trace"] = exc.trace_record()
                 event.error = {
                     "type": type(exc).__name__,
                     "detail": str(exc),
                     "executed": False,
                 }
+                if tool == VERIFY_TOOL and getattr(exc, "schema_hints", None):
+                    event.error["checker_schema_hints"] = list(exc.schema_hints)
             event.executed = False
         event.duration_seconds = round(time.monotonic() - started, 3)
         event.result = sanitize_agent_visible_result(event.result, state.task_id)
         event.error = sanitize_agent_visible_result(event.error, state.task_id)
         state.events.append(event)
+        if event.executed and state.filesystem_move_requested():
+            progress = state.filesystem_organization_progress(model_visible=True)
+            if isinstance(event.result, dict):
+                context_hint = event.result.get("context_hint")
+                if isinstance(context_hint, dict):
+                    context_hint["organization_progress"] = progress
+                else:
+                    event.result["organization_progress"] = progress
         self._block_repeated_error(state)
         event.error = sanitize_agent_visible_result(event.error, state.task_id)
         return event
@@ -1018,6 +1687,8 @@ class ExecutionEngineMixin:
         if len(state.events) < 2:
             return
         current = state.events[-1]
+        if is_tools_search_provenance_error(current.error):
+            return
         if current.executed or (
             isinstance(current.error, dict)
             and current.error.get("type") == "RepeatedActionBlocked"

@@ -227,6 +227,10 @@ _KEY_PRIORITY = {
     "notes": 84,
     # Batch continuation metadata must survive a bounded retry fit.
     "observation_type": 96,
+    # The ECS PDF workflow carries one compact all-years source handoff after
+    # individual table bodies are elided from the live transcript.
+    "ecs_structured_observations": 99,
+    "ecs_observation_count": 98,
     "input_pattern": 95,
     "start_page": 94,
     "page_count": 94,
@@ -512,7 +516,7 @@ def _fit(
             if value.get("observation_type") == "pdf_table" and key in {
                 "input_path", "page", "table_index", "table_count", "row_offset",
                 "row_count", "column_count", "next_row_offset", "truncated",
-                "merged_cells", "guidance",
+                "merged_cells", "aligned_rows", "guidance",
             }:
                 priority = max(priority, 93)
             if batch_context and key.casefold() == "guidance":
@@ -617,10 +621,11 @@ _BATCH_RECOVERY_MAX_CHUNKS = 2
 _BATCH_HISTORY_OBSERVATION_BUDGET = 16_000
 _BATCH_HISTORY_SUMMARY_BUDGET = 20_000
 TEXT_BATCH_READING_GUIDANCE = (
-    "Use files[].handle.path. If context_truncated=true, narrow input_pattern to one "
-    "observed basename (not its absolute path), keeping cwd unchanged; some extracted "
-    "text is hidden here. If source_has_more=true, use next_start_char as start_char "
-    "for unread source. Respect max_chars_per_file's schema limit."
+    "Use files[].handle.path. context_window_truncated=true only means this model "
+    "view is shortened; narrow input_pattern to one "
+    "observed basename. Continue only when source_has_more=true or source_truncated="
+    "true with next_start_char; outer response limits are not source continuation. If "
+    "source_has_more=false and files are complete, stop and mutate workbook."
 )
 TEXT_FILE_READING_GUIDANCE = (
     "Use file.read_text with files[0].handle.path. For hidden middle text, set "
@@ -852,6 +857,11 @@ def _compact_batch_file(value: dict[str, Any]) -> dict[str, Any] | None:
         source_has_more = bool(
             isinstance(metadata, dict) and metadata.get("source_truncated") is True
         )
+        if not source_has_more:
+            # In a raw Adapter batch, legacy ``truncated`` is the source
+            # cursor. The outer preview layer rewrites its own truncation to
+            # ``context_preview_truncated`` before this function is reached.
+            source_has_more = value.get("truncated") is True
     context_has_more = value.get("context_has_more")
     if not isinstance(context_has_more, bool):
         context_has_more = bool(value.get("context_truncated"))
@@ -1220,6 +1230,55 @@ def _compact_batch(value: dict[str, Any], budget: int) -> dict[str, Any]:
             continue
         break
     if _json_size(result) <= budget:
+        source_more = bool(
+            result.get("source_has_more")
+            or any(bool(file.get("source_has_more")) for file in result["files"])
+        )
+        window_more = bool(
+            result.get("context_files_omitted")
+            or result.get("context_has_more")
+            or any(
+                file.get("context_has_more") or file.get("context_truncated")
+                for file in result["files"]
+            )
+        )
+        result["source_has_more"] = source_more
+        result["context_window_truncated"] = window_more
+        result["context_truncated"] = source_more and window_more
+        result["has_more"] = source_more
+        for file in result["files"]:
+            file_context_more = bool(
+                file.get("context_has_more") or file.get("context_truncated")
+            )
+            file["context_has_more"] = file_context_more
+            file["context_truncated"] = file_context_more if source_more else False
+            file["has_more"] = bool(file.get("source_has_more"))
+        # Adding the explicit window marker can consume the last few bytes of
+        # a tight nested budget. Trim optional prose while keeping handles and
+        # continuation cursors intact.
+        fitted_text = False
+        while _json_size(result) > budget:
+            if not fitted_text and any(
+                isinstance(chunk.get("text"), str)
+                for file in result["files"]
+                for chunk in file.get("chunks", [])
+                if isinstance(chunk, dict)
+            ):
+                _fit_batch_text_windows(result, budget)
+                fitted_text = True
+                continue
+            guidance = result.get("guidance")
+            if isinstance(guidance, str) and guidance:
+                result["guidance"] = guidance[:-64]
+                continue
+            _slim_batch_optional_fields(result)
+            if _json_size(result) > budget and not any(
+                isinstance(chunk.get("text"), str)
+                for file in result["files"]
+                for chunk in file.get("chunks", [])
+                if isinstance(chunk, dict)
+            ):
+                break
         return result
     marker = {
         "observation_type": "text_batch",
@@ -1495,12 +1554,27 @@ def failure_summary(event: Any) -> dict[str, Any] | None:
         if isinstance(arguments, dict)
         else []
     )
-    return {
+    summary = {
         "step": getattr(event, "step", None),
         "action": action_label(event),
         "error_type": error_type,
         "argument_fields": fields,
     }
+    # Keep the latest structured matrix-validation observation available for a
+    # fresh replan.  The adapter's bounded detail contains the exact expected
+    # cells; dropping it leaves a small model with only ``ValueError`` and
+    # encourages replaying the same rounded matrix.  Limit this narrowly and
+    # keep it bounded so ordinary failures remain coarse.
+    error = getattr(event, "error", None)
+    detail = error.get("detail") if isinstance(error, dict) else None
+    if (
+        error_type == "ValueError"
+        and isinstance(detail, str)
+        and "expected" in detail.casefold()
+        and "observed" in detail.casefold()
+    ):
+        summary["error_detail"] = detail[:2400]
+    return summary
 
 
 def _events_contain_batch_context(events: list[Any]) -> bool:

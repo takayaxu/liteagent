@@ -671,7 +671,7 @@ def _shape_summary_at_path(shape: Any, path: list[int]) -> dict[str, Any]:
             "italic": _enum_name(_text_property(shape, "CharPosture", "NONE")),
             "underline": int(_text_property(shape, "CharUnderline", 0)),
             "strike": int(_text_property(shape, "CharStrikeout", 0)),
-            "alignment": _alignment_name(getattr(shape, "ParaAdjust", None)),
+            "alignment": _alignment_name(_text_property(shape, "ParaAdjust")),
         }
         summary["paragraphs"] = _paragraph_summaries(shape)
     if "tableshape" in summary["kind"].casefold():
@@ -1949,7 +1949,7 @@ def _format_text(session: ImpressSession, params: dict[str, Any]) -> dict[str, A
     return {
         "text": _shape_text(shape),
         "properties": {key: str(value) for key, value in observed.items()},
-        "alignment": _alignment_name(getattr(shape, "ParaAdjust", None)),
+        "alignment": _alignment_name(_text_property(shape, "ParaAdjust")),
         "paragraphs": _paragraph_summaries(shape),
     }
 

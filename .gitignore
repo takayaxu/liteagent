@@ -8,3 +8,6 @@ run-output/
 src/adapter_versions/v2_expanded/experiments/work/
 src/third_party/OSWorld/cache/
 src/third_party/OSWorld/docker_vm_data/
+
+# Mutable pointer; immutable profiles and run evidence are stored separately.
+/configs/current-single-task.json

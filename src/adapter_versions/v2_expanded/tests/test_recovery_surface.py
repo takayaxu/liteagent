@@ -8,8 +8,10 @@ from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent import completion_recovery
 from integrations.lite_agent.recovery_surface import (
     bounded_recovery_actions,
+    build_repair_contract,
     decorate_recovery_tools,
     last_failure_summary,
+    repair_confirmation_tool,
 )
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.tool_catalog import build_tools, search_actions
@@ -75,6 +77,124 @@ def test_repeated_error_surface_keeps_replan_and_completion_controls() -> None:
     # Recovery must offer at least one model-selectable public Adapter action;
     # a search-only surface would recreate the observed dead end.
     assert any(name.startswith("adapter__") for name in names)
+
+
+def test_grf_repair_contract_replaces_rows_and_exposes_only_confirmation(monkeypatch) -> None:
+    from integrations.lite_agent import batch_table_semantics
+
+    state = RuntimeState(
+        task_id="synthetic-grf-repair",
+        domain="multi_apps",
+        instruction="Extract HKU GRF results and save the table.",
+    )
+    event = ExecutionEvent(
+        step=7,
+        timestamp_utc="2026-09-30T00:00:00Z",
+        proposed={
+            "kind": "adapter",
+            "action": "adapter.call",
+            "arguments": {
+                "adapter": "libreoffice_calc",
+                "action": "workbook.create_new",
+                "payload": {
+                    "params": {
+                        "output_path": "/home/user/Desktop/GRF-p5y.xlsx",
+                        "headers": ["Year", "#Applied", "#Supported", "Success Rate"],
+                        "rows": [["2019", 1, 2, 3.0]],
+                    }
+                },
+            },
+        },
+        error={"type": "ValueError", "detail": "GRF row 1 expected 25"},
+    )
+    monkeypatch.setattr(
+        batch_table_semantics,
+        "_observed_grf_records",
+        lambda _state: (
+            {
+                2019: {"applied": 25, "supported": 7, "success_rate": 28.0},
+                2020: {"applied": 17, "supported": 7, "success_rate": 41.18},
+                2021: {"applied": 23, "supported": 7, "success_rate": 30.43},
+                2022: {"applied": 23, "supported": 9, "success_rate": 39.13},
+                2023: {"applied": 20, "supported": 5, "success_rate": 25.0},
+            },
+            [],
+        ),
+    )
+
+    contract = build_repair_contract(state, event)
+    assert contract is not None
+    assert contract["corrected_rows"][1] == ["2020", 17, 7, 41.18]
+    assert contract["corrected_rows"][2] == ["2021", 23, 7, 30.43]
+    state.repair_contract = contract
+
+    tool = repair_confirmation_tool(state)
+    assert tool is not None
+    assert tool["function"]["name"] == "repair_confirm"
+    assert tool["function"]["parameters"]["properties"]["repair_id"]["enum"] == [
+        contract["id"]
+    ]
+    names = {item["function"]["name"] for item in make_agent().tools(state)}
+    assert names == {"repair_confirm"}
+
+
+def test_ecs_rate_repair_contract_replaces_guessed_matrix(monkeypatch) -> None:
+    from integrations.lite_agent import batch_table_semantics
+
+    state = RuntimeState(
+        task_id="synthetic-ecs-repair",
+        domain="multi_apps",
+        instruction=(
+            "Extract the pass rate for each university and each year from the ECS "
+            "PDF files, fill the spreadsheet, and enter the values as decimals."
+        ),
+    )
+    event = ExecutionEvent(
+        step=18,
+        timestamp_utc="2026-10-01T00:00:00Z",
+        proposed={
+            "kind": "adapter",
+            "action": "adapter.call",
+            "arguments": {
+                "adapter": "libreoffice_calc",
+                "action": "range.write",
+                "payload": {
+                    "params": {
+                        "sheet": "Sheet1",
+                        "range": "B2:I10",
+                        "values": [[0.75] * 8 for _ in range(9)],
+                    }
+                },
+            },
+        },
+        error={"type": "ValueError", "detail": "observed matrix mismatch"},
+    )
+    matrix = [
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.5, 1.0, 0.0],
+        [0.5, 0.0, 0.0, 0.333333, 0.0, 0.25, 0.0, 1.0],
+    ] + [[0.0] * 8 for _ in range(7)]
+    monkeypatch.setattr(
+        batch_table_semantics,
+        "_observed_decimal_rate_matrix",
+        lambda _state: matrix,
+    )
+    monkeypatch.setattr(
+        batch_table_semantics,
+        "_observed_decimal_rate_target",
+        lambda _state: {
+            "sheet": "Sheet1",
+            "range": "B2:I10",
+            "record_count": 9,
+            "column_count": 8,
+        },
+    )
+
+    contract = build_repair_contract(state, event)
+
+    assert contract is not None
+    assert contract["corrected_values"] == matrix
+    assert contract["corrected_arguments"]["payload"]["params"]["values"] == matrix
+    assert contract["corrected_arguments"]["payload"]["params"]["range"] == "B2:I10"
 
 
 def test_archive_command_search_recalls_generic_command_runner() -> None:
@@ -445,10 +565,16 @@ def test_multi_apps_route_is_constrained_after_catalog_search() -> None:
     )
     parameters = route_tool["function"]["parameters"]
 
-    assert parameters["oneOf"]
-    branch = parameters["oneOf"][0]
-    assert branch["properties"]["adapter"] == {"enum": ["os"]}
-    assert branch["properties"]["action"] == {"enum": ["filesystem.find"]}
+    assert "oneOf" not in parameters
+    assert parameters["properties"]["adapter"] == {
+        "type": "string",
+        "enum": ["os"],
+    }
+    assert parameters["properties"]["action"] == {
+        "type": "string",
+        "enum": ["filesystem.find"],
+    }
+    assert parameters["required"] == ["adapter", "action", "payload"]
 
 
 def test_replan_description_does_not_echo_internal_blocked_action_names() -> None:
@@ -1045,9 +1171,17 @@ def test_soft_recovery_does_not_bypass_multi_apps_route_provenance() -> None:
         for tool in make_agent().tools(state)
         if tool["function"]["name"] == "adapter__adapter_call"
     )
-    branch = route_tool["function"]["parameters"]["oneOf"][0]
-    assert branch["properties"]["adapter"] == {"enum": ["os"]}
-    assert branch["properties"]["action"] == {"enum": ["filesystem.find"]}
+    parameters = route_tool["function"]["parameters"]
+    assert "oneOf" not in parameters
+    assert parameters["properties"]["adapter"] == {
+        "type": "string",
+        "enum": ["os"],
+    }
+    assert parameters["properties"]["action"] == {
+        "type": "string",
+        "enum": ["filesystem.find"],
+    }
+    assert parameters["required"] == ["adapter", "action", "payload"]
 
 
 def test_first_error_soft_recovery_preserves_phase_surface(monkeypatch) -> None:

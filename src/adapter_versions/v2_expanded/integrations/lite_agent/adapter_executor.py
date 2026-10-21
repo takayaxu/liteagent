@@ -49,6 +49,40 @@ def _split_argument_conversion(body: Any, *, forwarded: bool) -> tuple[Any, Any]
     return body, None
 
 
+def _disambiguate_text_batch_preview(
+    compact_body: Any, context_hint: Any
+) -> Any:
+    """Keep transport preview truncation separate from source pagination.
+
+    ``compact_adapter_body`` retains the legacy ``truncated`` marker for
+    callers that consume it directly.  The model-facing PDF projection also
+    carries source-level continuation fields, so its outer marker must not
+    look like a source cursor signal.
+    """
+    nested_hint = (
+        context_hint.get("downstream_context")
+        if isinstance(context_hint, dict)
+        else None
+    )
+    is_text_batch = (
+        isinstance(context_hint, dict)
+        and context_hint.get("observation_type") == "text_batch"
+    ) or (
+        isinstance(nested_hint, dict)
+        and nested_hint.get("observation_type") == "text_batch"
+    )
+    if (
+        not isinstance(compact_body, dict)
+        or compact_body.get("truncated") is not True
+        or not is_text_batch
+    ):
+        return compact_body
+    result = dict(compact_body)
+    result.pop("truncated", None)
+    result["context_preview_truncated"] = True
+    return result
+
+
 class AdapterExecutor:
     """Send structured actions to guest Adapters under a fail-closed policy."""
 
@@ -263,6 +297,9 @@ class AdapterExecutor:
                 adapter_context_hint(domain, action, feedback_body) if executed else None
             )
             compact_body = compact_adapter_body(feedback_body)
+            compact_body = _disambiguate_text_batch_preview(
+                compact_body, context_hint
+            )
             result_payload = (
                 {"context_hint": context_hint, "adapter_response": compact_body}
                 if context_hint is not None
@@ -274,6 +311,25 @@ class AdapterExecutor:
                 "http_status": response.status_code,
                 "result": result_payload,
             }
+            # Keep the authoritative filesystem inventory outside the compact
+            # model-facing result.  The context projection may omit entries
+            # from ``filesystem.find`` to fit the prompt, but the organization
+            # state machine still needs every exact source path.
+            if executed and domain == "multi_apps" and action == "adapter.call":
+                downstream = feedback_body.get("response") if isinstance(feedback_body, dict) else None
+                downstream_action = feedback_body.get("action") if isinstance(feedback_body, dict) else None
+                if isinstance(downstream, dict) and downstream_action == "filesystem.find":
+                    raw_result = downstream.get("result")
+                    if isinstance(raw_result, dict) and isinstance(raw_result.get("matches"), list):
+                        result["organization_inventory"] = [
+                            {
+                                key: item.get(key)
+                                for key in ("path", "name", "kind")
+                                if key in item
+                            }
+                            for item in raw_result["matches"]
+                            if isinstance(item, dict) and isinstance(item.get("path"), str)
+                        ]
             if not executed:
                 # Keep native causes structured until the model-context sanitizer
                 # and error-priority fitter apply their existing bounded projection.

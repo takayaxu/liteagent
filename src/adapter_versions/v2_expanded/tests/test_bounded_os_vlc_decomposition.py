@@ -274,6 +274,35 @@ def test_pdf_batch_returns_a_model_selected_window_and_resume_cursor(
     assert file_result["source_truncated"] is True
 
 
+def test_pdf_batch_accepts_one_exact_absolute_source_path(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "observed-source.pdf"
+    source.write_bytes(b"placeholder")
+    monkeypatch.setattr(os_actions.shutil, "which", lambda name: "/usr/bin/pdftotext")
+
+    arguments = {
+        "input_pattern": str(source),
+        "cwd_source": "explicit",
+        "cwd_path": str(tmp_path),
+        "max_chars_per_file": 25,
+    }
+    validate_os_action("pdf.extract_text_batch", arguments)
+    result = OSActions(runner=_PdfTextRunner("paper")).extract_pdf_text_batch(arguments, 5)
+
+    assert result["input_pattern"] == str(source.resolve())
+    assert result["matched"] == [str(source.resolve())]
+
+
+def test_image_batch_schema_accepts_one_exact_absolute_source_path(tmp_path) -> None:
+    validate_os_action(
+        "image.extract_text_batch",
+        {
+            "input_pattern": str(tmp_path / "scan.png"),
+            "cwd_source": "explicit",
+            "cwd_path": str(tmp_path),
+        },
+    )
+
+
 def test_pdf_batch_uses_single_discovered_directory_without_terminal(
     tmp_path, monkeypatch
 ) -> None:

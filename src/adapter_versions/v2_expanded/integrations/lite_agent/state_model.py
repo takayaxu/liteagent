@@ -54,6 +54,10 @@ class RuntimeState(RuntimeStateCoreMixin, CalcStateMixin, ImpressStateMixin):
     retry: int = 0
     soft_restart_count: int = 0
     recovery_context: dict[str, Any] | None = None
+    # A deterministic, one-shot mutation repair produced after a structured
+    # validation reject. The model can only confirm its id; the runner owns
+    # the corrected arguments and consumes this contract on success.
+    repair_contract: dict[str, Any] | None = None
     # A soft-restart handoff remains model-visible for a small bounded number
     # of valid follow-up turns.  These counters are runner state only; they are
     # never serialized into the model-facing recovery projection.
@@ -68,3 +72,9 @@ class RuntimeState(RuntimeStateCoreMixin, CalcStateMixin, ImpressStateMixin):
     defer_terminal_audit: bool = False
     pending_terminal: dict[str, Any] | None = None
     terminal_confirmation: bool = False
+    # Authoritative per-object organization ledger. A source advances only
+    # after classification plus either a committed move or an explicit retain.
+    filesystem_organization_ledger: dict[str, dict[str, Any]] = field(
+        default_factory=dict
+    )
+    filesystem_organization_active_path: str | None = None

@@ -1195,9 +1195,31 @@ def _save(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
 
 def _save_as(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     doc = session.doc
-    doc.calculateAll()
     url = _file_url(params["url"])
     path = _url_path(url)
+    if path is not None:
+        parent = path.parent
+        exists = parent.exists()
+        is_directory = parent.is_dir()
+        writable = is_directory and os.access(parent, os.W_OK | os.X_OK)
+        if not writable:
+            raise AdapterError(
+                "OUTPUT_PARENT_INVALID",
+                "The output parent must be an existing writable directory. "
+                "No file was saved; existing workbook cells are unchanged. "
+                "Use os.filesystem.find with kind=directory under an observed "
+                "root (~/ means the active user's home), then submit "
+                "workbook.save_as with a corrected params.url. Do not rewrite cells.",
+                {
+                    "path": str(path),
+                    "parent": str(parent),
+                    "parent_exists": exists,
+                    "parent_is_directory": is_directory,
+                    "parent_writable": writable,
+                    "home_directory": str(Path.home()),
+                    "discovery_action": "os.filesystem.find",
+                },
+            )
     suffix = path.suffix.lower() if path is not None else ""
     inferred_filter = _NEW_WORKBOOK_FILTERS.get(suffix)
     requested_filter = params.get("filter_name")
@@ -1220,10 +1242,17 @@ def _save_as(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     if filter_name:
         properties.insert(0, _property("FilterName", filter_name))
     try:
+        doc.calculateAll()
         doc.storeAsURL(url, tuple(properties))
     except Exception as exc:
         raise AdapterError(
-            "SAVE_FAILED", "LibreOffice failed to save the workbook", str(exc), 500
+            "SAVE_FAILED",
+            "LibreOffice failed to save the workbook. Existing cells remain "
+            "in the active workbook; inspect the destination before retrying "
+            "save_as with corrected arguments. Do not recreate or rewrite cells.",
+            {"url": url, "parent": str(path.parent) if path is not None else None,
+             "discovery_action": "os.filesystem.find", "cause": str(exc)},
+            500,
         ) from exc
     return _saved_workbook_result(url)
 
@@ -1284,215 +1313,38 @@ def _plain_cell_spec(value: Any) -> dict[str, Any]:
 
 
 def _create_new(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
-    output_url = _file_url(params["output_path"])
-    output_path = _url_path(output_url)
-    if output_path is None:
+    """Create one blank, unsaved workbook; writing and saving are separate actions."""
+    conflicts = sorted(set(params) - {"sheet_name"})
+    if conflicts:
         raise AdapterError(
-            "INVALID_REQUEST", "workbook.create_new supports local files only"
+            "INVALID_REQUEST",
+            "workbook.create_new only creates a blank workbook. Use range.write for "
+            "cells, range.format for display and workbook.save_as for a file.",
+            {"conflicting_fields": conflicts},
         )
-    output_path = output_path.resolve()
-    filter_name = _NEW_WORKBOOK_FILTERS.get(output_path.suffix.lower())
-    if filter_name is None:
-        raise AdapterError("INVALID_REQUEST", "new workbook format must be ODS or XLSX")
-    if output_path.exists() and not params.get("overwrite", False):
-        raise AdapterError(
-            "CONFLICT",
-            "destination workbook already exists; set overwrite=true to replace it",
-            {"output_path": str(output_path)},
-            409,
-        )
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
     previous_doc = session.doc
-    previous_doc_closed = False
-    previous_file_existed = output_path.is_file()
-    stage_fd, stage_name = tempfile.mkstemp(
-        prefix=f".{output_path.stem}.create-",
-        suffix=output_path.suffix,
-        dir=output_path.parent,
-    )
-    os.close(stage_fd)
-    stage_path = Path(stage_name)
-    stage_path.unlink()
-    stage_url = _file_url(str(stage_path))
-    backup_path: Path | None = None
-    commit_started = False
     doc = None
     try:
-        doc = session.desktop.loadComponentFromURL(
-            "private:factory/scalc", "_blank", 0, ()
-        )
-        if doc is None or not doc.supportsService(
-            "com.sun.star.sheet.SpreadsheetDocument"
-        ):
-            raise AdapterError(
-                "DOCUMENT_CREATE_FAILED",
-                "LibreOffice did not create a Calc workbook",
-                http_status=500,
-            )
+        doc = session.desktop.loadComponentFromURL("private:factory/scalc", "_blank", 0, ())
+        if doc is None or not doc.supportsService("com.sun.star.sheet.SpreadsheetDocument"):
+            raise AdapterError("DOCUMENT_CREATE_FAILED", "LibreOffice did not create a Calc workbook", http_status=500)
         sheets = doc.getSheets()
         sheet = sheets.getByIndex(0)
-        sheet_name = params.get("sheet_name")
-        if sheet_name and sheet.getName() != sheet_name:
-            if sheets.hasByName(sheet_name):
-                raise AdapterError(
-                    "CONFLICT", f"sheet already exists: {sheet_name}", http_status=409
-                )
-            sheet.setName(sheet_name)
-        sheet_name = sheet.getName()
-
-        headers = params.get("headers")
-        rows_supplied = "rows" in params
-        rows = params.get("rows")
-        matrix = [headers, *(rows or [])] if headers is not None else []
-        for row_index, row in enumerate(matrix):
-            for column_index, value in enumerate(row):
-                _set_cell(
-                    doc,
-                    sheet.getCellByPosition(column_index, row_index),
-                    _plain_cell_spec(value),
-                )
-        doc.calculateAll()
-        doc.storeAsURL(
-            stage_url,
-            (
-                _property("FilterName", filter_name),
-                _property("Overwrite", True),
-            ),
-        )
-        if (
-            not stage_path.is_file()
-            or stage_path.stat().st_size == 0
-            or not zipfile.is_zipfile(stage_path)
-        ):
-            raise AdapterError(
-                "DOCUMENT_CREATE_FAILED",
-                "staged workbook package is missing, empty, or invalid",
-                {"staged_path": str(stage_path)},
-                500,
-            )
-
-        if previous_file_existed:
-            backup_fd, backup_name = tempfile.mkstemp(
-                prefix=f".{output_path.stem}.backup-",
-                suffix=output_path.suffix,
-                dir=output_path.parent,
-            )
-            os.close(backup_fd)
-            backup_path = Path(backup_name)
-            shutil.copy2(output_path, backup_path)
-
-        if params.get("overwrite", False) and (
-            str(getattr(previous_doc, "URL", "") or "") != output_url
-        ):
-            previous_doc = next(
-                (
-                    candidate
-                    for candidate in session._documents()
-                    if str(getattr(candidate, "URL", "") or "") == output_url
-                ),
-                previous_doc,
-            )
-        previous_url = str(getattr(previous_doc, "URL", "") or "")
-        if (
-            previous_doc is not None
-            and previous_doc is not doc
-            and previous_url == output_url
-        ):
-            _close_document(previous_doc)
-            previous_doc_closed = True
-
-        commit_started = True
-        doc.storeAsURL(
-            output_url,
-            (
-                _property("FilterName", filter_name),
-                _property("Overwrite", True),
-            ),
-        )
-        if (
-            not output_path.is_file()
-            or output_path.stat().st_size == 0
-            or not zipfile.is_zipfile(output_path)
-        ):
-            raise AdapterError(
-                "DOCUMENT_CREATE_FAILED",
-                "created workbook package is missing, empty, or invalid",
-                {"output_path": str(output_path)},
-                500,
-            )
+        if params.get("sheet_name") and sheet.getName() != params["sheet_name"]:
+            sheet.setName(params["sheet_name"])
+        result = {
+            "url": "", "sheet": sheet.getName(), "sheet_names": _sheet_names(doc),
+            "written_cells": 0, "table_state": "blank_workbook", "saved": False,
+        }
         session.doc = doc
-    except AdapterError:
-        if doc is not None:
-            _close_document(doc)
-        if commit_started:
-            if backup_path is not None and backup_path.is_file():
-                os.replace(backup_path, output_path)
-            elif not previous_file_existed:
-                output_path.unlink(missing_ok=True)
-        if previous_doc_closed and output_path.is_file():
-            try:
-                session.doc = session.desktop.loadComponentFromURL(
-                    output_url, "_blank", 0, ()
-                )
-            except Exception:
-                session.doc = None
-        else:
-            session.doc = previous_doc
-        raise
+        return result
     except Exception as exc:
         if doc is not None:
             _close_document(doc)
-        if commit_started:
-            if backup_path is not None and backup_path.is_file():
-                os.replace(backup_path, output_path)
-            elif not previous_file_existed:
-                output_path.unlink(missing_ok=True)
-        if previous_doc_closed and output_path.is_file():
-            try:
-                session.doc = session.desktop.loadComponentFromURL(
-                    output_url, "_blank", 0, ()
-                )
-            except Exception:
-                session.doc = None
-        else:
-            session.doc = previous_doc
-        raise AdapterError(
-            "DOCUMENT_CREATE_FAILED",
-            "LibreOffice failed to create the workbook",
-            {"output_path": str(output_path), "error": str(exc)},
-            500,
-        ) from exc
-    finally:
-        stage_path.unlink(missing_ok=True)
-        if backup_path is not None:
-            backup_path.unlink(missing_ok=True)
-
-    width = len(headers) if isinstance(headers, list) else 0
-    height = 1 + len(rows or []) if headers is not None else 0
-    table_state = (
-        "header_only"
-        if headers is not None and not rows_supplied
-        else "complete_table"
-        if headers is not None
-        else "blank_workbook"
-    )
-    return {
-        "url": output_url,
-        "path": str(output_path),
-        "format": output_path.suffix.lower().removeprefix("."),
-        "size": output_path.stat().st_size,
-        "sheet": sheet_name,
-        "sheet_names": _sheet_names(doc),
-        "header_count": width,
-        "row_count": len(rows) if isinstance(rows, list) else 0,
-        "written_cells": width * height,
-        "table_state": table_state,
-        "data_range": f"A1:{_column_label(width - 1)}{height}"
-        if width and height
-        else None,
-        "saved": True,
-    }
+        session.doc = previous_doc
+        if isinstance(exc, AdapterError):
+            raise
+        raise AdapterError("DOCUMENT_CREATE_FAILED", "LibreOffice failed to create the workbook", {"error": str(exc)}, 500) from exc
 
 
 def _create_sheet(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:

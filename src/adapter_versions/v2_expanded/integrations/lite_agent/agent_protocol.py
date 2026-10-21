@@ -4,9 +4,12 @@ from __future__ import annotations
 import base64
 import copy
 import hashlib
+import io
 import json
 import re
 from typing import Any
+
+from PIL import Image
 from .adapter_results import (
     adapter_context_hint as adapter_context_hint,
     compact_adapter_body as compact_adapter_body,
@@ -23,6 +26,9 @@ from .instruction_semantics import strict_instruction_required_actions
 from .state_model import RuntimeState
 from .strict_contracts import RANGE_WRITE_FACADES
 from .recovery_surface import last_failure_summary
+from . import batch_table_semantics, table_ratio_compute
+from . import completion_review
+from .search_recovery_tools import constrain_adapter_call_routes
 
 
 # Ordinary protocol retries stay deliberately small.  A failed call after a
@@ -95,6 +101,7 @@ class AgentProtocolMixin:
         self,
         state: RuntimeState,
         *,
+        tools: list[dict[str, Any]] | None = None,
         protocol_recovery: bool = False,
         execution_recovery: bool = False,
         protocol_error: dict[str, Any] | None = None,
@@ -126,6 +133,21 @@ class AgentProtocolMixin:
             if state.domain == "libreoffice_calc"
             else ""
         )
+        rate_handoff = ""
+        if state.domain == "multi_apps":
+            matrix = batch_table_semantics._observed_decimal_rate_matrix(state)
+            target = batch_table_semantics._observed_decimal_rate_target(state)
+            if matrix is not None and target is not None:
+                if (
+                    not batch_table_semantics.inspection_pending(state)
+                    and not batch_table_semantics.mutation_and_save_complete(state)
+                ):
+                    rate_handoff = (
+                        " A read-only table.ratio_matrix.compute result is available. "
+                        f"Submit its model-visible values with the exposed {batch_table_semantics.WRITE_ACTION} "
+                        f"to {target['sheet']}!{target['range']}. Preserve its row and column order."
+                    )
+        calc_guidance += rate_handoff
         code_execution = source_workflow_guidance or (
             " For a source-code task that explicitly asks you to run or execute the code, read the relevant source and use command.run for a finite baseline reproduction before the first source mutation. After editing, use command.run again for finite verification before propose_done. For an interactive or long-running program, use a bounded import, syntax check, or focused test instead of launching it indefinitely."
             if state.domain == "multi_apps"
@@ -133,11 +155,20 @@ class AgentProtocolMixin:
             else ""
         )
         replan = (
+            " On every turn, discard any previously planned tool call and replan from the latest "
+            "observation plus the currently exposed schema; those are the sole source of truth "
+            "and override older context. If the schema exposes one route, call that route even "
+            "if an earlier turn suggested another action. For pdf.extract_text_batch, "
+            "cwd_source must be exactly one of its enum values (active_terminal, home, or "
+            "explicit); never put a directory path in cwd_source. Use cwd_path only with "
+            "cwd_source=explicit."
+            + (
             " The Runner detected a bounded no-progress cycle. Reconsider the remaining user-visible "
             "outcome and choose one materially different model-selected action or tool search; do not "
             "repeat the same operation and arguments."
             if state.pending_runner_replan is not None
             else ""
+            )
         )
         pending_terminal = getattr(state, "pending_terminal", None)
         terminal_audit_guidance = (
@@ -158,6 +189,14 @@ class AgentProtocolMixin:
             if failure
             else ""
         )
+        correction_guidance = ""
+        if isinstance(failure, dict) and isinstance(failure.get("correction"), str):
+            correction_guidance = (
+                " Inspect the structured rejection and source references, then submit "
+                "your corrected arguments through the original public API. The runner "
+                "does not replace values or execute a confirmation as a mutation. Detail: "
+                + failure["correction"]
+            )
         missing_fields: list[str] = []
         if isinstance(protocol_error, dict):
             raw_fields = protocol_error.get("missing_fields")
@@ -224,6 +263,60 @@ class AgentProtocolMixin:
             if schema_hints
             else ""
         )
+        allowed_route_guidance = ""
+        route_mismatch_guidance = ""
+        if isinstance(protocol_error, dict):
+            raw_routes = protocol_error.get("allowed_routes")
+            allowed_routes: list[tuple[str, str]] = []
+            if isinstance(raw_routes, list):
+                for route in raw_routes[:8]:
+                    if not isinstance(route, dict):
+                        continue
+                    adapter = route.get("adapter")
+                    action = route.get("action")
+                    if not (
+                        isinstance(adapter, str)
+                        and isinstance(action, str)
+                        and re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]{0,119}", adapter)
+                        and re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]{0,119}", action)
+                    ):
+                        continue
+                    pair = (adapter, action)
+                    if pair not in allowed_routes:
+                        allowed_routes.append(pair)
+            if allowed_routes:
+                rendered_routes = "; ".join(
+                    f"adapter={adapter}, action={action}"
+                    for adapter, action in allowed_routes
+                )
+                allowed_route_guidance = (
+                    " The current exposed route lease is authoritative and overrides "
+                    "all older plans. The only allowed route(s) are: "
+                    + rendered_routes
+                    + ". Emit the matching adapter/action now. Do not call a route "
+                    "from an earlier turn, search for the old route, or place the "
+                    "old action under another payload field."
+                )
+                if protocol_error.get("reason") == "tool route is not in the exposed allowlist":
+                    rejected_route = protocol_error.get("rejected_route")
+                    rejected_text = ""
+                    if isinstance(rejected_route, dict):
+                        rejected_adapter = rejected_route.get("adapter")
+                        rejected_action = rejected_route.get("action")
+                        if isinstance(rejected_adapter, str) and isinstance(
+                            rejected_action, str
+                        ):
+                            rejected_text = (
+                                f" The rejected stale route was {rejected_adapter}."
+                                f"{rejected_action}; do not emit it again."
+                            )
+                    route_mismatch_guidance = (
+                        " The previous response selected an adapter/action outside this "
+                        "allowlist and was rejected without execution. Do not rely on "
+                        "or repeat that old route; emit exactly one call using the "
+                        "currently exposed adapter/action pair."
+                        + rejected_text
+                    )
         if protocol_recovery or execution_recovery:
             recovery_guidance = (
                 (
@@ -246,6 +339,8 @@ class AgentProtocolMixin:
                 + missing_guidance
                 + required_call_guidance
                 + schema_guidance
+                + allowed_route_guidance
+                + route_mismatch_guidance
                 + repeat_cue
             )
         else:
@@ -282,7 +377,39 @@ class AgentProtocolMixin:
             "describe an object on a non-active worksheet; use structural inspect rather than "
             "switching sheets or recreating it."
         )
-        return f"""You are a lightweight OSWorld desktop agent. Perform the user's task in the current VM. Call exactly one provided tool per turn. Prefer deterministic Adapter tools over GUI. If a structural inspection tool and a dependent mutation tool are both provided, call the inspection tool first, then use the mutation with the exact documented schema; if only inspection is provided, call it and do not stop with prose because a later turn may expose the dependent action. When structural inspect output already identifies the requested object and an exposed Adapter action accepts that identifier, call the Adapter directly; it does not require the object to be selected or visible in the GUI. Do not navigate or click merely to select an object that inspect already identified. A tool result with executed=false is not a confirmed success; inspect the error and any partial results before choosing a correction. A rejected call did not run, but an execution or verification failure may have changed state. Never claim success from a proposed call. Use tools_search if a required public action is not exposed. For filesystem organization tasks, inspect both files and directories (use filesystem.find with kind=any) before classifying inputs, and exclude the destination category folders themselves from the source set. If a successful organization search used kind=file, it explicitly omitted directories; immediately issue one follow-up filesystem.find with kind=any before moving anything. Interpret \"move\", \"place\", \"put\", or \"organize\" as moving each selected object with filesystem.rename; use filesystem.copy or filesystem.copy_to_directories only when the instruction explicitly requests a copy or duplicate and the source should remain. When the instruction requests content analysis or a filename is ambiguous, read the relevant file content with the bounded public reader before classifying it; do not infer its category from a generic extension or name alone. For organization categories, put only content-confirmed academic or research papers in Paper_reading, only clearly code-bearing projects in Projects, and every other item (including presentations, spreadsheets, forms, and policy or administrative PDFs) in Miscellaneous. Once exact paths are observed, do not repeat equivalent searches: classify the remaining observed objects and move them with exact source/destination pairs. Do not repeat an identical successful read for the same source and offset; use its observed next_start_char for the next window, or proceed to the dependent mutation once the requested fields are visible. If workbook.create_new rejects model-supplied rows for placeholder values or sort order, correct those rows in memory, keep one row per source document, remove only invalid placeholder cells, reorder by the requested observed sort column, and retry workbook.create_new; do not reread a source that already supplied the requested fields. For Thunderbird messages.query, select_from chooses which end of the date-sorted matches is selected, while order only controls the returned order; for a request for the latest or most recent N messages from earliest to most recent, use select_from=\"latest\" and order=\"ascending\". When extracting fields from multiple source documents, preserve the instruction's requested cardinality: create one output record per source document when it asks for one entity per document, and do not expand that entity into related items such as coauthors unless requested. After the source observation is complete, perform a deterministic assembly pass before calling workbook.create_new: for each PDF, identify the first author in that PDF's author list, copy that author's exact affiliation, and pair that author with the email prefix in the same PDF in the listed order (for {{prefix1,prefix2}}@domain, the first author gets prefix1@domain). Assemble one complete tuple per source in memory, then sort those tuples by the requested column and submit them. Never mix values across PDFs or derive an email from a name; a valid address from another author or document is still wrong. Do not submit null, a prefix-only value, or a guessed value; if the mapping is not visible, use the bounded continuation once. {gui_guidance}{calc_guidance} For people, objects, scenes, layout, or other visual appearance in image files, open the image and inspect the screenshot; OCR only extracts visible text and cannot classify visual subjects. When the instruction explicitly requires command-line or terminal execution, set provenance=\"shell_history\" on each relevant command.run or terminal.show_output call. {completion_readback} A successful Adapter result with verification_passed=true and a matching structural read-back already satisfies that requirement; propose_done instead of calling an unrelated verifier. The completion gate may reject unsupported completion and return missing items. Before propose_done, compare every clause in the instruction against the truthful action ledger. Never claim an argument, value, target, or operation that is absent from an executed=true event; use tools_search to continue when any clause lacks evidence. Benchmark task identifiers, evaluator state, golden artifacts, and task-specific execution routes are unavailable; solve only from the instruction, screenshot, and public generic tools. Task domain: {state.domain}.{code_execution}{environment}{replan}{failure_guidance}{recovery_guidance}{terminal_audit_guidance}"""
+        completion_readback += (
+            " If the latest successful action result explicitly confirms that the current "
+            "document was saved after its changes, the save requirement is already satisfied. "
+            "Do not save it again merely to satisfy that requirement; structurally inspect "
+            "its final state before proposing completion. Later changes require fresh save "
+            "evidence; a save before those changes is not sufficient."
+        )
+        if completion_review.review_ready(state, self._generic_completion_gate(state)):
+            completion_readback += (
+                " Current completion evidence is ready: the execution ledger "
+                "satisfies the required changes, persistence, and final read-back "
+                "checks. Review the observed result against every user requirement; "
+                "if it matches, call propose_done with that evidence now. A successful "
+                "read-only inspection creates no new audit obligation. Do not repeat "
+                "inspect merely to audit the previous inspection. This readiness "
+                "signal does not certify that the observed values match the request."
+                " Completion review is active. Use the final observation already "
+                "in context; repeated inspect and mutation are unavailable in this "
+                "phase. If an actual discrepancy remains, call completion_revise "
+                "with the observed value, required value and correction to return "
+                "to the correction workflow. Otherwise call propose_done."
+            )
+        failure_guidance += correction_guidance
+        failure_guidance += (
+            " For filesystem organization, submit the current classification to "
+            "organization__verify_current after inspecting the object. A passed independent "
+            "check is required before moving or retaining it; opening alone is not inspection. "
+            "organization__skip_current is available only when retention has been verified "
+            "to satisfy the instruction. For a natural-language read search, use the returned exact reader "
+            "route when it matches the current object's required reader and do not repeat "
+            "the same tools_search query."
+        )
+        return f"""You are a lightweight OSWorld desktop agent. Perform the user's task in the current VM. Call exactly one provided tool per turn. Prefer deterministic Adapter tools over GUI. If a structural inspection tool and a dependent mutation tool are both provided, call the inspection tool first, then use the mutation with the exact documented schema; if only inspection is provided, call it and do not stop with prose because a later turn may expose the dependent action. When structural inspect output already identifies the requested object and an exposed Adapter action accepts that identifier, call the Adapter directly; it does not require the object to be selected or visible in the GUI. Do not navigate or click merely to select an object that inspect already identified. A tool result with executed=false is not a confirmed success; inspect the error and any partial results before choosing a correction. A rejected call did not run, but an execution or verification failure may have changed state. Never claim success from a proposed call. Use tools_search if a required public action is not exposed. For filesystem organization tasks, inspect both files and directories (use filesystem.find with kind=any) before classifying inputs, and exclude the destination category folders themselves from the source set. If a successful organization search used kind=file, it explicitly omitted directories; immediately issue one follow-up filesystem.find with kind=any before moving anything. Interpret \"move\", \"place\", \"put\", or \"organize\" as moving each selected object with filesystem.rename; use filesystem.copy or filesystem.copy_to_directories only when the instruction explicitly requests a copy or duplicate and the source should remain. When the instruction requests content analysis or a filename is ambiguous, read the relevant file content with the bounded public reader before classifying it; do not infer its category from a generic extension or name alone. For organization categories, follow the user's classification criteria and exact destination folder names. Use observed content to decide whether to move the current object or explicitly retain it with organization__skip_current. Once exact paths are observed, do not repeat equivalent searches: classify the remaining observed objects and move them with exact source/destination pairs. Do not repeat an identical successful read for the same source and offset; use its observed next_start_char for the next window, or proceed to the dependent mutation once the requested fields are visible. If range.write rejects model-supplied rows for placeholder values or sort order, correct those rows in memory, keep one row per source document, remove only invalid placeholder cells, reorder by the requested observed sort column, and retry range.write; do not reread a source that already supplied the requested fields. For Thunderbird messages.query, select_from chooses which end of the date-sorted matches is selected, while order only controls the returned order; for a request for the latest or most recent N messages from earliest to most recent, use select_from=\"latest\" and order=\"ascending\". When extracting fields from multiple source documents, preserve the instruction's requested cardinality: create one output record per source document when it asks for one entity per document, and do not expand that entity into related items such as coauthors unless requested. After source observation is complete, assemble only the fields requested by the user, retaining their source references. Never mix values across documents. workbook.create_new creates a blank unsaved workbook only; explicitly call range.write for values, range.format for display and workbook.save_as for the output file. For percentage display store a fraction and use number_format=0.00%. Do not submit null, a prefix-only value, or a guessed value; if the mapping is not visible, use the bounded continuation once. {gui_guidance}{calc_guidance} For people, objects, scenes, layout, or other visual appearance in image files, open the image and inspect the screenshot; OCR only extracts visible text and cannot classify visual subjects. When the instruction explicitly requires command-line or terminal execution, set provenance=\"shell_history\" on each relevant command.run or terminal.show_output call. {completion_readback} A successful Adapter result with verification_passed=true and a matching structural read-back already satisfies that requirement; propose_done instead of calling an unrelated verifier. The completion gate may reject unsupported completion and return missing items. Before propose_done, compare every clause in the instruction against the truthful action ledger. Never claim an argument, value, target, or operation that is absent from an executed=true event; use tools_search to continue when any clause lacks evidence. Benchmark task identifiers, evaluator state, golden artifacts, and task-specific execution routes are unavailable; solve only from the instruction, screenshot, and public generic tools. Task domain: {state.domain}.{code_execution}{environment}{replan}{failure_guidance}{recovery_guidance}{terminal_audit_guidance}"""
 
     def assert_agent_surface_safe(
         self,
@@ -293,25 +420,188 @@ class AgentProtocolMixin:
         assert_safe_agent_surface(task_id=state.task_id, messages=messages, tools=tools)
 
     @staticmethod
+    def _bind_system_message_to_tools(
+        message: str,
+        state: RuntimeState,
+        tools: list[dict[str, Any]],
+    ) -> str:
+        """Make generic workflow prose agree with the current tool lease.
+
+        The base prompt contains broad first-turn guidance, while organization
+        turns deliberately expose a much narrower state-dependent surface. A
+        small model can otherwise follow the old discovery instruction even
+        after that route has been removed from the schema.
+        """
+        names: set[str] = set()
+        routes: list[tuple[str, str]] = []
+        for tool in tools:
+            function = tool.get("function") if isinstance(tool, dict) else None
+            if not isinstance(function, dict):
+                continue
+            name = function.get("name")
+            if isinstance(name, str):
+                names.add(name)
+            if name != "adapter__adapter_call":
+                continue
+            parameters = function.get("parameters")
+            raw_routes = (
+                parameters.get("x-allowed-routes")
+                if isinstance(parameters, dict)
+                else None
+            )
+            if not isinstance(raw_routes, list):
+                continue
+            for route in raw_routes:
+                if not isinstance(route, dict):
+                    continue
+                adapter = route.get("adapter")
+                action = route.get("action")
+                pair = (adapter, action)
+                if (
+                    isinstance(adapter, str)
+                    and isinstance(action, str)
+                    and pair not in routes
+                ):
+                    routes.append(pair)
+
+        rendered_names = ", ".join(sorted(names)) or "none"
+        rendered_routes = "; ".join(
+            f"{adapter}.{action}" for adapter, action in routes
+        )
+        lease = (
+            " The current tool lease is authoritative for this turn. Call exactly one "
+            f"function from this list: {rendered_names}."
+            + (f" Downstream routes: {rendered_routes}." if rendered_routes else "")
+            + " Do not emit, name, or place an action from an earlier turn in the "
+            "response; an action not present here is unavailable, even if the task "
+            "normally uses it."
+        )
+        message = message.replace(
+            " Prefer deterministic Adapter tools over GUI.",
+            " Prefer deterministic Adapter tools over GUI." + lease,
+            1,
+        )
+        if "tools_search" in names:
+            search_guidance = (
+                " Use tools_search only when the required public action is not in "
+                "the current tool lease."
+            )
+            completion_guidance = " use tools_search to continue when any clause lacks evidence."
+        else:
+            search_guidance = (
+                " If the required action is not in the current tool lease, do not "
+                "invent or search for it; use one of the exposed transitions or wait "
+                "for the next state."
+            )
+            completion_guidance = " continue only with evidence from the current tool lease."
+        message = message.replace(
+            " Use tools_search if a required public action is not exposed.",
+            search_guidance,
+            1,
+        )
+        message = message.replace(
+            " use tools_search to continue when any clause lacks evidence.",
+            completion_guidance,
+            1,
+        )
+        if state.filesystem_move_requested():
+            observation = state.filesystem_observation_state()
+            if ("os", "filesystem.find") in routes and not (isinstance(observation, dict) and observation.get("complete") is True):
+                organization_guidance = (
+                    " For filesystem organization, use the exposed discovery route to "
+                    "inspect both files and directories before classifying inputs. "
+                    "Exclude the destination category folders themselves from the source set."
+                )
+            elif isinstance(observation, dict) and observation.get("complete") is True:
+                organization_guidance = (
+                    " Filesystem observation is complete. Do not rediscover the root or "
+                    "emit an earlier discovery action. Classify only the exact current "
+                    "source object. Destination category directories are protected, not sources. "
+                    "After observing content, submit the classification for independent "
+                    "verification. Move or retain only after a passing check; an object "
+                    "advances only after its actual disposition is verified."
+                )
+            else:
+                organization_guidance = (
+                    " Filesystem organization is in a later state. Use only the currently "
+                    "exposed organization transition; do not emit an unexposed discovery "
+                    "or mutation route. Exclude the destination category folders themselves "
+                    "from the source set."
+                )
+            message = re.sub(
+                r" For filesystem organization tasks, inspect both files and directories "
+                r"\(use filesystem\.find with kind=any\) before classifying inputs, and "
+                r"exclude the destination category folders themselves from the source set\. "
+                r"If a successful organization search used kind=file, it explicitly omitted "
+                r"directories; immediately issue one follow-up filesystem\.find with kind=any "
+                r"before moving anything\.",
+                organization_guidance,
+                message,
+                count=1,
+            )
+        return message
+
+    @staticmethod
     def _image_url(screenshot: bytes) -> str:
-        return "data:image/png;base64," + base64.b64encode(screenshot).decode("ascii")
+        # Desktop captures are commonly 1920x1080 PNGs. Sending the raw PNG
+        # as base64 can consume millions of prompt characters on every turn,
+        # even when the task is entirely deterministic and does not need GUI
+        # detail. Keep enough resolution for visual grounding while bounding
+        # the multimodal prompt size. Invalid synthetic bytes used by tests or
+        # non-image callers retain the historical passthrough behavior.
+        encoded = screenshot
+        media_type = "image/png"
+        try:
+            with Image.open(io.BytesIO(screenshot)) as image:
+                image = image.convert("RGB")
+                image.thumbnail((1280, 720), Image.Resampling.LANCZOS)
+                output = io.BytesIO()
+                image.save(output, format="JPEG", quality=70, optimize=True)
+                encoded = output.getvalue()
+                media_type = "image/jpeg"
+        except Exception:
+            pass
+        return f"data:{media_type};base64," + base64.b64encode(encoded).decode("ascii")
 
     def _messages(
         self,
         state: RuntimeState,
         screenshot: bytes,
         *,
+        tools: list[dict[str, Any]] | None = None,
         protocol_recovery: bool = False,
         execution_recovery: bool | None = None,
         protocol_error: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
+        organization_context = state.filesystem_move_requested()
+
+        def model_context(limit: int) -> list[dict[str, Any]]:
+            if organization_context:
+                return state.filesystem_organization_model_context(limit=limit)
+            return state.context_summary(limit=limit, strict_generic=True)
+
         if execution_recovery is None:
             execution_recovery = (
                 not protocol_recovery and self._execution_recovery_pending(state)
             )
+        pending_rate_row = batch_table_semantics._decimal_rate_next_write_target(state)
         bounded_recovery = protocol_recovery or execution_recovery
-        if bounded_recovery:
-            summary = state.context_summary(limit=4, strict_generic=True)
+        if pending_rate_row is not None and table_ratio_compute.latest_result(state) is not None:
+            last_error = state.events[-1].error if state.events else None
+            state_text = (
+                "Current truthful execution state (earlier PDF reads and computed rows remain in the ledger):\n"
+                + json.dumps({
+                    "next_action": "libreoffice_calc.range.write",
+                    "sheet": pending_rate_row["sheet"],
+                    "range": pending_rate_row["range"],
+                    "row_keys": pending_rate_row["row_keys"],
+                    "computed_values": pending_rate_row["values"],
+                    "last_error": last_error,
+                }, ensure_ascii=False)
+                + "\nSubmit exactly this current row as JSON numbers; do not reuse an earlier row."
+            )
+        elif bounded_recovery:
+            summary = model_context(limit=4)
             recovery_budget = (
                 MODEL_FORM_RECOVERY_MAX_CHARS
                 if _contains_pdf_form_observation(summary)
@@ -332,36 +622,58 @@ class AgentProtocolMixin:
             state_text = (
                 "Current truthful execution state (failed calls may have partial effects):\n"
                 + json.dumps(
-                    state.context_summary(strict_generic=True),
+                    model_context(limit=12),
                     ensure_ascii=False,
                 )
                 + "\nChoose the single next action using the instruction, latest tool results, "
                 "and current screenshot."
             )
+        message_content: list[dict[str, Any]] = [
+            {
+                "type": "text",
+                "text": state_text,
+            }
+        ]
+        # Deterministic Adapter turns do not need a repeated desktop image.
+        # Keeping the screenshot for GUI-only turns preserves visual grounding
+        # while avoiding a large Base64 payload on every PDF/Calc turn.
+        tool_names = {
+            str(tool.get("function", {}).get("name"))
+            for tool in (tools or [])
+            if isinstance(tool, dict) and isinstance(tool.get("function"), dict)
+        }
+        include_screenshot = not tools or "gui_action" in tool_names or not any(
+            name == "adapter__adapter_call" for name in tool_names
+        )
+        evidence = state.filesystem_organization_evidence() if organization_context else None
+        if evidence and evidence.get("action") == "desktop.open_path":
+            include_screenshot = True
+        if include_screenshot:
+            message_content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": self._image_url(screenshot)},
+                }
+            )
+        system_message = self._system_message(
+            state,
+            protocol_recovery=protocol_recovery,
+            execution_recovery=bool(execution_recovery),
+            protocol_error=protocol_error,
+        )
+        if tools is not None:
+            system_message = self._bind_system_message_to_tools(
+                system_message,
+                state,
+                tools,
+            )
         return [
             {
                 "role": "system",
-                "content": self._system_message(
-                    state,
-                    protocol_recovery=protocol_recovery,
-                    execution_recovery=bool(execution_recovery),
-                    protocol_error=protocol_error,
-                ),
+                "content": system_message,
             },
             {"role": "user", "content": state.instruction},
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": state_text,
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": self._image_url(screenshot)},
-                    },
-                ],
-            },
+            {"role": "user", "content": message_content},
         ]
 
     def propose(
@@ -380,9 +692,29 @@ class AgentProtocolMixin:
         # or putting screenshot data into RuntimeState.
         self._latest_screenshot = bytes(screenshot)
         tools = self.tools(state)
+        if (
+            protocol_recovery
+            and isinstance(protocol_error, dict)
+            and protocol_error.get("reason") == "tool route is not in the exposed allowlist"
+            and isinstance(protocol_error.get("rejected_route"), dict)
+            and protocol_error["rejected_route"].get("action") == "filesystem.find"
+            and state.domain == "multi_apps"
+        ):
+            # A stale discovery call after filesystem observation is complete
+            # cannot advance the task.  On the recovery turn narrow the
+            # visible lease to the dependent mutation routes so the model has
+            # no search/read branch to replay.
+            tools = constrain_adapter_call_routes(
+                tools,
+                [
+                    ("os", "filesystem.create_directory"),
+                    ("os", "filesystem.rename"),
+                ],
+            )
         messages = self._messages(
             state,
             screenshot,
+            tools=tools,
             protocol_recovery=protocol_recovery,
             execution_recovery=execution_recovery,
             protocol_error=protocol_error,
@@ -393,6 +725,7 @@ class AgentProtocolMixin:
             protocol_recovery
             and isinstance(protocol_error, dict)
             and protocol_error.get("finish_reason") == "length"
+            and not self._native_pdf_compact_turn(state)
         ):
             # A recovery turn must have at least enough room to emit the next
             # structured call after a large inspection.  ``min`` preserved a
@@ -443,8 +776,19 @@ class AgentProtocolMixin:
                 )
             )
         )
+        if self._native_pdf_compact_turn(state):
+            return min(self.config.max_output_tokens, 2048)
         return (
             max(self.config.max_output_tokens, 2048)
             if generic_matrix_write
             else self.config.max_output_tokens
         )
+
+    def _native_pdf_compact_turn(self, state: RuntimeState) -> bool:
+        """Bound deterministic ECS assembly calls to a small tool budget."""
+        if getattr(state, "domain", None) != "multi_apps":
+            return False
+        if not batch_table_semantics.native_pdf_table_observation_complete(state):
+            return False
+        exposed = {tool["function"]["name"] for tool in self.tools(state)}
+        return tool_name("adapter.call") in exposed

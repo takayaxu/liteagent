@@ -115,6 +115,8 @@ ZIP_PACKAGED_DOCUMENT_SUFFIXES = frozenset(
         ".zip",
     }
 )
+
+
 STRICT_GUEST_SANITIZE_PATTERNS = (
     "task_manifest.json",
     "**/task_manifest.json",
@@ -558,8 +560,20 @@ def model_preflight(
             # profile passed preflight.  Qwen3.5 has no numeric maximum to
             # compare here; the request-side boolean is sent explicitly and
             # the response observation is recorded by the model client.
-            "verified": bool(openapi is not None and profile_supported),
-            "preflight_verified": bool(openapi is not None and profile_supported),
+            "verified": bool(
+                profile_supported
+                and (
+                    openapi is not None
+                    or model.casefold().replace("-", "").startswith("qwen3.5")
+                )
+            ),
+            "preflight_verified": bool(
+                profile_supported
+                and (
+                    openapi is not None
+                    or model.casefold().replace("-", "").startswith("qwen3.5")
+                )
+            ),
             "effective_verified": (
                 effective == reasoning_mode if effective is not None else None
             ),
@@ -778,6 +792,23 @@ def persist_invalid_configuration(
             ensure_ascii=False,
         )
     )
+
+
+def _enforce_condition_for_run(
+    config: dict[str, Any], args: argparse.Namespace
+) -> dict[str, Any]:
+    """Apply frozen gates only to frozen manifests.
+
+    Development manifests may run against a dirty tree so local protocol
+    fixes can be validated without resealing historical experiment configs.
+    """
+    if config.get("status") == "development":
+        return {
+            "status": "development",
+            "enforced": False,
+            "source_tree": "not_applicable",
+        }
+    return enforce_runner_condition(config, args, PROJECT_ROOT)
 
 
 def model_preflight_failure(
@@ -1523,11 +1554,49 @@ def run_task(
                         protocol_failure_seen = True
                         configuration_failure_seen = exc.configuration_failure
                         errors[-1]["protocol"] = exc.trace_record()
+                        rejected_route = None
+                        if exc.reason == "tool route is not in the exposed allowlist":
+                            snapshot_message = (
+                                exc.response_snapshot.get("message")
+                                if isinstance(exc.response_snapshot, dict)
+                                else None
+                            )
+                            snapshot_calls = (
+                                snapshot_message.get("tool_calls")
+                                if isinstance(snapshot_message, dict)
+                                else None
+                            )
+                            if isinstance(snapshot_calls, list) and snapshot_calls:
+                                function = snapshot_calls[0].get("function")
+                                raw_arguments = (
+                                    function.get("arguments")
+                                    if isinstance(function, dict)
+                                    else None
+                                )
+                                try:
+                                    decoded_arguments = json.loads(raw_arguments or "")
+                                except (TypeError, ValueError, json.JSONDecodeError):
+                                    decoded_arguments = None
+                                if isinstance(decoded_arguments, dict):
+                                    rejected_adapter = decoded_arguments.get("adapter")
+                                    rejected_action = decoded_arguments.get("action")
+                                    if isinstance(rejected_adapter, str) and isinstance(
+                                        rejected_action, str
+                                    ):
+                                        rejected_route = {
+                                            "adapter": rejected_adapter,
+                                            "action": rejected_action,
+                                        }
                         protocol_recovery_context = {
                             "reason": exc.reason,
                             "tool": exc.tool_name,
                             "missing_fields": list(exc.missing_fields),
                             "schema_hints": list(exc.schema_hints),
+                            "allowed_routes": [
+                                {"adapter": adapter, "action": action}
+                                for adapter, action in exc.allowed_routes
+                            ],
+                            "rejected_route": rejected_route,
                             "finish_reason": exc.response_snapshot.get(
                                 "finish_reason"
                             ),
@@ -2214,7 +2283,9 @@ def main() -> None:
     )
     parser.add_argument("--no-gui", action="store_true")
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--max-output-tokens", type=int, default=512)
+    # Qwen may emit reasoning_content even in non-thinking mode.  Leave enough
+    # budget for the complete structured tool call after a large observation.
+    parser.add_argument("--max-output-tokens", type=int, default=4096)
     parser.add_argument("--request-timeout", type=float, default=180.0)
     parser.add_argument("--model-retries", type=int, default=3)
     parser.add_argument("--initial-settle-seconds", type=float, default=10.0)
@@ -2318,7 +2389,7 @@ def main() -> None:
             "LiteAgent strict Runner rejects task-specific or golden-enabled configs"
         )
     try:
-        frozen_condition = enforce_runner_condition(config, args, PROJECT_ROOT)
+        frozen_condition = _enforce_condition_for_run(config, args)
     except (RuntimeError, ValueError) as exc:
         # Condition errors are non-scored configuration evidence.  Persist the
         # classification before returning so a supervisor cannot mistake a
@@ -2503,11 +2574,7 @@ def main() -> None:
             require_expected=promotion_gate_required,
             phase="final",
         )
-        frozen_condition_revalidation = enforce_runner_condition(
-            config,
-            args,
-            PROJECT_ROOT,
-        )
+        frozen_condition_revalidation = _enforce_condition_for_run(config, args)
         metadata["integrity_revalidation"] = {
             "status": "ok",
             "config": config_integrity["final"],

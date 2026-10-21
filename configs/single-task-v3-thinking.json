@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "profile": "frozen-v3-thinking100-1800",
+  "baseline": {
+    "source_commit": "da003732c6836e86bc2c4a3df5100c3d11ea1782",
+    "source_tree_sha256": "8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b",
+    "source_tree_files": 562,
+    "frozen_source": "/home/liuxv/liteagent-fixed189-20261014-v1/adapter_versions/v2_expanded"
+  },
+  "model": {
+    "requested": "Qwen3.5-9B",
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch",
+    "base_urls": [
+      "https://qwen.jinmaoapi.cc.cd/v1"
+    ]
+  },
+  "protocol": {
+    "thinking": true,
+    "reasoning_mode": "thinking",
+    "max_steps": 100,
+    "initial_step_budget": 100,
+    "max_agent_seconds": 1800,
+    "max_local_steps": 100,
+    "max_soft_restarts": 1,
+    "max_no_progress_steps": 8,
+    "max_output_tokens": 8192,
+    "request_timeout": 240,
+    "model_retries": 3,
+    "top_k": 7,
+    "temperature": 0,
+    "concurrency": 1,
+    "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain."
+  },
+  "paths": {
+    "workspace": "/home/liuxv/liteagent",
+    "job_root": "/home/liuxv/liteagent-reproduction-jobs",
+    "qcow2": "/var/lib/liteagent-shared/Ubuntu.qcow2",
+    "python": "/var/lib/liteagent-shared/python-env/bin/python"
+  },
+  "policy": {
+    "prepare_only_by_default": true,
+    "fresh_vm": true,
+    "preserve_every_attempt": true,
+    "original_evaluator": true,
+    "baseline_candidate": false,
+    "resume": false
+  }
+}

@@ -64,6 +64,7 @@ _LOCAL_INPUT_ACTIONS = frozenset(
         "presentation.insert_audio",
         "spreadsheet.convert_file",
         "spreadsheet.read_file",
+        "workbook.read_file",
     }
 )
 

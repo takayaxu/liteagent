@@ -92,10 +92,8 @@ DOMAIN_SIGNATURES = {
             "reads bounded cell text exactly as displayed by LibreOffice Calc, including trailing zeros"
         ),
         "workbook.create_new": (
-            'params={"output_path": absolute local ODS|XLSX path, "sheet_name"?: str, '
-            '"headers"?: [unique str], "rows"?: [[string|number|boolean|null]], '
-            '"overwrite"?: bool}; headers and rows must be supplied together; creates, '
-            "optionally populates, and saves a new workbook"
+            'params={"sheet_name"?: str}; creates a blank unsaved workbook only. '
+            "Use range.write for data, range.format for display and workbook.save_as for a file"
         ),
         "workbook.save": "params={}; saves the active workbook in place",
         "workbook.save_as": (
