@@ -95,6 +95,7 @@ def _pivot_inventory_session(monkeypatch, tables):
     doc = SimpleNamespace(
         getCurrentController=lambda: SimpleNamespace(getActiveSheet=lambda: sheet),
         isModified=lambda: False,
+        Sheets=SimpleNamespace(getByIndex=lambda _: SimpleNamespace(Name="Input")),
     )
     monkeypatch.setattr(uno_worker, "_sheet_names", lambda doc: ["Overview"])
     monkeypatch.setattr(uno_worker, "_used_range", lambda sheet: {})
@@ -104,6 +105,19 @@ def _pivot_inventory_session(monkeypatch, tables):
         sheet=lambda name: sheet,
         _identity=lambda doc: {"title": "Quarterly.xlsx"},
     )
+
+
+def _inspected_pivot(output):
+    return SimpleNamespace(
+        getOutputRange=lambda: output,
+        SourceRange=SimpleNamespace(Sheet=0, StartColumn=0, StartRow=0, EndColumn=3, EndRow=8),
+        getDataPilotFields=lambda: SimpleNamespace(getCount=lambda: 0),
+    )
+
+
+def _empty_definition():
+    return {"source_sheet": "Input", "source_range": "A1:D9", "row_fields": [],
+            "column_fields": [], "page_fields": [], "data_fields": []}
 
 
 def test_workbook_inspection_lists_native_pivot_names_and_output_ranges(monkeypatch):
@@ -117,15 +131,15 @@ def test_workbook_inspection_lists_native_pivot_names_and_output_ranges(monkeypa
     }
     tables = SimpleNamespace(
         getElementNames=lambda: tuple(outputs),
-        getByName=lambda name: SimpleNamespace(getOutputRange=lambda: outputs[name]),
+        getByName=lambda name: _inspected_pivot(outputs[name]),
     )
 
     result = uno_worker._inspect(_pivot_inventory_session(monkeypatch, tables), {})
 
     sheet = result["sheets"][0]
     assert sheet["pivot_tables"] == [
-        {"name": "UnitsByRegion_7", "output_range": "H5:J18"},
-        {"name": "ReturnsByPeriod_2", "output_range": "N3:P9"},
+        {"name": "UnitsByRegion_7", "output_range": "H5:J18", **_empty_definition()},
+        {"name": "ReturnsByPeriod_2", "output_range": "N3:P9", **_empty_definition()},
     ]
     assert "pivot_tables_inspect_error" not in sheet
     assert result["modified"] is False
@@ -141,9 +155,7 @@ def test_workbook_pivot_inspection_reports_failed_reads_explicitly(monkeypatch, 
         getElementNames=(
             unavailable if failure == "enumeration" else lambda: ("Readable", "Unknown")
         ),
-        getByName=lambda name: SimpleNamespace(
-            getOutputRange=(lambda: good_output) if name == "Readable" else unavailable,
-        ),
+        getByName=lambda name: _inspected_pivot(good_output) if name == "Readable" else SimpleNamespace(getOutputRange=unavailable),
     )
 
     sheet = uno_worker._inspect(_pivot_inventory_session(monkeypatch, tables), {})[
@@ -155,7 +167,7 @@ def test_workbook_pivot_inspection_reports_failed_reads_explicitly(monkeypatch, 
         assert sheet["pivot_tables_inspect_error"] == "Native pivot metadata unavailable"
     else:
         assert sheet["pivot_tables"] == [
-            {"name": "Readable", "output_range": "D7:F12"},
+            {"name": "Readable", "output_range": "D7:F12", **_empty_definition()},
             {"name": "Unknown", "inspect_error": "Native pivot metadata unavailable"},
         ]
         assert "pivot_tables_inspect_error" not in sheet

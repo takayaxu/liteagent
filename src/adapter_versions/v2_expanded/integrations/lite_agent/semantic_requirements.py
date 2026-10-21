@@ -48,9 +48,7 @@ from .impress_title_formatting import title_format_requirement_errors
 from .impress_image_insertion import image_insertion_requirement_errors
 from .impress_textboxes import all_textbox_color_requirement_errors
 from .instruction_semantics import (
-    requested_chart_count,
     requested_merged_text_regions,
-    requested_pivot_count,
     requested_row_labels,
     requested_sheet_copy_lifecycle,
     requested_slide_content_formatting,
@@ -151,22 +149,6 @@ def _has_region_format(
 def _calc_errors(state: Any) -> list[str]:
     instruction = str(state.instruction)
     errors: list[str] = list(calc_semantics.sort_completion_missing(state))
-
-    chart_count = requested_chart_count(instruction)
-    observed_charts = len(_arguments(state, "chart.create"))
-    if chart_count > observed_charts:
-        errors.append(
-            f"the instruction requires {chart_count} chart.create operations; "
-            f"only {observed_charts} succeeded"
-        )
-
-    pivot_count = requested_pivot_count(instruction)
-    observed_pivots = len(_arguments(state, "pivot.create"))
-    if pivot_count is not None and pivot_count > observed_pivots:
-        errors.append(
-            f"the instruction requires {pivot_count} pivot.create operations; "
-            f"only {observed_pivots} succeeded"
-        )
 
     missing_scaled_outputs = missing_scaled_display_outputs(
         instruction,

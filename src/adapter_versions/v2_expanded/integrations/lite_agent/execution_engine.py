@@ -1080,6 +1080,9 @@ class ExecutionEngineMixin:
                     )
                     and not mutation_after_duplicate
                     and not observation_retry
+                    and not completion_recovery.outcome_retry_allowed(
+                        state, current_identity[0], current_identity[1], current_identity[2], duplicate.step
+                    )
                     and not spreadsheet_open_semantics.inspection_retry_required(
                         state, action, arguments
                     )
@@ -1589,6 +1592,7 @@ class ExecutionEngineMixin:
                 response_errors = completion_response_contract_errors(proposal)
                 if response_errors:
                     gate = {
+                        **gate,
                         "passed": False,
                         "missing": list(
                             dict.fromkeys([*response_errors, *gate["missing"]])

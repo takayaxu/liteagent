@@ -114,6 +114,19 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py --orders 13 15 27 47
 独立源码快照、配置、命令、日志和结果写入 `../liteagent-local-runs/`。可使用
 `--config /path/to/config.json` 指定另一份配置。
 
+当前开发树包含完成判定修复，已不等于冻结 v3 摘要。复跑本次透视表题请使用
+独立开发配置，保留上面的冻结配置作为原始条件记录：
+
+```bash
+HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
+  --config configs/single-task-completion-repair.json --orders 4
+```
+
+本次完成门检查原生对象是否存在，并对可解析的独立分类求和透视表核对源范围、
+分组、聚合、输出范围和最终回读值。缺少证据或发现不符时会报告具体目标与差异，
+直接开放检查和修复工具，无需模型先调用 `completion_revise`。
+适用范围、验证与限制见 [完成判定修复记录](docs/completion-outcomes-repair-20261021.md)。
+
 直接调用单题或自定义任务配置时，仍可使用通用形式：
 
 ```bash

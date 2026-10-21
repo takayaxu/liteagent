@@ -970,6 +970,14 @@ class ToolSurfaceMixin:
                     )
             return audit_tools
 
+        # Native result defects outrank phase/ranking filters, which can hide
+        # the very read or mutation needed to repair an already executed call.
+        outcome_tools = completion_recovery.outcome_recovery_tools(
+            state, self._generic_completion_gate(state)
+        )
+        if outcome_tools is not None:
+            return outcome_tools
+
         if pdf_table_selection.active(state):
             tools = self._build_tools(state.domain, ["adapter.call"], include_gui=False, include_control_tools=True, strict_generic=True)
             return self._apply_common_tool_constraints(tools, state)

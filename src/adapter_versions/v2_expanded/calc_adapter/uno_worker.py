@@ -782,8 +782,13 @@ def _inspect(session: CalcSession, _: dict[str, Any]) -> dict[str, Any]:
             for pivot_name in tables.getElementNames():
                 pivot_snapshot = {"name": str(pivot_name)}
                 try:
-                    output = tables.getByName(pivot_name).getOutputRange()
+                    pivot = tables.getByName(pivot_name)
+                    output = pivot.getOutputRange()
                     pivot_snapshot["output_range"] = _range_a1(output)
+                    pivot_snapshot.update(_pivot_field_snapshot(pivot))
+                    source = pivot.SourceRange
+                    pivot_snapshot["source_range"] = _range_a1(source)
+                    pivot_snapshot["source_sheet"] = str(doc.Sheets.getByIndex(source.Sheet).Name)
                 except Exception as exc:
                     pivot_snapshot["inspect_error"] = str(exc)
                 sheet_snapshot["pivot_tables"].append(pivot_snapshot)
@@ -801,9 +806,11 @@ def _inspect(session: CalcSession, _: dict[str, Any]) -> dict[str, Any]:
 
 def _read(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     cell_range = session.sheet(params["sheet"]).getCellRangeByName(params["range"])
+    url = str(getattr(session.doc, "URL", "") or "")
     return {
         "sheet": params["sheet"],
         "range": params["range"],
+        **({"workbook_url": url} if url else {}),
         **_range_snapshot(cell_range, session.doc),
     }
 
@@ -3135,6 +3142,29 @@ def _chart_create_from_summary_rows(
         "chart_count": len(charts),
         "charts": charts,
     }
+
+
+def _pivot_field_snapshot(pivot: Any) -> dict[str, Any]:
+    """Read the actual native descriptor, including fields of persisted pivots."""
+    fields = pivot.getDataPilotFields()
+    result = {"row_fields": [], "column_fields": [], "page_fields": [], "data_fields": []}
+    keys = {"row": "row_fields", "column": "column_fields", "page": "page_fields"}
+    # Saved pivots may expose empty element names; indexed fields retain Name.
+    for index in range(fields.getCount()):
+        field = fields.getByIndex(index)
+        orientation = _enum_name(field.Orientation)
+        if orientation in keys:
+            result[keys[orientation]].append(str(field.Name))
+        elif orientation == "data":
+            reference = field.Reference
+            # UNO's optional reference struct is void for a plain aggregation.
+            reference_type = reference.ReferenceType if reference is not None else 0
+            result["data_fields"].append({
+                "field": str(field.Name),
+                "aggregation": _enum_name(field.Function),
+                "show_data_as": "none" if reference_type == 0 else _enum_name(reference_type),
+            })
+    return result
 
 
 def _pivot_create(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:

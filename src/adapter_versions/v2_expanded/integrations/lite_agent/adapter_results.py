@@ -3152,7 +3152,8 @@ def workbook_inspect_context(result: dict[str, Any]) -> dict[str, Any] | None:
             summaries = [
                 {
                     key: pivot[key]
-                    for key in ("name", "output_range", "inspect_error")
+                    for key in ("name", "output_range", "inspect_error", "source_sheet", "source_range",
+                                "row_fields", "column_fields", "page_fields", "data_fields")
                     if key in pivot
                 }
                 for pivot in pivots[:MODEL_CONTEXT_MAX_LIST_ITEMS]
@@ -3181,7 +3182,7 @@ def workbook_inspect_context(result: dict[str, Any]) -> dict[str, Any] | None:
             "sheets[].charts. Empty cells do not imply that a sheet has no charts. "
             "data_series_count and data_series describe plotted value series; "
             "category_axes contains category labels, not additional value series. "
-            "sheets[].pivot_tables lists native pivot names and occupied output_range "
+            "sheets[].pivot_tables lists native pivot definitions, source and occupied output_range "
             "rectangles. Different names share worksheet cells; overlapping rectangles "
             "can overwrite table output. range.read reads the cells in a selected "
             "output_range. "
@@ -3351,6 +3352,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
         return {
             "sheet": result.get("sheet"),
             "range": result.get("range"),
+            **({"workbook_url": result["workbook_url"]} if result.get("workbook_url") else {}),
             **matrices,
             **cell_metadata,
             **summary_context,

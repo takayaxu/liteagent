@@ -560,7 +560,9 @@ class RuntimeStateCoreMixin:
             and not isinstance(pending_audit, dict)
             and not isinstance(pending_terminal, dict)
         ) or limit <= 0:
-            return summary[:limit] if limit > 0 else []
+            # execution_context_summary already keeps the latest limit events.
+            # Prefix markers must not evict the newest correction/readback.
+            return summary if limit > 0 else []
         markers: list[dict[str, Any]] = []
         if isinstance(recovery, dict):
             # Keep the successful mutation ledger in its own bounded marker.

@@ -22,7 +22,7 @@ from .tool_catalog import (
     action_from_tool_name,
     build_tools,
 )
-from .generic_routing import discovered_adapter_routes
+from .generic_routing import discovered_adapter_routes, recovery_search_actions
 from .search_recovery_tools import constrain_adapter_call_routes
 from .tool_catalog import tool_name
 from .generic_completion import (
@@ -34,6 +34,39 @@ from .generic_completion import (
 )
 from . import source_execution_semantics
 from . import completion_review
+from .completion_outcomes import outcome_retry_allowed as outcome_retry_allowed
+
+
+def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Keep observation and correction available until live defects disappear.
+
+    This runs before completion review and stage-based action ranking. No
+    rejected claim or model-authored completion_revise is a prerequisite.
+    """
+    issues = gate.get("outcome_issues")
+    if not issues:
+        return None
+    from .instruction_semantics import strict_instruction_required_actions
+
+    actions = list(dict.fromkeys([
+        *(a for issue in issues for a in issue.get("repair_actions", [])),
+        *strict_instruction_required_actions(state.domain, state.instruction),
+        # A repair may need another public action. Keep real catalog hits
+        # callable instead of letting this early surface swallow the search.
+        *(recovery_search_actions(state) or []),
+    ]))
+    actions = [a for a in actions if a not in FORBIDDEN_DATASET_ACTIONS]
+    tools = build_tools(state.domain, actions, include_gui=False, strict_generic=True)
+    guidance = (
+        " Completion has unresolved observed outcomes; use the completion_outcomes "
+        "ledger to inspect or repair the named target. A successful call is not proof "
+        "of the required result. After correcting, save and inspect/read the changed "
+        "output. For a wrong existing pivot use its observed name and replace=true; "
+        "adding another object leaves the defect unresolved."
+    )
+    for tool in tools:
+        tool["function"]["description"] += guidance
+    return tools
 
 
 def pending_completion_recovery(events: Iterable[Any]) -> dict[str, Any] | None:
@@ -176,6 +209,7 @@ def completion_rejection_error(
         "passed": False,
         "missing": gate["missing"],
         "recovery": recovery_details(mode),
+        **({"outcome_issues": gate["outcome_issues"]} if gate.get("outcome_issues") else {}),
     }
 
 
@@ -353,6 +387,9 @@ def strict_proactive_completion_tools(
     semantic_action_equivalents: Callable[[Any], dict[str, set[str]]] | None = None,
 ) -> list[dict[str, Any]] | None:
     """Build the proactive strict completion surface outside the Runtime."""
+    outcome_tools = outcome_recovery_tools(state, gate)
+    if outcome_tools is not None:
+        return outcome_tools
     if completion_review.review_ready(state, gate):
         # Review the final evidence already in context. Additional observation
         # requires an explicit discrepancy rather than another identical read.

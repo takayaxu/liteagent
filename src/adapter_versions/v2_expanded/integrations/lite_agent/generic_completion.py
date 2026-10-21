@@ -20,6 +20,7 @@ from .completion_policy import (
     effective_adapter_action,
     requires_readback_action,
 )
+from .completion_outcomes import completion_outcome_issues
 
 
 STRICT_COMPLETION_DONE = "done"
@@ -131,6 +132,7 @@ def strict_completion_gate(
     semantic_action_equivalents: Callable[[Any], dict[str, set[str]]] | None = None,
 ) -> dict[str, Any]:
     """Apply generic mutation, persistence, and read-back evidence only."""
+    outcome_issues = completion_outcome_issues(state)
     # GUI outcomes are reviewed visually by the planner, not an invented API mutation.
     # Only an explicit claim enters the existing deferred terminal-audit path.
     if completion is not None and _audited_gui_completion_available(
@@ -138,10 +140,12 @@ def strict_completion_gate(
     ):
         missing = completion_claim_contract_errors(completion)
         missing.extend(completion_claim_contradictions(completion))
+        missing.extend(issue["message"] for issue in outcome_issues)
         return {
             "passed": not missing,
             "missing": missing,
             "evidence_source": "audited_holo_gui",
+            **({"outcome_issues": outcome_issues} if outcome_issues else {}),
         }
     semantic_actions = _semantic_mutation_actions(
         state,
@@ -178,7 +182,9 @@ def strict_completion_gate(
             )
     if semantic_requirement_errors is not None:
         missing.extend(semantic_requirement_errors(state))
-    return {"passed": not missing, "missing": list(dict.fromkeys(missing))}
+    missing.extend(issue["message"] for issue in outcome_issues)
+    return {"passed": not missing, "missing": list(dict.fromkeys(missing)),
+            **({"outcome_issues": outcome_issues} if outcome_issues else {})}
 
 
 def strict_completion_phase(

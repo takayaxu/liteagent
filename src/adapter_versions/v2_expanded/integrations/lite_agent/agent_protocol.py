@@ -628,6 +628,13 @@ class AgentProtocolMixin:
                 + "\nChoose the single next action using the instruction, latest tool results, "
                 "and current screenshot."
             )
+        # Recompute from the immutable ledger after compaction so old source
+        # reads and concrete defects cannot disappear from a short repair turn.
+        from .completion_outcomes import completion_outcome_issues
+
+        outcomes = completion_outcome_issues(state)
+        if outcomes:
+            state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
