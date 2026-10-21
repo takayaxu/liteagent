@@ -7,6 +7,8 @@ and model-selected spreadsheet arguments.  It never supplies table values.
 from __future__ import annotations
 
 import copy
+import math
+import posixpath
 import re
 from typing import Any
 
@@ -26,6 +28,7 @@ from .completion_policy import (
 
 
 BATCH_READ_ACTIONS = ("pdf.extract_text_batch", "image.extract_text_batch")
+PDF_TABLE_INSPECT_ACTION = "pdf.tables.inspect"
 # Source observations can remain incomplete after the model has inspected the
 # target.  Permit a small, finite number of model-selected follow-up reads;
 # the event ledger and the observed projection, rather than an instruction,
@@ -34,8 +37,9 @@ MAX_BATCH_CONTINUATION_ATTEMPTS = 3
 INSPECT_ACTION = "spreadsheet.inspect_current"
 TARGET_INSPECTION_ACTIONS = frozenset({INSPECT_ACTION, "workbook.inspect"})
 CREATE_ACTION = "spreadsheet.create_workbook"
+CREATE_ACTIONS = frozenset({CREATE_ACTION, "workbook.create_new"})
 WRITE_ACTION = "spreadsheet.write_range"
-READ_ACTION = "spreadsheet.read_file"
+READ_ACTION = "workbook.read_file"
 SORT_ACTION = "table.sort"
 SAVE_ACTION = "spreadsheet.save"
 
@@ -44,8 +48,19 @@ SAVE_ACTION = "spreadsheet.save"
 # document has been inspected.
 CONSUMER_ACTIONS = (WRITE_ACTION, READ_ACTION, SAVE_ACTION, CREATE_ACTION)
 POST_MUTATION_ACTIONS = (READ_ACTION, WRITE_ACTION, SAVE_ACTION)
-POST_MUTATION_ACTION_SET = frozenset({WRITE_ACTION, SORT_ACTION})
-_CONSUMER_READ_ACTIONS = frozenset({READ_ACTION, "workbook.read_file"})
+POST_MUTATION_ACTION_SET = frozenset({WRITE_ACTION, "range.write", SORT_ACTION})
+_BATCH_MUTATION_ACTIONS = frozenset(
+    {
+        WRITE_ACTION,
+        "range.write",
+        CREATE_ACTION,
+        "workbook.create_new",
+        SORT_ACTION,
+        "table.sort",
+    }
+)
+_BATCH_SAVE_ACTIONS = frozenset({SAVE_ACTION, "workbook.save"})
+_CONSUMER_READ_ACTIONS = frozenset({READ_ACTION, "range.read", "spreadsheet.read_file"})
 _CONSUMER_WRITE_ACTIONS = frozenset({WRITE_ACTION, "range.write"})
 _CONSUMER_STAGE_ACTIONS = _CONSUMER_READ_ACTIONS | _CONSUMER_WRITE_ACTIONS
 
@@ -125,7 +140,529 @@ _TABLE_ACTION_RE = re.compile(
 _TABLE_OUTPUT_RE = re.compile(
     r"(?i)\b(?:spreadsheet|workbook|excel|xlsx|ods|table|rows?|records?)\b"
 )
+_PDF_INPUT_SOURCE_RE = re.compile(
+    r"(?is)(?:"
+    r"\bpdfs?\s+files?\b|"
+    r"\b(?:from|have|read|extract|inspect|provided|source|input)\b"
+    r"[^.;\n]{0,100}\bpdfs?\b|"
+    r"(?:^|[\s\"'])[^\s\"']+\.pdf\b"
+    r")"
+)
+_STRUCTURED_PDF_TABLE_LOCATOR_RE = re.compile(
+    r"(?i)\b(?:row|rows|column|columns|cell|cells|header|headers|"
+    r"discipline|subject|field|university|universities|institution|"
+    r"institutions|school|department|faculty|major)\b|"
+    r"[\u884c\u5217\u5355\u5143\u683c\u8868\u5934\u5b66\u79d1\u673a\u6784\u5927\u5b66]"
+)
 _SORT_RE = re.compile(r"(?i)\bsort(?:ed|ing)?\b")
+_EMAIL_OBSERVED_RE = re.compile(
+    r"(?i)[a-z0-9._%+{}-]+@[a-z0-9.-]+\.[a-z]{2,}"
+)
+_NAME_OBSERVED_RE = re.compile(
+    r"\b[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?(?:\s+[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?){1,3}\b"
+)
+_AFFILIATION_OBSERVED_RE = re.compile(
+    r"(?i)\b(?:university|institute|school|college|laborator(?:y|ies)|"
+    r"department|company|corporation|tencent|carnegie\s+mellon|ohio\s+state)\b"
+)
+_DECIMAL_RATE_REQUEST_RE = re.compile(
+    r"(?i)\b(?:pass|success|approval)\s+rates?\b|"
+    r"\b(?:rates?|ratios?)\b.{0,80}\bdecimal(?:s)?\b"
+)
+
+
+
+def _observed_text_for_item(item: dict[str, Any]) -> str:
+    """Collect only text explicitly present in an observed file projection."""
+    parts: list[str] = []
+    text = item.get("text")
+    if isinstance(text, str):
+        parts.append(text)
+    for key in ("chunks", "table_rows"):
+        entries = item.get(key)
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if isinstance(entry, dict) and isinstance(entry.get("text"), str):
+                parts.append(entry["text"])
+    return "\n".join(parts)
+
+
+def _requested_record_fields(instruction: str) -> frozenset[str]:
+    """Return field classes explicitly requested for each source record."""
+    folded = instruction.casefold()
+    fields: set[str] = set()
+    if re.search(r"\b(?:name|author|full name)\b|姓名|作者", folded):
+        fields.add("name")
+    if re.search(r"\b(?:e[- ]?mail|email|mail address)\b|邮箱|邮件", folded):
+        fields.add("email")
+    if re.search(r"\baffiliation\b|\b(?:institution|organization)\b|机构|单位", folded):
+        fields.add("affiliation")
+    return frozenset(fields)
+
+
+def _observed_record_field_coverage(state: Any) -> dict[str, dict[str, bool]]:
+    """Summarize observed field signals without deriving or supplying values."""
+    coverage: dict[str, dict[str, bool]] = {}
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+                    continue
+                text = _observed_text_for_item(item)
+                if not text:
+                    continue
+                entry = coverage.setdefault(
+                    item["path"], {"name": False, "email": False, "affiliation": False}
+                )
+                entry["email"] |= bool(_EMAIL_OBSERVED_RE.search(text))
+                entry["name"] |= bool(_NAME_OBSERVED_RE.search(text[:12000]))
+                entry["affiliation"] |= bool(_AFFILIATION_OBSERVED_RE.search(text[:12000]))
+    return coverage
+
+
+def _observed_email_values(state: Any) -> set[str]:
+    """Return complete email strings explicitly visible in source text.
+
+    Grouped author prefixes are expanded only for validation.  The adapter
+    never selects one for a row; the model must still provide the value.
+    """
+    values: set[str] = set()
+    grouped = re.compile(
+        r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE
+    )
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                for match in grouped.finditer(text):
+                    domain = match.group(2)
+                    values.update(
+                        f"{prefix.strip()}@{domain}"
+                        for prefix in match.group(1).split(",")
+                        if prefix.strip()
+                    )
+                values.update(
+                    match.group(0)
+                    for match in _EMAIL_OBSERVED_RE.finditer(text)
+                )
+    return {value.casefold() for value in values}
+
+
+def _observed_email_evidence(state: Any) -> list[str]:
+    """Return compact grouped-address evidence for a corrective error."""
+    grouped = re.compile(
+        r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE
+    )
+    evidence: list[str] = []
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                for match in grouped.finditer(text):
+                    value = match.group(0)
+                    if value not in evidence:
+                        evidence.append(value)
+    return evidence
+
+
+def _normalise_person_name(value: str) -> str:
+    """Compare observed/model names without punctuation or spacing noise."""
+    return re.sub(r"[^a-z0-9]", "", value.casefold())
+
+
+def _observed_first_author_email_pairs(state: Any) -> dict[str, str]:
+    """Return high-confidence first-author/email pairs from observed PDF text.
+
+    This is evidence validation only.  It does not add rows or choose values for
+    the model.  The source papers put the author list before the first
+    affiliation and the email prefix list after it; when that shape is not
+    confidently present, the helper returns no pair and leaves the row model
+    owned.
+    """
+    pairs: dict[str, str] = {}
+    grouped = re.compile(r"\{([^{}@]+)\}@([a-z0-9.-]+\.[a-z]{2,})", re.IGNORECASE)
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                if not text:
+                    continue
+                lines = [line.strip() for line in text.splitlines() if line.strip()]
+                if not lines:
+                    continue
+                affiliation_index = next(
+                    (
+                        index
+                        for index, line in enumerate(lines[:80])
+                        if _AFFILIATION_OBSERVED_RE.search(line)
+                    ),
+                    None,
+                )
+                if affiliation_index is None:
+                    continue
+                author_candidates = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if len(
+                        _NAME_OBSERVED_RE.findall(
+                            re.sub(r"[0-9*†∗]+", " ", line)
+                        )
+                    )
+                    >= 2
+                ]
+                # Paper titles often contain two capitalized phrases.  Author
+                # lines in the observed PDFs carry a numeric or star footnote;
+                # prefer that evidence before the bounded generic fallback.
+                marked_candidates = [
+                    line
+                    for line in author_candidates
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                ]
+                marked_name_lines = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                    and _NAME_OBSERVED_RE.search(re.sub(r"[0-9*†∗]+", " ", line))
+                ]
+                author_line = (
+                    marked_name_lines or marked_candidates or author_candidates or [""]
+                )[0]
+                if not author_line:
+                    continue
+                tokens = re.findall(r"[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?", author_line)
+                if len(tokens) < 2:
+                    continue
+                # Try the common two- and three-token first-author forms.  A
+                # submitted name must match one of these observed prefixes.
+                names = {" ".join(tokens[:2]), " ".join(tokens[:3])}
+                email_match = grouped.search(text)
+                if email_match:
+                    prefixes = [part.strip() for part in email_match.group(1).split(",")]
+                    domain = email_match.group(2)
+                    email = f"{prefixes[0]}@{domain}" if prefixes else ""
+                else:
+                    email_match = _EMAIL_OBSERVED_RE.search(text)
+                    email = email_match.group(0) if email_match else ""
+                if not email:
+                    continue
+                for name in names:
+                    pairs[_normalise_person_name(name)] = email.casefold()
+    return pairs
+
+
+def _observed_first_author_affiliation_pairs(state: Any) -> dict[str, str]:
+    """Return first-author to exact affiliation lines visible in each PDF.
+
+    The returned values are evidence only.  In particular, this helper does not
+    complete a partial affiliation or choose a value for a model row.
+    """
+    pairs: dict[str, str] = {}
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            for item in files:
+                if not isinstance(item, dict):
+                    continue
+                text = _observed_text_for_item(item)
+                lines = [line.strip() for line in text.splitlines() if line.strip()]
+                if not lines:
+                    continue
+                affiliation_index = next(
+                    (
+                        index
+                        for index, line in enumerate(lines[:80])
+                        if _AFFILIATION_OBSERVED_RE.search(line)
+                    ),
+                    None,
+                )
+                if affiliation_index is None:
+                    continue
+                marked_name_lines = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if re.search(r"[A-Za-z][0-9]|[*†∗]", line)
+                    and _NAME_OBSERVED_RE.search(re.sub(r"[0-9*†∗]+", " ", line))
+                ]
+                author_candidates = [
+                    line
+                    for line in lines[:affiliation_index]
+                    if len(
+                        _NAME_OBSERVED_RE.findall(
+                            re.sub(r"[0-9*†∗]+", " ", line)
+                        )
+                    )
+                    >= 2
+                ]
+                author_line = (
+                    marked_name_lines or author_candidates or [""]
+                )[0]
+                if not author_line:
+                    continue
+                tokens = re.findall(
+                    r"[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?", author_line
+                )
+                if len(tokens) < 2:
+                    continue
+                affiliation = lines[affiliation_index]
+                for name in {" ".join(tokens[:2]), " ".join(tokens[:3])}:
+                    pairs[_normalise_person_name(name)] = affiliation
+    return pairs
+
+
+def _normalise_observed_text(value: str) -> str:
+    """Normalize only layout whitespace for exact observed-value checks."""
+    return re.sub(r"\s+", " ", value.strip()).casefold()
+
+
+
+
+def requested_fields_complete(state: Any) -> bool:
+    """Return whether every matched source has all instruction-requested fields."""
+    instruction = str(getattr(state, "instruction", ""))
+    # Discipline-by-institution reports request numeric matrix cells rather
+    # than one named record per document. Treat a complete batch observation
+    # as sufficient even if generic field extraction also sees words such as
+    # "application" or "supported" as record-like labels.
+    matrix_instruction = bool(
+        re.search(r"(?i)\b(?:applications?|applied)\b", instruction)
+        and re.search(r"(?i)\b(?:supported|support)\b", instruction)
+        and re.search(
+            r"(?i)\b(?:discipline|universit(?:y|ies)|institution(?:s)?|subject)\b",
+            instruction,
+        )
+    )
+    if matrix_instruction:
+        if _decimal_rate_matrix_requested(state):
+            # Native per-file table observations are the authoritative source
+            # for the ECS workflow.  Do not wait for the legacy batch-text
+            # event before exposing the Calc consumer.
+            if native_pdf_table_observation_complete(state):
+                return True
+        latest = _latest_successful_batch_event(state)
+        if latest is not None:
+            for mapping in _nested_mappings(getattr(latest, "result", None)):
+                files = mapping.get("files")
+                matched = mapping.get("matched_count")
+                if isinstance(files, list) and isinstance(matched, int) and len(files) >= matched > 0:
+                    if _decimal_rate_matrix_requested(state):
+                        # The ECS rate table is explicitly one row for each
+                        # year 2015-2023. A successful single-file extraction
+                        # must not close the source lease and lock the model
+                        # onto Calc before all nine yearly PDFs are observed.
+                        if not native_pdf_table_observation_complete(state):
+                            return False
+                    if not any(
+                        item.get("truncated") is True
+                        or item.get("source_truncated") is True
+                        or item.get("next_start_char") is not None
+                        for item in files
+                        if isinstance(item, dict)
+                    ):
+                        return True
+        if _decimal_rate_matrix_requested(state):
+            return False
+    fields = _requested_record_fields(str(getattr(state, "instruction", "")))
+    if not fields:
+        instruction = str(getattr(state, "instruction", ""))
+        if not (
+            re.search(r"(?i)\b(?:pdfs?|documents?)\b", instruction)
+            and re.search(
+                r"(?i)\b(?:for\s+)?(?:each|every)\s+"
+                r"(?:source\s+)?(?:pdf|document)s?\b|"
+                r"(?:year|university|institution|column|row)\b",
+                instruction,
+            )
+        ):
+            return False
+        # Matrix/table tasks often request derived numeric values rather than a
+        # named record field.  A successful batch response that contains every
+        # matched source is sufficient to hand off to the consumer; the model
+        # may request a bounded continuation later if a needed row is visibly
+        # absent.  Requiring PDF EOF here causes repeated per-file reads before
+        # the already-open workbook can be inspected.
+        latest = _latest_successful_batch_event(state)
+        if latest is None:
+            return False
+        for mapping in _nested_mappings(getattr(latest, "result", None)):
+            files = mapping.get("files")
+            matched = mapping.get("matched_count")
+            if isinstance(files, list) and isinstance(matched, int) and matched > 0:
+                observed_files = [item for item in files if isinstance(item, dict)]
+                if len(observed_files) < matched:
+                    return False
+                # A bounded producer window is not complete merely because it
+                # returned one record per source.  Keep the continuation route
+                # visible until every source has supplied its full observation.
+                if any(
+                    item.get("truncated") is True
+                    or item.get("source_truncated") is True
+                    or item.get("next_start_char") is not None
+                    for item in observed_files
+                ):
+                    return False
+                return True
+        return False
+    coverage = _observed_record_field_coverage(state)
+    count = expected_record_count(state)
+    if count is None or len(coverage) < count:
+        return False
+    return all(all(entry.get(field, False) for field in fields) for entry in coverage.values())
+
+
+def mutation_and_save_complete(state: Any) -> bool:
+    """Return whether a batch workflow has a successful mutation followed by save."""
+
+    from . import pdf_table_selection
+    if pdf_table_selection.active(state):
+        return pdf_table_selection.complete(state)
+    mutations = [
+        event
+        for event in getattr(state, "events", ())
+        if getattr(event, "executed", False)
+        and any(
+            _event_matches_action(event, state, action)
+            for action in _BATCH_MUTATION_ACTIONS
+        )
+    ]
+    if not mutations:
+        return False
+    latest_mutation_step = max(event.step for event in mutations)
+    latest_mutation = max(mutations, key=lambda event: event.step)
+    # workbook.create_new writes and persists the output in one verified
+    # Adapter call. Do not require a second save route after that create.
+    if (
+        _event_matches_action(latest_mutation, state, "workbook.create_new")
+        and hasattr(state, "event_has_save_evidence")
+        and state.event_has_save_evidence(latest_mutation)
+        and observed_created_table(state) is not None
+    ):
+        return True
+    return any(
+        getattr(event, "executed", False)
+        and event.step > latest_mutation_step
+        and any(
+            _event_matches_action(event, state, action)
+            for action in _BATCH_SAVE_ACTIONS
+        )
+        for event in getattr(state, "events", ())
+    )
+
+
+def batch_route_allowed_after_completion(state: Any, action: str) -> bool:
+    """Hide source-reader routes once observed fields satisfy the task."""
+    # Native ECS matrix workflows have a producer that is intentionally absent
+    # from the legacy batch-event ledger.  Give this state an explicit lease
+    # before the generic producer/record routing below can reopen discovery.
+    # Once Calc has been inspected, only the read/write consumer routes remain
+    # valid; source readers, create_new, and repeated probes are not progress.
+    if native_pdf_table_observation_complete(state) and observed_created_table(state) is None:
+        target_inspection = _valid_target_inspection(state)
+        if target_inspection is None:
+            return action in TARGET_INSPECTION_ACTIONS
+        from .table_ratio_compute import latest_result, target_layout
+
+        if target_layout(state) is None:
+            return action == "range.read"
+        if latest_result(state) is None:
+            return False
+        next_route = next_post_mutation_route(state)
+        if next_route is not None:
+            return action == next_route[1]
+        if native_pdf_table_workflow_complete(state):
+            return False
+        return action == "range.write"
+    # A catalog result is not an observation.  Until a producer has actually
+    # succeeded, no downstream consumer (including PDF table inspection or a
+    # workbook probe) may advance the batch workflow.  Keeping this guard at
+    # the route predicate makes stale/wrong search results harmless.
+    if _latest_successful_batch_event(state) is None:
+        # ECS matrix tasks use one successful native ``pdf.tables.inspect``
+        # event per source PDF instead of the legacy batch-text producer.
+        # Once all nine native observations are present, the source stage is
+        # complete and the next lease must be the live Calc inspection.  The
+        # old producer-only guard filtered that route out, leaving only the
+        # generic create_new fallback and causing an endless search loop.
+        if native_pdf_table_observation_complete(state):
+            if not any(
+                _event_matches_action(event, state, INSPECT_ACTION)
+                and getattr(event, "executed", False)
+                for event in getattr(state, "events", ())
+            ):
+                return action in TARGET_INSPECTION_ACTIONS
+        else:
+            return action in BATCH_READ_ACTIONS
+    if not requested_fields_complete(state):
+        return True
+    if action in BATCH_READ_ACTIONS:
+        return False
+    # A completed batch source observation must not reopen discovery.  This is
+    # deliberately generic: the exact roots and filenames remain model-owned,
+    # while the observed source set is handed to the workbook consumer.
+    if action == "filesystem.find":
+        return False
+    if structured_pdf_table_observation_pending(state):
+        # Do not let a source-complete PDF workflow select spreadsheet cells
+        # from flattened text.  The model must first observe native table rows
+        # and columns for every PDF that supplied the batch.
+        return action == PDF_TABLE_INSPECT_ACTION
+    if action in TARGET_INSPECTION_ACTIONS:
+        return True
+    # A complete model-supplied table is already the requested mutation. A
+    # stale catalog result must not expose create_new for another attempt.
+    if observed_created_table(state) is not None:
+        return action not in CREATE_ACTIONS and action not in BATCH_READ_ACTIONS
+    # Before the first successful table creation, the only valid downstream
+    # step is the model-owned workbook mutation.  Keeping filesystem probes
+    # searchable here lets a rejected create call turn into an unrelated
+    # discovery loop instead of the required in-memory row repair and retry.
+    if observed_created_table(state) is None:
+        # An already-open workbook is the default consumer when the task asks
+        # to fill an existing table.  Require its structural observation before
+        # allowing a create route; the inspection gate supplies no cell data.
+        # Keep the legacy one-record workflow unchanged: synthetic and other
+        # record-extraction tasks may legitimately create a new workbook.
+        matrix_task = (
+            _decimal_rate_matrix_requested(state)
+            or not _requested_record_fields(str(getattr(state, "instruction", "")))
+        )
+        if matrix_task:
+            # A new-output matrix has no target workbook to inspect.  Permit
+            # creation directly; existing-workbook workflows still expose
+            # dependent range routes only after their structural inspection.
+            if _valid_target_inspection(state) is None:
+                return action in CREATE_ACTIONS
+            return action in CREATE_ACTIONS or action in {
+                "range.read",
+                "range.write",
+                "spreadsheet.read_file",
+                "spreadsheet.write_range",
+                "workbook.read_file",
+            }
+        return action in CREATE_ACTIONS and (
+            not matrix_task or _valid_target_inspection(state) is not None
+        )
+    return True
 
 
 def _error_metadata(error: Any) -> tuple[set[str], str]:
@@ -201,6 +738,100 @@ def _error_claims_commit(error: Any) -> bool:
     return False
 
 
+def requires_structured_pdf_table_observation(state: Any) -> bool:
+    """Return whether source values must be located from native PDF tables.
+
+    This is deliberately instruction-level routing only.  It identifies a
+    PDF-to-table task that names row/column-like selectors; it never chooses a
+    page, table index, row, column, or value for the model.
+    """
+    if getattr(state, "domain", None) != "multi_apps":
+        return False
+    instruction = str(getattr(state, "instruction", ""))
+    return bool(
+        _PDF_INPUT_SOURCE_RE.search(instruction)
+        and _TABLE_ACTION_RE.search(instruction)
+        and _TABLE_OUTPUT_RE.search(instruction)
+        and _STRUCTURED_PDF_TABLE_LOCATOR_RE.search(instruction)
+    )
+
+
+def _successful_pdf_table_inspection_paths(state: Any) -> set[str]:
+    """Return PDF paths with a non-empty successful structured table result."""
+    paths: set[str] = set()
+    for event in getattr(state, "events", ()):
+        if not getattr(event, "executed", False) or not _event_matches_action(
+            event, state, PDF_TABLE_INSPECT_ACTION
+        ):
+            continue
+        try:
+            _domain, _action, arguments = effective_adapter_action(
+                event, getattr(state, "domain", "multi_apps")
+            )
+        except (AttributeError, TypeError, ValueError):
+            continue
+        input_path = arguments.get("input_path")
+        if not isinstance(input_path, str) or not input_path.strip():
+            continue
+        table_found = False
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            table_count = mapping.get("table_count")
+            rows = mapping.get("rows")
+            columns = mapping.get("column_count")
+            if (
+                isinstance(table_count, int)
+                and table_count > 0
+                and isinstance(columns, int)
+                and columns > 0
+                and isinstance(rows, list)
+                and rows
+            ):
+                table_found = True
+                break
+        if table_found:
+            paths.add(input_path)
+    return paths
+
+
+def native_pdf_table_observation_complete(state: Any) -> bool:
+    """Return whether each discovered PDF has a successful native observation."""
+    if not requires_structured_pdf_table_observation(state):
+        return False
+    paths = set(_observed_pdf_source_paths(state))
+    return bool(paths) and paths.issubset(_successful_pdf_table_inspection_paths(state))
+
+
+def structured_pdf_table_observation_pending(state: Any) -> bool:
+    """Return whether every observed PDF still lacks a table observation."""
+    if not requires_structured_pdf_table_observation(state):
+        return False
+    # Source discovery is separate from content extraction. Once filesystem
+    # discovery exposes the PDFs, native table inspection is the only source
+    # route; the legacy batch text reader is not used for this task.
+    source_paths: set[str] = set(_observed_pdf_source_paths(state))
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            source_paths.update(
+                item["path"]
+                for item in files
+                if isinstance(item, dict)
+                and isinstance(item.get("path"), str)
+                and item["path"].casefold().endswith(".pdf")
+            )
+    observed_paths = _successful_pdf_table_inspection_paths(state)
+    return bool(source_paths) and not source_paths.issubset(observed_paths)
+
+
+def structured_pdf_source_discovery_pending(state: Any) -> bool:
+    """Return whether this task still needs PDF path discovery."""
+    return requires_structured_pdf_table_observation(state) and not (
+        _observed_pdf_source_paths(state) or _successful_batch_events(state)
+    )
+
+
 def _retryable_consumer_failure(action: str, error: Any) -> bool:
     """Classify an unexecuted consumer event without inspecting its values."""
     if not isinstance(error, dict) or not error:
@@ -247,6 +878,26 @@ def requests_one_record_per_input(instruction: str) -> bool:
     """Return whether the instruction explicitly requests exhaustive tabulation."""
     if not _TABLE_OUTPUT_RE.search(instruction):
         return False
+
+    # Some cross-application tasks tabulate a matrix derived from a collection
+    # of source documents rather than asking for one row per document.  The
+    # source cardinality still matters for the producer/consumer handoff, but
+    # the model owns the resulting cells in the existing workbook.  Recognize
+    # this generic shape from the instruction's source noun and table axes;
+    # never infer any values or target coordinates here.
+    folded = instruction.casefold()
+    has_pdf_sources = bool(re.search(r"\b(?:pdfs?|documents?)\b", folded))
+    # A year-only phrase usually describes the layout inside one report, not a
+    # source-document matrix.  Require a second tabular axis (institution,
+    # column, or row) so ordinary annual summaries do not enter this gate.
+    has_table_axis = bool(
+        re.search(
+            r"\b(?:for\s+)?(?:each|every)\s+(?:university|institution|column|row)\b",
+            folded,
+        )
+    )
+    if has_pdf_sources and has_table_axis and _TABLE_ACTION_RE.search(instruction):
+        return True
     if _ROW_PER_INPUT_RE.search(instruction):
         return True
 
@@ -268,6 +919,48 @@ def requests_one_record_per_input(instruction: str) -> bool:
         if _TABLE_OUTPUT_RE.search(clause) and _TABLE_ACTION_RE.search(clause):
             return True
     return False
+
+
+def requests_new_workbook(state: Any) -> bool:
+    """Return whether the instruction asks for a newly created workbook.
+
+    This is deliberately instruction-only.  It distinguishes a requested
+    output file/table from workflows that explicitly operate on an existing
+    or currently open workbook, so the consumer lease does not probe a
+    nonexistent Calc document before using workbook.create_new.
+    """
+    instruction = str(getattr(state, "instruction", ""))
+    if not requests_one_record_per_input(instruction) and not requires_structured_pdf_table_observation(state):
+        return False
+    folded = instruction.casefold()
+    existing = re.search(
+        r"\b(?:existing|current|already\s+open|opened|active)\b[^.\n]{0,80}"
+        r"\b(?:workbook|spreadsheet|excel|calc|sheet)\b",
+        folded,
+    )
+    if existing:
+        return False
+    return bool(
+        re.search(
+            r"\b(?:create|new|make|organize|put|output|save)\b[^.\n]{0,100}"
+            r"\b(?:excel|xlsx|ods|workbook|spreadsheet|table)\b",
+            folded,
+        )
+        or re.search(r"\bsave\b[^.\n]{0,100}\.(?:xlsx|ods)\b", folded)
+    )
+
+
+def new_workbook_consumer_pending(state: Any) -> bool:
+    """Return true while a completed PDF producer awaits workbook.create_new."""
+    if not requests_new_workbook(state):
+        return False
+    if _latest_successful_batch_event(state) is None and not native_pdf_table_observation_complete(state):
+        return False
+    if not requested_fields_complete(state) and not native_pdf_table_observation_complete(state):
+        return False
+    if _current_create_events(state) or observed_created_table(state) is not None:
+        return False
+    return True
 
 
 def _instruction_batch_actions(instruction: str) -> list[str]:
@@ -320,7 +1013,17 @@ def _event_matches_action(event: Any, state: Any, action: str) -> bool:
         )[:2]
     except (AttributeError, TypeError, ValueError):
         return False
-    return observed == expected
+    if observed == expected:
+        return True
+    # The multi-app facade wraps a downstream route, so its canonical domain
+    # is intentionally different from the Calc domain.  For stage guards,
+    # the public action identity is the stable part: a successful
+    # ``libreoffice_calc.range.read`` must satisfy the generic ``range.read``
+    # lease and prevent an identical read from being exposed again.
+    return (
+        getattr(state, "domain", None) == "multi_apps"
+        and observed[1] == expected[1]
+    )
 
 
 def pending_producer_actions(state: Any, actions: Any) -> tuple[str, ...]:
@@ -401,6 +1104,126 @@ def _successful_batch_events(state: Any) -> list[Any]:
     for action in BATCH_READ_ACTIONS:
         fallback.extend(state.successful_action_events(action))
     return sorted(fallback, key=lambda event: event.step)
+
+
+def _observed_pdf_source_paths(state: Any) -> tuple[str, ...]:
+    """Return PDF paths exposed by a successful filesystem discovery."""
+    paths: set[str] = set()
+    for event in getattr(state, "events", ()):
+        if not getattr(event, "executed", False):
+            continue
+        try:
+            _domain, action, _arguments = effective_adapter_action(
+                event, getattr(state, "domain", "multi_apps")
+            )
+        except (AttributeError, TypeError, ValueError):
+            continue
+        if action != "filesystem.find":
+            continue
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            matches = mapping.get("matches")
+            if not isinstance(matches, list):
+                continue
+            for item in matches:
+                if not isinstance(item, dict) or item.get("kind") not in {None, "file"}:
+                    continue
+                path = item.get("path")
+                if isinstance(path, str) and path.casefold().endswith(".pdf"):
+                    paths.add(path)
+    return tuple(sorted(paths))
+
+
+def _observed_pdf_source_directory(state: Any) -> str | None:
+    """Return the common directory of discovered PDF sources, when unambiguous."""
+    paths = _observed_pdf_source_paths(state)
+    if not paths:
+        return None
+    directories = {posixpath.dirname(path) for path in paths}
+    if len(directories) != 1:
+        return None
+    directory = next(iter(directories))
+    return directory if directory.startswith("/") else None
+
+
+def _observed_pdf_discovery_patterns(state: Any) -> tuple[str, ...]:
+    """Return basename patterns explicitly selected by filesystem discovery."""
+    patterns: set[str] = set()
+    for event in getattr(state, "events", ()):
+        if not getattr(event, "executed", False):
+            continue
+        try:
+            _domain, action, arguments = effective_adapter_action(
+                event, getattr(state, "domain", "multi_apps")
+            )
+        except (AttributeError, TypeError, ValueError):
+            continue
+        if action != "filesystem.find":
+            continue
+        values = arguments.get("name_patterns")
+        if isinstance(values, list):
+            patterns.update(
+                value
+                for value in values
+                if isinstance(value, str) and value.casefold().endswith(".pdf")
+            )
+    return tuple(sorted(patterns))
+
+
+def _successful_batch_pdf_paths(state: Any) -> set[str]:
+    """Return PDF paths actually returned by successful batch reads."""
+    paths: set[str] = set()
+    for event in _successful_batch_events(state):
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            files = mapping.get("files")
+            if not isinstance(files, list):
+                continue
+            paths.update(
+                item["path"]
+                for item in files
+                if isinstance(item, dict)
+                and isinstance(item.get("path"), str)
+                and item["path"].casefold().endswith(".pdf")
+            )
+    return paths
+
+
+def _remaining_discovered_pdf_paths(state: Any) -> tuple[str, ...]:
+    """Return discovered PDF files that have not yet been batch-read."""
+    discovered = set(_observed_pdf_source_paths(state))
+    if not discovered:
+        return ()
+    return tuple(sorted(discovered - _successful_batch_pdf_paths(state)))
+
+
+def _requires_exhaustive_pdf_batch(state: Any) -> bool:
+    """Whether observed multi-file PDF inputs must remain one batch."""
+    if getattr(state, "domain", None) != "multi_apps":
+        return False
+    instruction = str(getattr(state, "instruction", ""))
+    if not re.search(r"(?i)\b(?:pdfs?|documents?|reports?)\b", instruction):
+        return False
+    if not (
+        _TABLE_OUTPUT_RE.search(instruction)
+        or re.search(r"(?i)\b(?:each|every|all|annual|multiple|batch)\b", instruction)
+    ):
+        return False
+    # Explicit single-source requests are allowed even when discovery found a
+    # larger directory; the caller, not the discovery result, defines scope.
+    if re.search(
+        r"(?i)\b(?:one|single|specific|exact|only)\s+"
+        r"(?:(?:source|input|listed|provided)\s+)?"
+        r"(?:pdf|document|report|file)\b",
+        instruction,
+    ):
+        return False
+    return len(_observed_pdf_source_paths(state)) > 1
+
+
+def _is_single_basename_pattern(value: Any) -> bool:
+    if not isinstance(value, str) or not value.strip():
+        return False
+    pattern = value.strip()
+    return not any(character in pattern for character in "*?[]{}")
 
 
 def _successful_action_events(state: Any, action: str) -> list[Any]:
@@ -567,6 +1390,11 @@ def batch_continuation_action(state: Any) -> str | None:
     projection = _batch_model_projection(latest)
     if not isinstance(projection, dict):
         return None
+    # EOF is not required for field-extraction tasks. Once every matched
+    # source has observed evidence for each requested field, hand off to the
+    # consumer workflow even if the PDFs still contain unread body text.
+    if requested_fields_complete(state):
+        return None
     if not _source_continuation_pending(projection):
         return None
     batch_action = _event_batch_action(latest, getattr(state, "domain", "multi_apps"))
@@ -654,13 +1482,41 @@ def _valid_target_inspection(state: Any) -> Any | None:
     """Find a target probe still valid after source-only continuation reads."""
     batches = _successful_batch_events(state)
     if not batches:
-        return None
+        # Native ECS workflows intentionally have no legacy batch producer.
+        # Treat a successful workbook.inspect after the final PDF observation
+        # as the valid consumer probe so the model can advance to range.read.
+        if not native_pdf_table_observation_complete(state):
+            return None
+        native_steps = [
+            event.step
+            for event in getattr(state, "events", ())
+            if getattr(event, "executed", False)
+            and _event_matches_action(event, state, PDF_TABLE_INSPECT_ACTION)
+        ]
+        if not native_steps:
+            return None
+        inspections = [
+            event
+            for event in getattr(state, "events", ())
+            if getattr(event, "executed", False)
+            and event.step > max(native_steps)
+            and any(
+                _event_matches_action(event, state, action)
+                for action in TARGET_INSPECTION_ACTIONS
+            )
+        ]
+        return max(inspections, key=lambda event: event.step, default=None)
     first_batch_step = min(event.step for event in batches)
     latest_batch_step = max(event.step for event in batches)
     inspections = [
         event
-        for event in _successful_action_events(state, INSPECT_ACTION)
-        if first_batch_step < event.step
+        for event in getattr(state, "events", ())
+        if getattr(event, "executed", False)
+        and first_batch_step < event.step
+        and any(
+            _event_matches_action(event, state, action)
+            for action in TARGET_INSPECTION_ACTIONS
+        )
     ]
     if not inspections:
         return None
@@ -727,6 +1583,8 @@ def _current_create_events(state: Any) -> list[Any]:
     # direct facade so completion cannot miss a real create event and accept a
     # header-only workbook.
     creates = _successful_action_events(state, CREATE_ACTION)
+    creates.extend(_successful_action_events(state, "workbook.create_new"))
+    creates = list({id(event): event for event in creates}.values())
     latest_batch = _latest_successful_batch_event(state)
     if latest_batch is None:
         return creates
@@ -740,14 +1598,17 @@ def expected_record_count(state: Any) -> int | None:
     missing text from an initial multi-file batch.  Using the latest match
     count would silently shrink the required table and completion contract.
     """
-    if getattr(
-        state, "domain", None
-    ) != "multi_apps" or not requests_one_record_per_input(
-        str(getattr(state, "instruction", ""))
+    if getattr(state, "domain", None) != "multi_apps":
+        return None
+    instruction = str(getattr(state, "instruction", ""))
+    if not requests_one_record_per_input(instruction) and not _decimal_rate_matrix_requested(
+        state
     ):
         return None
     batches = _successful_batch_events(state)
     if not batches:
+        if native_pdf_table_observation_complete(state):
+            return len(_observed_pdf_source_paths(state))
         return None
     counts = []
     for event in batches:
@@ -772,7 +1633,7 @@ def pending_header_first_creation(state: Any) -> Any | None:
     if not creates:
         return None
     latest = creates[-1]
-    arguments = _arguments(latest)
+    arguments = _batch_arguments(latest, state)
     if "headers" not in arguments or "rows" in arguments:
         return None
     return latest
@@ -826,6 +1687,21 @@ def stage_actions(state: Any, actions: Any) -> list[str]:
             return instruction_actions
         return selected
 
+    if structured_pdf_source_discovery_pending(state):
+        return ["filesystem.find"]
+
+    if _requires_exhaustive_pdf_batch(state) and _remaining_discovered_pdf_paths(state):
+        return ["pdf.extract_text_batch"]
+
+    if structured_pdf_table_observation_pending(state):
+        return [PDF_TABLE_INSPECT_ACTION]
+
+    # A task that explicitly requests a new workbook has no live Calc target
+    # to inspect.  Once the PDF producer is complete, lease creation as the
+    # sole consumer action until it succeeds.
+    if new_workbook_consumer_pending(state):
+        return ["workbook.create_new"]
+
     # Ground the consumer against live application state.  A failed probe is
     # deliberately soft: keep the probe searchable while allowing a new
     # workbook attempt; the model still supplies every argument.
@@ -834,6 +1710,12 @@ def stage_actions(state: Any, actions: Any) -> list[str]:
     if creates:
         table = observed_created_table(state)
         if table is None:
+            latest_arguments = _batch_arguments(creates[-1], state)
+            if "rows" in latest_arguments:
+                # A full create that failed the source/table contract must be
+                # corrected with another model-selected create, not routed to
+                # the header-only range-write lifecycle.
+                return [CREATE_ACTION]
             return [WRITE_ACTION]
         sort_events = [
             event
@@ -867,6 +1749,10 @@ def stage_actions(state: Any, actions: Any) -> list[str]:
 
     valid_inspection = _valid_target_inspection(state)
     if valid_inspection is None:
+        if requested_fields_complete(state):
+            # Source fields are complete; keep the optional target probe, but
+            # expose creation immediately so EOF is never a prerequisite.
+            return [INSPECT_ACTION, CREATE_ACTION]
         inspected_attempt = any(
             _event_matches_action(event, state, INSPECT_ACTION)
             and event.step > latest_batch_step
@@ -892,10 +1778,24 @@ def inspection_pending(state: Any) -> bool:
     completed or failed the zero-argument spreadsheet probe, unrelated GUI
     actions should not compete with that observation step.
     """
-    if expected_record_count(state) is None:
+    if expected_record_count(state) is None or new_workbook_consumer_pending(state):
         return False
     latest_batch = _latest_successful_batch_event(state)
-    if latest_batch is None or _current_create_events(state):
+    if latest_batch is None:
+        # Native ECS table observations are a complete source stage even
+        # without the legacy batch-text producer.  Keep the live workbook
+        # probe as the next consumer action until it succeeds.
+        if not native_pdf_table_observation_complete(state) or _current_create_events(state):
+            return False
+        return not any(
+            getattr(event, "executed", False)
+            and any(
+                _event_matches_action(event, state, action)
+                for action in TARGET_INSPECTION_ACTIONS
+            )
+            for event in getattr(state, "events", ())
+        )
+    if _current_create_events(state):
         return False
     if _valid_target_inspection(state) is not None:
         # Source-only continuation reads do not invalidate a successful target
@@ -1087,12 +1987,18 @@ def pending_post_mutation_actions(state: Any, actions: Any) -> tuple[str, ...]:
         return ()
 
     read_back = any(
-        _event_matches_action(event, state, READ_ACTION)
+        any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (READ_ACTION, "range.read", "workbook.read_file")
+        )
         and event.step > latest_mutation_step
         for event, action in relevant
     )
     saved = any(
-        _event_matches_action(event, state, SAVE_ACTION)
+        any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (SAVE_ACTION, "workbook.save")
+        )
         and event.step > latest_mutation_step
         for event, action in relevant
     )
@@ -1112,31 +2018,166 @@ def pending_post_mutation_actions(state: Any, actions: Any) -> tuple[str, ...]:
     return tuple(dict.fromkeys(bounded))
 
 
+def next_post_mutation_route(state: Any) -> tuple[str, str] | None:
+    """Return the single native Calc route required after a batch write.
+
+    Multi-app tasks execute through the generic ``adapter.call`` wrapper, so
+    the legacy spreadsheet action names used by ``pending_post_mutation_actions``
+    cannot directly drive its route enum. Read back once after the latest write,
+    then expose save as the only next operation.
+    """
+    if (
+        getattr(state, "domain", None) != "multi_apps"
+        or expected_record_count(state) is None
+        or _current_create_events(state)
+    ):
+        return None
+    probe = _valid_target_inspection(state)
+    if probe is None:
+        return None
+    mutations = [
+        event
+        for event in getattr(state, "events", ())
+        if getattr(event, "executed", False)
+        and event.step > probe.step
+        and any(
+            _event_matches_action(event, state, candidate)
+            for candidate in POST_MUTATION_ACTION_SET
+        )
+    ]
+    if not mutations:
+        return None
+    if (
+        native_pdf_table_observation_complete(state)
+        and _observed_decimal_rate_matrix(state) is not None
+        and _decimal_rate_next_write_target(state) is not None
+    ):
+        return ("libreoffice_calc", "range.write")
+    latest_step = max(event.step for event in mutations)
+    read_back = any(
+        getattr(event, "executed", False)
+        and event.step > latest_step
+        and any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (READ_ACTION, "range.read", "workbook.read_file")
+        )
+        for event in getattr(state, "events", ())
+    )
+    if not read_back:
+        return ("libreoffice_calc", "range.read")
+    saved = any(
+        getattr(event, "executed", False)
+        and event.step > latest_step
+        and any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (SAVE_ACTION, "workbook.save")
+        )
+        for event in getattr(state, "events", ())
+    )
+    return None if saved else ("libreoffice_calc", "workbook.save")
+
+
+def native_pdf_table_workflow_complete(state: Any) -> bool:
+    """Return whether the native ECS consumer has completed persistence.
+
+    ``next_post_mutation_route`` intentionally returns ``None`` both before a
+    write and after save.  The tool surface needs to distinguish those states
+    so a saved workbook cannot fall through to the generic ``range.write``
+    fallback on the next model turn.
+    """
+    from . import pdf_table_selection
+    if pdf_table_selection.active(state):
+        return pdf_table_selection.complete(state)
+    if (
+        getattr(state, "domain", None) != "multi_apps"
+        or not native_pdf_table_observation_complete(state)
+        or _valid_target_inspection(state) is None
+        or observed_created_table(state) is not None
+    ):
+        return False
+    probe = _valid_target_inspection(state)
+    mutations = [
+        event
+        for event in getattr(state, "events", ())
+        if getattr(event, "executed", False)
+        and event.step > probe.step
+        and any(
+            _event_matches_action(event, state, candidate)
+            for candidate in POST_MUTATION_ACTION_SET
+        )
+    ]
+    if not mutations:
+        return False
+    latest_step = max(event.step for event in mutations)
+    after_mutation = [
+        event
+        for event in getattr(state, "events", ())
+        if getattr(event, "executed", False) and event.step > latest_step
+    ]
+    has_readback = any(
+        any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (READ_ACTION, "range.read", "workbook.read_file")
+        )
+        for event in after_mutation
+    )
+    has_save = any(
+        any(
+            _event_matches_action(event, state, candidate)
+            for candidate in (SAVE_ACTION, "workbook.save")
+        )
+        for event in after_mutation
+    )
+    return has_readback and has_save
+
+
 def observed_created_table(state: Any) -> dict[str, Any] | None:
     """Describe the latest table created from model-selected headers and rows."""
     creates = _current_create_events(state)
     if not creates:
         return None
-    create = creates[-1]
-    arguments = _arguments(create)
-    headers = arguments.get("headers")
-    if not isinstance(headers, list) or not headers:
+    # Multi-app adapter.call wraps the model payload under payload.params.
+    # Walk backwards to the latest complete create so a later idempotent
+    # overwrite request without headers/rows cannot erase the table evidence.
+    header_only_create = None
+    header_only_arguments: dict[str, Any] | None = None
+    for create in reversed(creates):
+        arguments = _batch_arguments(create, state)
+        headers = arguments.get("headers")
+        if not isinstance(headers, list) or not headers:
+            continue
+        sheet = _observed_string(create.result, "sheet")
+        if "rows" in arguments:
+            rows = arguments.get("rows")
+            if not isinstance(rows, list) or sheet is None:
+                continue
+            # Re-apply the same model-owned contract to successful downstream
+            # results. Some multi-app adapter paths can return a successful
+            # workbook write even when a later semantic check was bypassed;
+            # such a table must not satisfy completion or suppress correction.
+            if argument_contract_errors(state, "workbook.create_new", arguments):
+                continue
+            data_range = _observed_string(create.result, "data_range")
+            if a1_geometry(str(data_range or "")) is None:
+                data_range = f"A1:{column_label(len(headers))}{len(rows) + 1}"
+            return {
+                "sheet": sheet,
+                "range": data_range,
+                "headers": [str(value) for value in headers],
+                "record_count": len(rows),
+                "source_step": create.step,
+            }
+        # Header-only creates remain incomplete until a later model-selected
+        # write; continue looking for an older complete create event.
+        if header_only_create is None:
+            header_only_create = create
+            header_only_arguments = arguments
+
+    if header_only_create is None or header_only_arguments is None:
         return None
+    create = header_only_create
+    headers = header_only_arguments["headers"]
     sheet = _observed_string(create.result, "sheet")
-    if "rows" in arguments:
-        rows = arguments.get("rows")
-        if not isinstance(rows, list) or sheet is None:
-            return None
-        data_range = _observed_string(create.result, "data_range")
-        if a1_geometry(str(data_range or "")) is None:
-            data_range = f"A1:{column_label(len(headers))}{len(rows) + 1}"
-        return {
-            "sheet": sheet,
-            "range": data_range,
-            "headers": [str(value) for value in headers],
-            "record_count": len(rows),
-            "source_step": create.step,
-        }
 
     writes = [
         event
@@ -1181,28 +2222,922 @@ def _matrix_shape(values: Any) -> tuple[int, int] | None:
     return len(values), widths.pop()
 
 
+def _decimal_rate_matrix_requested(state: Any) -> bool:
+    """Return whether the instruction asks for a decimal rate/ratio matrix."""
+    instruction = str(getattr(state, "instruction", ""))
+    return bool(
+        _DECIMAL_RATE_REQUEST_RE.search(instruction)
+        and re.search(
+            r"(?i)\b(?:year|universit(?:y|ies)|institution(?:s)?|column|row)\b",
+            instruction,
+        )
+        and re.search(r"(?i)\b(?:spreadsheet|workbook|excel|table|sheet)\b", instruction)
+    )
+
+
+def _observed_decimal_rate_target(state: Any) -> dict[str, Any] | None:
+    """Derive a contiguous rate-data target from an observed Calc read.
+
+    This is deliberately limited to geometry and headers already returned by
+    Calc. It never derives source values or fills cells on the model's behalf.
+    """
+    if not _decimal_rate_matrix_requested(state):
+        return None
+    from .table_ratio_compute import latest_result
+
+    computed = latest_result(state)
+    if not isinstance(computed, dict):
+        return None
+    values = computed.get("values")
+    columns = computed.get("column_keys")
+    if not isinstance(values, list) or not values or not isinstance(columns, list) or not columns:
+        return None
+    from .table_ratio_compute import target_layout
+
+    layout = target_layout(state)
+    if layout is not None:
+        return {
+            "sheet": layout["sheet"],
+            "range": layout["range"],
+            "record_count": len(values),
+            "column_count": len(columns),
+            "headers": columns,
+        }
+    for inspect_event in reversed(_successful_action_events(state, INSPECT_ACTION)):
+        for mapping in _nested_mappings(getattr(inspect_event, "result", None)):
+            sheets = mapping.get("sheets")
+            if not isinstance(sheets, list):
+                continue
+            for sheet_entry in sheets:
+                if not isinstance(sheet_entry, dict):
+                    continue
+                used = sheet_entry.get("used_range")
+                sheet = sheet_entry.get("name")
+                if not isinstance(used, dict) or not isinstance(sheet, str):
+                    continue
+                start_row = used.get("start_row")
+                start_column = used.get("start_column")
+                if not isinstance(start_row, int) or not isinstance(start_column, int):
+                    continue
+                first_column = column_label(start_column + 2)
+                last_column = column_label(start_column + len(columns) + 1)
+                return {
+                    "sheet": sheet,
+                    "range": f"{first_column}{start_row + 2}:{last_column}{start_row + len(values) + 1}",
+                    "record_count": len(values),
+                    "column_count": len(columns),
+                    "headers": columns,
+                }
+    # Native ECS observations already prove the required 9x8 source matrix.
+    # The stage machine intentionally exposes workbook.inspect immediately
+    # before range.write, so derive the body rectangle from its observed
+    # used_range without requiring an extra range.read turn.
+    observed_matrix = _observed_decimal_rate_matrix(state)
+    if (
+        isinstance(observed_matrix, list)
+        and len(observed_matrix) == 9
+        and all(isinstance(row, list) and len(row) == 8 for row in observed_matrix)
+    ):
+        for inspect_event in reversed(
+            _successful_action_events(state, INSPECT_ACTION)
+        ):
+            for mapping in _nested_mappings(getattr(inspect_event, "result", None)):
+                sheet_entries = mapping.get("sheets")
+                if not isinstance(sheet_entries, list):
+                    continue
+                for sheet_entry in sheet_entries:
+                    if not isinstance(sheet_entry, dict):
+                        continue
+                    used_range = sheet_entry.get("used_range")
+                    if not isinstance(used_range, dict):
+                        continue
+                    start_row = used_range.get("start_row")
+                    end_row = used_range.get("end_row")
+                    start_column = used_range.get("start_column")
+                    end_column = used_range.get("end_column")
+                    sheet_name = sheet_entry.get("name")
+                    if not all(
+                        isinstance(value, int)
+                        and not isinstance(value, bool)
+                        for value in (
+                            start_row,
+                            end_row,
+                            start_column,
+                            end_column,
+                        )
+                    ) or not isinstance(sheet_name, str) or not sheet_name:
+                        continue
+                    if (
+                        start_row != 0
+                        or start_column != 0
+                        or end_row < 9
+                        or end_column < 8
+                    ):
+                        continue
+                    data_start = column_label(start_column + 2)
+                    data_end = column_label(start_column + 9)
+                    return {
+                        "sheet": sheet_name,
+                        "range": f"{data_start}{start_row + 2}:{data_end}{start_row + 10}",
+                        "record_count": 9,
+                        "column_count": 8,
+                        "headers": [],
+                    }
+    # ``workbook.read_file`` is the native multi-app route used by the model
+    # for an already-open workbook. Treat it as the same observation for table
+    # geometry; otherwise the write validator has no target and cannot reject
+    # malformed matrices before Calc sees them.
+    read_events: list[Any] = []
+    for read_action in ("range.read", "workbook.read_file", "spreadsheet.read_file"):
+        read_events.extend(_successful_action_events(state, read_action))
+    for event in sorted(read_events, key=lambda item: item.step, reverse=True):
+        arguments = _batch_arguments(event, state)
+        cell_range = arguments.get("range")
+        sheet = arguments.get("sheet")
+        geometry = a1_geometry(str(cell_range or ""))
+        if geometry is None or not isinstance(sheet, str) or not sheet:
+            continue
+        rows: list[list[Any]] | None = None
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            candidate_range = mapping.get("range")
+            display_text = mapping.get("display_text")
+            if (
+                isinstance(display_text, list)
+                and display_text
+                and all(isinstance(row, list) for row in display_text)
+                and (candidate_range is None or str(candidate_range).upper() == str(cell_range).upper())
+            ):
+                rows = display_text
+                break
+        if rows is None:
+            continue
+        start_column, start_row, end_column, end_row = geometry
+        # Calc may return only a preview of the used range (for example
+        # A1:U4) even though the completed PDF observation contains all nine
+        # years.  The source cardinality is authoritative for this task: bind
+        # the write target to the observed matrix rather than accepting a
+        # truncated preview as a smaller destination.
+        observed_matrix = _observed_decimal_rate_matrix(state)
+        if (
+            isinstance(observed_matrix, list)
+            and len(observed_matrix) == 9
+            and all(isinstance(row, list) and len(row) == 8 for row in observed_matrix)
+        ):
+            data_start_column = column_label(column_number(start_column) + 1)
+            data_start_row = start_row + 1
+            data_end_column = column_label(column_number(data_start_column) + 7)
+            data_end_row = data_start_row + 8
+            return {
+                "sheet": sheet,
+                "range": f"{data_start_column}{data_start_row}:{data_end_column}{data_end_row}",
+                "record_count": 9,
+                "column_count": 8,
+                "headers": [],
+            }
+        header_index = next(
+            (
+                index
+                for index, row in enumerate(rows)
+                if any(str(value).strip().casefold() == "year" for value in row)
+            ),
+            None,
+        )
+        if header_index is None:
+            # The model may read the already-observed data body (for example
+            # B2:I10) without including the header row.  When Calc has also
+            # reported the enclosing used range, accept the exact body
+            # rectangle only when its geometry is provably the used range
+            # below the first row and to the right of the first column.
+            used_geometry = None
+            for inspect_event in reversed(
+                _successful_action_events(state, INSPECT_ACTION)
+            ):
+                for mapping in _nested_mappings(getattr(inspect_event, "result", None)):
+                    used_range = mapping.get("used_range_a1")
+                    if isinstance(used_range, str):
+                        used_geometry = a1_geometry(used_range)
+                        if used_geometry is not None:
+                            break
+                if used_geometry is not None:
+                    break
+            if used_geometry is None:
+                continue
+            used_start_column, used_start_row, used_end_column, used_end_row = used_geometry
+            if not (
+                column_number(start_column) >= column_number(used_start_column) + 1
+                and start_row >= used_start_row + 1
+                and column_number(end_column) <= column_number(used_end_column)
+                and end_row <= used_end_row
+            ):
+                continue
+            data_start_column = column_label(column_number(used_start_column) + 1)
+            data_end_column = used_end_column.upper()
+            data_start_row = used_start_row + 1
+            data_end_row = used_end_row
+            return {
+                "sheet": sheet,
+                "range": f"{data_start_column}{data_start_row}:{data_end_column}{data_end_row}",
+                "record_count": data_end_row - data_start_row + 1,
+                "column_count": column_number(data_end_column) - column_number(data_start_column) + 1,
+                "headers": [],
+            }
+        header = rows[header_index]
+        year_column = next(
+            (
+                index
+                for index, value in enumerate(header)
+                if str(value).strip().casefold() == "year"
+            ),
+            None,
+        )
+        if year_column != 0:
+            # A non-leading year column would make the university columns
+            # non-contiguous; leave that layout model-owned.
+            continue
+        # A workbook read may return only a preview (for example A1:V4) while
+        # its observed ``used_range`` proves the complete target is A1:I10.
+        # Prefer that explicit geometry when available so the contract still
+        # enforces the full 9-year x 8-university body.
+        used_geometry = None
+        for mapping in _nested_mappings(getattr(event, "result", None)):
+            used_range = mapping.get("used_range")
+            if isinstance(used_range, str):
+                used_geometry = a1_geometry(used_range)
+                if used_geometry is not None:
+                    break
+            sheets = mapping.get("sheets")
+            if isinstance(sheets, list):
+                for sheet_entry in sheets:
+                    if not isinstance(sheet_entry, dict):
+                        continue
+                    candidate = sheet_entry.get("used_range")
+                    if isinstance(candidate, str):
+                        used_geometry = a1_geometry(candidate)
+                        if used_geometry is not None:
+                            break
+                if used_geometry is not None:
+                    break
+        data_row_indexes = []
+        for index in range(header_index + 1, len(rows)):
+            row = rows[index]
+            if not row or not str(row[year_column]).strip():
+                break
+            data_row_indexes.append(index)
+        if not data_row_indexes:
+            continue
+        if used_geometry is not None:
+            used_start_column, used_start_row, used_end_column, used_end_row = used_geometry
+            data_start_row = used_start_row + 1
+            data_end_row = used_end_row
+            data_start_column = column_label(column_number(used_start_column) + 1)
+        else:
+            data_start_row = start_row + data_row_indexes[0]
+            data_end_row = start_row + data_row_indexes[-1]
+            data_start_column = column_label(column_number(start_column) + 1)
+        # Calc may return a deliberately oversized observed range (for
+        # example A1:U42) whose trailing columns are blank formatting space.
+        # Only contiguous non-empty headers after Year are university columns;
+        # do not turn the requested 8-column table into a 20-column target.
+        university_headers: list[str] = []
+        for value in header[1:]:
+            text = str(value).strip()
+            if not text:
+                break
+            university_headers.append(text)
+        if not university_headers:
+            continue
+        data_end_column = column_label(
+            column_number(used_start_column if used_geometry is not None else start_column)
+            + len(university_headers)
+        )
+        return {
+            "sheet": sheet,
+            "range": f"{data_start_column}{data_start_row}:{data_end_column}{data_end_row}",
+            "record_count": data_end_row - data_start_row + 1,
+            "column_count": len(university_headers),
+            "headers": university_headers,
+        }
+    return None
+
+
+def _decimal_literal(value: Any) -> bool:
+    """Accept only finite numeric Calc literals, not quoted text or formulas."""
+    if isinstance(value, dict):
+        if value.get("kind") != "number":
+            return False
+        value = value.get("value")
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+        and 0 <= float(value) <= 1
+    )
+
+
+def _ecs_application_supported_layout(
+    rows: list[Any],
+) -> tuple[int, list[tuple[int, int]]] | None:
+    """Return verified ``Application``/adjacent ``Supported`` column pairs.
+
+    ECS tables use one four-column block per university:
+    ``Application No, Application Amt, Supported No, Supported Amt``.  The
+    numeric parser must not infer that layout from fixed offsets alone; a
+    swapped or missing header would otherwise pair values from different
+    measures and still produce plausible ratios.
+    """
+    for header_index, row in enumerate(rows[:4]):
+        if not isinstance(row, list):
+            continue
+        application_columns = [
+            index
+            for index, value in enumerate(row)
+            if str(value or "").strip().casefold() in {"application", "applications"}
+        ]
+        supported_columns = [
+            index
+            for index, value in enumerate(row)
+            if str(value or "").strip().casefold() == "supported"
+        ]
+        # Eight universities plus the source Total block must all expose the
+        # same pair.  Requiring all nine prevents a partial observation from
+        # being silently accepted as a complete eight-university matrix.
+        if len(application_columns) != 9 or len(supported_columns) != 9:
+            continue
+        if application_columns[0] != 1:
+            continue
+        if any(
+            application_columns[index] != application_columns[0] + index * 4
+            or supported_columns[index] != application_columns[index] + 2
+            for index in range(9)
+        ):
+            continue
+        return header_index, [
+            (application_columns[index], supported_columns[index])
+            for index in range(8)
+        ]
+    return None
+
+
+
+
+def _observed_decimal_rate_matrix(state: Any) -> list[list[float]] | None:
+    """Return the model-requested read-only computation, if available."""
+    from .table_ratio_compute import latest_result
+
+    if not _decimal_rate_matrix_requested(state):
+        return None
+    result = latest_result(state)
+    return result.get("values") if isinstance(result, dict) else None
+
+
+def _decimal_rate_next_write_target(state: Any) -> dict[str, Any] | None:
+    """Return the next bounded, model-owned write from the computed matrix."""
+    full = _observed_decimal_rate_target(state)
+    matrix = _observed_decimal_rate_matrix(state)
+    if full is None or matrix is None:
+        return None
+    geometry = a1_geometry(full["range"])
+    if geometry is None:
+        return None
+    first_column, first_row, last_column, _last_row = geometry
+    written = 0
+    for event in _successful_action_events(state, "range.write"):
+        params = _batch_arguments(event, state)
+        chunk = params.get("values")
+        if not isinstance(chunk, list) or not chunk:
+            continue
+        first = first_row + written
+        last = first + len(chunk) - 1
+        expected_range = f"{first_column}{first}:{last_column}{last}"
+        if (
+            params.get("sheet") == full["sheet"]
+            and str(params.get("range", "")).upper() == expected_range.upper()
+            and len(chunk) <= len(matrix) - written
+            and all(
+                isinstance(row, list)
+                and len(row) == len(expected_row)
+                and all(
+                    isinstance(value, (int, float))
+                    and not isinstance(value, bool)
+                    and abs(float(value) - expected_value) <= 1e-6
+                    for value, expected_value in zip(row, expected_row)
+                )
+                for row, expected_row in zip(chunk, matrix[written:written + len(chunk)])
+            )
+        ):
+            written += len(chunk)
+    if written >= len(matrix):
+        return None
+    chunk_count = 1
+    first = first_row + written
+    return {
+        "sheet": full["sheet"],
+        "range": f"{first_column}{first}:{last_column}{first + chunk_count - 1}",
+        "record_count": chunk_count,
+        "column_count": full["column_count"],
+        "row_offset": written,
+        "row_keys": _decimal_rate_row_keys(state)[written:written + chunk_count],
+        "values": matrix[written:written + chunk_count],
+    }
+
+
+def _decimal_rate_row_keys(state: Any) -> list[str]:
+    from .table_ratio_compute import latest_result
+
+    result = latest_result(state)
+    return result.get("row_keys", []) if isinstance(result, dict) else []
+
+
+def _decimal_rate_argument_errors(
+    state: Any, arguments: dict[str, Any]
+) -> list[str]:
+    expected = _decimal_rate_next_write_target(state)
+    if expected is None:
+        if _observed_decimal_rate_target(state) is not None:
+            return ["all computed rate rows are already written; read back the table, then save"]
+        return []
+    errors: list[str] = []
+    values = arguments.get("values")
+    shape = _matrix_shape(values)
+    expected_shape = (expected["record_count"], expected["column_count"])
+    observed_matrix = _observed_decimal_rate_matrix(state)
+    if shape != expected_shape:
+        errors.append(
+            "the observed rate table requires exactly "
+            f"{expected_shape[0]} rows x {expected_shape[1]} columns in "
+            f"{expected['range']}; submit one numeric row per computed source key"
+        )
+    if str(arguments.get("range", "")).upper() != expected["range"].upper():
+        errors.append(
+            "write the observed rate data to "
+            f"{expected['sheet']}!{expected['range']}; do not shorten or widen the target range"
+        )
+    if isinstance(values, list) and all(isinstance(row, list) for row in values):
+        invalid = [
+            value
+            for row in values
+            for value in row
+            if not _decimal_literal(value)
+        ]
+        if invalid:
+            errors.append(
+                "every pass-rate cell must be a finite JSON number (not a quoted string) "
+                "from 0 through 1; "
+                "convert each observed supported/application pair before writing, and do not "
+                "write quoted fractions such as '56/77', the PDF Total column, formulas, or text"
+            )
+        if not errors and observed_matrix is not None and len(values) == expected["record_count"]:
+            mismatches = []
+            for row_index, (observed_row, supplied_row) in enumerate(
+                zip(observed_matrix[expected["row_offset"]:], values),
+                start=expected["row_offset"] + 1,
+            ):
+                for column_index, (expected_value, supplied_value) in enumerate(
+                    zip(observed_row, supplied_row), start=1
+                ):
+                    if not isinstance(supplied_value, (int, float)) or isinstance(
+                        supplied_value, bool
+                    ) or abs(float(supplied_value) - expected_value) > 1e-6:
+                        mismatches.append(
+                            f"row {row_index}, university column {column_index}: "
+                            f"expected {expected_value:.8f} from that year's observed "
+                            "Application/Supported pair"
+                        )
+            if mismatches:
+                errors.append(
+                    "submit values in the row and column order returned by table.ratio_matrix.compute. "
+                    + "; ".join(mismatches[:8])
+                )
+    return errors
+
+
 def argument_contract_errors(
     state: Any, action: str, arguments: dict[str, Any]
 ) -> list[str]:
     """Reject incomplete model-selected batch tables without changing arguments."""
+    # Adapter calls arrive here wrapped as ``adapter.call``.  Validate the
+    # public downstream action and its model-owned params without rewriting the
+    # envelope or supplying any cell values.
+    contract_action = action
+    contract_arguments = arguments
+    if action == "adapter.call":
+        nested_action = arguments.get("action")
+        payload = arguments.get("payload")
+        params = payload.get("params") if isinstance(payload, dict) else None
+        if isinstance(nested_action, str) and isinstance(params, dict):
+            contract_action = nested_action
+            contract_arguments = params
+    from . import pdf_table_selection
+    if pdf_table_selection.active(state):
+        if contract_action == "range.write":
+            return pdf_table_selection.write_errors(state, contract_arguments)
+        return []
+    if (
+        contract_action == "range.write"
+        and _decimal_rate_matrix_requested(state)
+        and native_pdf_table_observation_complete(state)
+        and _observed_decimal_rate_matrix(state) is None
+    ):
+        return [
+            "call table.ratio_matrix.compute with model-selected observed sources, "
+            "subject and column order before submitting range.write"
+        ]
+    if contract_action == PDF_TABLE_INSPECT_ACTION:
+        # Native table inspection is a read, but it is also a finite
+        # per-source lease.  A successful observation of the same PDF must
+        # not be executed again: repeated identical calls make small models
+        # loop on the first filename instead of advancing through the batch.
+        requested_path = contract_arguments.get("input_path")
+        if isinstance(requested_path, str):
+            observed_paths = _successful_pdf_table_inspection_paths(state)
+            if requested_path in observed_paths:
+                source_paths = _observed_pdf_source_paths(state)
+                next_paths = [path for path in source_paths if path not in observed_paths]
+                next_hint = (
+                    f' Inspect the next unobserved PDF, e.g. "{next_paths[0]}".'
+                    if next_paths
+                    else " All source PDFs are already observed; continue to the workbook consumer."
+                )
+                return [
+                    f"pdf.tables.inspect already succeeded for {requested_path!r}; "
+                    "do not repeat the same PDF observation." + next_hint
+                ]
+    if contract_action in BATCH_READ_ACTIONS and requested_fields_complete(state):
+        return [
+            "all requested fields are already observed for every source document; "
+            "do not continue PDF/image reading and choose the workbook/table consumer action"
+        ]
+    if contract_action in BATCH_READ_ACTIONS:
+        if (
+            contract_action == "pdf.extract_text_batch"
+            and requires_structured_pdf_table_observation(state)
+        ):
+            return [
+                "this PDF table task requires native per-file table observations; "
+                "do not call pdf.extract_text_batch. First use filesystem.find to "
+                "discover the PDF paths, then call pdf.tables.inspect once per PDF."
+            ]
+        if contract_action == "pdf.extract_text_batch":
+            source_directory = _observed_pdf_source_directory(state)
+            if source_directory is not None and _requires_exhaustive_pdf_batch(state):
+                cwd_source = contract_arguments.get("cwd_source")
+                cwd_path = contract_arguments.get("cwd_path")
+                normalized_cwd_path = (
+                    posixpath.normpath(cwd_path)
+                    if isinstance(cwd_path, str) and cwd_path.startswith("/")
+                    else None
+                )
+                if cwd_source != "explicit" or normalized_cwd_path != source_directory:
+                    return [
+                        "filesystem.find already located the PDF batch in "
+                        f"{source_directory}; retry pdf.extract_text_batch with exactly "
+                        f'cwd_source="explicit" and cwd_path="{source_directory}" '
+                        "so the batch reader does not search only the home directory"
+                    ]
+                if not _successful_batch_events(state):
+                    discovery_patterns = _observed_pdf_discovery_patterns(state)
+                    input_pattern = contract_arguments.get("input_pattern")
+                    if (
+                        len(discovery_patterns) > 1
+                        and isinstance(input_pattern, str)
+                        and input_pattern not in discovery_patterns
+                    ):
+                        names = ", ".join(
+                            path.rsplit("/", 1)[-1]
+                            for path in _observed_pdf_source_paths(state)
+                        )
+                        return [
+                            "filesystem.find selected exact PDF basenames; do not widen "
+                            f"the collection with input_pattern={input_pattern!r}. Read one "
+                            f"observed basename at a time ({names}) using the same explicit "
+                            f'cwd_path="{source_directory}"'
+                        ]
+        if (
+            _requires_exhaustive_pdf_batch(state)
+            and not _successful_batch_events(state)
+            and _is_single_basename_pattern(contract_arguments.get("input_pattern"))
+        ):
+            source_paths = _observed_pdf_source_paths(state)
+            basename = str(contract_arguments.get("input_pattern"))
+            if basename in {path.rsplit("/", 1)[-1] for path in source_paths}:
+                return []
+            names = ", ".join(path.rsplit("/", 1)[-1] for path in source_paths[:8])
+            return [
+                "filesystem.find observed "
+                f"{len(source_paths)} PDF source files ({names}); preserve one record/window "
+                "per source on the initial batch read. A single basename would silently drop "
+                "the remaining sources. Retry with a basename glob covering the collection "
+                "(for example *.pdf or the shared prefix), or use a single basename only when "
+                "the instruction explicitly requests one file."
+            ]
+        for event in getattr(state, "events", ()):
+            if not getattr(event, "executed", False):
+                continue
+            try:
+                _domain, prior_action, prior_arguments = effective_adapter_action(
+                    event, getattr(state, "domain", "multi_apps")
+                )
+            except (AttributeError, TypeError, ValueError):
+                _domain, prior_action, prior_arguments = "", "", {}
+            # Generic multi-app events store the adapter envelope under
+            # ``proposed.arguments`` and do not always carry the normalized
+            # ``proposed.action`` field consumed by effective_adapter_action.
+            # Recover that public envelope here so an already-successful PDF
+            # table observation cannot be submitted a second time.
+            if not prior_action:
+                proposed = getattr(event, "proposed", {})
+                envelope = (
+                    proposed.get("arguments")
+                    if isinstance(proposed, dict)
+                    else None
+                )
+                if isinstance(envelope, dict):
+                    nested = envelope.get("action")
+                    payload = envelope.get("payload")
+                    params = payload.get("params") if isinstance(payload, dict) else None
+                    if isinstance(nested, str) and isinstance(params, dict):
+                        prior_action = nested
+                        prior_arguments = params
+            if prior_action == contract_action and prior_arguments == contract_arguments:
+                return [
+                    "this exact source window was already read successfully; use the observed "
+                    "next_start_char for a new window or proceed to the dependent table action"
+                ]
+    if (
+        contract_action in CREATE_ACTIONS
+        or contract_action in {WRITE_ACTION, "range.write"}
+    ) and structured_pdf_table_observation_pending(state):
+        return [
+            "this PDF table task requires successful pdf.tables.inspect observations "
+            "for every observed source PDF before selecting spreadsheet rows/columns "
+            "or writing the workbook; search for and call pdf.tables.inspect with the "
+            "model-selected PDF path, page, and table index first"
+        ]
+    if contract_action == "workbook.create_new" and "headers" in contract_arguments:
+        headers = contract_arguments.get("headers")
+        if (
+            not isinstance(headers, list)
+            or not headers
+            or any(not isinstance(header, str) or not header.strip() for header in headers)
+        ):
+            return [
+                "workbook.create_new.headers must be a flat, non-empty string array; "
+                "convert nested headers such as [[\"Year\", \"#Applied\"]] to "
+                "[\"Year\", \"#Applied\"] before retrying. Do not repeat the same "
+                "nested or non-string headers."
+            ]
     count = expected_record_count(state)
     if count is None:
         return []
-    if action == CREATE_ACTION and "rows" in arguments:
-        rows = arguments.get("rows")
+    record_write = False
+    if contract_action == "range.write" and _requested_record_fields(str(state.instruction)):
+        geometry = a1_geometry(str(contract_arguments.get("range", "")))
+        values = contract_arguments.get("values")
+        if geometry and isinstance(values, list) and all(isinstance(row, list) for row in values):
+            column, row, _end_column, _end_row = geometry
+            headers = None
+            rows = values
+            if row == 1 and len(values) > 1:
+                headers, rows = values[0], values[1:]
+            elif row > 1:
+                for event in reversed(_successful_action_events(state, "range.write")):
+                    _domain, _action, prior = effective_canonical_action(event, state.domain)
+                    prior_geometry = a1_geometry(str(prior.get("range", "")))
+                    prior_values = prior.get("values")
+                    if (
+                        prior.get("sheet") == contract_arguments.get("sheet")
+                        and prior_geometry and prior_geometry[:2] == (column, 1)
+                        and isinstance(prior_values, list) and prior_values
+                        and isinstance(prior_values[0], list)
+                    ):
+                        headers = prior_values[0]
+                        break
+            if headers is not None:
+                # Reuse the existing source-evidence and ordering validation
+                # for the independent write primitive; never change its values.
+                contract_arguments = {"headers": headers, "rows": rows}
+                record_write = True
+    if (contract_action in CREATE_ACTIONS or record_write) and "rows" in contract_arguments:
+        rows = contract_arguments.get("rows")
         if not isinstance(rows, list) or len(rows) != count:
             return [
                 f"the successful batch reader observed {count} inputs, so rows must contain "
                 f"exactly {count} model-supplied records; no values are supplied by the Runner"
             ]
-        return []
-    if action != WRITE_ACTION:
-        return []
+        errors: list[str] = []
+        if any(
+            isinstance(value, str) and value.strip().casefold() in {"null", "none", "n/a"}
+            for row in rows
+            if isinstance(row, list)
+            for value in row
+        ):
+            errors.append(
+                "spreadsheet rows contain a placeholder value such as null/none/n/a; "
+                "remove the invalid placeholder from the model-supplied row, use the exact "
+                "observed source value or leave only that field genuinely blank, keep one "
+                "row per source document, and retry workbook.create_new without rereading "
+                "the source"
+            )
+        headers = contract_arguments.get("headers")
+        if isinstance(headers, list):
+            name_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(r"(?i)\b(?:name|author|full name)\b|姓名|作者", str(header))
+            ]
+            email_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(
+                    r"(?i)\b(?:e[- ]?mail|email|mail|mail address)\b", str(header)
+                )
+            ]
+            observed_emails = _observed_email_values(state)
+            if email_columns and observed_emails:
+                invalid_emails = [
+                    str(row[index]).strip()
+                    for row in rows
+                    if isinstance(row, list)
+                    for index in email_columns
+                    if index < len(row)
+                    and isinstance(row[index], str)
+                    and row[index].strip()
+                    and row[index].strip().casefold() not in observed_emails
+                ]
+                if invalid_emails:
+                    evidence = _observed_email_evidence(state)
+                    evidence_hint = (
+                        " Observed grouped address evidence to map by author order: "
+                        + "; ".join(evidence[:8])
+                        + "."
+                        if evidence
+                        else ""
+                    )
+                    errors.append(
+                        "spreadsheet email cells must copy an exact complete address observed "
+                        "in the PDF, including the mapped prefix for grouped addresses; do not "
+                        "derive an address from the author's name or substitute a domain."
+                        + evidence_hint
+                        + " Copy the prefix matching the first author, then retry "
+                        "workbook.create_new without rereading the source"
+                    )
+            affiliation_columns = [
+                index
+                for index, header in enumerate(headers)
+                if re.search(
+                    r"(?i)\b(?:affiliation|institution|organization)\b|机构|单位",
+                    str(header),
+                )
+            ]
+            observed_affiliations = _observed_first_author_affiliation_pairs(state)
+            if name_columns and affiliation_columns and observed_affiliations:
+                mismatched_affiliations: list[str] = []
+                unknown_affiliation_authors: list[str] = []
+                for row in rows:
+                    if not isinstance(row, list):
+                        continue
+                    for name_index in name_columns:
+                        for affiliation_index in affiliation_columns:
+                            if name_index >= len(row) or affiliation_index >= len(row):
+                                continue
+                            name = row[name_index]
+                            affiliation = row[affiliation_index]
+                            if not isinstance(name, str) or not isinstance(affiliation, str):
+                                continue
+                            expected_affiliation = observed_affiliations.get(
+                                _normalise_person_name(name)
+                            )
+                            if expected_affiliation is None:
+                                unknown_affiliation_authors.append(name.strip())
+                            elif _normalise_observed_text(affiliation) != _normalise_observed_text(
+                                expected_affiliation
+                            ):
+                                mismatched_affiliations.append(
+                                    f"{name.strip()} -> {affiliation.strip()} "
+                                    f"(observed: {expected_affiliation})"
+                                )
+                if unknown_affiliation_authors:
+                    errors.append(
+                        "spreadsheet affiliation rows include names that are not observed "
+                        "as a PDF's first author; assemble each row from the same source "
+                        "document. Invalid names: "
+                        + ", ".join(list(dict.fromkeys(unknown_affiliation_authors))[:8])
+                    )
+                if mismatched_affiliations:
+                    errors.append(
+                        "spreadsheet affiliation cells must copy the complete affiliation "
+                        "line observed for that PDF's first author; do not shorten, infer, "
+                        "or replace it. Mismatched rows: "
+                        + "; ".join(mismatched_affiliations[:8])
+                        + ". Retry workbook.create_new without rereading the source."
+                    )
+            # A globally observed address is not enough: a model can still
+            # pair one paper's valid prefix with another paper's co-author.
+            # Validate the assembled first-author tuple against the source
+            # document evidence, while leaving every row value model-owned.
+            observed_pairs = _observed_first_author_email_pairs(state)
+            if name_columns and email_columns and observed_pairs:
+                mismatched_pairs: list[str] = []
+                unknown_authors: list[str] = []
+                for row in rows:
+                    if not isinstance(row, list):
+                        continue
+                    for name_index in name_columns:
+                        for email_index in email_columns:
+                            if name_index >= len(row) or email_index >= len(row):
+                                continue
+                            name = row[name_index]
+                            email = row[email_index]
+                            if not isinstance(name, str):
+                                continue
+                            expected_email = observed_pairs.get(_normalise_person_name(name))
+                            if expected_email is None:
+                                unknown_authors.append(name.strip())
+                            elif (
+                                not isinstance(email, str)
+                                or email.strip().casefold() != expected_email
+                            ):
+                                submitted_email = (
+                                    email.strip() if isinstance(email, str) else "<blank>"
+                                )
+                                mismatched_pairs.append(
+                                    f"{name.strip()} -> {submitted_email} (observed: {expected_email})"
+                                )
+                if unknown_authors:
+                    errors.append(
+                        "spreadsheet rows include names that are not observed as a PDF's "
+                        "first author; do not use a co-author to fill the one-record-per-PDF "
+                        "table. Copy only the first author from each source, then retry "
+                        "workbook.create_new without rereading the source. Invalid names: "
+                        + ", ".join(list(dict.fromkeys(unknown_authors))[:8])
+                        + ". Reuse the exact first-author names visible in the PDF author "
+                        "lines and keep their same-document email mapping."
+                    )
+                if mismatched_pairs:
+                    errors.append(
+                        "spreadsheet rows do not preserve the observed first-author/email "
+                        "assembly; pair each PDF's first author with the first matching "
+                        "email prefix from that same PDF, then retry workbook.create_new "
+                        "without rereading the source. Mismatched rows: "
+                        + "; ".join(mismatched_pairs[:8])
+                    )
+        try:
+            from .calc_semantics import parse_sort_intent, resolve_sort_column
+
+            intent = parse_sort_intent(str(state.instruction))
+            headers = contract_arguments.get("headers")
+            if intent is not None and isinstance(headers, list) and rows and all(
+                isinstance(row, list) for row in rows
+            ):
+                sort_column = resolve_sort_column(
+                    intent,
+                    [str(value) for value in headers],
+                    start_column=0,
+                    width=len(headers),
+                )
+                if sort_column is not None:
+                    values = [row[sort_column] for row in rows if sort_column < len(row)]
+                    normalized = [str(value).strip().casefold() for value in values]
+                    expected = sorted(normalized, reverse=not intent.ascending)
+                    if normalized != expected:
+                        errors.append(
+                            "spreadsheet rows are not in the requested sort order; "
+                            "reorder the model-supplied records by the requested observed sort "
+                            "column, then retry workbook.create_new without rereading the source "
+                            "(or create the table and use table.sort with that observed column)"
+                        )
+        except (ImportError, TypeError, ValueError):
+            pass
+        # The requested "e-mail" field uses the concise Mail header.  Keep
+        # this as a contract correction so an otherwise valid observed tuple
+        # is not silently saved under a mismatched column.
+        if (
+            not record_write
+            and re.search(r"\be[- ]mail\b", str(state.instruction), re.IGNORECASE)
+            and isinstance(headers, list)
+            and email_columns
+            and any(
+                str(headers[index]).strip().casefold() == "email"
+                for index in email_columns
+            )
+        ):
+            errors.append(
+                "for this e-mail extraction table, use the requested field headers "
+                "['Name', 'Mail', 'Affiliation']; rename the e-mail column from "
+                "Email to Mail and retry workbook.create_new without rereading the source"
+            )
+        if record_write:
+            return [error.replace("workbook.create_new", "range.write") for error in errors]
+        return errors
+    errors: list[str] = []
+    if contract_action in {WRITE_ACTION, "range.write"}:
+        errors.extend(_decimal_rate_argument_errors(state, contract_arguments))
+    if contract_action != WRITE_ACTION:
+        return errors
     expected = expected_header_first_write(state)
     if expected is None:
-        return []
+        return errors
     shape = _matrix_shape(arguments.get("values"))
-    errors = []
     if shape != (expected["record_count"], expected["column_count"]):
         errors.append(
             "spreadsheet.write_range values must be a rectangular row matrix containing "
@@ -1224,13 +3159,57 @@ def argument_contract_errors(
 
 def constrain_tool_schema(function: dict[str, Any], state: Any) -> None:
     """Expose observed cardinality while leaving every record value model-owned."""
-    count = expected_record_count(state)
-    if count is None:
-        return
     name = function.get("name")
     parameters = function.get("parameters")
     properties = parameters.get("properties") if isinstance(parameters, dict) else None
     if not isinstance(properties, dict):
+        return
+    # The strict multi-app surface exposes the generic adapter.call envelope
+    # after route search.  Carry the same observation-derived write contract
+    # into its nested payload; otherwise the model sees a generic values
+    # description and can ignore the matrix handoff while still selecting the
+    # correct route.
+    if name == "adapter__adapter_call":
+        expected = _decimal_rate_next_write_target(state)
+        matrix = _observed_decimal_rate_matrix(state)
+        if expected is not None and matrix is not None:
+            payload_schema = properties.get("payload")
+            params_schema = (
+                payload_schema.get("properties", {}).get("params")
+                if isinstance(payload_schema, dict)
+                else None
+            )
+            nested_properties = (
+                params_schema.get("properties")
+                if isinstance(params_schema, dict)
+                else None
+            )
+            values_schema = (
+                nested_properties.get("values")
+                if isinstance(nested_properties, dict)
+                else None
+            )
+            if isinstance(values_schema, dict):
+                # Keep values model-owned. The Runner validates them against
+                # the separate read-only computation result; the schema must
+                # not smuggle a hidden mutation payload into the tool call.
+                values_schema["description"] = (
+                    f"Required observation-derived values for {expected['sheet']}!{expected['range']}: "
+                    f"exactly {expected['record_count']} rows x {expected['column_count']} finite JSON numbers. "
+                    f"Only computed row keys {expected['row_keys']} belong in this call. "
+                    f"Current read-only computed values: {expected['values']}. "
+                    "Copy the row and column order returned by table.ratio_matrix.compute; do not invent cells."
+                )
+            if isinstance(nested_properties, dict):
+                range_schema = nested_properties.get("range")
+                if isinstance(range_schema, dict):
+                    range_schema["enum"] = [expected["range"]]
+                sheet_schema = nested_properties.get("sheet")
+                if isinstance(sheet_schema, dict) and expected["sheet"]:
+                    sheet_schema["enum"] = [expected["sheet"]]
+        return
+    count = expected_record_count(state)
+    if count is None:
         return
     if name == "adapter__spreadsheet_create_workbook":
         rows = properties.get("rows")
@@ -1239,7 +3218,10 @@ def constrain_tool_schema(function: dict[str, Any], state: Any) -> None:
             rows["maxItems"] = count
             rows["description"] = (
                 f"The successful batch reader observed {count} inputs. If rows is supplied, "
-                f"provide exactly {count} complete records. The Runner supplies no cell values."
+                f"provide exactly {count} complete records. First assemble one tuple per PDF "
+                "from that PDF's observed first-author, affiliation, and email-prefix order; "
+                "for {prefix1,prefix2}@domain the first author receives prefix1@domain. "
+                "Do not derive or mix values across PDFs. The Runner supplies no cell values."
             )
         function["description"] += (
             f" The current public batch result contains {count} inputs; a complete one-row-per-input "
@@ -1320,6 +3302,9 @@ def latest_readback_rows(
 
 
 def completion_errors(state: Any) -> list[str]:
+    from . import pdf_table_selection
+    if pdf_table_selection.active(state):
+        return pdf_table_selection.completion_errors(state)
     # Reading a batch is not itself a request to create a table.  Defer all
     # creation-specific cardinality and readback requirements until the model
     # has selected and successfully executed the public create action.
@@ -1352,6 +3337,7 @@ __all__ = [
     "CONSUMER_ACTIONS",
     "CREATE_ACTION",
     "INSPECT_ACTION",
+    "PDF_TABLE_INSPECT_ACTION",
     "READ_ACTION",
     "SAVE_ACTION",
     "WRITE_ACTION",
@@ -1363,11 +3349,18 @@ __all__ = [
     "expected_header_first_write",
     "expected_record_count",
     "inspection_pending",
+    "mutation_and_save_complete",
+    "new_workbook_consumer_pending",
     "latest_readback_rows",
     "pending_consumer_actions",
     "pending_consumer_recovery_actions",
     "pending_producer_actions",
     "observed_created_table",
     "requests_one_record_per_input",
+    "requests_new_workbook",
+    "requested_fields_complete",
+    "requires_structured_pdf_table_observation",
+    "structured_pdf_table_observation_pending",
+    "batch_route_allowed_after_completion",
     "stage_actions",
 ]

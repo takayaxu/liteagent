@@ -13,7 +13,10 @@ from integrations.lite_agent.agent_protocol import (
     AgentProtocolMixin,
     MODEL_BATCH_RECOVERY_MAX_CHARS,
 )
-from integrations.lite_agent.adapter_executor import AdapterExecutor
+from integrations.lite_agent.adapter_executor import (
+    AdapterExecutor,
+    _disambiguate_text_batch_preview,
+)
 from integrations.lite_agent.adapter_results import (
     adapter_context_hint,
     compact_context_hint_for_model,
@@ -24,6 +27,52 @@ from integrations.lite_agent.episode_control import (
 )
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.tool_catalog import build_tools, tool_name
+
+
+def test_pdf_batch_transport_preview_is_not_source_continuation(monkeypatch):
+    source_text = "author@example.edu; University; 2024\n" + ("body " * 1800)
+    body = {
+        "status": "ok",
+        "action": "pdf.extract_text_batch",
+        "result": {
+            "matched_count": 1,
+            "files": [{
+                "path": "/tmp/paper.pdf",
+                "text": source_text,
+                "source_start_char": 0,
+                "source_end_char": len(source_text),
+                "source_total_chars": len(source_text),
+                "source_truncated": False,
+                "next_start_char": None,
+            }],
+        },
+    }
+
+    monkeypatch.setattr(
+        "integrations.lite_agent.adapter_executor.requests.post",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            ok=True, status_code=200, json=lambda: body,
+        ),
+    )
+    result = AdapterExecutor({"os": "http://synthetic"}).execute(
+        "os", "pdf.extract_text_batch", {"input_pattern": "*.pdf"}, {}
+    )
+
+    assert result["executed"] is True
+    adapter_response = result["result"]["adapter_response"]
+    assert adapter_response["context_preview_truncated"] is True
+    assert "truncated" not in adapter_response
+    hint = result["result"]["context_hint"]
+    assert hint["observation_type"] == "text_batch"
+    assert hint["source_has_more"] is False
+    assert hint["files"][0]["source_truncated"] is False
+    assert hint["files"][0]["next_start_char"] is None
+    forwarded_preview = _disambiguate_text_batch_preview(
+        {"truncated": True, "chars": 10, "preview": "{}"},
+        {"downstream_context": hint},
+    )
+    assert forwarded_preview["context_preview_truncated"] is True
+    assert "truncated" not in forwarded_preview
 
 
 def _state_with_recent_failure() -> RuntimeState:

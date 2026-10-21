@@ -1315,6 +1315,35 @@ def requested_slide_content_formatting(
     }
 
 
+def content_formatting_argument_contract_errors(
+    instruction: str, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    """Reject an all-role mutation when the instruction targets content only.
+
+    The Adapter accepts ``roles=['all']`` by design, so this distinction must be
+    enforced before execution.  Keeping the check here preserves the generic
+    Adapter contract while preventing a model from changing title/table/text
+    roles as a side effect of a content-only request.
+    """
+    if action not in {"slide.format_text_roles", "slides.format_text_roles"}:
+        return []
+    request = requested_slide_content_formatting(instruction)
+    if request is None:
+        return []
+    roles = arguments.get("roles")
+    if (
+        isinstance(roles, list)
+        and roles
+        and all(role in {"content", "body"} for role in roles)
+    ):
+        return []
+    return [
+        "the instruction targets content only; do not use roles=['all'] or include "
+        "title, table, or other text roles; retry slide.format_text_roles with "
+        "roles=['content'] (or ['body']) so every other text role remains unchanged"
+    ]
+
+
 def requested_title_to_notes(instruction: str) -> dict[str, Any] | None:
     if not re.search(
         r"(?i)\b(?:add|copy|put|write)\b.{0,40}\btitle\b.{0,30}\bnotes?\b",
@@ -1391,12 +1420,12 @@ def requested_cover_image_slide(instruction: str) -> int | None:
     return None
 
 
-def semantic_configuration_action(domain: str, instruction: str) -> str | None:
+def semantic_configuration_actions(domain: str, instruction: str) -> list[str]:
     if domain == "os" and re.search(
         r"(?i)\b(?:notification|notifications|banner|banners|disturb|quiet)\b",
         instruction,
     ):
-        return "notifications.configure"
+        return ["notifications.configure"]
     if domain == "vlc":
         is_global_play_pause = bool(
             re.search(r"(?i)\b(?:hotkey|shortcut|keyboard)\b", instruction)
@@ -1425,29 +1454,35 @@ def semantic_configuration_action(domain: str, instruction: str) -> str | None:
                 is_persistent_interface_setting,
             )
         ):
-            return "preferences.configure"
-        return None
+            return ["preferences.configure"]
+        return []
     if domain != "thunderbird":
-        return None
+        return []
+    actions: list[str] = []
     if re.search(r"(?i)\bsignature\b", instruction):
-        return "mail.configure"
+        actions.append("identity.set_plain_text_signature")
     if re.search(r"(?i)\b(?:unified|combined)\b.{0,40}\binbox(?:es)?\b", instruction):
-        return "mail.configure"
+        actions.append("inbox.set_unified")
     if re.search(r"(?i)\b(?:dark\s+(?:mode|theme)|complete\s+dark)\b", instruction):
-        return "mail.configure"
+        actions.append("theme.set_dark_mode")
     if re.search(
         r"(?i)\b(?:reply|replies|quot(?:e|ed|es|ing))\b", instruction
     ) and re.search(
         r"(?i)\b(?:original|message|mail|quote|quoting)\b|[>]",
         instruction,
     ):
-        return "mail.configure"
+        actions.append("identity.set_reply_quoting")
     if re.search(r"(?i)\bfilters?\b", instruction) and re.search(
         r"(?i)\bsubfolders?\b",
         instruction,
     ):
-        return "mail.configure"
-    return None
+        actions.append("filters.set_subfolder_application")
+    return actions
+
+
+def semantic_configuration_action(domain: str, instruction: str) -> str | None:
+    actions = semantic_configuration_actions(domain, instruction)
+    return actions[0] if actions else None
 
 
 def requested_vscode_settings(instruction: str) -> dict[str, Any] | None:
@@ -1535,9 +1570,13 @@ def instruction_required_actions(
     )
     actions.extend(filesystem_rename_semantics.required_actions(domain, instruction))
     actions.extend(clipboard_path_semantics.required_actions(domain, instruction))
-    semantic_action = semantic_configuration_action(domain, instruction)
-    if semantic_action is not None:
-        actions.append(semantic_action)
+    configuration_actions = semantic_configuration_actions(domain, instruction)
+    if domain == "thunderbird" and {
+        "identity.set_plain_text_signature",
+        "identity.set_reply_quoting",
+    }.intersection(configuration_actions):
+        actions.append("identities.query")
+    actions.extend(configuration_actions)
     actions.extend(vscode_configuration_semantics.required_actions(domain, instruction))
     actions.extend(workspace_open_semantics.required_actions(domain, instruction))
     if domain == "libreoffice_calc" and re.search(
@@ -1652,7 +1691,13 @@ def instruction_required_actions(
         if requests_presentation_audio_insertion(instruction):
             actions.extend(["presentation.inspect", "audio.insert"])
         role_text_update = parse_role_text_update_intent(instruction)
-        if parse_multislide_role_format_intent(instruction) is not None:
+        title_range_personal_cleanup = (
+            requested_title_range_personal_info_cleanup(instruction) is not None
+        )
+        if (
+            parse_multislide_role_format_intent(instruction) is not None
+            and not title_range_personal_cleanup
+        ):
             actions.extend(
                 ["presentation.inspect", "slides.format_text_roles"]
                 if strict_generic
@@ -1674,6 +1719,8 @@ def instruction_required_actions(
             actions.extend(["presentation.inspect", "shape.set_geometry"])
         if strict_generic and role_text_update is not None:
             actions.extend(["presentation.inspect", "slide.set_role_text"])
+            if role_text_update.formatting:
+                actions.append("slide.format_text_roles")
         elif requested_slide_title_update(instruction) is not None:
             actions.extend(
                 ["presentation.inspect", "shape.write_text", "shape.format_text"]
@@ -1706,7 +1753,11 @@ def instruction_required_actions(
             actions.extend(["presentation.inspect", "shape.set_geometry"])
         if requested_table_edge_position(instruction) is not None:
             actions.extend(["presentation.inspect", "shape.set_geometry"])
-        if strict_generic and parse_personal_information_removal_intent(instruction):
+        if (
+            strict_generic
+            and parse_personal_information_removal_intent(instruction)
+            and not title_range_personal_cleanup
+        ):
             actions.extend(["presentation.inspect", "shape.delete"])
         elif requested_title_range_personal_info_cleanup(instruction) is not None:
             actions.extend(
@@ -1754,6 +1805,27 @@ def instruction_required_actions(
 
 def strict_instruction_required_actions(domain: str, instruction: str) -> list[str]:
     return instruction_required_actions(domain, instruction, strict_generic=True)
+
+
+def messages_query_argument_contract_errors(
+    instruction: str, domain: str, action: str, arguments: dict[str, Any]
+) -> list[str]:
+    """Reject a contradictory mail selector without rewriting model arguments."""
+    if domain != "multi_apps" or action != "adapter.call":
+        return []
+    if not isinstance(arguments, dict):
+        return []
+    if arguments.get("adapter") != "thunderbird" or arguments.get("action") != "messages.query":
+        return []
+    payload = arguments.get("payload")
+    params = payload.get("params") if isinstance(payload, dict) else None
+    if not isinstance(params, dict) or params.get("select_from") != "earliest":
+        return []
+    if re.search(r"(?i)\b(?:latest|most\s+recent|newest|last)\b", instruction):
+        return [
+            "messages.query select_from=earliest contradicts the instruction's latest/most-recent request; use select_from=latest and keep order separate for presentation"
+        ]
+    return []
 
 
 def requested_column_order(instruction: str) -> list[str]:
@@ -1824,6 +1896,7 @@ __all__ = [
     "looks_like_personal_information",
     "requested_slide_role_text_formatting",
     "requested_slide_content_formatting",
+    "content_formatting_argument_contract_errors",
     "requested_title_to_notes",
     "requested_all_textbox_color",
     "requested_textbox_font_sizes",

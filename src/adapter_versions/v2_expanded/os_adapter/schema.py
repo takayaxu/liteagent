@@ -919,12 +919,15 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             )
     elif action == "pdf.extract_text_batch":
         pattern = _string(params, "input_pattern")
-        if Path(pattern).name != pattern or any(
-            character in pattern for character in ("/", "\\", "\n", "\r", "\x00")
+        is_absolute_file = pattern.startswith(("/", "~/")) and not any(
+            character in pattern for character in ("*", "?", "[", "]")
+        )
+        if (not is_absolute_file and Path(pattern).name != pattern) or any(
+            character in pattern for character in ("\\", "\n", "\r", "\x00")
         ):
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.input_pattern must be a basename or basename glob",
+                "params.input_pattern must be one basename glob or one absolute file path",
             )
         cwd_source = _string(params, "cwd_source")
         if cwd_source not in {"active_terminal", "home", "explicit"}:
@@ -954,12 +957,15 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _bool(params, "preserve_layout")
     elif action == "image.extract_text_batch":
         pattern = _string(params, "input_pattern")
-        if Path(pattern).name != pattern or any(
-            character in pattern for character in ("/", "\\", "\n", "\r", "\x00")
+        is_absolute_file = pattern.startswith(("/", "~/")) and not any(
+            character in pattern for character in ("*", "?", "[", "]")
+        )
+        if (not is_absolute_file and Path(pattern).name != pattern) or any(
+            character in pattern for character in ("\\", "\n", "\r", "\x00")
         ):
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.input_pattern must be a basename or basename glob",
+                "params.input_pattern must be one basename glob or one absolute file path",
             )
         cwd_source = _string(params, "cwd_source")
         if cwd_source not in {"active_terminal", "home", "explicit"}:

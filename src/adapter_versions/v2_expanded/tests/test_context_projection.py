@@ -458,6 +458,30 @@ def test_command_result_keeps_observed_streams_in_forwarded_model_context(
     assert body == original
 
 
+def test_pdf_flat_text_is_omitted_after_native_table_observation() -> None:
+    text_event = event(1, action="adapter.call", result={"context_hint": {"downstream_context": {"text": "flat PDF text"}}})
+    text_event.proposed["arguments"] = {
+        "adapter": "os",
+        "action": "pdf.extract_text_batch",
+        "payload": {"params": {"input_pattern": "grf19.pdf"}},
+    }
+    table_event = event(2, action="adapter.call", result={"context_hint": {"downstream_context": {"rows": [["structured"]]}}})
+    table_event.proposed["arguments"] = {
+        "adapter": "os",
+        "action": "pdf.tables.inspect",
+        "payload": {"params": {"input_path": "/home/user/Documents/Fundings/grf/grf19.pdf"}},
+    }
+
+    summary = execution_context_summary(
+        [text_event, table_event], "multi_apps", strict_generic=True
+    )
+    first = summary[0]["result"]["context_hint"]
+
+    assert first["observation_type"] == "text_batch_superseded_by_native_pdf_table"
+    assert first["input_pattern"] == "grf19.pdf"
+    assert "text" not in first
+
+
 @pytest.mark.parametrize("forwarded", [False, True])
 def test_captured_command_feedback_distinguishes_existing_terminal_output(
     forwarded: bool,
@@ -1831,6 +1855,7 @@ def test_text_batch_projection_is_typed_bounded_and_keeps_handles() -> None:
     assert len(encoded) <= 18_000
     assert projected["observation_type"] == "text_batch"
     assert projected["context_truncated"] is True
+    assert projected["context_window_truncated"] is True
     assert projected["has_more"] is True
     assert len(projected["files"]) == 8
     first = projected["files"][0]
@@ -2245,8 +2270,9 @@ def test_final_batch_fit_propagates_context_loss_without_changing_source_window(
     assert chunk["context_has_more"] is True
     assert file["context_has_more"] is True
     assert batch["context_has_more"] is True
-    assert batch["context_truncated"] is True
-    assert file["has_more"] is batch["has_more"] is True
+    assert batch["context_truncated"] is source_has_more
+    assert batch["context_window_truncated"] is True
+    assert file["has_more"] is batch["has_more"] is source_has_more
     assert chunk["source_has_more"] is source_has_more
     assert file["source_has_more"] is batch["source_has_more"] is source_has_more
     assert file["source_start_char"] == start
@@ -2436,12 +2462,13 @@ def test_text_batch_projection_separates_source_and_context_truncation() -> None
     projected = text_batch_context_for_model(value, max_chars=2_000)
 
     assert projected["source_has_more"] is False
-    assert projected["context_truncated"] is True
-    assert projected["has_more"] is True
+    assert projected["context_truncated"] is False
+    assert projected["context_window_truncated"] is True
+    assert projected["has_more"] is False
     assert projected["files"][0]["source_has_more"] is False
-    assert projected["files"][0]["context_truncated"] is True
+    assert projected["files"][0]["context_truncated"] is False
     assert projected["files"][0]["context_has_more"] is True
-    assert projected["files"][0]["has_more"] is True
+    assert projected["files"][0]["has_more"] is False
     chunk = projected["files"][0]["chunks"][0]
     assert chunk["source_has_more"] is False
     assert chunk["context_has_more"] is True

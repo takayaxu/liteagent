@@ -48,6 +48,7 @@ OUTPUT_PATH_FIELDS: dict[str, tuple[str, ...]] = {
     "spreadsheet.save": ("output_path",),
     "window.capture": ("output_path",),
     "workbook.save": ("url",),
+    "workbook.save_as": ("url",),
     "presentation.save": ("url",),
     "document.save": ("url",),
     "image.export": ("output_path",),

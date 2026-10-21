@@ -420,9 +420,15 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         if "text" not in params or not isinstance(params["text"], str):
             raise AdapterError("INVALID_REQUEST", "params.text must be a string")
     if action == "slide.set_role_text":
-        unexpected = set(params).difference(
-            {"slide", "role", "text", *TEXT_FORMAT_FIELDS}
-        )
+        formatting = sorted(set(params).intersection(TEXT_FORMAT_FIELDS))
+        if formatting:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "slide.set_role_text only replaces text; formatting fields "
+                f"{formatting} conflict with this action. Call slide.format_text_roles "
+                "separately with params.slide, params.roles, and the formatting fields",
+            )
+        unexpected = set(params).difference({"slide", "role", "text"})
         if unexpected:
             raise AdapterError(
                 "INVALID_REQUEST",
@@ -435,17 +441,19 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 "params.role must be title, content, body, or text",
             )
         _required_string(params, "text")
-        formatting = {key: params[key] for key in TEXT_FORMAT_FIELDS if key in params}
-        if formatting:
-            _validate_role_format_rule(
-                {"roles": [params["role"]], **formatting}, "params"
-            )
     if action == "shape.write_text_native":
         _optional_bool(params, "replace")
     if action in {"slide.format_text_roles", "slides.format_text_roles"}:
         location_field = "slide" if action.startswith("slide.") else "slides"
+        if "overrides" in params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                f"params.overrides conflicts with {action}: this action accepts "
+                "one shared rule for the selected roles; make a separate "
+                f"{action} call with its own roles and formatting fields",
+            )
         unexpected = set(params).difference(
-            {location_field, "roles", "overrides", *TEXT_FORMAT_FIELDS}
+            {location_field, "roles", *TEXT_FORMAT_FIELDS}
         )
         if unexpected:
             raise AdapterError(
@@ -475,26 +483,8 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                     "INVALID_REQUEST",
                     "params.slides must be an array of 1 to 100 unique non-negative integers",
                 )
-        base_rule = {
-            key: value
-            for key, value in params.items()
-            if key not in {location_field, "overrides"}
-        }
+        base_rule = {key: value for key, value in params.items() if key != location_field}
         _validate_role_format_rule(base_rule, "params")
-        if "overrides" in params:
-            overrides = params["overrides"]
-            if (
-                not isinstance(overrides, list)
-                or not overrides
-                or len(overrides) > 8
-                or any(not isinstance(override, Mapping) for override in overrides)
-            ):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.overrides must be an array of 1 to 8 role-format objects",
-                )
-            for index, override in enumerate(overrides):
-                _validate_role_format_rule(override, f"params.overrides[{index}]")
     if action in {"shape.format_text", "table.format_text"}:
         for field in ("bold", "italic", "underline", "strike", "bullet"):
             _optional_bool(params, field)

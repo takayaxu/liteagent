@@ -835,15 +835,22 @@ ACTION_KEYWORDS = {
         "articles",
         "author",
         "batch",
+        "bank",
         "content",
         "document",
         "documents",
+        "discrepancy",
+        "discrepancies",
         "extract",
+        "invoice",
+        "invoices",
         "metadata",
         "paper",
         "papers",
         "pdf",
         "read",
+        "statement",
+        "statements",
         "text",
     },
     ("os", "pdf.tables.inspect"): {
@@ -1283,6 +1290,19 @@ ACTION_KEYWORDS = {
         "subject",
         "thunderbird",
     },
+    ("thunderbird", "identities.query"): {
+        "account",
+        "accounts",
+        "email",
+        "identity",
+        "identities",
+        "mail",
+        "profile",
+        "query",
+        "read",
+        "signature",
+        "thunderbird",
+    },
     ("thunderbird", "compose.set_recipients"): {
         "email",
         "receiver",
@@ -1378,22 +1398,42 @@ ACTION_KEYWORDS = {
         "vision",
         "zoom",
     },
-    ("thunderbird", "mail.configure"): {
+    ("thunderbird", "identity.set_plain_text_signature"): {
         "mail",
         "email",
         "signature",
+        "plain",
+        "text",
+        "identity",
+    },
+    ("thunderbird", "identity.set_reply_quoting"): {
+        "mail",
+        "email",
         "reply",
         "quote",
         "quoting",
+        "original",
+        "identity",
+    },
+    ("thunderbird", "filters.set_subfolder_application"): {
+        "mail",
         "automatic",
         "filter",
         "filters",
         "subfolder",
         "subfolders",
+    },
+    ("thunderbird", "inbox.set_unified"): {
+        "mail",
         "unified",
+        "combined",
         "inbox",
+    },
+    ("thunderbird", "theme.set_dark_mode"): {
+        "mail",
         "dark",
         "theme",
+        "mode",
     },
     ("vlc", "preferences.configure"): {
         "vlc",
@@ -1709,10 +1749,8 @@ ACTION_KEYWORDS = {
     },
     ("libreoffice_impress", "slide.set_role_text"): {
         "add",
-        "align",
         "body",
         "content",
-        "font",
         "heading",
         "insert",
         "replace",
@@ -1993,18 +2031,26 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
         },
         "workbook.save": {
             "description": (
-                "Save the active workbook. Pass {} to save the current file in its existing "
-                "format. For Save As, pass url ending in .ods or .xlsx; the Adapter selects "
-                "that file format from the extension. Use workbook.export for CSV or PDF."
+                "Save the active workbook in place using its current URL and file format. "
+                "This action accepts no fields. Use workbook.save_as when the instruction "
+                "requires a new .ods or .xlsx destination."
+            ),
+            "properties": {},
+            "required": [],
+        },
+        "workbook.save_as": {
+            "description": (
+                "Save the active workbook to one explicit new .ods or .xlsx file. "
+                "The filename extension selects the format."
             ),
             "properties": {
                 "url": {
                     "type": "string",
-                    "description": "Optional output file path or file URL for Save As; omit to save the current file.",
+                    "pattern": r"^(?:.*/)?[^/.][^/]*\.(?:[Oo][Dd][Ss]|[Xx][Ll][Ss][Xx])$",
                 },
-                "filter_name": {"type": "string"},
+                "filter_name": {"type": "string", "minLength": 1},
             },
-            "required": [],
+            "required": ["url"],
         },
         "workbook.export": {
             "properties": {
@@ -2039,6 +2085,8 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                 "The range must be a single "
                 "rectangle such as F3:F20; do not join non-contiguous ranges with commas. "
                 "Issue separate range.read calls when disjoint regions must be checked. "
+                "Keep each read bounded to at most 1000 rows and 10000 cells; use the "
+                "smallest observed rectangle and never invent a very large row number. "
                 "The result includes cell_addresses aligned one-for-one with the returned "
                 "display_text, formulas, and kinds matrices; use cell_addresses[i][j] as "
                 "the exact A1 address for each observed cell. Native date cells also "
@@ -2669,32 +2717,6 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
             },
             "required": ["subject", "attachment_path"],
         },
-        "preferences.update": {
-            "properties": {
-                "values": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "Thunderbird preference names mapped to JSON scalar values.",
-                    "additionalProperties": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                            {"type": "number"},
-                        ]
-                    },
-                },
-                "remove_keys": {
-                    "type": "array",
-                    "minItems": 1,
-                    "uniqueItems": True,
-                    "items": {"type": "string", "minLength": 1},
-                    "description": "Preference names to remove from the user profile.",
-                },
-            },
-            "required": [],
-            "anyOf": [{"required": ["values"]}, {"required": ["remove_keys"]}],
-        },
     },
     "multi_apps": {},
 }
@@ -3281,6 +3303,7 @@ def search_actions(
             query_tokens=query_tokens,
             instruction_tokens=instruction_tokens,
             error_tokens=error_tokens,
+            query=query,
             limit=limit,
             excluded_actions=set(excluded_actions),
             excluded_routes=set(excluded_routes),
@@ -3393,6 +3416,7 @@ def _search_multi_app_actions(
     query_tokens: set[str],
     instruction_tokens: set[str],
     error_tokens: set[str],
+    query: str,
     limit: int,
     excluded_actions: set[str],
     excluded_routes: set[tuple[str, str]],
@@ -3528,8 +3552,52 @@ def _search_multi_app_actions(
             and query_tokens.intersection({"file", "files", "project", "vscode"})
         )
     )
+    # An active-workbook query is an observation request.  The word ``path``
+    # describes the identity returned by inspection; it is not a request to
+    # search the filesystem or to supply a path argument to tools_search.
+    active_workbook_search = bool(
+        search_tokens.intersection(
+            {"workbook", "spreadsheet", "worksheet", "calc"}
+        )
+        and search_tokens.intersection(
+            {"active", "current", "open", "identity", "path", "ranges", "read"}
+        )
+    )
+    local_file_read_search = bool(
+        search_tokens.intersection({"read", "extract"})
+        and search_tokens.intersection({"local", "file", "csv", "spreadsheet"})
+        and not search_tokens.intersection({"copy", "move", "write", "rename"})
+    )
+    local_file_path_search = bool(
+        search_tokens.intersection({"find", "locate", "search"})
+        and search_tokens.intersection(
+            {"file", "files", "path", "folder", "directory"}
+        )
+    )
     pdf_split_search = _pdf_split_intent(search_tokens)
+    # Small models sometimes carry over the generic ``filesystem.read_file``
+    # name from an earlier tool vocabulary when the requested sources are PDFs.
+    # In that context the public, bounded reader is the OS PDF extractor. Keep
+    # this alias narrow so ordinary filesystem reads retain their normal routes.
+    pdf_read_alias_search = bool(
+        search_tokens.intersection({"read", "extract", "file", "filesystem"})
+        and search_tokens.intersection({"pdf", "pdfs"})
+        and query_tokens.intersection({"filesystem", "read_file", "read", "file"})
+    )
+    decimal_rate_write_search = bool(
+        search_tokens.intersection({"pdf", "pdfs"})
+        and search_tokens.intersection({"spreadsheet", "workbook", "calc", "sheet"})
+        and query_tokens.intersection({"write", "cell", "cells", "range"})
+    )
     desktop_association_search = _desktop_association_intent(search_tokens)
+    file_organization_search = bool(
+        search_tokens.intersection(
+            {"copy", "move", "organize", "place", "put", "folder", "directory"}
+        )
+        and search_tokens.intersection(
+            {"file", "files", "invoice", "invoices", "problematic", "matching"}
+        )
+    )
 
     for route_domain in DOWNSTREAM_ADAPTER_DOMAINS:
         available = set(public_actions(route_domain))
@@ -3633,6 +3701,21 @@ def _search_multi_app_actions(
                 action,
             ) == ("vs_code", "workspace.find_files"):
                 score += 5000
+            if active_workbook_search and (route_domain, action) == (
+                "libreoffice_calc",
+                "workbook.inspect",
+            ):
+                score += 5000
+            if local_file_read_search:
+                score += {
+                    ("libreoffice_calc", "workbook.read_file"): 5000,
+                    ("os", "filesystem.find"): 4500,
+                }.get((route_domain, action), 0)
+            if local_file_path_search and (route_domain, action) == (
+                "os",
+                "filesystem.find",
+            ):
+                score += 5000
             if desktop_association_search:
                 score += {
                     ("os", "desktop.applications.inspect"): 5000,
@@ -3644,10 +3727,107 @@ def _search_multi_app_actions(
                     ("os", "filesystem.find"): 4500,
                     ("os", "pdf.pages.extract"): 4000,
                 }.get((route_domain, action), 0)
+            if pdf_read_alias_search:
+                score += {
+                    ("os", "pdf.extract_text_batch"): 7000,
+                    ("os", "filesystem.find"): 3500,
+                }.get((route_domain, action), 0)
+            if file_organization_search:
+                score += {
+                    ("os", "filesystem.create_directory"): 5200,
+                    ("os", "filesystem.copy"): 5000,
+                    ("os", "filesystem.copy_to_directories"): 4800,
+                    ("os", "filesystem.find"): 1800,
+                }.get((route_domain, action), 0)
             if score:
                 matches.append((score, route_domain, action))
 
-    ranked = sorted(matches, key=lambda item: (-item[0], item[1], item[2]))
+    # An application and operation named in the current query take precedence
+    # over context bonuses inferred from the full instruction. Keep other
+    # routes as fallbacks, and retain the existing ranking for unscoped queries.
+    named_domains = {
+        route_domain
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS
+        if _tokens(route_domain).difference({"libreoffice"}).issubset(
+            exact_query_tokens
+        )
+    }
+
+    def query_priority(item: tuple[int, str, str]) -> tuple[int, int, int, str, str]:
+        score, route_domain, action = item
+        operation_matches = len(_tokens(action).intersection(exact_query_tokens))
+        preferred = route_domain in named_domains and operation_matches > 0
+        return (
+            -int(preferred),
+            -operation_matches if preferred else 0,
+            -score,
+            route_domain,
+            action,
+        )
+
+    ranked = sorted(matches, key=query_priority)
+    # An explicit downstream action in the search query is an unambiguous
+    # request for that route. Keep unrelated filesystem routes out of the
+    # result so the model can call the requested action instead of repeating
+    # catalog searches over a noisy multi-route result.
+    # Treat an explicitly named downstream action as an exact route request.
+    # Search queries often carry incidental location fields (for example
+    # ``path=...``); those fields must not make a Calc ``range.read`` request
+    # resolve to the path-based ``workbook.read_file`` route.
+    explicit_actions = {
+        action.casefold()
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS
+        for action in public_actions(route_domain)
+        if re.search(
+            rf"(?<![\w.]){re.escape(action.casefold())}(?![\w.])",
+            query.casefold(),
+        )
+    }
+    explicit_routes = {
+        match.casefold()
+        for match in re.findall(r"(?<![\w.])(?:filesystem\.[a-z_]+)", query.casefold())
+    }
+    explicit_actions.update(explicit_routes)
+    # ``filesystem.read_file`` is not a public route in the strict generic
+    # catalog. When it is the model's stale alias for a PDF read, preserve the
+    # explicit-route narrowing while redirecting it to the real PDF reader.
+    if pdf_read_alias_search and "filesystem.read_file" in explicit_actions:
+        explicit_actions.add("pdf.extract_text_batch")
+    if decimal_rate_write_search and not explicit_actions:
+        # Once a PDF-to-rate-table task asks for a write-like operation, do not
+        # expose another read route that lets a small model reopen the already
+        # observed workbook with an invented oversized A1 range.
+        # An explicit public action in the model's query is authoritative: a
+        # query for ``range.read`` must never be rewritten to ``range.write``
+        # merely because the surrounding instruction is a rate-table task.
+        explicit_actions = {"range.write"}
+    # Small models sometimes describe the active-workbook read as
+    # ``workbook.read``.  With an explicit sheet/range and no path this is the
+    # cell reader, not the file reader; keep the next surface read-only.
+    if (
+        re.search(r"(?<![\w.])workbook\.read(?![\w.])", query.casefold())
+        and "path=" not in query.casefold()
+        and re.search(r"\bsheet\s*=", query.casefold())
+        and re.search(r"\brange\s*=", query.casefold())
+    ):
+        explicit_actions.add("range.read")
+    # An explicitly named public route is an unambiguous discovery request,
+    # even when its identifier has no lexical overlap with the normalized
+    # contract tokens (for example ``workbook.create_new``).  Keep it in the
+    # result so discovery cannot return an empty set for a valid route.
+    if explicit_actions:
+        ranked_keys = {(item[1], item[2]) for item in ranked}
+        for route_domain in DOWNSTREAM_ADAPTER_DOMAINS:
+            for action in public_actions(route_domain):
+                if action.casefold() in explicit_actions and (
+                    route_domain,
+                    action,
+                ) not in ranked_keys:
+                    ranked.append((0, route_domain, action))
+    if explicit_actions:
+        ranked = [
+            item for item in ranked if item[2].casefold() in explicit_actions
+        ]
     return [
         {
             "action": "adapter.call",
@@ -3722,7 +3902,7 @@ def _strict_generic_schema_overlay(
         # the deterministic default-export contract presented to a small model.
         parameters["properties"].pop("filter_options", None)
     elif (domain, action) in {
-        ("libreoffice_calc", "workbook.save"),
+        ("libreoffice_calc", "workbook.save_as"),
         ("libreoffice_impress", "presentation.save"),
     }:
         # Save keeps the current format (or infers Save As from the URL). Format
@@ -3737,6 +3917,42 @@ def _strict_generic_schema_overlay(
             "choose cover. With cover, negative x/y or dimensions beyond the slide are "
             "expected centered clipping; do not retry for that geometry."
         )
+    elif domain == "libreoffice_impress" and action == "shape.set_geometry":
+        # Qwen's OpenAI-compatible tool parser can emit an empty object for this
+        # action when its model-facing schema contains nested top-level allOf and
+        # oneOf branches. Present a flat surface while the Adapter keeps enforcing
+        # the exact location, geometry, and mutual-exclusion contract at runtime.
+        parameters.pop("allOf", None)
+        parameters.pop("anyOf", None)
+        parameters.pop("oneOf", None)
+        parameters["minProperties"] = 3
+    elif domain == "libreoffice_impress" and action == "shape.format_text":
+        # Qwen's OpenAI-compatible tool parser can emit an empty object when the
+        # model-facing schema combines the required shape target with a top-level
+        # anyOf of optional formatting fields. Keep the callable flat and require
+        # the target plus one formatting field; the Adapter's runtime validator
+        # remains authoritative for field values and selector consistency.
+        parameters.pop("anyOf", None)
+        parameters["minProperties"] = len(parameters["required"]) + 1
+    elif domain == "libreoffice_impress" and action in {
+        "slide.format_text_roles",
+        "slides.format_text_roles",
+    }:
+        # Some OpenAI-compatible Qwen tool parsers emit an empty object when a
+        # callable combines required location/role fields with a top-level
+        # anyOf of optional formatting fields. Keep the model-facing contract
+        # flat and require at least one additional property; the Adapter's
+        # runtime validator remains authoritative about which formatting field
+        # was supplied and its value.
+        parameters.pop("anyOf", None)
+        parameters["minProperties"] = len(parameters["required"]) + 1
+    elif domain == "libreoffice_impress" and action == "slide.set_background":
+        # The same Qwen-compatible surface rule applies to the background
+        # action: its color/image and slide/all_slides alternatives are
+        # checked by the Adapter, while the model sees a flat object.
+        parameters.pop("anyOf", None)
+        parameters.pop("oneOf", None)
+        parameters["minProperties"] = 2
     return parameters
 
 
@@ -3818,6 +4034,15 @@ def _adapter_tool(
         if direct_schema is not None
         else f"Exact request contract: {_catalog_signature(domain, action, strict_generic=strict_generic)}."
     )
+    if strict_generic and domain == "libreoffice_impress" and action in {
+        "slide.format_text_roles",
+        "slides.format_text_roles",
+    }:
+        contract = (
+            f"{contract} When an instruction says only \"content\" or \"body\", "
+            "use roles=['content'] (or ['body']); use roles=['all'] only when it "
+            "explicitly requests all/every text or every text box."
+        )
     return {
         "type": "function",
         "function": {
@@ -3854,9 +4079,15 @@ def build_tools(
     before it has observed application state; the default remains unchanged
     for callers that need the complete control surface.
     """
+    # Control tools are namespaced directly (for example ``propose_done``),
+    # whereas application actions use the ``adapter__`` prefix.  A staged
+    # action selector may return a control name to narrow the next turn; do not
+    # reinterpret that name as an Adapter route.
+    control_action_names = {"tools_search", "propose_done", "fail_task"}
     tools = [
         _adapter_tool(domain, action, strict_generic=strict_generic)
         for action in actions
+        if action not in control_action_names
     ]
     if not include_control_tools:
         return tools

@@ -215,6 +215,27 @@ def detect_no_progress_stall(
         and _changed_flag(getattr(event, "result", None)) is False
     ]
     search_signatures = {_request_signature(event) for event in searches}
+    search_results = {
+        json.dumps(
+            (getattr(event, "result", None) or {}).get("matches", []),
+            sort_keys=True, default=str,
+        )
+        for event in searches
+        if isinstance(getattr(event, "result", None), dict)
+    }
+    failed_classifications = [
+        event for event in recent
+        if _proposal(event).get("kind") == "organization"
+        and isinstance(getattr(event, "result", None), dict)
+        and event.result.get("passed") is False
+    ]
+    classification_signatures = {
+        json.dumps({
+            key: event.result.get(key)
+            for key in ("path", "observation_step", "disposition", "destination_directory")
+        }, sort_keys=True)
+        for event in failed_classifications
+    }
     unchanged_signatures = {_request_signature(event) for event in unchanged_mutations}
     repeated_equivalent_reads = [
         event
@@ -249,12 +270,18 @@ def detect_no_progress_stall(
         repeated_operation_signatures = cycle_operation_signatures
 
     reason = None
-    if len(repeated_blocks) >= 3 and len(searches) >= 2:
+    if len(failed_classifications) >= 4 and len(classification_signatures) <= 2:
+        reason = "repeated_classification_rejection_cycle"
+    elif len(repeated_blocks) >= 3 and len(searches) >= 2:
         reason = "repeated_action_search_cycle"
     elif len(repeated_blocks) >= 4:
         reason = "repeated_action_rejection_cycle"
     elif (
-        len(searches) >= 4 and len(search_signatures) <= 2 and len(failed_actions) >= 2
+        len(searches) >= 4 and len(search_signatures) <= 2
+        and (
+            len(failed_actions) >= 2
+            or (len(searches) == window and len(search_results) <= 2)
+        )
     ):
         reason = "repeated_catalog_search_cycle"
     elif len(unchanged_mutations) >= 4 and len(unchanged_signatures) <= 3:

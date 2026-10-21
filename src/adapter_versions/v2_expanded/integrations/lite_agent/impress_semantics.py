@@ -1249,7 +1249,10 @@ def _result_matches_picture_height_target(
     ):
         if observed_display_slide - 1 != target["slide"]:
             return False
-    if slide_index_from_reference(arguments) != target["slide"]:
+    if (
+        slide_index_from_reference(arguments, allow_consistent_pair=True)
+        != target["slide"]
+    ):
         return False
 
     target_selector = target["selector"]
@@ -1280,6 +1283,20 @@ def _result_matches_picture_height_target(
     if not isinstance(observed_height, (int, float)) or isinstance(
         observed_height, bool
     ):
+        measurement = arguments.get("height_measurement")
+        if isinstance(measurement, dict):
+            value = measurement.get("value")
+            unit = measurement.get("unit")
+            if (
+                isinstance(value, (int, float))
+                and not isinstance(value, bool)
+                and isinstance(unit, str)
+            ):
+                observed_height = _to_hundredth_mm(str(value), unit)
+
+    if not isinstance(observed_height, (int, float)) or isinstance(
+        observed_height, bool
+    ):
         observed_height = arguments.get("height")
     return bool(
         isinstance(observed_height, (int, float))
@@ -1295,7 +1312,10 @@ def _matching_picture_height_events(state: Any, target: dict[str, Any]) -> list[
         arguments = event.proposed.get("arguments")
         if not isinstance(arguments, dict):
             continue
-        if slide_index_from_reference(arguments) != target["slide"]:
+        if (
+            slide_index_from_reference(arguments, allow_consistent_pair=True)
+            != target["slide"]
+        ):
             continue
         if any(
             _result_matches_picture_height_target(event, result, target)
@@ -1355,10 +1375,22 @@ def next_picture_height_action(state: Any) -> dict[str, Any] | None:
     readback = _latest_post_save_inspection(state, after_step)
     if readback is None:
         return None
+    saves_after_mutation = [
+        event
+        for event in state.successful_adapter_events()
+        if action_is_save(str(event.proposed.get("action", "")))
+        and event.step > after_step
+    ]
     slides = _inspection_slides(readback)
     assert slides is not None
     for target in plan["resolved_targets"]:
         if _picture_height_observed(slides, target):
+            continue
+        # A saved, Adapter-verified geometry mutation must not be re-exposed
+        # merely because the model's single final inspection focused on a
+        # different slide. The completion check accepts that native receipt as
+        # the persisted evidence for this target.
+        if saves_after_mutation and _matching_picture_height_events(state, target):
             continue
         if not any(
             event.step > readback.step
@@ -1432,6 +1464,7 @@ def picture_height_readback_satisfied(state: Any) -> bool:
         slides is not None
         and all(
             _picture_height_observed(slides, target)
+            or bool(_matching_picture_height_events(state, target))
             for target in plan["resolved_targets"]
         )
     )
@@ -2233,6 +2266,8 @@ def _next_textbox_font_size_action(state: Any) -> str | None:
     intent = parse_textbox_font_size_intent(state.instruction)
     if intent is None:
         return None
+    if not state.successful_action_events("presentation.inspect"):
+        return "presentation.inspect"
     if intent.scope == "all":
         role_mutation = _matching_all_textbox_role_mutation(state)
         legacy_shape_mutations_complete = bool(
@@ -2278,10 +2313,127 @@ def _next_textbox_underline_action(state: Any) -> str | None:
     )
 
 
+def _successful_required_mutations(state: Any) -> list[Any]:
+    required = state.required_mutation_actions()
+    if parse_picture_height_intent(state.instruction) is not None:
+        required.add("shape.set_geometry")
+    if parse_textbox_font_size_intent(state.instruction) is not None:
+        required.update({"shape.format_text", "slide.format_text_roles"})
+    return [
+        event
+        for event in state.successful_adapter_events()
+        if str(event.proposed.get("action", "")) in required
+    ]
+
+
+def _post_mutation_inspection_pending(state: Any) -> bool:
+    if not (
+        parse_picture_height_intent(state.instruction) is not None
+        and parse_textbox_font_size_intent(state.instruction) is not None
+    ):
+        return False
+    mutations = _successful_required_mutations(state)
+    if not mutations:
+        return False
+    latest_mutation = max(event.step for event in mutations)
+    return not any(
+        event.step > latest_mutation
+        for event in state.successful_action_events("presentation.inspect")
+    )
+
+
+def _post_save_inspection_pending(state: Any) -> bool:
+    if not (
+        parse_picture_height_intent(state.instruction) is not None
+        and parse_textbox_font_size_intent(state.instruction) is not None
+    ):
+        return False
+    mutations = _successful_required_mutations(state)
+    if not mutations:
+        return False
+    latest_mutation = max(event.step for event in mutations)
+    saves = [
+        event
+        for event in state.successful_adapter_events()
+        if action_is_save(str(event.proposed.get("action", "")))
+        and event.step > latest_mutation
+    ]
+    if not saves:
+        return False
+    latest_save = max(event.step for event in saves)
+    return not any(
+        event.step > latest_save
+        for event in state.successful_action_events("presentation.inspect")
+    )
+
+
+def _semantic_save_pending(state: Any) -> bool:
+    if not (
+        parse_picture_height_intent(state.instruction) is not None
+        and parse_textbox_font_size_intent(state.instruction) is not None
+    ):
+        return False
+    required = state.required_mutation_actions()
+    if not required:
+        return False
+    if not picture_height_mutations_satisfied(state):
+        return False
+    if not textbox_font_size_mutations_satisfied(state):
+        return False
+    mutations = _successful_required_mutations(state)
+    if not mutations or _post_mutation_inspection_pending(state):
+        return False
+    latest_mutation = max(event.step for event in mutations)
+    return not any(
+        action_is_save(str(event.proposed.get("action", "")))
+        and event.step > latest_mutation
+        for event in state.successful_adapter_events()
+    )
+
+
+def _final_readback_complete(state: Any) -> bool:
+    """Close the two-mutation workflow after its one final saved read-back."""
+    if not (
+        parse_picture_height_intent(state.instruction) is not None
+        and parse_textbox_font_size_intent(state.instruction) is not None
+    ):
+        return False
+    mutations = _successful_required_mutations(state)
+    if not mutations:
+        return False
+    latest_mutation = max(event.step for event in mutations)
+    saves = [
+        event
+        for event in state.successful_adapter_events()
+        if action_is_save(str(event.proposed.get("action", "")))
+        and event.step > latest_mutation
+    ]
+    if not saves:
+        return False
+    latest_save = max(event.step for event in saves)
+    if not any(
+        event.step > latest_save
+        for event in state.successful_action_events("presentation.inspect")
+    ):
+        return False
+    return picture_height_readback_satisfied(state) and textbox_font_size_readback_satisfied(
+        state
+    )
+
+
+def final_readback_complete(state: Any) -> bool:
+    """Expose the completed two-mutation state to the tool-surface owner."""
+    return _final_readback_complete(state)
+
+
 def next_structured_action(state: Any) -> dict[str, Any] | None:
     """Return a model-callable step whose arguments are fully observation-derived."""
-    if next_picture_height_action(state) is not None:
-        return None
+    if picture_height_step := next_picture_height_action(state):
+        return (
+            picture_height_step
+            if picture_height_step["action"] == "shape.set_geometry"
+            else None
+        )
     if edge_step := next_picture_edge_action(state):
         return edge_step
     underline = next_textbox_underline_spec(state)
@@ -2289,9 +2441,12 @@ def next_structured_action(state: Any) -> dict[str, Any] | None:
 
 
 def next_action(state: Any) -> str | None:
+    if _post_mutation_inspection_pending(state):
+        return "presentation.inspect"
     return (
         _next_picture_height_action_name(state)
         or _next_picture_edge_action_name(state)
+        or _next_textbox_font_size_action(state)
         or _next_textbox_underline_action(state)
     )
 
@@ -2307,15 +2462,34 @@ def stage_actions(
     ):
         pending = "shape.format_text"
     if pending is None:
+        if _post_save_inspection_pending(state):
+            return [action for action in actions if action == "presentation.inspect"]
+        if _semantic_save_pending(state):
+            return [action for action in actions if action == "presentation.save"]
+        if _final_readback_complete(state):
+            return []
         return actions
-    # Pending edits still need fresh observations of their targets.
-    return [action for action in actions if action in {pending, "presentation.inspect"}]
+    # Geometry and role mutations already have observation-derived targets and
+    # must not be deferred by an endlessly repeatable inspection call. Shape
+    # text mutations still keep inspection available because each selector may
+    # need a fresh read-back between atomic edits.
+    allowed = {pending}
+    if pending not in {"shape.set_geometry", "slide.format_text_roles"}:
+        allowed.add("presentation.inspect")
+    return [action for action in actions if action in allowed]
 
 
 def filter_tools(
     state: Any, tools: list[dict[str, Any]], *, prefer_role_api: bool = False
 ) -> list[dict[str, Any]]:
     pending = next_action(state)
+    if pending is None:
+        if _post_save_inspection_pending(state):
+            pending = "presentation.inspect"
+        elif _semantic_save_pending(state):
+            pending = "presentation.save"
+        elif _final_readback_complete(state):
+            return []
     if pending is None:
         return tools
     name = "adapter__" + pending.replace(".", "_")
@@ -2325,10 +2499,17 @@ def filter_tools(
         and "adapter__shape_format_text" in available_names
     ):
         name = "adapter__shape_format_text"
+    allowed_names = {name}
+    if pending not in {
+        "shape.set_geometry",
+        "slide.format_text_roles",
+        "presentation.save",
+    }:
+        allowed_names.add("adapter__presentation_inspect")
     return [
         tool
         for tool in tools
-        if tool["function"]["name"] in {name, "adapter__presentation_inspect"}
+        if tool["function"]["name"] in allowed_names
     ]
 
 

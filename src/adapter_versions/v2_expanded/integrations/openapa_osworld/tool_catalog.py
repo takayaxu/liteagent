@@ -92,15 +92,14 @@ DOMAIN_SIGNATURES = {
             "reads bounded cell text exactly as displayed by LibreOffice Calc, including trailing zeros"
         ),
         "workbook.create_new": (
-            'params={"output_path": absolute local ODS|XLSX path, "sheet_name"?: str, '
-            '"headers"?: [unique str], "rows"?: [[string|number|boolean|null]], '
-            '"overwrite"?: bool}; headers and rows must be supplied together; creates, '
-            "optionally populates, and saves a new workbook"
+            'params={"sheet_name"?: str}; creates a blank unsaved workbook only. '
+            "Use range.write for data, range.format for display and workbook.save_as for a file"
         ),
-        "workbook.save": (
-            'params={"url"?: str, "filter_name"?: str}; the URL extension selects the '
-            "format, so omit filter_name normally; when supplied it must match the extension "
-            "(for example .xlsx uses Calc MS Excel 2007 XML)"
+        "workbook.save": "params={}; saves the active workbook in place",
+        "workbook.save_as": (
+            'params={"url": explicit ODS|XLSX path, "filter_name"?: str}; the URL '
+            "extension selects the format, so omit filter_name normally; when supplied "
+            "it must match the extension"
         ),
         "workbook.convert_file": (
             'params={"input_path": absolute local CSV|ODS|XLSX path, '
@@ -130,9 +129,10 @@ DOMAIN_SIGNATURES = {
         "range.text_transform": (
             'params={"source_sheet": str, "source_range": A1 range, '
             '"destination_sheet": str, "destination": top-left A1 cell, '
-            '"operations": ["trim"|"collapse_whitespace"|"title_case"|'
-            '"lowercase"|"uppercase"], "skip_blank"?: bool}; applies ordered '
-            "text-only transformations and writes a same-sized output range"
+            '"transform": "trim"|"collapse_whitespace"|"title_case"|'
+            '"lowercase"|"uppercase", "skip_blank"?: bool}; applies one text-only '
+            "transform and writes a same-sized output range; call once per transform "
+            "in the intended order"
         ),
         "range.set_scaled_display": (
             'params={"sheet": str, "range": A1 range, "divisor": positive power of 1000, '
@@ -295,28 +295,24 @@ DOMAIN_SIGNATURES = {
             'params={"slide": nonnegative 0-based int, "roles": ['
             '"all"|"title"|"content"|"body"|"table"|"text"], one or more of '
             '"color": color, "font_size": number, "font_name": str, "bold": bool, '
-            '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment, '
-            '"overrides"?: [{"roles": [role], one or more formatting fields}]}; '
-            "resolves roles from live UNO shape services, changes only supplied properties, "
-            "and applies overrides after the shared base rule"
+            '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment}; '
+            "resolves roles from live UNO shape services and applies one shared rule; "
+            "use a separate call for a different role or formatting rule"
         ),
         "slide.set_role_text": (
             'params={"slide": nonnegative 0-based int, "role": '
-            '"title"|"content"|"body"|"text", "text": non-empty str, '
-            'optional "color": color, "font_size": number, "font_name": str, '
-            '"bold": bool, "italic": bool, "underline": bool, "strike": bool, '
-            '"alignment": "left"|"center"|"right"|"justify"}; resolves exactly one '
-            "live semantic text role, replaces its text, applies only model-selected "
-            "formatting, and verifies the resulting text and properties"
+            '"title"|"content"|"body"|"text", "text": non-empty str}; resolves '
+            "exactly one live semantic text role, replaces only its text, and verifies "
+            "the replacement; use slide.format_text_roles separately for formatting"
         ),
         "slides.format_text_roles": (
             'params={"slides": [unique nonnegative zero-based ints], "roles": ['
             '"all"|"title"|"content"|"body"|"table"|"text"], one or more of '
             '"color": color, "font_size": number, "font_name": str, "bold": bool, '
             '"italic": bool, "underline": bool, "strike": bool, "alignment": alignment, '
-            '"overrides"?: [{"roles": [role], one or more formatting fields}]}; '
-            "applies one shared rule atomically after every selected slide and live semantic "
-            "role has passed preflight; use slide.format_text_roles for one slide"
+            "}; applies exactly one shared rule after every selected slide and live "
+            "semantic role has passed preflight; use a separate format call for a "
+            "different rule, or slide.format_text_roles for one slide"
         ),
         "shape.set_geometry": (
             'params={"slide": nonnegative 0-based int, "selector": object, '
@@ -496,7 +492,8 @@ DOMAIN_SIGNATURES = {
             '"include_hidden"?: bool, '
             '"preserve_layout"?: bool (defaults true; set false for prose)}; returns bounded raw text from the beginning of each '
             "matching PDF extraction, or from start_char when supplied, without modifying "
-            "the files. For subsequent windows use one observed filename and its next_start_char"
+            "the files. For subsequent windows use one observed filename and its next_start_char. "
+            "When the instruction asks for one selected entity per source document, keep one output record per document and do not expand related entities unless requested"
         ),
         "image.extract_text_batch": (
             'params={"input_pattern": image/PDF basename glob, "cwd_source": '
@@ -507,22 +504,46 @@ DOMAIN_SIGNATURES = {
         ),
     },
     "thunderbird": {
-        "mail.configure": (
-            'params={"identity"?: str (required for identity-specific settings), '
-            '"signature_text"?: str, '
-            '"quote_original_on_reply"?: bool, '
-            '"automatic_filters_on_subfolders"?: bool, "unified_inbox"?: bool, '
-            '"dark_mode"?: bool}; provide at least one '
-            "semantic setting; the adapter resolves and verifies Thunderbird preference keys"
+        "identities.query": (
+            "params={}; reads current Thunderbird identity keys and their email, display name, "
+            "account, server, and hostname mappings; use the exact returned identity key for "
+            "identity-specific actions"
+        ),
+        "identity.set_plain_text_signature": (
+            'params={"identity": exact key returned by identities.query, '
+            '"signature_text": str}; sets one identity plain-text signature atomically'
+        ),
+        "identity.set_reply_quoting": (
+            'params={"identity": exact key returned by identities.query, "enabled": bool}; '
+            "sets whether one identity quotes the original message in replies"
+        ),
+        "filters.set_subfolder_application": (
+            'params={"enabled": bool}; sets whether incoming filters run automatically on '
+            "IMAP subfolders without changing filter rules"
+        ),
+        "inbox.set_unified": (
+            'params={"enabled": bool}; changes only the unified inbox folder-tree view mode'
+        ),
+        "theme.set_dark_mode": (
+            'params={"enabled": bool}; changes only the built-in complete dark theme setting'
         ),
         "folders.ensure_local": 'params={"names": [str]}',
+        "filters.configure": (
+            'params={"filter": {"name"?: str, "enabled"?: bool, "match"?: "all"|"any", '
+            '"condition_mode": "criteria"|"all_messages", "conditions": [{"field": str, '
+            '"operator": str, "value": str}], "action": "move_to_local_folder"|"forward", '
+            '"destination": str}}; configures one rule; call folders.ensure_local first for '
+            "move_to_local_folder; forward does not create a local folder"
+        ),
         "messages.query": (
             'params={"folder_name": str, "limit"?: int[1,500], '
             '"select_from"?: "latest"|"earliest", '
             '"order"?: "ascending"|"descending", "sender_contains"?: str, '
             '"subject_contains"?: str, "after"?: ISO-8601 str, '
             '"before"?: ISO-8601 str, "has_attachments"?: bool}; returns sender name/address, '
-            "subject, recipients, CC, date, message ID and attachment metadata without message bodies"
+            "subject, recipients, CC, date, message ID and attachment metadata without message bodies; "
+            "select_from chooses the newest/oldest matching messages, while order only controls "
+            "their returned chronology (latest N oldest-to-newest = select_from='latest', order='ascending')"
         ),
         "compose.attach": (
             'params={"subject": exact open compose subject, '

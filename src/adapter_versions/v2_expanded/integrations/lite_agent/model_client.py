@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
+from types import SimpleNamespace
 from typing import Any
 
 import httpx
@@ -23,6 +25,127 @@ _SCHEMA_HINT_ITEM_MAX = 180
 # keep an HTTP request alive after that deadline and hide the true attempt
 # count in the episode ledger.
 MODEL_SDK_MAX_RETRIES = 0
+
+
+def _same_served_model(expected: str, returned: Any) -> bool:
+    """Accept a provider response that omits only a GGUF quantization suffix."""
+    if returned == expected:
+        return True
+    if not isinstance(returned, str):
+        return False
+    base = re.sub(r"-Q[2-8](?:_[A-Z0-9]+)+$", "", expected, flags=re.I)
+    return base != expected and returned == base
+
+
+def _stream_value(value: Any, key: str, default: Any = None) -> Any:
+    if isinstance(value, dict):
+        return value.get(key, default)
+    return getattr(value, key, default)
+
+
+def _jsonable(value: Any, *, exclude_none: bool = False) -> Any:
+    """Serialize both SDK models and lightweight OpenAI-compatible objects."""
+    if value is None:
+        return None
+    model_dump = getattr(value, "model_dump", None)
+    if callable(model_dump):
+        try:
+            return model_dump(mode="json", exclude_none=exclude_none)
+        except (AttributeError, TypeError, ValueError):
+            pass
+    if isinstance(value, dict):
+        return {
+            key: _jsonable(item, exclude_none=exclude_none)
+            for key, item in value.items()
+            if not (exclude_none and item is None)
+        }
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item, exclude_none=exclude_none) for item in value]
+    namespace = getattr(value, "__dict__", None)
+    if isinstance(namespace, dict):
+        return {
+            key: _jsonable(item, exclude_none=exclude_none)
+            for key, item in namespace.items()
+            if not (exclude_none and item is None)
+        }
+    return value
+
+
+def _aggregate_stream_response(response: Any) -> Any:
+    """Aggregate streamed Chat Completions deltas into the normal response shape."""
+    choices = _stream_value(response, "choices")
+    if isinstance(choices, list):
+        # Test doubles and providers that ignore stream=True may return a full
+        # response. Keep that response unchanged.
+        return response
+    if not hasattr(response, "__iter__"):
+        return response
+
+    model = None
+    usage = None
+    finish_reason = None
+    content: list[str] = []
+    reasoning: list[str] = []
+    reasoning_content: list[str] = []
+    calls: dict[int, dict[str, Any]] = {}
+    for chunk in response:
+        model = _stream_value(chunk, "model", model)
+        chunk_usage = _stream_value(chunk, "usage")
+        if chunk_usage is not None:
+            usage = chunk_usage
+        for choice in _stream_value(chunk, "choices", []) or []:
+            finish = _stream_value(choice, "finish_reason")
+            if finish is not None:
+                finish_reason = finish
+            delta = _stream_value(choice, "delta")
+            if delta is None:
+                continue
+            text = _stream_value(delta, "content")
+            if isinstance(text, str):
+                content.append(text)
+            for key, target in (("reasoning", reasoning), ("reasoning_content", reasoning_content)):
+                value = _stream_value(delta, key)
+                if isinstance(value, str):
+                    target.append(value)
+            for call in _stream_value(delta, "tool_calls", []) or []:
+                index = _stream_value(call, "index", 0)
+                if not isinstance(index, int) or index < 0:
+                    index = 0
+                entry = calls.setdefault(
+                    index,
+                    {"id": None, "name": "", "arguments": []},
+                )
+                call_id = _stream_value(call, "id")
+                if isinstance(call_id, str):
+                    entry["id"] = call_id
+                function = _stream_value(call, "function")
+                name = _stream_value(function, "name")
+                arguments = _stream_value(function, "arguments")
+                if isinstance(name, str):
+                    entry["name"] += name
+                if isinstance(arguments, str):
+                    entry["arguments"].append(arguments)
+
+    tool_calls = [
+        SimpleNamespace(
+            id=entry["id"],
+            function=SimpleNamespace(
+                name=entry["name"], arguments="".join(entry["arguments"])
+            ),
+        )
+        for _index, entry in sorted(calls.items())
+    ]
+    message = SimpleNamespace(
+        content="".join(content) or None,
+        tool_calls=tool_calls,
+        reasoning="".join(reasoning) or None,
+        reasoning_content="".join(reasoning_content) or None,
+    )
+    return SimpleNamespace(
+        model=model,
+        usage=usage,
+        choices=[SimpleNamespace(message=message, finish_reason=finish_reason)],
+    )
 
 
 def _safe_schema_path(path: Any) -> str:
@@ -347,6 +470,7 @@ class StructuredToolProtocolError(RuntimeError):
         tool_name: str | None = None,
         missing_fields: tuple[str, ...] = (),
         schema_hints: tuple[str, ...] = (),
+        allowed_routes: tuple[tuple[str, str], ...] = (),
         configuration_failure: bool = False,
     ) -> None:
         self.reason = reason
@@ -354,6 +478,7 @@ class StructuredToolProtocolError(RuntimeError):
         self.tool_name = tool_name
         self.missing_fields = missing_fields
         self.schema_hints = schema_hints
+        self.allowed_routes = allowed_routes
         self.configuration_failure = configuration_failure
         super().__init__(f"structured tool call protocol error: {reason}")
 
@@ -364,6 +489,10 @@ class StructuredToolProtocolError(RuntimeError):
             "tool_name": self.tool_name,
             "missing_fields": list(self.missing_fields),
             "schema_hints": list(self.schema_hints),
+            "allowed_routes": [
+                {"adapter": adapter, "action": action}
+                for adapter, action in self.allowed_routes
+            ],
             "configuration_failure": self.configuration_failure,
             "response": self.response_snapshot,
         }
@@ -440,6 +569,7 @@ class StructuredToolModelClient:
             "tools": tools,
             "tool_choice": "required",
             "parallel_tool_calls": False,
+            "stream": True,
             "temperature": temperature,
             "max_tokens": output_token_budget,
             "extra_body": {
@@ -464,10 +594,12 @@ class StructuredToolModelClient:
             with_options = getattr(self.client, "with_options", None)
             if callable(with_options):
                 request_client = with_options(timeout=timeout)
-        response = request_client.chat.completions.create(**request)
+        response = _aggregate_stream_response(
+            request_client.chat.completions.create(**request)
+        )
         if (
             expected_model is not None
-            and getattr(response, "model", None) != expected_model
+            and not _same_served_model(expected_model, getattr(response, "model", None))
         ):
             raise StructuredToolProtocolError(
                 "response model identity does not match the requested model",
@@ -551,6 +683,65 @@ class StructuredToolModelClient:
                 error.message,
             ),
         )
+        allowed_routes: tuple[tuple[str, str], ...] = ()
+        route_repaired_from: tuple[str, str] | None = None
+        if isinstance(schema, dict):
+            properties = schema.get("properties") if isinstance(schema, dict) else None
+            action_schema = properties.get("action") if isinstance(properties, dict) else None
+            adapter_schema = properties.get("adapter") if isinstance(properties, dict) else None
+            action_enum = action_schema.get("enum") if isinstance(action_schema, dict) else None
+            adapter_enum = adapter_schema.get("enum") if isinstance(adapter_schema, dict) else None
+            raw_routes = schema.get("x-allowed-routes")
+            if isinstance(raw_routes, list):
+                parsed_routes: list[tuple[str, str]] = []
+                for route in raw_routes:
+                    if not isinstance(route, dict):
+                        continue
+                    adapter = route.get("adapter")
+                    action = route.get("action")
+                    if not isinstance(adapter, str) or not isinstance(action, str):
+                        continue
+                    pair = (adapter, action)
+                    if pair not in parsed_routes:
+                        parsed_routes.append(pair)
+                allowed_routes = tuple(parsed_routes)
+            elif (
+                isinstance(action_enum, list)
+                and isinstance(adapter_enum, list)
+                and action_enum
+                and adapter_enum
+            ):
+                allowed_routes = tuple(
+                    (str(adapter), str(action))
+                    for adapter in adapter_enum
+                    for action in action_enum
+                )
+        # The provider may ignore JSON-schema enums and replay a stale route
+        # from an earlier turn.  An allowlist is a protocol boundary, not a
+        # hint: never infer or rewrite the requested route from the payload
+        # shape. The caller must re-plan or search for the requested action.
+        if tool == "adapter__adapter_call" and allowed_routes:
+            requested_adapter = arguments.get("adapter")
+            requested_action = arguments.get("action")
+            requested_route = (
+                requested_adapter,
+                requested_action,
+            )
+            if (
+                isinstance(requested_adapter, str)
+                and isinstance(requested_action, str)
+                and requested_route not in allowed_routes
+            ):
+                raise StructuredToolProtocolError(
+                    "tool route is not in the exposed allowlist",
+                    response_snapshot=self._response_snapshot(response, choice, message),
+                    tool_name=tool,
+                    schema_hints=(
+                        "adapter/action must match one of the currently exposed routes; "
+                        "call tools_search for the exact required public route",
+                    ),
+                    allowed_routes=allowed_routes,
+                )
         if validation_errors:
             actionable_errors = _actionable_validation_errors(validation_errors)
             raise StructuredToolProtocolError(
@@ -562,17 +753,23 @@ class StructuredToolModelClient:
                     actionable_errors,
                     instance=arguments,
                 ),
+                allowed_routes=allowed_routes,
             )
         return {
             "id": call.id,
             "tool": tool,
             "arguments_raw": arguments_raw,
             "model_actual": response.model,
-            "usage": response.usage.model_dump(mode="json") if response.usage else None,
+            "usage": _jsonable(response.usage),
             "finish_reason": choice.finish_reason,
             "max_output_tokens_requested": output_token_budget,
             "request_timeout_seconds": request_timeout_seconds,
-            "response_message": message.model_dump(mode="json", exclude_none=True),
+            "response_message": _jsonable(message, exclude_none=True),
+            "route_repaired_from": (
+                {"adapter": route_repaired_from[0], "action": route_repaired_from[1]}
+                if route_repaired_from is not None
+                else None
+            ),
             # ``length`` can still be valid when only the reasoning suffix was
             # truncated; completeness is established by JSON/schema validation.
             "structured_call_validated": True,
@@ -604,12 +801,8 @@ class StructuredToolModelClient:
         response: Any, choice: Any | None, message: Any | None
     ) -> dict[str, Any]:
         usage = getattr(response, "usage", None)
-        if usage is not None and hasattr(usage, "model_dump"):
-            usage = usage.model_dump(mode="json")
-        if message is not None and hasattr(message, "model_dump"):
-            message_dump = message.model_dump(mode="json", exclude_none=True)
-        else:
-            message_dump = None
+        usage = _jsonable(usage)
+        message_dump = _jsonable(message, exclude_none=True)
         snapshot = {
             "model": getattr(response, "model", None),
             "finish_reason": getattr(choice, "finish_reason", None),

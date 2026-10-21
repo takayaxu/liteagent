@@ -64,7 +64,7 @@ READ_ONLY_ACTION_SUFFIXES = (
     ".status",
     ".wait_for",
 )
-SAVE_ACTION_SUFFIXES = (".save", ".export")
+SAVE_ACTION_SUFFIXES = (".save", ".save_as", ".export")
 READ_ONLY_ACTIONS = frozenset(
     {
         "clipboard.get",
@@ -74,7 +74,12 @@ READ_ONLY_ACTIONS = frozenset(
     }
 )
 
-_CANONICAL_ACTION_ALIASES: dict[tuple[str, str], tuple[str, str]] = {}
+_CANONICAL_ACTION_ALIASES: dict[tuple[str, str], tuple[str, str]] = {
+    ("libreoffice_calc", "workbook.save_as"): (
+        "libreoffice_calc",
+        "workbook.save",
+    ),
+}
 _CANONICAL_PUBLIC_ACTIONS: dict[tuple[str, str], tuple[str, ...]] = {}
 
 COMPLETION_RECOVERY_CLAIM_ONLY = "claim_only"

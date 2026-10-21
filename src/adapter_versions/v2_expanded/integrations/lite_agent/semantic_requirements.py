@@ -40,6 +40,7 @@ from .impress_role_formatting import (
     action_slide_indices,
     adapter_confirmed_role_slides,
     multislide_role_requirement_errors,
+    multislide_visual_title_fallback_plan,
     parse_multislide_role_format_intent,
 )
 from .impress_role_text_update import role_text_update_requirement_errors
@@ -331,21 +332,10 @@ def _impress_role_format_state(
         slides = action_slide_indices(arguments)
         if slides is None:
             continue
-        rules = [
-            {
-                key: value
-                for key, value in arguments.items()
-                if key not in {"slide", "slides", "overrides"}
-            },
-            *[
-                rule
-                for rule in arguments.get("overrides", [])
-                if isinstance(rule, dict)
-            ],
-        ]
+        rule = {key: value for key, value in arguments.items() if key not in {"slide", "slides"}}
         for slide in slides:
             slide_state = formatted.setdefault(slide, {})
-            for rule in rules:
+            for rule in (rule,):
                 roles = rule.get("roles")
                 if not isinstance(roles, list):
                     continue
@@ -469,7 +459,15 @@ def strict_semantic_requirement_errors(state: Any) -> list[str]:
             *impress_semantics.completion_missing(state),
         ]
     if state.domain == "multi_apps":
-        return source_execution_semantics.completion_errors(state)
+        errors = list(source_execution_semantics.completion_errors(state))
+        if state.filesystem_move_requested() and not state.filesystem_organization_complete():
+            pending = state.filesystem_organization_pending_entries()
+            errors.append(
+                "filesystem organization is incomplete: every observed source object must be "
+                f"moved with filesystem.rename or explicitly skipped after classification; "
+                f"{len(pending)} object(s) remain pending"
+            )
+        return errors
     if state.domain == "os":
         return [
             *terminal_output_completion_errors(state),
@@ -494,7 +492,11 @@ def strict_semantic_action_equivalents(state: Any) -> dict[str, set[str]]:
         state.domain == "libreoffice_impress"
         and parse_multislide_role_format_intent(str(state.instruction)) is not None
     ):
-        equivalents[MULTISLIDE_ROLE_ACTION] = {SINGLE_SLIDE_ROLE_ACTION}
+        equivalents[MULTISLIDE_ROLE_ACTION] = (
+            {"shape.format_text"}
+            if multislide_visual_title_fallback_plan(state) is not None
+            else {SINGLE_SLIDE_ROLE_ACTION}
+        )
     if state.domain == "libreoffice_impress" and (
         requested_slide_content_formatting(str(state.instruction)) is not None
         or requested_slide_role_text_formatting(str(state.instruction)) is not None

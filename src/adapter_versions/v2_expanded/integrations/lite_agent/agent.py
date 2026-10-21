@@ -24,7 +24,7 @@ class LiteAgentConfig:
     include_gui: bool = True
     enable_thinking: bool = False
     reasoning_effort: str | None = None
-    max_output_tokens: int = 512
+    max_output_tokens: int = 4096
     temperature: float = 0.0
     request_timeout_seconds: float = 180.0
     allow_task_specific_or_golden: bool = False

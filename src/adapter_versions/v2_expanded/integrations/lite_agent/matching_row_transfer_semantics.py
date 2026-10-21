@@ -66,7 +66,10 @@ def stage_actions(state: Any, actions: Iterable[str]) -> list[str]:
         str(getattr(state, "domain", "")) != "multi_apps"
         or not requests_matching_row_transfer(str(getattr(state, "instruction", "")))
         or state.successful_action_events(ACTION)
-        or not state.successful_action_events("spreadsheet.read_file")
+        or not any(
+            state.successful_action_events(action)
+            for action in ("workbook.read_file", "spreadsheet.read_file")
+        )
     ):
         return selected
     focused = [action for action in selected if action == ACTION]

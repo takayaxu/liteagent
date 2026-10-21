@@ -302,12 +302,17 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         ],
     },
     "document.add_page_numbers": {
+        "description": (
+            "Create or update native page-number fields in the footer of every active "
+            "page style. Existing footer text and non-page-number fields are preserved."
+        ),
         "properties": {
             "position": {
                 "type": "string",
                 "enum": ["bottom_left", "bottom_center", "bottom_right"],
                 "description": (
-                    "Footer position for the page-number field on every active page style."
+                    "Footer position for the page-number field on every active page style; "
+                    "this does not replace other footer content."
                 ),
             },
         },
@@ -865,6 +870,10 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     "table.insert_after_text": {
         "description": (
             "Insert a new table of model-supplied values after an observed text anchor. "
+            "Select the source rows required by the user's instruction before "
+            "building rows; a source reader returns all rows, including unrelated "
+            "records. Do not copy the whole source when only selected results "
+            "are requested. Include the header if requested. "
             "The existing anchor and source text stay in the document. To convert "
             "existing delimited paragraphs in place without retyping their contents, "
             "use table.convert_text."
@@ -876,7 +885,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "description": (
                     "Text of the unique body paragraph after which the table belongs, "
                     "such as a section heading observed in the document or stated in the "
-                    "instruction. The Adapter locates the paragraph; no GUI cursor move is needed."
+                    "instruction. With the default exact match, copy the full observed "
+                    "paragraph, including any heading number; use contains explicitly "
+                    "for a partial heading. The Adapter locates the paragraph; no GUI cursor move is needed."
                 ),
             },
             "rows": {
@@ -885,6 +896,11 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "maxItems": 200,
                 "description": (
                     "Complete rectangular table matrix, including any header row. Use "
+                    "only the user-selected source records; exclude unrelated rows "
+                    "even when they were returned by the same source reader. Keep "
+                    "the source columns and row orientation unless the user requests "
+                    "a transpose. Compare each row label with the requested selection "
+                    "before submitting. Use "
                     "strings for values whose displayed spelling, trailing zeros, or fixed "
                     "decimal places must be preserved exactly. An identical existing table "
                     "is reported with changed=false instead of being inserted again."

@@ -8,137 +8,144 @@ NONEMPTY_STRING = {"type": "string", "minLength": 1}
 # Model-visible parameter contracts owned by the Adapter. Runtime validation
 # remains in thunderbird_adapter.schema and is checked against this manifest.
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
+    "identities.query": {
+        "description": (
+            "Read the current Thunderbird identity keys and their email, display name, "
+            "account, server, and hostname mappings without changing profile state. Use the "
+            "exact returned identity value for identity-specific actions."
+        ),
+        "properties": {},
+        "required": [],
+    },
     "filters.configure": {
+        "description": (
+            "Create or update exactly one Thunderbird message-filter rule per call. "
+            "For move_to_local_folder, call folders.ensure_local with the destination "
+            "name first; this action never creates folders. Forward needs no folder."
+        ),
         "properties": {
-            "filters": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 50,
-                "description": (
-                    "Semantic Thunderbird message-filter rules. A move_to_local_folder rule "
-                    "creates its destination local folder when missing."
-                ),
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            **NONEMPTY_STRING,
-                            "maxLength": 255,
-                            "description": "Optional visible rule name; a descriptive name is generated when omitted.",
-                        },
-                        "enabled": {
-                            "type": "boolean",
-                            "default": True,
-                            "description": "Whether the filter is active; defaults to true.",
-                        },
-                        "match": {
-                            "type": "string",
-                            "enum": ["all", "any"],
-                            "default": "all",
-                            "description": "Require all conditions or any condition; defaults to all.",
-                        },
-                        "condition_mode": {
-                            "type": "string",
-                            "enum": ["criteria", "all_messages"],
-                            "description": (
-                                "Use criteria when the request names message conditions. "
-                                "Use all_messages only when it explicitly applies to every incoming message."
-                            ),
-                        },
-                        "conditions": {
-                            "type": "array",
-                            "maxItems": 10,
-                            "description": (
-                                "Explicit message conditions. Supply at least one item for "
-                                "condition_mode=criteria, or an empty array for all_messages."
-                            ),
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "field": {
-                                        "type": "string",
-                                        "enum": [
-                                            "subject",
-                                            "sender",
-                                            "recipient",
-                                            "cc",
-                                            "body",
-                                        ],
-                                        "description": "Message field to test.",
-                                    },
-                                    "operator": {
-                                        "type": "string",
-                                        "enum": [
-                                            "contains",
-                                            "does_not_contain",
-                                            "is",
-                                            "is_not",
-                                            "begins_with",
-                                            "ends_with",
-                                        ],
-                                        "description": "Comparison applied to the selected field.",
-                                    },
-                                    "value": {
-                                        **NONEMPTY_STRING,
-                                        "maxLength": 1024,
-                                        "description": "Literal text to compare with the selected message field.",
-                                    },
+            "filter": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        **NONEMPTY_STRING,
+                        "maxLength": 255,
+                        "description": "Optional visible rule name; a descriptive name is generated when omitted.",
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": "Whether the filter is active; defaults to true.",
+                    },
+                    "match": {
+                        "type": "string",
+                        "enum": ["all", "any"],
+                        "default": "all",
+                        "description": "Require all conditions or any condition; defaults to all.",
+                    },
+                    "condition_mode": {
+                        "type": "string",
+                        "enum": ["criteria", "all_messages"],
+                        "description": (
+                            "Use criteria when the request names message conditions. "
+                            "Use all_messages only when it explicitly applies to every incoming message."
+                        ),
+                    },
+                    "conditions": {
+                        "type": "array",
+                        "maxItems": 10,
+                        "description": (
+                            "Explicit message conditions. Supply at least one item for "
+                            "condition_mode=criteria, or an empty array for all_messages."
+                        ),
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "field": {
+                                    "type": "string",
+                                    "enum": [
+                                        "subject",
+                                        "sender",
+                                        "recipient",
+                                        "cc",
+                                        "body",
+                                    ],
+                                    "description": "Message field to test.",
                                 },
-                                "required": ["field", "operator", "value"],
-                                "additionalProperties": False,
+                                "operator": {
+                                    "type": "string",
+                                    "enum": [
+                                        "contains",
+                                        "does_not_contain",
+                                        "is",
+                                        "is_not",
+                                        "begins_with",
+                                        "ends_with",
+                                    ],
+                                    "description": "Comparison applied to the selected field.",
+                                },
+                                "value": {
+                                    **NONEMPTY_STRING,
+                                    "maxLength": 1024,
+                                    "description": "Literal text to compare with the selected message field.",
+                                },
                             },
-                        },
-                        "action": {
-                            "type": "string",
-                            "enum": ["move_to_local_folder", "forward"],
-                            "description": "Move matching messages to a local folder or forward them.",
-                        },
-                        "destination": {
-                            **NONEMPTY_STRING,
-                            "maxLength": 512,
-                            "description": (
-                                "For move_to_local_folder, the visible local-folder name. "
-                                "For forward, the destination email address."
-                            ),
+                            "required": ["field", "operator", "value"],
+                            "additionalProperties": False,
                         },
                     },
-                    "required": [
-                        "condition_mode",
-                        "conditions",
-                        "action",
-                        "destination",
-                    ],
-                    "allOf": [
-                        {
-                            "if": {
-                                "properties": {"condition_mode": {"const": "criteria"}},
-                                "required": ["condition_mode"],
-                            },
-                            "then": {"properties": {"conditions": {"minItems": 1}}},
-                        },
-                        {
-                            "if": {
-                                "properties": {
-                                    "condition_mode": {"const": "all_messages"}
-                                },
-                                "required": ["condition_mode"],
-                            },
-                            "then": {"properties": {"conditions": {"maxItems": 0}}},
-                        },
-                    ],
-                    "additionalProperties": False,
+                    "action": {
+                        "type": "string",
+                        "enum": ["move_to_local_folder", "forward"],
+                        "description": "Move matching messages to a local folder or forward them.",
+                    },
+                    "destination": {
+                        **NONEMPTY_STRING,
+                        "maxLength": 512,
+                        "description": (
+                            "For move_to_local_folder, the visible local-folder name. "
+                            "For forward, the destination email address."
+                        ),
+                    },
                 },
+                "required": [
+                    "condition_mode",
+                    "conditions",
+                    "action",
+                    "destination",
+                ],
+                "allOf": [
+                    {
+                        "if": {
+                            "properties": {"condition_mode": {"const": "criteria"}},
+                            "required": ["condition_mode"],
+                        },
+                        "then": {"properties": {"conditions": {"minItems": 1}}},
+                    },
+                    {
+                        "if": {
+                            "properties": {"condition_mode": {"const": "all_messages"}},
+                            "required": ["condition_mode"],
+                        },
+                        "then": {"properties": {"conditions": {"maxItems": 0}}},
+                    },
+                ],
+                "additionalProperties": False,
             }
         },
-        "required": ["filters"],
+        "required": ["filter"],
     },
-    "mail.configure": {
+    "identity.set_plain_text_signature": {
+        "description": (
+            "Set one existing Thunderbird identity's plain-text signature. This atomically "
+            "stores the signature text and selects plain-text signature mode."
+        ),
         "properties": {
             "identity": {
                 **NONEMPTY_STRING,
                 "description": (
-                    "Thunderbird identity identifier. Required when setting signature_text "
-                    "or quote_original_on_reply; no identity is inferred."
+                    "Exact internal Thunderbird identity key returned by identities.query, "
+                    "for example id1. An email address is not an identity key."
                 ),
             },
             "signature_text": {
@@ -148,46 +155,69 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "For robustness, literal \\n and \\r\\n sequences are also interpreted as line breaks."
                 ),
             },
-            "quote_original_on_reply": {
+        },
+        "required": ["identity", "signature_text"],
+    },
+    "identity.set_reply_quoting": {
+        "description": (
+            "Set whether replies from one existing Thunderbird identity quote the original "
+            "message. This changes no other reply or identity setting."
+        ),
+        "properties": {
+            "identity": {
+                **NONEMPTY_STRING,
+                "description": (
+                    "Exact internal Thunderbird identity key returned by identities.query, "
+                    "for example id1. An email address is not an identity key."
+                ),
+            },
+            "enabled": {
                 "type": "boolean",
                 "description": "Whether replies include the quoted original message.",
             },
-            "automatic_filters_on_subfolders": {
+        },
+        "required": ["identity", "enabled"],
+    },
+    "filters.set_subfolder_application": {
+        "description": (
+            "Set whether incoming message filters run automatically on IMAP subfolders. "
+            "This changes no filter rules."
+        ),
+        "properties": {
+            "enabled": {
                 "type": "boolean",
                 "description": (
                     "Whether incoming message filters run automatically on IMAP subfolders."
                 ),
-            },
-            "unified_inbox": {
-                "type": "boolean",
-                "description": (
-                    "Whether Thunderbird combines account inboxes in Unified Folders view."
-                ),
-            },
-            "dark_mode": {
-                "type": "boolean",
-                "description": "Whether Thunderbird uses its built-in complete dark theme.",
-            },
-        },
-        "required": [],
-        "anyOf": [
-            {"required": ["signature_text"]},
-            {"required": ["quote_original_on_reply"]},
-            {"required": ["automatic_filters_on_subfolders"]},
-            {"required": ["unified_inbox"]},
-            {"required": ["dark_mode"]},
-        ],
-        "allOf": [
-            {
-                "if": {
-                    "anyOf": [
-                        {"required": ["signature_text"]},
-                        {"required": ["quote_original_on_reply"]},
-                    ]
-                },
-                "then": {"required": ["identity"]},
             }
-        ],
+        },
+        "required": ["enabled"],
+    },
+    "inbox.set_unified": {
+        "description": (
+            "Set whether Thunderbird combines account inboxes in Unified Folders view. "
+            "This changes only the folder-tree view mode."
+        ),
+        "properties": {
+            "enabled": {
+                "type": "boolean",
+                "description": "Whether the unified inbox view is enabled.",
+            }
+        },
+        "required": ["enabled"],
+    },
+    "theme.set_dark_mode": {
+        "description": (
+            "Set whether Thunderbird uses its built-in complete dark theme. This changes "
+            "only the active theme."
+        ),
+        "properties": {
+            "enabled": {
+                "type": "boolean",
+                "description": "Whether the built-in complete dark theme is enabled.",
+            }
+        },
+        "required": ["enabled"],
     },
     "compose.set_recipients": {
         "description": (
@@ -256,7 +286,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "enum": ["latest", "earliest"],
                 "default": "latest",
                 "description": (
-                    "Which end of the date-sorted matches to select before arranging the response."
+                    "Which end of the date-sorted matches to select before arranging the response. "
+                    "Use latest when the instruction says latest, most recent, newest, or last; "
+                    "use earliest only when it explicitly asks for oldest or first."
                 ),
             },
             "order": {
@@ -265,7 +297,9 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "default": "descending",
                 "description": (
                     "Date order of returned messages. For the latest N messages arranged from "
-                    "earliest to most recent, use select_from='latest' and order='ascending'."
+                    "earliest to most recent, use select_from='latest' and order='ascending'. "
+                    "This changes presentation order only; it does not change which messages "
+                    "are selected."
                 ),
             },
             "sender_contains": {

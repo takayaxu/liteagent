@@ -7,8 +7,7 @@ before the final save.  Action-level suppression for those cases silently
 turns a valid workflow into a Top-K error.  The executor already blocks exact
 duplicate mutations and the recovery protocol handles repeated failures;
 this module only removes actions that the state machine has classified as
-*fully* blocked (for example, a read action for which multiple argument
-variants have independently failed).
+*fully* blocked (a parameterless action has only one request variant).
 """
 
 from __future__ import annotations
@@ -20,6 +19,7 @@ from integrations.openapa_osworld.tool_catalog import public_actions
 from multi_apps_adapter.route_utils import is_route, normalize_route
 
 from .impress_image_insertion import is_sized_image_insertion_instruction
+from .completion_policy import effective_canonical_action
 from .tool_catalog import (
     DOWNSTREAM_ADAPTER_DOMAINS,
     FORBIDDEN_DATASET_ACTIONS,
@@ -120,6 +120,82 @@ def recovery_search_routes(state: Any) -> list[tuple[str, str]] | None:
         route = (adapter, action)
         if route not in routes:
             routes.append(route)
+    # Multi-app catalog ranking can omit an exact Calc consumer token when the
+    # query also contains a long observed path/range.  Preserve the model's
+    # explicit public action choice as a truthful route fallback; arguments
+    # remain entirely model-authored and are still validated by the Adapter.
+    query = str(
+        (getattr(latest, "proposed", {}) or {}).get("arguments", {}).get("query", "")
+    ).casefold()
+    if "range.read" in query and ("libreoffice" in query or "sheet" in query):
+        route = ("libreoffice_calc", "range.read")
+        if route not in routes:
+            routes.append(route)
+    if "range.write" in query and ("libreoffice" in query or "sheet" in query):
+        route = ("libreoffice_calc", "range.write")
+        if route not in routes:
+            routes.append(route)
+    return routes
+
+
+def created_workbook_routes(state: Any) -> list[tuple[str, str]]:
+    """Expose independent consumers of a confirmed new, unsaved workbook.
+
+    This depends only on executed Adapter state, never on the task instruction.
+    The model still selects every action, cell value, range, and output path.
+    """
+    if getattr(state, "domain", None) != "multi_apps":
+        return []
+    created = False
+    write_attempted = False
+    save_attempted = False
+    for event in getattr(state, "events", ()):
+        domain, action, _ = effective_canonical_action(event, state.domain)
+        if domain != "libreoffice_calc":
+            continue
+        if created and action == "range.write":
+            # A failed write may have partial effects; permit a native read.
+            write_attempted = True
+        if created and action in {"workbook.save", "workbook.save_as"}:
+            # The model has moved to persistence. A save error leaves the
+            # existing cells intact; expose discovery/read-back rather than
+            # encouraging another write during recovery. Explicit edit
+            # searches can still request a new write lease.
+            save_attempted = True
+        if not getattr(event, "executed", False):
+            continue
+        result = getattr(event, "result", None)
+        hint = result.get("context_hint", {}) if isinstance(result, dict) else {}
+        context = hint.get("downstream_context", {})
+        if action == "workbook.create_new":
+            created = bool(
+                isinstance(context, dict)
+                and context.get("table_state") == "blank_workbook"
+                and context.get("saved") is False
+                and context.get("sheet")
+            )
+            write_attempted = False
+            save_attempted = False
+        elif action in {
+            "workbook.save", "workbook.save_as", "workbook.open",
+            "workbook.read_file", "workbook.convert_file",
+        }:
+            created = False
+        elif action == "workbook.inspect" and isinstance(context, dict) and context.get("url"):
+            created = False
+    if not created:
+        return []
+    actions = ["workbook.save_as"]
+    if not save_attempted:
+        actions.insert(0, "range.write")
+    if write_attempted:
+        actions.insert(0, "range.read")
+    routes = [("libreoffice_calc", action) for action in actions]
+    # Directory discovery belongs to persistence recovery. A partial write
+    # (including just a header) does not establish that the source data is
+    # complete or that an output parent needs discovery.
+    if save_attempted:
+        routes.append(("os", "filesystem.find"))
     return routes
 
 
@@ -157,6 +233,18 @@ def discovered_adapter_routes(state: Any) -> list[tuple[str, str]]:
             route = (adapter, action)
             if route not in routes:
                 routes.append(route)
+    latest = _latest_catalog_event(state)
+    query = str(
+        (getattr(latest, "proposed", {}) or {}).get("arguments", {}).get("query", "")
+    ).casefold() if latest is not None else ""
+    for token, action in (("range.read", "range.read"), ("range.write", "range.write")):
+        if token in query and ("libreoffice" in query or "sheet" in query):
+            route = ("libreoffice_calc", action)
+            if route not in routes:
+                routes.append(route)
+    for route in created_workbook_routes(state):
+        if route not in routes:
+            routes.append(route)
     return routes
 
 

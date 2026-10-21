@@ -72,8 +72,20 @@ def verify_check(check: dict[str, Any]) -> dict[str, Any]:
         def serialized(value: Any) -> str:
             return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
+        blocks: list[str] = []
+        for line in text.splitlines(keepends=True):
+            if line.startswith('name="'):
+                blocks.append("")
+            if blocks:
+                blocks[-1] += line
         passed = all(
-            all(f'{key}="{serialized(value)}"' in text for key, value in item.items())
+            any(
+                all(
+                    f'{key}="{serialized(value)}"' in block
+                    for key, value in item.items()
+                )
+                for block in blocks
+            )
             for item in expected
         )
         return _result(passed, check, text, expected)

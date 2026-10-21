@@ -214,6 +214,37 @@ CELL_VALUE = {
 # Structured action contracts used to expose strict native tool schemas. The
 # corresponding runtime validation remains in calc_adapter.schema.
 _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
+    "workbook.save": {
+        "description": (
+            "Save the active workbook in place using its current URL and file format. "
+            "This action accepts no fields. Use workbook.save_as when the instruction "
+            "requires a new .ods or .xlsx destination."
+        ),
+        "properties": {},
+        "required": [],
+    },
+    "workbook.save_as": {
+        "description": (
+            "Save the active workbook to one explicit new .ods or .xlsx file. "
+            "The filename extension selects the format. Use workbook.save with an empty "
+            "arguments object to save the current workbook in place."
+        ),
+        "properties": {
+            "url": {
+                "type": "string",
+                "pattern": r"^(?:.*/)?[^/.][^/]*\.(?:[Oo][Dd][Ss]|[Xx][Ll][Ss][Xx])$",
+                "description": (
+                    "Output file path or file URL containing a filename and ending in "
+                    ".ods or .xlsx. The parent must be an existing writable directory. "
+                    "Discover an unknown parent using os.filesystem.find with "
+                    "kind=directory; use its observed path, not a guessed home directory. "
+                    "A save error leaves successful cell writes intact."
+                ),
+            },
+            "filter_name": {"type": "string", "minLength": 1},
+        },
+        "required": ["url"],
+    },
     "range.write": {
         "properties": {
             "sheet": {
@@ -223,7 +254,8 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "range": {
                 **NONEMPTY_STRING,
                 "description": (
-                    "Exact A1 destination range. To write one value into merged cells, "
+                    "Exact A1 destination range whose row and column counts match values "
+                    "exactly. Count both endpoints inclusively. To write one value into merged cells, "
                     "target only the top-left cell and pass one value."
                 ),
             },
@@ -241,6 +273,8 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     'Example: {"sheet":"Summary","range":"B2:C2",'
                     '"values":[["Quantity",12]]}. Use '
                     "kind=string for literal text; use range.format for fonts and colors. "
+                    "Writing does not sort. Supply rows in the intended order or call "
+                    "table.sort separately; sort_column and sort_order are invalid here. "
                     "kind=formatted_text composes text from cell references, not font styling; "
                     "do not repeatedly retry a formula that Calc reports as invalid."
                 ),
@@ -457,91 +491,11 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
     },
     "workbook.create_new": {
+        "description": "Create a blank unsaved workbook. This does not write cells, apply formats or save a file. Use range.write, range.format and workbook.save_as explicitly afterwards.",
         "properties": {
-            "output_path": {
-                **NONEMPTY_STRING,
-                "pattern": "^(?:/|~/|file:///).+\\.(?:ods|xlsx)$",
-                "description": (
-                    "New local ODS or XLSX path. The extension selects the format; "
-                    "the action creates parent directories and saves the workbook."
-                ),
-            },
-            "sheet_name": {
-                **NONEMPTY_STRING,
-                "description": "Optional name for the first worksheet.",
-            },
-            "headers": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 256,
-                "uniqueItems": True,
-                "items": NONEMPTY_STRING,
-                "description": (
-                    "Optional table header row. Omit rows to create and save a header-only "
-                    "workbook for later explicit range writes. Supply rows, including an empty "
-                    "array for an intentionally empty table, to complete the table in one call."
-                ),
-            },
-            "rows": {
-                "type": "array",
-                "maxItems": 10000,
-                "items": {
-                    "type": "array",
-                    "maxItems": 256,
-                    "items": {
-                        "oneOf": [
-                            {
-                                "type": "number",
-                                "description": (
-                                    "Numeric quantity copied as a JSON number, without quotes. "
-                                    "Counts and measurements keep their source numeric type."
-                                ),
-                            },
-                            {
-                                "type": "string",
-                                "description": (
-                                    "Literal text or identifier. Quoted digits remain text cells "
-                                    "and are never converted to numeric quantities."
-                                ),
-                            },
-                            {"type": "boolean", "description": "Boolean true or false."},
-                            {"type": "null", "description": "Blank cell."},
-                        ]
-                    },
-                },
-                "description": (
-                    "Optional compact data rows aligned positionally with headers; rows is valid "
-                    "only with headers. Values may be strings, numbers, booleans, or null. "
-                    "JSON numbers become numeric cells; quoted digits remain text. Preserve "
-                    "source numeric types for quantities and keep text identifiers as text: "
-                    "for example, [\"item\", 7, \"007\"] stores a number and a text identifier. "
-                    "Omit rows for a staged header-only workbook; use [] for a complete table "
-                    "that intentionally has no data rows."
-                ),
-            },
-            "overwrite": {
-                "type": "boolean",
-                "description": "Replace an existing destination only when explicitly true.",
-            },
+            "sheet_name": {**NONEMPTY_STRING, "description": "Optional name for the first worksheet."},
         },
-        "required": ["output_path"],
-        "oneOf": [
-            {
-                "required": ["headers", "rows"],
-            },
-            {
-                "required": ["headers"],
-                "not": {"required": ["rows"]},
-            },
-            {
-                "not": {
-                    "anyOf": [
-                        {"required": ["headers"]},
-                        {"required": ["rows"]},
-                    ]
-                }
-            },
-        ],
+        "required": [],
     },
     "workbook.convert_file": {
         "properties": {
@@ -685,8 +639,14 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "range.text_transform": {
         "description": (
-            "Clean or change the case of selected text cells and write the result "
-            "to an explicit destination. Every selected source cell is transformed; "
+            "Apply exactly one text transform to selected cells and write the result "
+            "to an explicit destination. Call this action again for each additional "
+            "transform in the intended order, using the preceding destination_range "
+            "as source_range and the same top-left destination when transforming in place. "
+            "title_case changes letter case only and does not trim or collapse whitespace; "
+            "a request for both whitespace cleanup and title casing requires separate "
+            "collapse_whitespace and title_case calls. "
+            "Every selected source cell is transformed; "
             "headers are not detected or skipped automatically. When cleaning data "
             "below existing column headers, select only data rows and keep both "
             "headers unchanged unless the user asks to edit them."
@@ -715,21 +675,21 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "explicitly asks to replace them."
                 ),
             },
-            "operations": {
-                "type": "array",
-                "minItems": 1,
-                "uniqueItems": True,
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "trim",
-                        "collapse_whitespace",
-                        "title_case",
-                        "lowercase",
-                        "uppercase",
-                    ],
-                },
-                "description": "Transforms are applied in the supplied order.",
+            "transform": {
+                "type": "string",
+                "enum": [
+                    "trim",
+                    "collapse_whitespace",
+                    "title_case",
+                    "lowercase",
+                    "uppercase",
+                ],
+                "description": (
+                    "The single transform to apply: trim removes leading and trailing "
+                    "whitespace; collapse_whitespace also replaces each internal whitespace "
+                    "run with one space; title_case capitalizes each word and lowercases its "
+                    "remaining letters; lowercase and uppercase change all letter case."
+                ),
             },
             "skip_blank": {
                 "type": "boolean",
@@ -741,7 +701,7 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "source_range",
             "destination_sheet",
             "destination",
-            "operations",
+            "transform",
         ],
     },
     "range.merge": {

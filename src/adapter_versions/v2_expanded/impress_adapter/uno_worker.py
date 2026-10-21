@@ -671,7 +671,7 @@ def _shape_summary_at_path(shape: Any, path: list[int]) -> dict[str, Any]:
             "italic": _enum_name(_text_property(shape, "CharPosture", "NONE")),
             "underline": int(_text_property(shape, "CharUnderline", 0)),
             "strike": int(_text_property(shape, "CharStrikeout", 0)),
-            "alignment": _alignment_name(getattr(shape, "ParaAdjust", None)),
+            "alignment": _alignment_name(_text_property(shape, "ParaAdjust")),
         }
         summary["paragraphs"] = _paragraph_summaries(shape)
     if "tableshape" in summary["kind"].casefold():
@@ -1779,21 +1779,6 @@ def _set_role_text(session: ImpressSession, params: dict[str, Any]) -> dict[str,
             {"expected": params["text"], "observed": observed, "path": path},
             422,
         )
-    formatting = {
-        key: params[key]
-        for key in (
-            "color",
-            "font_size",
-            "font_name",
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "alignment",
-        )
-        if key in params
-    }
-    formatted = _format_role_shape_text(shape, formatting) if formatting else None
     return {
         "slide": params["slide"],
         "requested_role": params["role"],
@@ -1801,7 +1786,6 @@ def _set_role_text(session: ImpressSession, params: dict[str, Any]) -> dict[str,
         "path": path,
         "previous_text": before,
         "text": observed,
-        "properties": formatted["properties"] if formatted is not None else {},
     }
 
 
@@ -1965,7 +1949,7 @@ def _format_text(session: ImpressSession, params: dict[str, Any]) -> dict[str, A
     return {
         "text": _shape_text(shape),
         "properties": {key: str(value) for key, value in observed.items()},
-        "alignment": _alignment_name(getattr(shape, "ParaAdjust", None)),
+        "alignment": _alignment_name(_text_property(shape, "ParaAdjust")),
         "paragraphs": _paragraph_summaries(shape),
     }
 
@@ -2047,16 +2031,16 @@ def _format_role_shape_text(shape: Any, params: dict[str, Any]) -> dict[str, Any
 def _format_text_roles(
     session: ImpressSession, params: dict[str, Any]
 ) -> dict[str, Any]:
+    if "overrides" in params:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "params.overrides is unsupported: make a separate format_text_roles "
+            "call for each role and formatting rule",
+        )
     slide_indices = [params["slide"]] if "slide" in params else list(params["slides"])
     pages = [(slide, session.page(slide)) for slide in slide_indices]
-    rules = [
-        {
-            key: value
-            for key, value in params.items()
-            if key not in {"slide", "slides", "overrides"}
-        },
-        *params.get("overrides", []),
-    ]
+    shared_rule = {key: value for key, value in params.items() if key not in {"slide", "slides"}}
+    rules = [shared_rule]
     plans = []
     for slide, page in pages:
         slide_rules = []

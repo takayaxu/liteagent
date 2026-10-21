@@ -20,6 +20,7 @@ ACTIONS = frozenset(
         "workbook.read_file",
         "workbook.create_new",
         "workbook.save",
+        "workbook.save_as",
         "workbook.export",
         "workbook.convert_file",
         "sheet.create",
@@ -85,6 +86,19 @@ A1_RANGE_PATTERN = re.compile(
     r"^\$?[A-Za-z]{1,4}\$?[1-9][0-9]*"
     r"(?::\$?[A-Za-z]{1,4}\$?[1-9][0-9]*)?$"
 )
+_BOUNDED_A1_RANGE_PATTERN = re.compile(
+    r"^\$?([A-Za-z]{1,4})\$?([1-9][0-9]*)"
+    r"(?::\$?([A-Za-z]{1,4})\$?([1-9][0-9]*))?$"
+)
+MAX_RANGE_READ_ROWS = 1000
+MAX_RANGE_READ_CELLS = 10_000
+
+
+def _column_number(value: str) -> int:
+    result = 0
+    for char in value.upper():
+        result = result * 26 + ord(char) - ord("A") + 1
+    return result
 
 
 def explicit_format_ranges(value: Any) -> tuple[str, ...] | None:
@@ -287,6 +301,28 @@ def _required_a1_range(
             f"{prefix}.{field} must be one contiguous A1 range such as A1 or A1:B2; "
             "do not join non-contiguous ranges with commas; use separate calls",
             {field: value},
+        )
+    match = _BOUNDED_A1_RANGE_PATTERN.fullmatch(value.strip())
+    assert match is not None
+    start_col, start_row, end_col, end_row = match.groups()
+    end_col = end_col or start_col
+    end_row = end_row or start_row
+    start_row_i, end_row_i = int(start_row), int(end_row)
+    start_col_i, end_col_i = _column_number(start_col), _column_number(end_col)
+    if end_row_i < start_row_i or end_col_i < start_col_i:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            f"{prefix}.{field} must have its end cell after its start cell",
+            {field: value},
+        )
+    rows = end_row_i - start_row_i + 1
+    cells = rows * (end_col_i - start_col_i + 1)
+    if rows > MAX_RANGE_READ_ROWS or cells > MAX_RANGE_READ_CELLS:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            f"{prefix}.{field} is too large; range.read is limited to "
+            f"{MAX_RANGE_READ_ROWS} rows and {MAX_RANGE_READ_CELLS} cells",
+            {field: value, "rows": rows, "cells": cells},
         )
     return value
 
@@ -508,6 +544,14 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             _required_string(params, "range")
 
     if action == "range.write":
+        unknown = sorted(set(params) - {"sheet", "range", "values"})
+        if unknown:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "range.write does not accept params." + ", params.".join(unknown)
+                + "; it only writes cells. Remove these fields. To sort, reorder "
+                "the supplied rows or call table.sort separately with its documented schema.",
+            )
         validate_typed_matrix(params.get("values"))
     elif action == "cells.set_formulas":
         _required_string(params, "sheet")
@@ -587,22 +631,35 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 "params.range cannot be combined with params.start_row or params.start_column",
             )
     elif action == "workbook.create_new":
-        output_path = _required_string(params, "output_path")
-        if not output_path.startswith(("/", "~/", "file:///")):
+        conflicts = sorted(set(params) - {"sheet_name"})
+        if conflicts:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.output_path must be an absolute local path, a ~/ path, or a file URL",
-            )
-        suffix = output_path.lower().rsplit(".", 1)[-1] if "." in output_path else ""
-        if suffix not in {"ods", "xlsx"}:
-            raise AdapterError(
-                "INVALID_REQUEST", "params.output_path must end in .ods or .xlsx"
+                "workbook.create_new only creates a blank workbook; use range.write "
+                "for cells, range.format for display and workbook.save_as for a file",
+                {"conflicting_fields": conflicts},
             )
         _optional_string(params, "sheet_name")
-        _optional_bool(params, "overwrite")
-        _validate_plain_table(params)
     elif action == "workbook.save":
-        _optional_string(params, "url")
+        if params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "workbook.save accepts no fields and saves the current workbook in place; "
+                "for a new .ods or .xlsx target, call workbook.save_as with params.url",
+                {
+                    "conflicting_fields": sorted(params),
+                    "replacement_action": "workbook.save_as",
+                },
+            )
+    elif action == "workbook.save_as":
+        url = _required_string(params, "url")
+        save_target = url.split("?", 1)[0]
+        if not re.search(r"(?i)(?:^|/)[^/.][^/]*\.(?:ods|xlsx)$", save_target):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.url must contain a filename before the .ods or .xlsx extension",
+                {"field": "url", "url": url},
+            )
         _optional_string(params, "filter_name")
     elif action == "workbook.convert_file":
         input_path = _required_string(params, "input_path")
@@ -703,9 +760,14 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _required_string(params, "source_range")
         _required_string(params, "destination_sheet")
         _required_string(params, "destination")
-        operations = _string_list(params, "operations")
-        if len(operations) != len(set(operations)):
-            raise AdapterError("INVALID_REQUEST", "params.operations must be unique")
+        if "operations" in params:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.operations is no longer supported; call range.text_transform "
+                "once per transform with params.transform",
+                {"conflicting_field": "operations", "replacement_field": "transform"},
+            )
+        transform = _required_string(params, "transform")
         supported = {
             "trim",
             "collapse_whitespace",
@@ -713,12 +775,12 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             "lowercase",
             "uppercase",
         }
-        unknown = sorted(set(operations) - supported)
-        if unknown:
+        if transform not in supported:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.operations contains unsupported text transforms",
-                unknown,
+                "params.transform must be one of: collapse_whitespace, lowercase, "
+                "title_case, trim, uppercase",
+                {"transform": transform},
             )
         _optional_bool(params, "skip_blank")
     elif action == "sheet.create":
@@ -1058,7 +1120,10 @@ def orient_typed_values(
     if value_rows != target_rows or value_columns != target_columns:
         raise AdapterError(
             "RANGE_INVALID",
-            "typed matrix dimensions do not match the target range. "
+            f"Target range has {target_rows} row(s) and {target_columns} column(s), "
+            f"but values has {value_rows} row(s) and {value_columns} column(s). "
+            "Change the A1 range or the values matrix so both dimensions match "
+            "exactly, then submit a corrected range.write call. No cells were written. "
             "To write one value into merged cells, target only the top-left cell.",
             {
                 "target_rows": target_rows,

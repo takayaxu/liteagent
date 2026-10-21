@@ -48,17 +48,165 @@ def test_discovered_active_workbook_contract_needs_no_guessed_path():
         ),
         routes("get current workbook path"),
     )
-    branches = tools[0]["function"]["parameters"]["oneOf"]
-    branch = next(
-        entry for entry in branches
-        if entry["properties"]["adapter"]["enum"] == ["libreoffice_calc"]
-        and entry["properties"]["action"]["enum"] == ["workbook.inspect"]
-    )
-    schema = branch["properties"]["payload"]["properties"]["params"]
-    assert schema["properties"] == {}
-    assert schema["required"] == []
-    assert "currently open" in schema["description"]
+    parameters = tools[0]["function"]["parameters"]
+    assert "libreoffice_calc" in parameters["properties"]["adapter"]["enum"]
+    assert "workbook.inspect" in parameters["properties"]["action"]["enum"]
+    schema = parameters["properties"]["payload"]["properties"]["params"]
+    assert "libreoffice_calc.workbook.inspect" in schema["description"]
     assert "No file path" in schema["description"]
+
+
+def test_explicit_range_read_search_ignores_incidental_path() -> None:
+    matches = search_actions(
+        "multi_apps",
+        'range.read path="file:///home/user/Documents/Fundings/supported_rate.xlsx" '
+        'sheet="Sheet1" range="A1:I10"',
+        limit=6,
+        strict_generic=True,
+    )
+
+    assert [
+        (item["adapter"], item["downstream_action"])
+        for item in matches
+    ] == [("libreoffice_calc", "range.read")]
+
+
+def test_explicit_range_read_wins_over_pdf_rate_table_context() -> None:
+    matches = search_actions(
+        "multi_apps",
+        "libreoffice_calc range.read",
+        instruction="Read the PDF reports and calculate rates in the spreadsheet.",
+        limit=6,
+        strict_generic=True,
+    )
+
+    assert [
+        (item["adapter"], item["downstream_action"])
+        for item in matches
+    ] == [("libreoffice_calc", "range.read")]
+
+
+def test_active_workbook_read_alias_is_read_only() -> None:
+    matches = search_actions(
+        "multi_apps",
+        'workbook.read sheet="Sheet1" range="A1:I10"',
+        limit=6,
+        strict_generic=True,
+    )
+
+    assert [
+        (item["adapter"], item["downstream_action"])
+        for item in matches
+    ] == [("libreoffice_calc", "range.read")]
+
+
+def test_explicit_workbook_create_route_is_retrievable() -> None:
+    matches = search_actions(
+        "multi_apps",
+        "workbook.create_new",
+        limit=6,
+        strict_generic=True,
+    )
+
+    assert [
+        (item["adapter"], item["downstream_action"])
+        for item in matches
+    ] == [("libreoffice_calc", "workbook.create_new")]
+
+
+def test_provenance_failure_does_not_hide_pathless_workbook_inspect_route() -> None:
+    route = ("libreoffice_calc", "workbook.inspect")
+    state = RuntimeState(
+        task_id="synthetic-provenance-recovery",
+        domain="multi_apps",
+        instruction="Inspect the open workbook.",
+        events=[
+            ExecutionEvent(
+                step=1,
+                timestamp_utc="2026-09-26T00:00:00Z",
+                proposed={
+                    "kind": "adapter",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": route[0],
+                        "action": route[1],
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=False,
+                error={
+                    "type": "ValueError",
+                    "detail": (
+                        "multi_apps.adapter.call requires a matching public "
+                        "tools_search result before execution"
+                    ),
+                },
+            ),
+            ExecutionEvent(
+                step=2,
+                timestamp_utc="2026-09-26T00:00:01Z",
+                proposed={
+                    "kind": "adapter",
+                    "action": "adapter.call",
+                    "arguments": {
+                        "adapter": route[0],
+                        "action": route[1],
+                        "payload": {"params": {}},
+                    },
+                },
+                executed=False,
+                error={
+                    "type": "RepeatedActionBlocked",
+                    "blocked_action": "adapter.call",
+                    "argument_signature": "synthetic",
+                    "error_signature": ["ValueError", "provenance", []],
+                    "block_scope": "episode",
+                    "previous_error": {
+                        "type": "ValueError",
+                        "detail": (
+                            "multi_apps.adapter.call requires a matching public "
+                            "tools_search result before execution"
+                        ),
+                    },
+                },
+            ),
+        ],
+    )
+
+    assert state.blocked_routes() == set()
+    matches = search_actions(
+        "multi_apps",
+        "libreoffice_calc workbook inspect",
+        limit=6,
+        strict_generic=True,
+        excluded_routes=state.blocked_routes(),
+    )
+    assert (route[0], route[1]) in [
+        (item["adapter"], item["downstream_action"]) for item in matches
+    ]
+
+    state.events.append(
+        ExecutionEvent(
+            step=3,
+            timestamp_utc="2026-09-26T00:00:02Z",
+            proposed={
+                "kind": "catalog",
+                "tool": "tools_search",
+                "arguments": {"query": "libreoffice_calc workbook inspect"},
+            },
+            executed=True,
+            result={
+                "matches": [
+                    {
+                        "action": "adapter.call",
+                        "adapter": route[0],
+                        "downstream_action": route[1],
+                    }
+                ]
+            },
+        )
+    )
+    assert state.active_request_blocks() == {}
 
 
 @pytest.fixture

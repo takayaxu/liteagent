@@ -75,6 +75,7 @@ from scripts.frozen_condition import (  # noqa: E402
     enforce_runner_condition,
 )
 from scripts.openapa_trajectory import build_trajectory_manifest, write_manifest  # noqa: E402
+from scripts.organization_step_budget import estimate_organization_step_budget  # noqa: E402
 from scripts.office_episode_recovery import (  # noqa: E402
     model_visible_recovery_status,
     recover_office_episode,
@@ -114,6 +115,8 @@ ZIP_PACKAGED_DOCUMENT_SUFFIXES = frozenset(
         ".zip",
     }
 )
+
+
 STRICT_GUEST_SANITIZE_PATTERNS = (
     "task_manifest.json",
     "**/task_manifest.json",
@@ -557,8 +560,20 @@ def model_preflight(
             # profile passed preflight.  Qwen3.5 has no numeric maximum to
             # compare here; the request-side boolean is sent explicitly and
             # the response observation is recorded by the model client.
-            "verified": bool(openapi is not None and profile_supported),
-            "preflight_verified": bool(openapi is not None and profile_supported),
+            "verified": bool(
+                profile_supported
+                and (
+                    openapi is not None
+                    or model.casefold().replace("-", "").startswith("qwen3.5")
+                )
+            ),
+            "preflight_verified": bool(
+                profile_supported
+                and (
+                    openapi is not None
+                    or model.casefold().replace("-", "").startswith("qwen3.5")
+                )
+            ),
             "effective_verified": (
                 effective == reasoning_mode if effective is not None else None
             ),
@@ -777,6 +792,23 @@ def persist_invalid_configuration(
             ensure_ascii=False,
         )
     )
+
+
+def _enforce_condition_for_run(
+    config: dict[str, Any], args: argparse.Namespace
+) -> dict[str, Any]:
+    """Apply frozen gates only to frozen manifests.
+
+    Development manifests may run against a dirty tree so local protocol
+    fixes can be validated without resealing historical experiment configs.
+    """
+    if config.get("status") == "development":
+        return {
+            "status": "development",
+            "enforced": False,
+            "source_tree": "not_applicable",
+        }
+    return enforce_runner_condition(config, args, PROJECT_ROOT)
 
 
 def model_preflight_failure(
@@ -1423,24 +1455,39 @@ def run_task(
             agent_loop_started + args.max_agent_seconds
         )
         office_recoveries_attempted = 0
-        # ``max_steps`` remains the immutable global episode budget.  A target
+        # ``max_steps`` remains the immutable hard global episode budget.  A target
         # condition may additionally provide a smaller local budget so a
         # bounded same-VM soft restart can rebuild context and continue within
         # the same episode.  No VM reset occurs in this loop.
         local_step_limit = getattr(args, "max_local_steps", None) or args.max_steps
         soft_restart_limit = getattr(args, "max_soft_restarts", 1)
         total_steps = 0
+        initial_step_budget = getattr(args, "initial_step_budget", None)
+        initial_step_limit = (
+            initial_step_budget if initial_step_budget is not None else args.max_steps
+        )
+        step_budget = {
+            "policy": (
+                "observed_organization_inventory"
+                if initial_step_budget is not None else "fixed"
+            ),
+            "initial_limit": initial_step_limit,
+            "hard_limit": args.max_steps,
+            "effective_limit": initial_step_limit,
+            "estimate": None,
+        }
+        record["step_budget"] = step_budget
         # A terminal Tool consumes one additional model turn for its audit.
         # Permit that bounded turn even when the normal Tool budget was just
         # exhausted; it does not create a VM reset or a second terminal event.
         terminal_audit_turns_remaining = 1
-        while total_steps < args.max_steps or (
+        while total_steps < step_budget["effective_limit"] or (
             isinstance(getattr(state, "pending_terminal", None), dict)
             and terminal_audit_turns_remaining > 0
         ):
             terminal_audit_turn = (
                 isinstance(getattr(state, "pending_terminal", None), dict)
-                and total_steps >= args.max_steps
+                and total_steps >= step_budget["effective_limit"]
                 and terminal_audit_turns_remaining > 0
             )
             if terminal_audit_turn:
@@ -1507,11 +1554,49 @@ def run_task(
                         protocol_failure_seen = True
                         configuration_failure_seen = exc.configuration_failure
                         errors[-1]["protocol"] = exc.trace_record()
+                        rejected_route = None
+                        if exc.reason == "tool route is not in the exposed allowlist":
+                            snapshot_message = (
+                                exc.response_snapshot.get("message")
+                                if isinstance(exc.response_snapshot, dict)
+                                else None
+                            )
+                            snapshot_calls = (
+                                snapshot_message.get("tool_calls")
+                                if isinstance(snapshot_message, dict)
+                                else None
+                            )
+                            if isinstance(snapshot_calls, list) and snapshot_calls:
+                                function = snapshot_calls[0].get("function")
+                                raw_arguments = (
+                                    function.get("arguments")
+                                    if isinstance(function, dict)
+                                    else None
+                                )
+                                try:
+                                    decoded_arguments = json.loads(raw_arguments or "")
+                                except (TypeError, ValueError, json.JSONDecodeError):
+                                    decoded_arguments = None
+                                if isinstance(decoded_arguments, dict):
+                                    rejected_adapter = decoded_arguments.get("adapter")
+                                    rejected_action = decoded_arguments.get("action")
+                                    if isinstance(rejected_adapter, str) and isinstance(
+                                        rejected_action, str
+                                    ):
+                                        rejected_route = {
+                                            "adapter": rejected_adapter,
+                                            "action": rejected_action,
+                                        }
                         protocol_recovery_context = {
                             "reason": exc.reason,
                             "tool": exc.tool_name,
                             "missing_fields": list(exc.missing_fields),
                             "schema_hints": list(exc.schema_hints),
+                            "allowed_routes": [
+                                {"adapter": adapter, "action": action}
+                                for adapter, action in exc.allowed_routes
+                            ],
+                            "rejected_route": rejected_route,
                             "finish_reason": exc.response_snapshot.get(
                                 "finish_reason"
                             ),
@@ -1681,7 +1766,7 @@ def run_task(
                 }
                 record["runner_termination"] = {
                     "type": "terminal_audit_continuation_budget_exhausted",
-                    "limit_steps": args.max_steps,
+                    "limit_steps": step_budget["effective_limit"],
                     "review_step": step,
                     "selected_tool": selected_tool,
                 }
@@ -1773,6 +1858,17 @@ def run_task(
             after_path.write_bytes(observation_box["value"]["screenshot"])
             event.screenshot_after = after_path.name
             write_event(event_trace, event)
+            if initial_step_budget is not None and step_budget["estimate"] is None:
+                estimate = estimate_organization_step_budget(
+                    state,
+                    used_steps=total_steps,
+                    initial_limit=step_budget["initial_limit"],
+                    hard_limit=args.max_steps,
+                )
+                if estimate is not None:
+                    step_budget["estimate"] = estimate
+                    step_budget["effective_limit"] = estimate["effective_limit"]
+                    logging.info("Observed organization step budget: %s", step_budget)
             if recovery_failure is not None:
                 raise RuntimeError(
                     "Office environment recovery failed at "
@@ -1792,7 +1888,7 @@ def run_task(
             )
             if (
                 recovery_reason is not None
-                and total_steps < args.max_steps
+                and total_steps < step_budget["effective_limit"]
                 and not state.done
                 and not state.failed
                 and not isinstance(getattr(state, "pending_terminal", None), dict)
@@ -1874,6 +1970,24 @@ def run_task(
                 if terminal_action is not None:
                     env.step(terminal_action, 0.1)
                 break
+
+        if (
+            "termination_reason" not in record
+            and total_steps >= step_budget["effective_limit"]
+            and not state.done
+            and not state.failed
+        ):
+            record["termination_reason"] = "step_budget_exhausted"
+            record["runner_termination"] = {
+                "type": "step_budget_exhausted",
+                "limit_steps": step_budget["effective_limit"],
+                "hard_limit_steps": args.max_steps,
+                "global_steps": total_steps,
+                "pending_model_audit": state.pending_model_audit,
+            }
+            terminal_action = osworld_terminal_action("agent_failed")
+            if terminal_action is not None:
+                env.step(terminal_action, 0.1)
 
         record["episode_control"] = {
             "global_steps": total_steps,
@@ -2048,6 +2162,8 @@ def run_task(
         "reasoning_mode": getattr(args, "reasoning_mode", None),
         "gui_enabled": not args.no_gui,
     }
+    if "step_budget" in record:
+        manifest["agent"]["step_budget"] = record["step_budget"]
     write_manifest(task_dir, manifest)
     record["trajectory_manifest"] = str(task_dir / "trajectory_manifest.json")
     if interrupted:
@@ -2073,6 +2189,16 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--orders", type=int, nargs="+", default=None)
     parser.add_argument("--max-steps", type=int, default=30)
+    parser.add_argument(
+        "--initial-step-budget",
+        type=int,
+        default=None,
+        help=(
+            "Opt in to an organization inventory step estimate. Start with this "
+            "budget, extend once after complete source discovery, and never exceed "
+            "the immutable --max-steps hard cap. Other tasks keep the initial budget."
+        ),
+    )
     parser.add_argument(
         "--max-local-steps",
         type=int,
@@ -2157,7 +2283,9 @@ def main() -> None:
     )
     parser.add_argument("--no-gui", action="store_true")
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--max-output-tokens", type=int, default=512)
+    # Qwen may emit reasoning_content even in non-thinking mode.  Leave enough
+    # budget for the complete structured tool call after a large observation.
+    parser.add_argument("--max-output-tokens", type=int, default=4096)
     parser.add_argument("--request-timeout", type=float, default=180.0)
     parser.add_argument("--model-retries", type=int, default=3)
     parser.add_argument("--initial-settle-seconds", type=float, default=10.0)
@@ -2179,6 +2307,13 @@ def main() -> None:
     # accepted from the launcher.
     args.runner = Path(__file__).resolve()
     args.python = str(Path(sys.executable).resolve())
+    if args.max_steps < 1:
+        parser.error("max steps must be positive")
+    if (
+        args.initial_step_budget is not None
+        and not 1 <= args.initial_step_budget <= args.max_steps
+    ):
+        parser.error("initial step budget must be between 1 and max steps")
     if args.evaluator_file_fetch_attempts <= 0:
         parser.error("evaluator file fetch attempts must be positive")
     if args.evaluator_file_fetch_delay_seconds < 0:
@@ -2254,7 +2389,7 @@ def main() -> None:
             "LiteAgent strict Runner rejects task-specific or golden-enabled configs"
         )
     try:
-        frozen_condition = enforce_runner_condition(config, args, PROJECT_ROOT)
+        frozen_condition = _enforce_condition_for_run(config, args)
     except (RuntimeError, ValueError) as exc:
         # Condition errors are non-scored configuration evidence.  Persist the
         # classification before returning so a supervisor cannot mistake a
@@ -2377,6 +2512,7 @@ def main() -> None:
             "agent_fields_projected_in_short_lived_process; evaluator loaded only after episode"
         ),
         "max_steps": args.max_steps,
+        "initial_step_budget": args.initial_step_budget,
         "max_local_steps": args.max_local_steps,
         "max_soft_restarts": args.max_soft_restarts,
         "max_no_progress_steps": args.max_no_progress_steps,
@@ -2438,11 +2574,7 @@ def main() -> None:
             require_expected=promotion_gate_required,
             phase="final",
         )
-        frozen_condition_revalidation = enforce_runner_condition(
-            config,
-            args,
-            PROJECT_ROOT,
-        )
+        frozen_condition_revalidation = _enforce_condition_for_run(config, args)
         metadata["integrity_revalidation"] = {
             "status": "ok",
             "config": config_integrity["final"],

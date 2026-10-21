@@ -46,7 +46,11 @@ def replacement(monkeypatch, tmp_path):
             setValue=lambda value: case.cells.__setitem__((column, row), value),
         )
 
-    sheet = SimpleNamespace(getName=lambda: "Data", getCellByPosition=cell)
+    sheet = SimpleNamespace(
+        getName=lambda: "Data",
+        getCellByPosition=cell,
+        getCellRangeByPosition=lambda *args: SimpleNamespace(),
+    )
     sheets = SimpleNamespace(
         getByIndex=lambda index: sheet, getElementNames=lambda: ("Data",),
     )
@@ -100,6 +104,24 @@ def replacement(monkeypatch, tmp_path):
     monkeypatch.setattr(uno_worker, "_file_url", lambda path: Path(path).resolve().as_uri())
     monkeypatch.setattr(uno_worker, "_property", lambda name, value: (name, value))
     return case
+
+
+def test_create_new_formats_grf_rates_as_two_decimal_percentages(replacement, monkeypatch):
+    case = replacement
+    case.params.update(
+        headers=["Year", "#Applied", "#Supported", "Success Rate"],
+        rows=[["2019", 25, 7, 28.0], ["2020", 17, 7, 41.18]],
+    )
+    applied_formats = []
+    monkeypatch.setattr(
+        uno_worker,
+        "_apply_number_format",
+        lambda doc, target, format_code, locale=None: applied_formats.append(format_code),
+    )
+
+    uno_worker._create_new(case.session, case.params)
+
+    assert applied_formats == ['0.00"%"']
 
 
 @pytest.mark.parametrize("selected", [None, "unrelated"])

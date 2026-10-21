@@ -274,6 +274,58 @@ def test_pdf_batch_returns_a_model_selected_window_and_resume_cursor(
     assert file_result["source_truncated"] is True
 
 
+def test_pdf_batch_accepts_one_exact_absolute_source_path(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "observed-source.pdf"
+    source.write_bytes(b"placeholder")
+    monkeypatch.setattr(os_actions.shutil, "which", lambda name: "/usr/bin/pdftotext")
+
+    arguments = {
+        "input_pattern": str(source),
+        "cwd_source": "explicit",
+        "cwd_path": str(tmp_path),
+        "max_chars_per_file": 25,
+    }
+    validate_os_action("pdf.extract_text_batch", arguments)
+    result = OSActions(runner=_PdfTextRunner("paper")).extract_pdf_text_batch(arguments, 5)
+
+    assert result["input_pattern"] == str(source.resolve())
+    assert result["matched"] == [str(source.resolve())]
+
+
+def test_image_batch_schema_accepts_one_exact_absolute_source_path(tmp_path) -> None:
+    validate_os_action(
+        "image.extract_text_batch",
+        {
+            "input_pattern": str(tmp_path / "scan.png"),
+            "cwd_source": "explicit",
+            "cwd_path": str(tmp_path),
+        },
+    )
+
+
+def test_pdf_batch_uses_single_discovered_directory_without_terminal(
+    tmp_path, monkeypatch
+) -> None:
+    def unavailable() -> Path:
+        raise OSAdapterError(
+            "TERMINAL_UNAVAILABLE",
+            "no active user shell working directory is observable",
+            http_status=422,
+        )
+
+    monkeypatch.setattr(os_actions, "_active_terminal_working_directory", unavailable)
+
+    resolved = os_actions._batch_input_directory(
+        {"input_pattern": "*.pdf", "cwd_source": "active_terminal"},
+        lambda *_args, **_kwargs: {
+            "suggested_directories": [str(tmp_path)],
+            "suggestion_scan": {},
+        },
+    )
+
+    assert resolved == tmp_path.resolve()
+
+
 def test_file_observation_preserves_modification_time_for_model_classification() -> (
     None
 ):
@@ -474,3 +526,26 @@ def test_generic_search_recalls_only_atomic_replacements() -> None:
     assert RETIRED_OS_WORKFLOWS.isdisjoint(os_matches)
     assert "playback.open" in vlc_matches
     assert RETIRED_VLC_WORKFLOWS.isdisjoint(vlc_matches)
+
+
+def test_invoice_folder_search_prioritizes_atomic_file_mutations() -> None:
+    matches = search_actions(
+        "multi_apps",
+        "find problematic folder",
+        instruction=(
+            "Cross-check invoices with bank statements and put mismatched invoices "
+            "in the problematic folder."
+        ),
+        limit=6,
+        strict_generic=True,
+    )
+    routes = [
+        (item.get("adapter"), item.get("downstream_action")) for item in matches
+    ]
+
+    assert routes[:3] == [
+        ("os", "filesystem.create_directory"),
+        ("os", "filesystem.copy"),
+        ("os", "filesystem.copy_to_directories"),
+    ]
+    assert routes.index(("os", "filesystem.find")) > 2

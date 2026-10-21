@@ -384,6 +384,12 @@ def _batch_input_directory(
                 include_hidden=bool(params.get("include_hidden", False)),
             )
             suggestions = recovery["suggested_directories"]
+            # In headless task containers there may be no observable shell even
+            # though the requested PDFs live in one unambiguous user directory.
+            # Resolve that single candidate directly; keep explicit recovery
+            # guidance when the match is ambiguous or absent.
+            if len(suggestions) == 1:
+                return Path(suggestions[0]).resolve()
             if suggestions:
                 guidance = (
                     'retry with cwd_source="explicit" and cwd_path set to one '
@@ -413,6 +419,19 @@ def _batch_input_directory(
     else:
         input_directory = Path(params["cwd_path"]).expanduser()
     return _source(str(input_directory), directory=True).resolve()
+
+
+def _batch_input_target(
+    params: dict[str, Any],
+    candidate_directories: Callable[..., dict[str, Any]],
+) -> tuple[Path, str, str | None]:
+    """Resolve a basename batch or one exact absolute file path."""
+    raw_pattern = params["input_pattern"]
+    expanded = Path(raw_pattern).expanduser()
+    if expanded.is_absolute() and not any(char in raw_pattern for char in "*?[]"):
+        source = _source(str(expanded), directory=False).resolve()
+        return source.parent, source.name, str(source)
+    return _batch_input_directory(params, candidate_directories), raw_pattern, None
 
 
 def _gvariant(value: Any) -> str:
@@ -777,6 +796,23 @@ class OSActions:
             )
         source = _source(str(source_path))
         _reject_noop_rename(source, destination)
+        if source.is_dir() and destination != source:
+            try:
+                destination.relative_to(source)
+            except ValueError:
+                pass
+            else:
+                raise AdapterError(
+                    "INVALID_MOVE_PARENT_INTO_CHILD",
+                    "cannot move a directory into one of its own descendants; "
+                    "create the destination directory, then rename each selected "
+                    "file with its exact destination path",
+                    {
+                        "source": str(source),
+                        "destination": str(destination),
+                        "suggested_action": "filesystem.create_directory",
+                    },
+                )
         if destination.exists() and destination != source:
             if not params.get("replace", False):
                 raise AdapterError(
@@ -1753,9 +1789,10 @@ class OSActions:
     def extract_pdf_text_batch(
         self, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
-        input_directory = _batch_input_directory(params, _pdf_candidate_directories)
-
-        pattern = params["input_pattern"]
+        input_directory, pattern, exact_source = _batch_input_target(
+            params, _pdf_candidate_directories
+        )
+        reported_pattern = exact_source or pattern
         include_hidden = bool(params.get("include_hidden", False))
         all_matches = sorted(
             path.resolve() for path in input_directory.glob(pattern) if path.is_file()
@@ -1784,7 +1821,7 @@ class OSActions:
                 message,
                 {
                     "directory": str(input_directory),
-                    "input_pattern": pattern,
+                    "input_pattern": reported_pattern,
                     "hidden_matches_excluded": len(all_matches) - len(visible_matches),
                     "non_pdf_matches_excluded": len(visible_matches),
                     **recovery,
@@ -1903,7 +1940,7 @@ class OSActions:
                 "text could not be extracted from every matching PDF",
                 {
                     "directory": str(input_directory),
-                    "input_pattern": pattern,
+                    "input_pattern": reported_pattern,
                     "files": files,
                     "failed": failed,
                 },
@@ -1911,7 +1948,7 @@ class OSActions:
             )
         return {
             "input_directory": str(input_directory),
-            "input_pattern": pattern,
+            "input_pattern": reported_pattern,
             "matched": [str(path) for path in matches],
             "hidden_matches_excluded": len(all_matches) - len(visible_matches),
             "non_pdf_matches_excluded": len(visible_matches) - len(matches),
@@ -1928,9 +1965,10 @@ class OSActions:
     def extract_image_text_batch(
         self, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
-        input_directory = _batch_input_directory(params, _ocr_candidate_directories)
-
-        pattern = params["input_pattern"]
+        input_directory, pattern, exact_source = _batch_input_target(
+            params, _ocr_candidate_directories
+        )
+        reported_pattern = exact_source or pattern
         include_hidden = bool(params.get("include_hidden", False))
         all_matches = sorted(
             path.resolve() for path in input_directory.glob(pattern) if path.is_file()
@@ -1966,7 +2004,7 @@ class OSActions:
                 message,
                 {
                     "directory": str(input_directory),
-                    "input_pattern": pattern,
+                    "input_pattern": reported_pattern,
                     "supported_extensions": sorted(OCR_SOURCE_SUFFIXES),
                     "hidden_matches_excluded": len(all_matches) - len(visible_matches),
                     "unsupported_matches_excluded": len(visible_matches),
@@ -1982,7 +2020,7 @@ class OSActions:
                 f"{len(matches)} files match input_pattern, exceeding max_files={max_files}",
                 {
                     "directory": str(input_directory),
-                    "input_pattern": pattern,
+                    "input_pattern": reported_pattern,
                     "matched_files": len(matches),
                     "max_files": max_files,
                 },
@@ -2151,14 +2189,14 @@ class OSActions:
                 "OCR did not successfully read any matching file",
                 {
                     "directory": str(input_directory),
-                    "input_pattern": pattern,
+                    "input_pattern": reported_pattern,
                     "files": files,
                 },
                 422,
             )
         return {
             "input_directory": str(input_directory),
-            "input_pattern": pattern,
+            "input_pattern": reported_pattern,
             "matched": [str(path) for path in matches],
             "supported_extensions": sorted(OCR_SOURCE_SUFFIXES),
             "hidden_matches_excluded": len(all_matches) - len(visible_matches),
