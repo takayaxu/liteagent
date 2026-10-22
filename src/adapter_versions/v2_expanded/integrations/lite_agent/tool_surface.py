@@ -905,6 +905,11 @@ class ToolSurfaceMixin:
     def tools(self, state: RuntimeState) -> list[dict[str, Any]]:
         if state.done or state.failed:
             return []
+        from . import read_audit_gate
+
+        read_tools = read_audit_gate.gate_tools(self, state)
+        if read_tools is not None and state.pending_terminal is None:
+            return read_tools
         multi_app = state.domain == "multi_apps"
         batch_workflow = multi_app and (
             batch_table_semantics.requests_one_record_per_input(

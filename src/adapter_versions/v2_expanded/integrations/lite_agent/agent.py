@@ -34,6 +34,7 @@ class LiteAgentConfig:
     presence_penalty: float | None = None
     thinking_token_budget: int | None = None
     tool_call_stop_sequence: str | None = None
+    read_audit_gate: bool = False
 
     def __post_init__(self) -> None:
         if self.allow_task_specific_or_golden:

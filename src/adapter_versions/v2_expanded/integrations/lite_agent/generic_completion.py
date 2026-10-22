@@ -156,6 +156,8 @@ def strict_completion_gate(
         f"observed {discrepancy.get('observed')!r}; required {discrepancy.get('required')!r}; "
         f"correction {discrepancy.get('correction')!r}"
     ] if discrepancy is not None else [])
+    if getattr(state, "read_audit", None) and state.read_audit["status"] != "passed":
+        review_missing.append("finish mandatory content-read review and repair before completion")
     # GUI outcomes are reviewed visually by the planner, not an invented API mutation.
     # The planner reviews the GUI result before its explicit final claim.
     if completion is not None and _audited_gui_completion_available(

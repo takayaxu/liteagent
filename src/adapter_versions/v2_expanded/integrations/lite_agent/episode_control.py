@@ -20,7 +20,7 @@ from .completion_policy import (
 from .recovery_surface import last_failure_summary
 
 
-CONTROL_TOOL_NAMES = frozenset({"tools_search", "propose_done", "fail_task", "completion_revise"})
+CONTROL_TOOL_NAMES = frozenset({"tools_search", "propose_done", "fail_task", "completion_revise", "read_audit"})
 _MUTATION_LEDGER_LIMIT = 32
 _MUTATION_ARGUMENT_BUDGET = 900
 # Keep the restart handoff for three model decisions after the first audited

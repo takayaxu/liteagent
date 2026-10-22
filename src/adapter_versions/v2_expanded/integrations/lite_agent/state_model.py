@@ -64,6 +64,7 @@ class RuntimeState(RuntimeStateCoreMixin, CalcStateMixin, ImpressStateMixin):
     recovery_projection_turns_remaining: int = 0
     recovery_projection_initial_audit_pending: bool = False
     recovery_history: list[dict[str, Any]] = field(default_factory=list)
+    read_audit: dict[str, Any] | None = None
     pending_model_audit: dict[str, Any] | None = None
     last_model_audit: dict[str, Any] | None = None
     # Enables action/GUI audit evidence and the legacy failure acknowledgement.

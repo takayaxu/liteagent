@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "experiment_id": "active-thinking-serial",
+  "status": "development",
+  "purpose": "Isolated committed candidate: mandatory Calc range.read review, OSWorld order 6, unchanged model and budgets.",
+  "sources": {
+    "baseline_candidate": false,
+    "resume": false,
+    "source_mode": "active",
+    "completion_protocol": "Committed candidate worktree; source and config sealed at launch"
+  },
+  "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+  "adapter_version": "v2_expanded",
+  "model": {
+    "requested": "Qwen3.5-9B",
+    "reasoning_mode": "thinking",
+    "reasoning_profile": "qwen35_thinking_switch",
+    "base_urls": [
+      "https://qwen.jinmaoapi.cc.cd/v1"
+    ]
+  },
+  "vm": {
+    "provider": "docker",
+    "image": "third_party/OSWorld/docker_vm_data/Ubuntu.qcow2",
+    "screen_size": [
+      1920,
+      1080
+    ],
+    "headless": true,
+    "fresh_container_per_task": true
+  },
+  "protocol": {
+    "runs": 1,
+    "best_of": false,
+    "preserve_every_attempt": true,
+    "max_steps": 100,
+    "max_no_progress_steps": 8,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 8192,
+    "top_k": 7,
+    "temperature": 0,
+    "thinking": true,
+    "gui_enabled": true,
+    "guest_proxy": false,
+    "model_retries": 3,
+    "reasoning_mode": "thinking",
+    "tool_call_stop_sequence": "\n</function>\n</tool_call>",
+    "max_local_steps": 100,
+    "max_soft_restarts": 1,
+    "request_timeout": 240,
+    "initial_settle_seconds": 10,
+    "action_settle_seconds": 2,
+    "evaluator_settle_seconds": 5,
+    "evaluator_file_fetch_attempts": 3,
+    "evaluator_file_fetch_delay_seconds": 1,
+    "task_specific_or_golden_exposed": false,
+    "original_evaluator": true,
+    "evaluator_loaded_after_episode": true,
+    "non_promotable": true,
+    "initial_step_budget": 100,
+    "concurrency": 1,
+    "no_mid_run_condition_changes": true,
+    "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain.",
+    "read_audit_gate": true
+  },
+  "tasks": [
+    {
+      "order": 6,
+      "domain": "libreoffice_calc",
+      "task_id": "04d9aeaf-7bed-4024-bedb-e10e6f00eb7f"
+    }
+  ]
+}

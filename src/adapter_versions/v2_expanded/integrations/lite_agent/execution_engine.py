@@ -377,6 +377,9 @@ class ExecutionEngineMixin:
             arguments = json.loads(proposal.get("arguments_raw") or "{}")
             if not isinstance(arguments, dict):
                 raise ValueError("tool arguments must decode to an object")
+            from . import read_audit_gate
+
+            read_audit_gate.enforce(self, state, tool)
             model_arguments = copy.deepcopy(arguments)
             event.parsed = True
             event.proposed["arguments"] = arguments
@@ -1112,6 +1115,13 @@ class ExecutionEngineMixin:
                     state.filesystem_organization_active_path = None
                 event.result = result.get("result") if event.executed else None
                 event.error = result.get("error") if not event.executed else None
+            elif tool == "read_audit":
+                if model_visible_tools is not None:
+                    validate_model_visible_tool_arguments(model_visible_tools, tool, arguments)
+                event.result = read_audit_gate.submit(self, state, arguments)
+                event.proposed["kind"] = "read_review"
+                event.validated = True
+                event.executed = True
             elif tool == "completion_revise":
                 from . import completion_review
 
@@ -1686,6 +1696,9 @@ class ExecutionEngineMixin:
         event.result = sanitize_agent_visible_result(event.result, state.task_id)
         event.error = sanitize_agent_visible_result(event.error, state.task_id)
         state.events.append(event)
+        from . import read_audit_gate
+
+        read_audit_gate.observe(self, state, event)
         if event.executed and state.filesystem_move_requested():
             progress = state.filesystem_organization_progress(model_visible=True)
             if isinstance(event.result, dict):

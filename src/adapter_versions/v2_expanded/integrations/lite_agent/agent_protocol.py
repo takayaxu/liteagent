@@ -581,6 +581,11 @@ class AgentProtocolMixin:
         execution_recovery: bool | None = None,
         protocol_error: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
+        from . import read_audit_gate
+
+        read_messages = read_audit_gate.messages(self, state, protocol_error)
+        if read_messages is not None and state.pending_terminal is None:
+            return read_messages
         organization_context = state.filesystem_move_requested()
 
         def model_context(limit: int) -> list[dict[str, Any]]:

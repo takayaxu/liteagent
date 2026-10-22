@@ -1391,6 +1391,7 @@ def run_task(
             presence_penalty=config.get("protocol", {}).get("presence_penalty"),
             thinking_token_budget=config.get("protocol", {}).get("thinking_token_budget"),
             tool_call_stop_sequence=config.get("protocol", {}).get("tool_call_stop_sequence"),
+            read_audit_gate=config.get("protocol", {}).get("read_audit_gate", False),
             request_timeout_seconds=args.request_timeout,
         )
         request_context = {"step_num": 0, "attempt": 0, "screenshot": ""}
