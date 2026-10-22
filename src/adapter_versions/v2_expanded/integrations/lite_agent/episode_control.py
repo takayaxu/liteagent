@@ -246,6 +246,19 @@ def mark_tool_result_for_audit(state: Any, event: Any) -> dict[str, Any]:
         int(step) if isinstance(step, int) and not isinstance(step, bool) else None
     )
     tool = _tool_name(event)
+    if (
+        tool == "propose_done"
+        and getattr(state, "done", False)
+        and getattr(event, "executed", False)
+        and not getattr(event, "error", None)
+    ):
+        # The successful final gate is terminal, not a new audit obligation.
+        event.audit_required = False
+        event.audit_completed = False
+        event.audit_tool = None
+        state.pending_model_audit = None
+        return {"event_step": step_value, "tool": tool,
+                "tool_class": "control", "status": "not_required"}
     is_control = tool in CONTROL_TOOL_NAMES
     _domain, action, _arguments = effective_canonical_action(event, state.domain)
     if (

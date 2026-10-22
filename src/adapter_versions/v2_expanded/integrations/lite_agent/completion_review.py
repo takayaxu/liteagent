@@ -13,6 +13,23 @@ from .completion_policy import (
 TOOL_NAME = "completion_revise"
 
 
+def unresolved_discrepancy(state: Any) -> dict[str, Any] | None:
+    """A failed self-review cannot be erased by another read or success claim."""
+    for event in reversed(state.events):
+        if not event.executed or event.error:
+            continue
+        if event.proposed.get("tool") == TOOL_NAME:
+            return event.proposed.get("arguments", {})
+        if event.proposed.get("kind") == "gui":
+            return None
+        if event.proposed.get("kind") == "adapter":
+            _domain, action, arguments = effective_canonical_action(event, state.domain)
+            if not (action_is_read_only(action) or action_is_save(action)
+                    or command_is_read_only(action, arguments)):
+                return None
+    return None
+
+
 def review_ready(state: Any, gate: dict[str, Any]) -> bool:
     if gate.get("passed") is not True:
         return False

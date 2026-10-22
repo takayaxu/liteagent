@@ -903,6 +903,8 @@ class ToolSurfaceMixin:
         return soft_recovery_tools(constrained, state)
 
     def tools(self, state: RuntimeState) -> list[dict[str, Any]]:
+        if state.done or state.failed:
+            return []
         multi_app = state.domain == "multi_apps"
         batch_workflow = multi_app and (
             batch_table_semantics.requests_one_record_per_input(
@@ -941,7 +943,10 @@ class ToolSurfaceMixin:
             expected_tool = str(pending_terminal.get("tool", "propose_done"))
             if expected_tool not in {"propose_done", "fail_task"}:
                 expected_tool = "propose_done"
-            audit_tools = completion_recovery.completion_review_tools(state, self.selected_actions(state))
+            audit_tools = [tool for tool in self._build_tools(
+                state.domain, [], include_gui=False, include_control_tools=True,
+                strict_generic=True,
+            ) if tool["function"]["name"] == expected_tool]
             audit_tools = self._apply_common_tool_constraints(audit_tools, state)
             for tool in audit_tools:
                 function = tool.get("function")
@@ -950,8 +955,8 @@ class ToolSurfaceMixin:
                 name = function.get("name")
                 if name in {"propose_done", "fail_task"}:
                     function["description"] = (
-                        f"Confirm the previous {expected_tool} result only if every required outcome holds. "
-                        "If work remains, choose an exposed inspection or repair action to reopen execution."
+                        f"Confirm the previous {expected_tool} result once. "
+                        "This acknowledgement does not reopen execution."
                     )
             return audit_tools
 

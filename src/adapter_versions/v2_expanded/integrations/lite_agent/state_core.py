@@ -549,6 +549,13 @@ class RuntimeStateCoreMixin:
         observation = self.filesystem_observation_state()
         progress = self.workflow_progress()
         if progress:
+            # Completion readiness outranks the generic source workflow label.
+            from .completion import CompletionMixin
+            from .completion_review import review_ready
+            if self.done:
+                progress = {**progress, "pending_phase": "complete"}
+            elif review_ready(self, CompletionMixin._generic_completion_gate(self)):
+                progress = {**progress, "pending_phase": "completion_review"}
             # This marker is intentionally before ordinary event history. It
             # is a phase ledger, not a replayable result, and must survive fit.
             summary = [{"workflow_progress": progress}, *summary]

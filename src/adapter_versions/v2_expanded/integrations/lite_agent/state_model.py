@@ -66,9 +66,8 @@ class RuntimeState(RuntimeStateCoreMixin, CalcStateMixin, ImpressStateMixin):
     recovery_history: list[dict[str, Any]] = field(default_factory=list)
     pending_model_audit: dict[str, Any] | None = None
     last_model_audit: dict[str, Any] | None = None
-    # Terminal control results are deferred by the strict Runner until one
-    # subsequent Qwen turn has audited the result.  Direct unit callers keep
-    # the legacy immediate-terminal behavior unless this flag is enabled.
+    # Enables action/GUI audit evidence and the legacy failure acknowledgement.
+    # Successful completion always commits immediately after the final gate.
     defer_terminal_audit: bool = False
     pending_terminal: dict[str, Any] | None = None
     terminal_confirmation: bool = False

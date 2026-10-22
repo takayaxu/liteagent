@@ -350,6 +350,8 @@ class ExecutionEngineMixin:
         screenshot_before: str | None = None,
         screenshot: bytes | None = None,
     ) -> ExecutionEvent:
+        if state.done or state.failed:
+            raise ValueError("episode is terminal; no further tool may execute")
         started = time.monotonic()
         model_visible_tools = proposal.get("_model_visible_tools")
         recorded_proposal = {
@@ -1628,14 +1630,11 @@ class ExecutionEngineMixin:
                     )
                 )
                 if gate["passed"]:
-                    if getattr(state, "defer_terminal_audit", False):
-                        state.pending_terminal = {
-                            "status": "done",
-                            "tool": "propose_done",
-                            "event_step": event.step,
-                        }
-                    else:
-                        state.done = True
+                    # The full gate is the final review. A passed claim must
+                    # not create another model turn that can reopen the task.
+                    state.pending_terminal = None
+                    state.pending_model_audit = None
+                    state.done = True
                 else:
                     state.completion_rejections += 1
             elif tool == "fail_task":

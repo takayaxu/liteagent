@@ -43,6 +43,8 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
     This runs before completion review and stage-based action ranking. No
     rejected claim or model-authored completion_revise is a prerequisite.
     """
+    if gate.get("passed") is not False:
+        return None
     issues = gate.get("outcome_issues")
     if not issues:
         return None
@@ -70,26 +72,16 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
     return tools
 
 
-def completion_review_tools(state: Any, selected: Iterable[str]) -> list[dict[str, Any]]:
-    """A ready gate authorizes a claim; it does not revoke repair capabilities."""
-    actions = list(dict.fromkeys([
-        *selected,
-        *INSPECT_ACTIONS.get(state.domain, ()),
-        *SAVE_ACTIONS.get(state.domain, ()),
-        *(effective_canonical_action(e, state.domain)[1] for e in state.successful_adapter_events()
-          if effective_canonical_action(e, state.domain)[0] == state.domain
-          and not action_is_read_only(effective_canonical_action(e, state.domain)[1])),
-        *(recovery_search_actions(state) or []),
-    ]))
-    if state.domain == "multi_apps":
-        routes = discovered_adapter_routes(state)
-        tools = build_tools(state.domain, ["adapter.call"] if routes else [], include_gui=False, strict_generic=True)
-        if routes:
-            tools = constrain_adapter_call_routes(tools, routes)
-    else:
-        tools = build_tools(state.domain, [a for a in actions if a not in FORBIDDEN_DATASET_ACTIONS],
-                            include_gui=False, strict_generic=True)
-    return [*tools, completion_review.revision_tool()]
+def completion_review_tools(state: Any) -> list[dict[str, Any]]:
+    """Ready evidence awaits a final claim or an explicit failed self-review.
+
+    Failed native checks take the recovery path before reaching this phase.
+    A model-observed discrepancy can still open correction via completion_revise.
+    """
+    controls = build_tools(state.domain, [], include_gui=False, strict_generic=True)
+    return [tool for tool in controls
+            if tool["function"]["name"] in {"propose_done", "fail_task"}
+            ] + [completion_review.revision_tool()]
 
 
 def pending_completion_recovery(events: Iterable[Any]) -> dict[str, Any] | None:
@@ -414,7 +406,7 @@ def strict_proactive_completion_tools(
     if outcome_tools is not None:
         return outcome_tools
     if completion_review.review_ready(state, gate):
-        return completion_review_tools(state, selected_actions(state))
+        return completion_review_tools(state)
     # Successful calls do not prove task completion. Only the model's rejected
     # claim starts closing work; a later content change reopens normal tools.
     for event in reversed(state.events):

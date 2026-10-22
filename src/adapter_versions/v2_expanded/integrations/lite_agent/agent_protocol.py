@@ -173,11 +173,8 @@ class AgentProtocolMixin:
         pending_terminal = getattr(state, "pending_terminal", None)
         terminal_audit_guidance = (
             " The previous terminal control result is waiting for one audit turn. "
-            "Review the truthful result against every target and requirement. Confirm the "
-            "same terminal tool only if all outcomes hold. If a discrepancy remains, choose "
-            "an exposed inspection, repair action or search; this cancels the pending "
-            "completion and resumes execution. gate.passed=true does not certify "
-            "unobserved targets or unsupported requirements."
+            "Acknowledge the same terminal tool once. Successful completion claims "
+            "already end immediately after final review and require no audit turn."
             if isinstance(pending_terminal, dict)
             else ""
         )
@@ -389,10 +386,13 @@ class AgentProtocolMixin:
             completion_readback += (
                 " The implemented completion checks currently pass. Compare the observed "
                 "result with every user requirement and target before propose_done. "
-                "A single target's successful verification does not prove a whole batch. "
-                "Inspection, repair and search remain available when evidence is missing "
-                "or a discrepancy remains; completion_revise is optional. Do not repeat "
-                "already satisfied work without a concrete discrepancy."
+                "Review the final observations already in context; a single target's "
+                "verification does not prove a whole batch. If every clause is satisfied, "
+                "call propose_done now. Its full gate is the final review: acceptance "
+                "ends execution immediately without another inspection or confirmation. "
+                "If self-review identifies an actual discrepancy, call completion_revise "
+                "with the observed state, required state and correction; a failed review "
+                "opens inspection and repair tools. Do not repeat satisfied inspections."
             )
         failure_guidance += correction_guidance
         failure_guidance += (

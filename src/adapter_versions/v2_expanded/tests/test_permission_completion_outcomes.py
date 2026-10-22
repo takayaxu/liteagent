@@ -10,7 +10,7 @@ from integrations.lite_agent.adapter_results import adapter_context_hint, compac
 from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.completion_outcomes import completion_outcome_issues, outcome_retry_allowed
 from integrations.lite_agent.completion_policy import completion_claim_contradictions
-from integrations.lite_agent.episode_control import resolve_terminal_audit
+from integrations.lite_agent.episode_control import mark_tool_result_for_audit
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 
 
@@ -102,7 +102,7 @@ def test_final_inventory_certifies_each_mode_including_already_correct_targets()
     assert completion_outcome_issues(current) == []
     assert agent()._generic_completion_gate(current)["passed"]
     # Even when ready, ordinary repairs, inspection and search remain callable.
-    assert {"adapter__filesystem_find", "adapter__filesystem_set_permissions", "tools_search", "propose_done"} <= names(agent(), current)
+    assert names(agent(), current) == {"propose_done", "fail_task", "completion_revise"}
     assert current.workflow_progress()["pending_phase"] == "outcomes_verified"
 
 
@@ -167,14 +167,24 @@ def test_negative_pending_statement_does_not_block_success():
     assert completion_claim_contradictions({"reason": "No remaining files require changes.", "evidence": "all modes read back"}) == []
 
 
-def test_terminal_audit_can_reopen_direct_correction_instead_of_forcing_confirmation():
+def test_successful_final_review_commits_without_another_audit_or_repair():
     current = state()
     final_scan(current)
-    current.pending_terminal = {"tool": "propose_done", "status": "done", "event_step": 4}
-    tools = agent().tools(current)
-    assert {"adapter__filesystem_find", "adapter__filesystem_set_permissions", "tools_search"} <= {t["function"]["name"] for t in tools}
-    assert not resolve_terminal_audit(current, {"tool": "adapter__filesystem_find"})
+    current.defer_terminal_audit = True
+    worker = agent()
+    result = worker.execute_proposal(current, {
+        "tool": "propose_done", "arguments_raw": json.dumps({
+            "reason": "Every regular file has the requested mode.",
+            "evidence": ["Final complete inventory reports 0640 for every file."],
+        }), "_model_visible_tools": worker.tools(current),
+    })
+    assert result.executed, result.error
+    assert current.done
     assert current.pending_terminal is None
+    assert mark_tool_result_for_audit(current, result)["status"] == "not_required"
+    assert current.pending_model_audit is None
+    assert not result.audit_required
+    assert worker.tools(current) == []
 
 
 def test_find_reports_actual_modes_and_limited_scan_coverage(tmp_path):
@@ -219,10 +229,10 @@ def test_failed_dispatched_mutation_demands_new_inventory():
     assert any(i["code"] == "permissions.final_state_unverified" for i in completion_outcome_issues(current))
 
 
-def test_nonpermission_ready_task_still_retains_model_selected_mutation_and_search():
+def test_nonpermission_ready_task_waits_for_final_review_instead_of_repair():
     current = state()
     current.instruction = "Set the clipboard text to hello."
     current.events = [event(1, "clipboard.set", {"text": "hello"}, {"verification_passed": True})]
     worker = agent()
     assert worker._generic_completion_gate(current)["passed"]
-    assert {"adapter__clipboard_set", "tools_search", "propose_done"} <= names(worker, current)
+    assert names(worker, current) == {"propose_done", "fail_task", "completion_revise"}

@@ -70,9 +70,8 @@ def adapter_event(action, arguments, *, domain="os") -> ExecutionEvent:
     )
 
 
-@pytest.mark.parametrize("review_tool", ["propose_done", "tools_search"])
 @pytest.mark.parametrize("delegation", ["qwen_to_holo", "planner_to_holo"])
-def test_audited_gui_claim_uses_existing_terminal_audit(review_tool, delegation) -> None:
+def test_audited_gui_claim_ends_at_the_final_gate(delegation) -> None:
     state = gui_state()
     state.events[0].proposed["delegation"] = delegation
     agent = LiteAgent(LiteAgentConfig(base_url="http://unused/v1"), NoAdapter())
@@ -89,13 +88,14 @@ def test_audited_gui_claim_uses_existing_terminal_audit(review_tool, delegation)
     )
 
     assert event.executed is True
-    assert state.done is False
-    assert state.pending_terminal["event_step"] == event.step
+    assert state.done is True
+    assert state.pending_terminal is None
     assert len(state.events) == 2
     mark_tool_result_for_audit(state, event)
-    resolution = consume_terminal_audit(state, {"tool": review_tool})
-    assert resolution["confirmed"] is (review_tool == "propose_done")
-    assert state.done is (review_tool == "propose_done")
+    assert state.pending_model_audit is None
+    assert not event.audit_required
+    assert consume_terminal_audit(state, {"tool": "tools_search"}) is None
+    assert state.done
     assert len(state.events) == 2
 
 

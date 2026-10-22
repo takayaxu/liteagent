@@ -1209,9 +1209,8 @@ def run_task(
         instruction=example["instruction"],
         recommended_actions=[],
     )
-    # Terminal control results are sent through one bounded Qwen audit turn
-    # before the Runner allows the episode to finish.  The default behavior of
-    # direct LiteAgent callers remains unchanged.
+    # Audit action/GUI results before the final completion claim. A passed
+    # completion gate ends immediately; only failure controls defer an ack.
     state.defer_terminal_audit = True
     record: dict[str, Any] = {
         "order": task["order"],
@@ -1886,7 +1885,13 @@ def run_task(
                 if isinstance(stall, dict)
                 else ("local_step_limit" if local_limit_reached else None)
             )
-            if (
+            if state.done:
+                record["termination_reason"] = "agent_done"
+                stop_reason = "agent_done"
+            elif state.failed:
+                record["termination_reason"] = "agent_failed"
+                stop_reason = "agent_failed"
+            elif (
                 recovery_reason is not None
                 and total_steps < step_budget["effective_limit"]
                 and not state.done
@@ -1951,10 +1956,6 @@ def run_task(
                 }
                 record["termination_reason"] = "agent_loop_time_budget_exhausted"
                 stop_reason = "agent_loop_time_budget_exhausted"
-            elif state.done:
-                stop_reason = "agent_done"
-            elif state.failed:
-                stop_reason = "agent_failed"
 
             if (
                 stop_reason is None

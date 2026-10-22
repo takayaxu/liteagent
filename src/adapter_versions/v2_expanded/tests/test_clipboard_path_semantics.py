@@ -371,7 +371,7 @@ def test_multi_apps_tool_surface_uses_search_then_adapter_call() -> None:
     }
 
 
-def test_terminal_audit_keeps_the_generic_multi_apps_surface_available() -> None:
+def test_legacy_terminal_acknowledgement_does_not_expose_repair() -> None:
     state = _state(
         [
             _catalog_event(("os", "clipboard.set")),
@@ -385,13 +385,7 @@ def test_terminal_audit_keeps_the_generic_multi_apps_surface_available() -> None
         "event_step": 3,
     }
 
-    assert _tool_names(state) == {
-        "adapter__adapter_call",
-        "tools_search",
-        "gui_request",
-        "propose_done",
-        "fail_task",
-    }
+    assert _tool_names(state) == {"propose_done"}
 
 
 def test_failed_find_returns_to_generic_recovery_surface() -> None:

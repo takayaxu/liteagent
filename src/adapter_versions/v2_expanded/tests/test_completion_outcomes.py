@@ -63,6 +63,100 @@ def agent(executor=None):
                      executor or NoExecution(), model_client=SimpleNamespace(client=object()))
 
 
+def claim(worker, current, reason="The requested tables are saved and fully verified."):
+    return worker.execute_proposal(current, {
+        "tool": "propose_done", "finish_reason": "tool_calls",
+        "arguments_raw": json.dumps({"reason": reason, "evidence": [
+            "Final native definitions and both complete output ranges match the request.",
+        ]}), "_model_visible_tools": worker.tools(current),
+    })
+
+
+def test_final_gate_commits_without_another_model_turn_and_cannot_reopen():
+    from integrations.lite_agent.episode_control import mark_tool_result_for_audit
+
+    current = state()
+    current.defer_terminal_audit = True
+    worker = agent()
+    assert {t["function"]["name"] for t in worker.tools(current)} == {
+        "propose_done", "fail_task", "completion_revise",
+    }
+    result = claim(worker, current)
+    assert result.executed, result.error
+    assert result.result["gate"] == {"passed": True, "missing": []}
+    assert current.done and current.pending_terminal is None
+    assert mark_tool_result_for_audit(current, result)["status"] == "not_required"
+    assert current.pending_model_audit is None and not result.audit_required
+    assert worker.tools(current) == []
+    with pytest.raises(ValueError, match="episode is terminal"):
+        worker.execute_proposal(current, {
+            "tool": "adapter__workbook_inspect", "arguments_raw": "{}",
+        })
+
+
+def test_failed_native_review_exposes_repair_instead_of_accepting_a_good_claim():
+    from integrations.lite_agent.completion_recovery import outcome_recovery_tools
+
+    current = state()
+    current.events[6].result["context_hint"]["sheets"][1]["pivot_tables"][0]["data_fields"][0]["aggregation"] = "count"
+    worker = agent()
+    result = claim(worker, current)
+    assert not result.executed and not current.done
+    assert current.pending_terminal is None
+    assert result.error["outcome_issues"][0]["code"] == "pivot.definition_mismatch"
+    assert result.error["outcome_issues"][0]["target"]["name"] == "ByRegion"
+    assert {"adapter__pivot_create", "adapter__range_read", "tools_search"} <= {
+        t["function"]["name"] for t in worker.tools(current)
+    }
+    assert outcome_recovery_tools(current, {
+        "passed": True, "outcome_issues": result.error["outcome_issues"],
+    }) is None
+
+
+@pytest.mark.parametrize("reason", [
+    "The task is not complete.",
+    "Two remaining files still need to be processed.",
+])
+def test_final_gate_rejects_admitted_unfinished_work_even_with_complete_native_state(reason):
+    current = state()
+    current.defer_terminal_audit = True
+    result = claim(agent(), current, reason)
+    assert not result.executed and not current.done
+    assert result.error["missing"]
+    assert current.pending_terminal is None
+
+
+def test_failed_self_review_cannot_be_bypassed_by_reads_save_or_another_claim():
+    current = state()
+    worker = agent()
+    originals = deepcopy(current.events)
+    revision = worker.execute_proposal(current, {
+        "tool": "completion_revise", "_model_visible_tools": worker.tools(current),
+        "arguments_raw": json.dumps({
+            "observed": "The first total still needs correction.",
+            "required": "Both totals must match the source.",
+            "correction": "Replace the first pivot, then persist and read both outputs.",
+        }),
+    })
+    assert revision.executed, revision.error
+    assert not worker._generic_completion_gate(current)["passed"]
+    current.events.extend([
+        event(11, "range.read", {"sheet": "Summary", "range": "H3:I6"},
+              originals[7].result["context_hint"]),
+        event(12, "workbook.save"),
+    ])
+    result = claim(worker, current)
+    assert not result.executed and not current.done
+    assert any("failed completion self-review" in item for item in result.error["missing"])
+    assert "adapter__pivot_create" in {t["function"]["name"] for t in worker.tools(current)}
+    for original in [originals[3], originals[5], originals[6], originals[7], originals[8]]:
+        original.step = len(current.events) + 1
+        current.events.append(original)
+    assert worker._generic_completion_gate(current)["passed"]
+    assert claim(worker, current).executed
+    assert current.done
+
+
 def codes(current):
     return {issue["code"] for issue in completion_outcome_issues(current)}
 

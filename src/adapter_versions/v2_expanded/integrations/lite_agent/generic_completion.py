@@ -21,6 +21,7 @@ from .completion_policy import (
     requires_readback_action,
 )
 from .completion_outcomes import completion_outcome_issues
+from .completion_review import unresolved_discrepancy
 
 
 STRICT_COMPLETION_DONE = "done"
@@ -133,14 +134,21 @@ def strict_completion_gate(
 ) -> dict[str, Any]:
     """Apply generic mutation, persistence, and read-back evidence only."""
     outcome_issues = completion_outcome_issues(state)
+    discrepancy = unresolved_discrepancy(state)
+    review_missing = ([
+        "resolve the failed completion self-review before claiming success: "
+        f"observed {discrepancy.get('observed')!r}; required {discrepancy.get('required')!r}; "
+        f"correction {discrepancy.get('correction')!r}"
+    ] if discrepancy is not None else [])
     # GUI outcomes are reviewed visually by the planner, not an invented API mutation.
-    # Only an explicit claim enters the existing deferred terminal-audit path.
+    # The planner reviews the GUI result before its explicit final claim.
     if completion is not None and _audited_gui_completion_available(
         state, is_read_only_action, is_save_action
     ):
         missing = completion_claim_contract_errors(completion)
         missing.extend(completion_claim_contradictions(completion))
         missing.extend(issue["message"] for issue in outcome_issues)
+        missing.extend(review_missing)
         return {
             "passed": not missing,
             "missing": missing,
@@ -183,6 +191,7 @@ def strict_completion_gate(
     if semantic_requirement_errors is not None:
         missing.extend(semantic_requirement_errors(state))
     missing.extend(issue["message"] for issue in outcome_issues)
+    missing.extend(review_missing)
     return {"passed": not missing, "missing": list(dict.fromkeys(missing)),
             **({"outcome_issues": outcome_issues} if outcome_issues else {})}
 
