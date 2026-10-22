@@ -525,3 +525,23 @@ def test_header_or_year_write_does_not_project_calculation_as_mutation_complete(
     assert (
         progress["outstanding_outcomes"][0]["code"] == "calculation.output_unverified"
     )
+
+
+@pytest.mark.parametrize(
+    "area,values",
+    [
+        ("H11:H13", [[2019, 2020, 2021]]),
+        (
+            "I11:J13",
+            [{"kind": "formula", "value": "='Source data'.F6/'Source data'.F5-1"}] * 6,
+        ),
+        ("H10:K13", write_args()["values"]),
+    ],
+)
+def test_invalid_matrix_geometry_is_rejected_before_inventing_cell_roles(area, values):
+    args = {"sheet": "Changes", "range": area, "values": values}
+    errors = argument_errors(source_state(), "range.write", args)
+    assert len(errors) == 1
+    assert "RANGE_INVALID" in errors[0]
+    assert "No cells were written" in errors[0]
+    assert "precomputed literal" not in errors[0]

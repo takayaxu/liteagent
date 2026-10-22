@@ -9,6 +9,9 @@ from __future__ import annotations
 import math
 import re
 
+from calc_adapter.errors import AdapterError
+from calc_adapter.schema import orient_typed_values
+
 from .completion_policy import (
     action_is_read_only,
     action_is_save,
@@ -98,8 +101,14 @@ def _proposed_cells(action, args):
         rect, values = rectangle(args.get("range")), args.get("values")
         if not rect or not isinstance(values, list) or not values:
             return
-        if not isinstance(values[0], list):
-            values = [[v] for v in values] if rect[0] == rect[2] else [values]
+        try:
+            values = orient_typed_values(
+                values,
+                target_rows=rect[3] - rect[1] + 1,
+                target_columns=rect[2] - rect[0] + 1,
+            )
+        except AdapterError:
+            return  # Malformed rectangles cannot establish any cell identity.
         for ri, row in enumerate(values):
             if isinstance(row, list):
                 for ci, value in enumerate(row):
@@ -317,6 +326,26 @@ def argument_errors(state, action, args):
         or args.get("sheet") != spec["target_sheet"]
     ):
         return []
+    if action == "range.write" and (rect := rectangle(args.get("range"))):
+        try:
+            orient_typed_values(
+                args.get("values"),
+                target_rows=rect[3] - rect[1] + 1,
+                target_columns=rect[2] - rect[0] + 1,
+            )
+        except AdapterError as exc:
+            detail = (
+                "For a one-column target use a flat list or one value per nested row, "
+                "not one nested row containing every value. "
+                if rect[0] == rect[2] and rect[1] != rect[3]
+                else "For a rectangular target use one nested list per worksheet row. "
+            )
+            return [
+                f"{exc.code}: {exc.message} Target dimensions are "
+                f"{rect[3] - rect[1] + 1} rows by {rect[2] - rect[0] + 1} columns. "
+                + detail
+                + "Validate the matrix shape before interpreting cell roles. No cells were written."
+            ]
     grids, _, _ = _grids(state, (action, args))
     grid = grids[spec["target_sheet"]]
     targets, source = _targets(grid, spec), _sources(grids, spec)
