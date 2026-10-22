@@ -9,6 +9,7 @@ import os
 import re
 import shlex
 import shutil
+import stat
 import tempfile
 import time
 from datetime import datetime, timezone
@@ -467,6 +468,9 @@ class OSActions:
         max_results = int(params.get("max_results", 50))
         matches: dict[Path, dict[str, Any]] = {}
         scanned_entries = 0
+        skipped_hidden_count = 0
+        depth_limited_directories: list[str] = []
+        scan_errors: list[dict[str, str]] = []
 
         for root in roots:
             queue = deque([(root, 0)])
@@ -476,17 +480,20 @@ class OSActions:
                     entries = sorted(
                         directory.iterdir(), key=lambda path: path.name.casefold()
                     )
-                except (FileNotFoundError, OSError, PermissionError):
+                except OSError as exc:
+                    scan_errors.append({"path": str(directory), "error": str(exc)})
                     continue
                 for entry in entries:
                     if not include_hidden and entry.name.startswith("."):
+                        skipped_hidden_count += 1
                         continue
                     scanned_entries += 1
                     try:
                         is_directory = entry.is_dir()
                         is_file = entry.is_file()
                         is_symlink = entry.is_symlink()
-                    except (FileNotFoundError, OSError, PermissionError):
+                    except OSError as exc:
+                        scan_errors.append({"path": str(entry), "error": str(exc)})
                         continue
                     if any(fnmatchcase(entry.name, pattern) for pattern in patterns):
                         kind_matches = (
@@ -496,9 +503,12 @@ class OSActions:
                         )
                         if kind_matches:
                             try:
-                                resolved = entry.resolve()
+                                # Keep link identity separate from its target so
+                                # a link cannot overwrite a regular-file record.
+                                resolved = entry.absolute() if is_symlink else entry.resolve()
                                 stat_result = entry.stat()
-                            except (FileNotFoundError, OSError, PermissionError):
+                            except OSError as exc:
+                                scan_errors.append({"path": str(entry), "error": str(exc)})
                                 continue
                             matches[resolved] = {
                                 "path": str(resolved),
@@ -508,6 +518,9 @@ class OSActions:
                                 "modified_at": datetime.fromtimestamp(
                                     stat_result.st_mtime, tz=timezone.utc
                                 ).isoformat(),
+                                "mode": f"{stat.S_IMODE(stat_result.st_mode):04o}",
+                                "mode_value": stat.S_IMODE(stat_result.st_mode),
+                                "is_symlink": is_symlink,
                             }
                     if (
                         recursive
@@ -516,6 +529,8 @@ class OSActions:
                         and depth + 1 < max_depth
                     ):
                         queue.append((entry, depth + 1))
+                    elif recursive and is_directory and not is_symlink:
+                        depth_limited_directories.append(str(entry))
 
         ordered = [matches[path] for path in sorted(matches, key=str)]
         returned = ordered[:max_results]
@@ -525,11 +540,16 @@ class OSActions:
             "kind": kind,
             "recursive": recursive,
             "max_depth": max_depth,
+            "include_hidden": include_hidden,
             "matches": returned,
             "match_count": len(ordered),
             "returned_count": len(returned),
             "truncated": len(ordered) > len(returned),
             "scanned_entries": scanned_entries,
+            "scan_complete": not (scan_errors or depth_limited_directories or skipped_hidden_count),
+            "skipped_hidden_count": skipped_hidden_count,
+            "depth_limited_directories": depth_limited_directories[:32],
+            "scan_errors": scan_errors[:32],
         }
 
     def open_path(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:

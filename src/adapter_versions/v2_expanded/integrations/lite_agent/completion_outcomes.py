@@ -298,6 +298,10 @@ def _output_issue(events: list, sheet: str, pivot: dict, totals: dict, after: in
 
 def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
     """Return live defects, distinguishing wrong state from absent evidence."""
+    if getattr(state, "domain", None) == "os":
+        from .filesystem_permission_semantics import outcome_issues
+
+        return outcome_issues(state, result_payload, _issue)
     if getattr(state, "domain", None) != "libreoffice_calc":
         return []
     instruction = str(state.instruction)
@@ -406,6 +410,12 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
 
 def outcome_retry_allowed(state: Any, domain: str, action: str, args: dict, after_step: int) -> bool:
     """Allow one model-selected reapplication after fresh native contradiction."""
+    if domain == "os" and action == "filesystem.set_permissions":
+        return any(issue["code"] == "permissions.mode_mismatch"
+                   and issue["target"].get("path") == args.get("path")
+                   and issue["evidence_step"] > after_step
+                   and str(args.get("mode", "")).lstrip("0") == issue["expected"]["mode"].lstrip("0")
+                   for issue in completion_outcome_issues(state))
     if domain != "libreoffice_calc" or action != "pivot.create":
         return False
     for issue in completion_outcome_issues(state):

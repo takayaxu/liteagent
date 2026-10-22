@@ -306,6 +306,13 @@ class RuntimeStateCoreMixin:
         restart or context compression cannot erase a completed source phase.
         """
         from . import pdf_table_selection
+        from .filesystem_permission_semantics import requested_scope
+        from .completion_outcomes import completion_outcome_issues
+
+        if requested_scope(self) is not None:
+            issues = completion_outcome_issues(self)
+            return {"pending_phase": "outcome_verification" if issues else "outcomes_verified",
+                    "outstanding_outcomes": issues}
 
         if pdf_table_selection.active(self):
             observed = pdf_table_selection.observations(self)

@@ -895,6 +895,11 @@ def completion_claim_contradictions(
             r"(?i)\bcannot\s+complete\s+(?:this|the)\s+task\b",
         ),
         "the completion claim describes work that still needs to happen": (
+            r"(?i)(?<!no )(?<!zero )\b(?:remaining|pending|unfinished|unprocessed)\b[^.!?\n]{0,100}"
+            r"\b(?:still\s+)?(?:need(?:s)?|require(?:s)?)\b",
+            r"(?i)\b(?:files?|items?|targets?|tasks?|changes?|operations?)\b[^.!?\n]{0,60}"
+            r"\b(?:remain(?:s)?\s+(?:pending|unfinished|unprocessed)|still\s+need(?:s)?\s+to\s+be)\b",
+            r"(?:还有|仍有|剩余|尚有)[^。！？\n]{0,60}(?:未完成|未处理|待处理|需要|需修改)",
             r"(?i)\bthe\s+next(?:\s+(?:logical|required|necessary))?\s+step\s+"
             r"(?:is|would\s+be|will\s+be)\s+to\b",
             r"(?i)\b(?:I|we|the\s+user)\s+(?:still\s+)?(?:need|needs|will\s+need|would\s+need)\s+to\b",

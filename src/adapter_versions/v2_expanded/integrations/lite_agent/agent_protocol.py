@@ -173,10 +173,11 @@ class AgentProtocolMixin:
         pending_terminal = getattr(state, "pending_terminal", None)
         terminal_audit_guidance = (
             " The previous terminal control result is waiting for one audit turn. "
-            "Review the truthful result and screenshot, then call the same terminal "
-            "Tool once to confirm it. No further mutation, search, or inspection is "
-            "needed after an accepted completion result. A completion result with "
-            "status=ok or gate.passed=true acknowledges the submitted action evidence."
+            "Review the truthful result against every target and requirement. Confirm the "
+            "same terminal tool only if all outcomes hold. If a discrepancy remains, choose "
+            "an exposed inspection, repair action or search; this cancels the pending "
+            "completion and resumes execution. gate.passed=true does not certify "
+            "unobserved targets or unsupported requirements."
             if isinstance(pending_terminal, dict)
             else ""
         )
@@ -386,18 +387,12 @@ class AgentProtocolMixin:
         )
         if completion_review.review_ready(state, self._generic_completion_gate(state)):
             completion_readback += (
-                " Current completion evidence is ready: the execution ledger "
-                "satisfies the required changes, persistence, and final read-back "
-                "checks. Review the observed result against every user requirement; "
-                "if it matches, call propose_done with that evidence now. A successful "
-                "read-only inspection creates no new audit obligation. Do not repeat "
-                "inspect merely to audit the previous inspection. This readiness "
-                "signal does not certify that the observed values match the request."
-                " Completion review is active. Use the final observation already "
-                "in context; repeated inspect and mutation are unavailable in this "
-                "phase. If an actual discrepancy remains, call completion_revise "
-                "with the observed value, required value and correction to return "
-                "to the correction workflow. Otherwise call propose_done."
+                " The implemented completion checks currently pass. Compare the observed "
+                "result with every user requirement and target before propose_done. "
+                "A single target's successful verification does not prove a whole batch. "
+                "Inspection, repair and search remain available when evidence is missing "
+                "or a discrepancy remains; completion_revise is optional. Do not repeat "
+                "already satisfied work without a concrete discrepancy."
             )
         failure_guidance += correction_guidance
         failure_guidance += (

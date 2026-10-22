@@ -2664,6 +2664,10 @@ def filesystem_find_context(result: dict[str, Any]) -> dict[str, Any]:
     }
     if "kind" in result:
         context["kind"] = result["kind"]
+    context.update({key: result[key] for key in (
+        "roots", "name_patterns", "recursive", "max_depth", "include_hidden", "scan_complete",
+        "skipped_hidden_count", "depth_limited_directories", "scan_errors",
+    ) if key in result})
     suffixes: set[str] = set()
     matched_directories: list[str] = []
     for item in matches[:50]:
@@ -2674,6 +2678,7 @@ def filesystem_find_context(result: dict[str, Any]) -> dict[str, Any]:
             "kind": item.get("kind"),
             "size_bytes": item.get("size_bytes"),
             "modified_at": item.get("modified_at"),
+            **{key: item[key] for key in ("mode", "mode_value", "is_symlink") if key in item},
         }
         context["matches"].append(preview)
         parent = path if item.get("kind") == "directory" else path.rsplit("/", 1)[0]

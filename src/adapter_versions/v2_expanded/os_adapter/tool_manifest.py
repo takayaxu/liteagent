@@ -278,7 +278,10 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "Find local files or directories under the model-selected roots using basename "
             "patterns. Use this to discover an existing file path before opening, reading "
             "or processing it. This searches the filesystem directly and does not require "
-            "an active application workspace."
+            "an active application workspace. Results include observed Unix modes and scan "
+            "coverage. To verify all files, include hidden entries and inspect scan_complete, "
+            "depth_limited_directories, scan_errors and truncated; limited scans do not prove "
+            "the whole tree is covered. Repeat after changes to verify final permissions."
         ),
         "properties": {
             "roots": {
