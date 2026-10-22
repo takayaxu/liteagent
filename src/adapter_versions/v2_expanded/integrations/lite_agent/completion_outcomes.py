@@ -304,23 +304,26 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
         return outcome_issues(state, result_payload, _issue)
     if getattr(state, "domain", None) != "libreoffice_calc":
         return []
+    from .calc_scaled_outcomes import scaled_display_issues
+
+    scaled_issues = scaled_display_issues(state)
     instruction = str(state.instruction)
     counts = {"pivot_tables": requested_pivot_count(instruction), "charts": requested_chart_count(instruction)}
     counts = {key: value for key, value in counts.items() if value}
     if not counts:
-        return []
+        return scaled_issues
     events = _events(state)
     mutations = [(e, a, ar, p) for e, a, ar, p in events
                  if a == "gui" or (not action_is_read_only(a) and not action_is_save(a))]
     # Before any work, normal discovery owns the surface. Completion still
     # needs the existing action/persistence checks in that phase.
     if not mutations:
-        return []
+        return scaled_issues
     after = max([e.step for e, _, _, _ in mutations]
                 + [e.step for e, a, _, _ in events if action_is_save(a)])
     inspections = [(e, p) for e, a, _, p in events if a == "workbook.inspect"]
     inspect_event, snapshot = inspections[-1] if inspections else (None, {})
-    issues = []
+    issues = list(scaled_issues)
     actions = tuple(dict.fromkeys([
         "workbook.inspect", "range.read", "sheet.create", "workbook.save",
         *("pivot.create" if k == "pivot_tables" else "chart.create" for k in counts),
@@ -328,7 +331,7 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
     if inspect_event is None or inspect_event.step <= after:
         # A pre-mutation snapshot cannot prove that a newly created sheet is
         # missing or that a just-replaced object still has its old definition.
-        return [_issue("workbook.final_inventory_unverified", "current workbook",
+        return [*issues, _issue("workbook.final_inventory_unverified", "current workbook",
                        "native object inventory after final mutation and save",
                        {"last_inspection_step": getattr(inspect_event, "step", None), "after_step": after},
                        actions=actions)]

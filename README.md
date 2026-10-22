@@ -138,6 +138,9 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 最终完成门及第 4、147 题复跑证据见
 [最终完成审查记录](docs/final-completion-gate-20261022.md)，Qwen 空参数工具和
 分隔符修复见 [工具调用修复记录](docs/empty-tool-whitespace-repair-20261022.md)。
+明确指定源列和目标单位列的缩放显示任务，还会核验目标原生值与实际显示结果，
+允许复制、公式或写值实现；缺项持续到保存并回读验证消除，详见
+[单元格结果核验修复](docs/scaled-display-outcomes-repair-20261022.md)。
 
 直接调用单题或自定义任务配置时，仍可使用通用形式：
 

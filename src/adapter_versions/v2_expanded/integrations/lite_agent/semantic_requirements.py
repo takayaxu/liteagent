@@ -25,6 +25,7 @@ from .clipboard_path_semantics import (
 from .calc_scaled_display import (
     describe_scaled_display_output,
     missing_scaled_display_outputs,
+    scaled_display_contract,
 )
 from . import impress_semantics
 from .filesystem_copy_semantics import (
@@ -150,7 +151,7 @@ def _calc_errors(state: Any) -> list[str]:
     instruction = str(state.instruction)
     errors: list[str] = list(calc_semantics.sort_completion_missing(state))
 
-    missing_scaled_outputs = missing_scaled_display_outputs(
+    missing_scaled_outputs = [] if scaled_display_contract(instruction) else missing_scaled_display_outputs(
         instruction,
         _arguments(state, "range.set_scaled_display"),
     )

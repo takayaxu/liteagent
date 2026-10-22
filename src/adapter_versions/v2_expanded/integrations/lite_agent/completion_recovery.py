@@ -65,8 +65,16 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
         "of every required result. Inspect every named target and retain already-correct "
         "targets. After correcting, persist when required and read back the final scope."
     )
-    if state.domain == "libreoffice_calc":
+    if any(issue.get("code", "").startswith("pivot.") for issue in issues):
         guidance += " For a wrong existing pivot use its observed name and replace=true."
+    if any(issue.get("code", "").startswith("scaled_display.") for issue in issues):
+        guidance += (
+            " For an observed empty scaled output, transfer the observed source values "
+            "using range.copy, cells.set_formulas or range.write, then ensure its display "
+            "matches the requested scale and unit. Formatting an empty cell cannot "
+            "populate it. Do not repeat reads of known blank cells instead of filling "
+            "them; after the correction, save and read all named output ranges."
+        )
     for tool in tools:
         tool["function"]["description"] += guidance
     return tools

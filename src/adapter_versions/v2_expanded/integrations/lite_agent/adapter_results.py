@@ -3319,7 +3319,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
         }
         matrices = {
             key: result.get(key)
-            for key in ("display_text", "formulas", "kinds", "cell_addresses")
+            for key in ("display_text", "values", "formulas", "kinds", "cell_addresses", "number_formats")
             if isinstance(result.get(key), list)
         }
         if "cell_addresses" not in matrices:

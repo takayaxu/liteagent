@@ -131,6 +131,25 @@ def _destination_column(value: Any) -> str | None:
     return match.group("column").upper() if match is not None else None
 
 
+def scaled_display_contract(instruction: str) -> dict[str, Any] | None:
+    """Recognize a named source and explicit outputs for native result checks."""
+    intent = parse_scaled_display_intent(instruction)
+    source = re.search(r"(?i)\bcolumn\s+[\"'“‘]([^\"'”’\r\n]+)[\"'”’]", instruction)
+    places = re.search(
+        r"(?i)\b(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+        r"\s+decimal\s+places?\b", instruction,
+    )
+    if intent is None or source is None or places is None:
+        return None
+    token = places[1].casefold()
+    precision = int(token) if token.isdigit() else _NUMBER_WORDS[token]
+    if precision > 12 or any(output.unit is None for output in intent.outputs):
+        return None
+    return {"source_header": source[1].strip(), "outputs": intent.outputs,
+            "decimal_places": precision, "separator": intent.separator,
+            "rounding_mode": intent.rounding_mode}
+
+
 def _call_covers(
     arguments: dict[str, Any],
     output: ScaledDisplayOutput,

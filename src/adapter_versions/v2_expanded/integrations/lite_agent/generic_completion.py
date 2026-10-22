@@ -21,6 +21,7 @@ from .completion_policy import (
     requires_readback_action,
 )
 from .completion_outcomes import completion_outcome_issues
+from .calc_scaled_display import scaled_display_contract
 from .completion_review import unresolved_discrepancy
 
 
@@ -58,10 +59,17 @@ def _semantic_mutation_actions(
     is_read_only_action: Callable[[str], bool],
 ) -> set[str]:
     legacy = set(legacy_actions)
+    # Native cell outcomes accept copying, formulas, numeric writes or text
+    # displays. A prescribed operation name cannot establish their correctness.
+    outcome_actions = (
+        {"range.copy", "range.set_scaled_display"}
+        if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction)
+        else set()
+    )
     return {
         action
         for action in instruction_actions(state.domain, state.instruction)
-        if action not in legacy and not is_read_only_action(action)
+        if action not in legacy | outcome_actions and not is_read_only_action(action)
     }
 
 
@@ -70,6 +78,14 @@ def _observed_mutation_actions(state: Any) -> set[str]:
         effective_adapter_action(event, state.domain)[1]
         for event in state.successful_adapter_events()
     }
+
+
+def _outcome_mutation_actions(state: Any) -> set[str]:
+    """Recognize legal implementations as mutations without requiring each one."""
+    if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction):
+        return {"range.copy", "range.set_scaled_display", "range.write",
+                "cells.set_formulas", "range.format"}
+    return set()
 
 
 def _missing_semantic_actions(
@@ -168,7 +184,7 @@ def strict_completion_gate(
             is_read_only_action=is_read_only_action,
             is_save_action=is_save_action,
             relevance_score=relevance_score,
-            required_mutations=semantic_actions,
+            required_mutations=semantic_actions | _outcome_mutation_actions(state),
         )
     )
     if semantic_actions:
@@ -253,7 +269,7 @@ def strict_completion_phase(
                 is_read_only_action=is_read_only_action,
                 is_save_action=is_save_action,
                 relevance_score=relevance_score,
-                required_mutations=(),
+                required_mutations=_outcome_mutation_actions(state),
             )
         )
         if not relevant_mutations:
