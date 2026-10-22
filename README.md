@@ -2,8 +2,10 @@
 
 本仓库保留 LiteAgent 的运行源码、测试和历史开发记录。当前开发分支为
 `codex/api-split-liuxv`，冻结 v3 源码基线提交为 `026e829`。
-冻结 v3 是历史基线，不代表当前活动源码；后续复跑默认使用本地最新活动源码，
-包括尚未提交的运行源码修复。只有明确指定冻结版本时，才使用对应历史源码。
+冻结 v3 是历史基线；后续复跑默认使用当前开发分支最新的 Git 提交（启动时的
+`HEAD`），不包含未提交、已暂存但未提交或未跟踪的源码改动。需要验证修复时，
+先完成源码提交，再从该提交创建独立运行工作树。只有明确指定历史版本时，
+才使用对应历史提交。
 冻结 v3 的运行范围为 562 个文件，SHA-256：
 
 ```text
@@ -101,25 +103,37 @@ export QWEN_MODEL='Qwen3.5-9B'
 export QWEN_API_KEY='EMPTY'
 ```
 
-默认的本地串行配置位于 `configs/single-task-active-thinking.json`：它使用启动时的
-最新活动源码（`sources.source_mode=active`），保持 Qwen3.5-9B thinking、每题
+本地串行配置位于 `configs/single-task-active-thinking.json`，保持 Qwen3.5-9B thinking、每题
 100 步和 1800 秒，并配置完整的工具调用
 结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
 在调用结束处停止生成，客户端仍检查恰好一个完整工具调用并执行参数 schema 校验。
 
-依次运行指定 OSWorld 题目：
+复跑前，从开发分支最新提交创建独立 Git worktree，并在该目录依次运行指定题目：
 
 ```bash
+cd /home/liuxv/liteagent
+rerun_commit=$(git rev-parse HEAD)
+mkdir -p /home/liuxv/liteagent-local-runs
+rerun_root=$(mktemp -d /home/liuxv/liteagent-local-runs/committed-rerun-XXXXXXXX)
+git worktree add --detach "$rerun_root/source" "$rerun_commit"
+cd "$rerun_root/source"
 HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py --orders 13 15 27 47 76
 ```
 
-运行器从当前工作区复制独立源码快照，包含未提交的运行源码修改，记录实际源码
-摘要、Git 提交与工作区是否有改动，再按顺序运行题目；快照准备后和运行结束时均
-校验源码完整性。源码快照、配置、命令、日志和结果写入 `../liteagent-local-runs/`。
-可使用 `--config /path/to/config.json` 指定另一份配置；需要使用最新活动源码时，
-其 `sources.source_mode` 必须为 `active`，不能沿用历史配置中的固定源码摘要。
+`git worktree add` 从指定提交检出文件，不会带入开发工作区的未提交改动。
+运行工作树中的源码、运行脚本和默认配置均来自该提交，启动前不要在其中修改源码。
+复跑记录必须保留所用提交 SHA、源码摘要和配置；每次新复跑重新解析开发分支的
+`HEAD` 并创建工作树，不复用旧快照来代表最新版本。
 
-默认配置也收录了 4、102、119、147、183，可按需复跑，例如：
+现有配置的 `sources.source_mode=active` 仍表示“复制启动目录的源码”，运行器本身
+不会自动过滤未提交改动。因此必须从上述独立提交工作树启动，不能直接从有待提交
+源码的开发目录启动。运行器再复制独立快照并记录源码摘要、Git 提交和工作区状态，
+在快照准备后及运行结束时校验完整性。默认结果位于运行工作树父目录下的
+`liteagent-local-runs/`，可用 `--result-dir` 指定其他仓库外目录。
+可用 `--config /path/to/config.json` 指定测试配置，但不得借此混入未提交源码；
+使用最新提交复跑时，不沿用历史配置中不匹配的固定源码摘要。
+
+默认配置也收录了 4、102、119、147、183，在上述提交工作树内可按需复跑，例如：
 
 ```bash
 HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
@@ -142,13 +156,14 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 允许复制、公式或写值实现；缺项持续到保存并回读验证消除，详见
 [单元格结果核验修复](docs/scaled-display-outcomes-repair-20261022.md)。
 
-直接调用单题或自定义任务配置时，仍可使用通用形式：
+直接调用单题或自定义任务配置时，也必须在上述提交工作树内运行：
 
 ```bash
 ./bin/run-liteagent.sh \
   --config /path/to/config.json \
   --orders 1 \
   --result-dir /tmp/liteagent-run-1 \
+  --qcow2 /var/lib/liteagent-shared/Ubuntu.qcow2 \
   --base-url "$QWEN_BASE_URL" \
   --model "$QWEN_MODEL" \
   --api-key "$QWEN_API_KEY"
