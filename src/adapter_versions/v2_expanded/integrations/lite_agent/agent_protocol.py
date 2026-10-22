@@ -722,6 +722,7 @@ class AgentProtocolMixin:
         execution_recovery: bool | None = None,
         protocol_error: dict[str, Any] | None = None,
         request_timeout_seconds: float | None = None,
+        deadline_monotonic: float | None = None,
     ) -> dict[str, Any]:
         # The execution phase follows immediately after ``propose`` in the
         # Runner.  Retain the exact bytes so a delegated GUI request can be
@@ -772,6 +773,8 @@ class AgentProtocolMixin:
                 output_token_budget,
                 MODEL_TRUNCATION_RECOVERY_MIN_TOKENS,
             )
+        deadline_options = ({"deadline_monotonic": deadline_monotonic}
+                            if deadline_monotonic is not None else {})
         proposal = self.model_client.propose(
             model=self.config.model,
             messages=messages,
@@ -783,6 +786,7 @@ class AgentProtocolMixin:
             reasoning_mode=self.config.reasoning_mode,
             expected_model=self.config.model,
             request_timeout_seconds=request_timeout_seconds,
+            **deadline_options,
             presence_penalty=getattr(self.config, "presence_penalty", None),
             thinking_token_budget=getattr(self.config, "thinking_token_budget", None),
             tool_call_stop_sequence=getattr(self.config, "tool_call_stop_sequence", None),

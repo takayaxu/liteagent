@@ -592,6 +592,7 @@ class StructuredToolModelClient:
         presence_penalty: float | None = None,
         thinking_token_budget: int | None = None,
         tool_call_stop_sequence: str | None = None,
+        deadline_monotonic: float | None = None,
     ) -> dict[str, Any]:
         if (
             reasoning_effort is not None
@@ -653,9 +654,17 @@ class StructuredToolModelClient:
             with_options = getattr(self.client, "with_options", None)
             if callable(with_options):
                 request_client = with_options(timeout=timeout)
-        response = _aggregate_stream_response(
-            request_client.chat.completions.create(**request)
-        )
+        if deadline_monotonic is None:
+            response = _aggregate_stream_response(
+                request_client.chat.completions.create(**request)
+            )
+        else:
+            from .model_deadline import run_before_deadline
+
+            response = run_before_deadline(
+                lambda: request_client.chat.completions.create(**request),
+                _aggregate_stream_response, deadline_monotonic,
+            )
         if (
             expected_model is not None
             and not _same_served_model(expected_model, getattr(response, "model", None))

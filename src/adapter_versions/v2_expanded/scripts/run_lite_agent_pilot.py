@@ -1534,6 +1534,7 @@ def run_task(
                         before["screenshot"],
                         protocol_recovery=protocol_recovery,
                         protocol_error=protocol_recovery_context,
+                        deadline_monotonic=agent_loop_started + args.max_agent_seconds,
                         request_timeout_seconds=min(
                             args.request_timeout,
                             max(0.1, remaining_seconds),
