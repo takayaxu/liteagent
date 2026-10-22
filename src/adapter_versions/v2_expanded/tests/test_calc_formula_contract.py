@@ -383,14 +383,16 @@ def test_separately_written_formulas_can_complete_from_native_final_read():
     assert CompletionMixin._generic_completion_gate(state)["passed"]
 
 
-def test_final_read_must_refresh_year_labels_and_source_document_identity():
+def test_final_read_is_scoped_to_calculated_outputs_and_preserves_source_identity():
     state = completed_state()
     payload = state.events[-1].result["context_hint"]
     state.events[-1].proposed["arguments"]["range"] = "I11:J13"
     payload["range"] = "I11:J13"
     for key in ("values", "display_text", "formulas", "kinds"):
         payload[key] = [row[1:] for row in payload[key][1:]]
-    assert outcome_issues(state)[0]["code"] == "calculation.final_readback_missing"
+    # A post-save read of only the calculated scope is sufficient; the
+    # immutable headers and year labels were already observed natively.
+    assert outcome_issues(state) == []
     state = completed_state()
     state.events[0].result["context_hint"]["url"] = "file:///tmp/current.xlsx"
     state.events[2].result["context_hint"]["workbook_url"] = (

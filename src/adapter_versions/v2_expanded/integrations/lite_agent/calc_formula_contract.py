@@ -572,12 +572,13 @@ def outcome_issues(state):
         )
     header_row, columns = _layout(grid, spec["output_headers"])
     years = _years(grid, header_row, columns[0])
-    identities = [(c, header_row) for c in columns] + [
-        (columns[0], row) for row in years.values()
-    ]
+    # The final post-save readback is scoped to calculated outputs.  Headers
+    # and year labels are immutable layout evidence established before the
+    # save; requiring them to be reread after saving rejects a valid final
+    # read such as B2:D6 and can trap the model in a save/read loop.
     if saved <= changed or any(
         not grid[c].get("native") or grid[c]["step"] <= saved
-        for c in [*targets, *identities]
+        for c in targets
     ):
         return issue(
             "final_readback_missing",
@@ -589,7 +590,8 @@ def outcome_issues(state):
             "native percentage display for the calculated fractional results",
         )
     if any(
-        str(grid[(columns[0], row)].get("display", "")).strip() != str(year)
+        grid[(columns[0], row)].get("native")
+        and str(grid[(columns[0], row)].get("display", "")).strip() != str(year)
         for year, row in years.items()
     ):
         return issue(
