@@ -1086,7 +1086,17 @@ def test_optional_generation_setting_reaches_captured_request_unchanged(
         assert field not in body
     else:
         assert body[field] == value
-    assert request["tool_choice"] == "required"
+    if field == "tool_call_stop_sequence" and value is not None:
+        # Native Qwen empty-tool grammar must survive vLLM's request adjustment;
+        # required single-call semantics are enforced by the explicit grammar.
+        assert request["tool_choice"] == "auto"
+        constraint = json.loads(request["extra_body"]["structured_outputs"]["structural_tag"])
+        assert constraint["format"]["at_least_one"] is True
+        assert constraint["format"]["stop_after_first"] is True
+        assert any(tag["content"]["max_whitespace_cnt"] == 1
+                   for tag in constraint["format"]["tags"])
+    else:
+        assert request["tool_choice"] == "required"
     assert request["parallel_tool_calls"] is False
     assert request["temperature"] == 0
     assert request["max_tokens"] == 4096

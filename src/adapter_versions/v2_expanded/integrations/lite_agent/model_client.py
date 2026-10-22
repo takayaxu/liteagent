@@ -25,6 +25,56 @@ _SCHEMA_HINT_ITEM_MAX = 180
 # keep an HTTP request alive after that deadline and hide the true attempt
 # count in the episode ledger.
 MODEL_SDK_MAX_RETRIES = 0
+QWEN_TOOL_CALL_END = "\n</function>\n</tool_call>"
+
+
+def _bounded_qwen_empty_tool_constraint(
+    model: str, tools: list[dict[str, Any]], tool_call_stop_sequence: str | None,
+) -> dict[str, Any] | None:
+    """Bound whitespace in Qwen XML bodies for tools with no arguments.
+
+    vLLM's automatic required-tool grammar permits unbounded whitespace in an
+    empty XML body. With greedy decoding this can loop on newline tokens while
+    its tool parser emits no SSE deltas. Preserve the public schemas and bound
+    only syntax whitespace, never string values or reasoning.
+    """
+    if (
+        not re.match(r"^qwen3[.]5(?:-|$)", model, re.I)
+        or tool_call_stop_sequence != QWEN_TOOL_CALL_END
+    ):
+        return None
+    tags = []
+    has_empty_tool = False
+    for tool in tools:
+        function = tool["function"]
+        schema = function["parameters"]
+        empty = (
+            schema.get("type") == "object"
+            and schema.get("properties") == {}
+            and not schema.get("required")
+            and schema.get("additionalProperties") is False
+        )
+        has_empty_tool |= empty
+        tags.append({
+            "type": "tag",
+            "begin": f"<tool_call>\n<function={function['name']}>\n",
+            "content": {
+                "type": "json_schema", "json_schema": schema,
+                "style": "qwen_xml", "any_order": False,
+                "max_whitespace_cnt": 1 if empty else None,
+            },
+            "end": "\n</function>\n</tool_call>",
+        })
+    if not has_empty_tool:
+        return None
+    return {
+        "type": "structural_tag",
+        "format": {
+            "type": "triggered_tags", "triggers": ["<tool_call>\n<function="],
+            "tags": tags, "at_least_one": True, "stop_after_first": True,
+            "excludes": ["<think>", "</think>"],
+        },
+    }
 
 
 def _same_served_model(expected: str, returned: Any) -> bool:
@@ -586,6 +636,15 @@ class StructuredToolModelClient:
             # Retain the complete native delimiter for the provider's tool parser.
             request["stop"] = [tool_call_stop_sequence]
             request["extra_body"]["include_stop_str_in_output"] = True
+        constraint = _bounded_qwen_empty_tool_constraint(model, tools, tool_call_stop_sequence)
+        if constraint is not None:
+            # required/named choices cause vLLM to replace explicit constraints.
+            # The explicit grammar enforces the same requirement (at_least_one)
+            # and a single call (stop_after_first), with bounded empty bodies.
+            request["tool_choice"] = "auto"
+            request["extra_body"]["structured_outputs"] = {
+                "structural_tag": json.dumps(constraint)
+            }
         if self.request_observer is not None:
             self.request_observer(request)
         request_client = self.client

@@ -20,7 +20,7 @@ def dump(path, value):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/single-task-v3-thinking.json")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs/single-task-active-thinking.json")
     parser.add_argument("--orders", nargs="+", type=int, required=True)
     parser.add_argument("--result-dir", type=Path)
     args = parser.parse_args()
@@ -33,10 +33,19 @@ def main():
     seal = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(seal)
     observed = seal.build_source_tree_seal(active)
-    if observed["sha256"] != config["sources"]["baseline_source_sha256"]:
-        parser.error("active runtime differs from the configured frozen v3 source")
+    source_mode = config["sources"].get("source_mode", "frozen")
+    if source_mode not in {"active", "frozen"}:
+        parser.error("sources.source_mode must be active or frozen")
+    if source_mode == "active":
+        config["sources"]["baseline_source_sha256"] = observed["sha256"]
+        config["sources"]["baseline_source_commit"] = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        config["sources"]["working_tree_dirty"] = bool(subprocess.check_output(
+            ["git", "status", "--porcelain"], cwd=ROOT, text=True).strip())
+    elif observed["sha256"] != config["sources"]["baseline_source_sha256"]:
+        parser.error("active runtime differs from the configured frozen source")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    job = (args.result_dir or ROOT.parent / "liteagent-local-runs" / f"v3-thinking-serial-{stamp}").resolve()
+    job = (args.result_dir or ROOT.parent / "liteagent-local-runs" / f"{source_mode}-thinking-serial-{stamp}").resolve()
     job.mkdir(parents=True, exist_ok=False)
     source = job / "source"
     snapshot = source / "src/adapter_versions/v2_expanded"

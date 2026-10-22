@@ -2,7 +2,9 @@
 
 本仓库保留 LiteAgent 的运行源码、测试和历史开发记录。当前开发分支为
 `codex/api-split-liuxv`，冻结 v3 源码基线提交为 `026e829`。
-运行范围为 562 个文件，SHA-256：
+冻结 v3 是历史基线，不代表当前活动源码；后续复跑默认使用本地最新活动源码，
+包括尚未提交的运行源码修复。只有明确指定冻结版本时，才使用对应历史源码。
+冻结 v3 的运行范围为 562 个文件，SHA-256：
 
 ```text
 8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b
@@ -99,8 +101,9 @@ export QWEN_MODEL='Qwen3.5-9B'
 export QWEN_API_KEY='EMPTY'
 ```
 
-默认的本地串行配置位于 `configs/single-task-v3-thinking.json`：它固定冻结
-v3 源码、Qwen3.5-9B thinking、每题 100 步和 1800 秒，并配置完整的工具调用
+默认的本地串行配置位于 `configs/single-task-active-thinking.json`：它使用启动时的
+最新活动源码（`sources.source_mode=active`），保持 Qwen3.5-9B thinking、每题
+100 步和 1800 秒，并配置完整的工具调用
 结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
 在调用结束处停止生成，客户端仍检查恰好一个完整工具调用并执行参数 schema 校验。
 
@@ -110,22 +113,31 @@ v3 源码、Qwen3.5-9B thinking、每题 100 步和 1800 秒，并配置完整�
 HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py --orders 13 15 27 47 76
 ```
 
-运行器会核对当前 LiteAgent 源码与配置中的冻结 v3 摘要，按顺序运行题目，并将
-独立源码快照、配置、命令、日志和结果写入 `../liteagent-local-runs/`。可使用
-`--config /path/to/config.json` 指定另一份配置。
+运行器从当前工作区复制独立源码快照，包含未提交的运行源码修改，记录实际源码
+摘要、Git 提交与工作区是否有改动，再按顺序运行题目；快照准备后和运行结束时均
+校验源码完整性。源码快照、配置、命令、日志和结果写入 `../liteagent-local-runs/`。
+可使用 `--config /path/to/config.json` 指定另一份配置；需要使用最新活动源码时，
+其 `sources.source_mode` 必须为 `active`，不能沿用历史配置中的固定源码摘要。
 
-当前开发树包含完成判定修复，已不等于冻结 v3 摘要。复跑本次透视表题请使用
-独立开发配置，保留上面的冻结配置作为原始条件记录：
+默认配置也收录了 4、102、119、147、183，可按需复跑，例如：
 
 ```bash
 HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
-  --config configs/single-task-completion-repair.json --orders 4
+  --orders 102 119 147 183
 ```
 
-本次完成门检查原生对象是否存在，并对可解析的独立分类求和透视表核对源范围、
+`configs/single-task-v3-thinking.json` 和 `configs/single-task-completion-repair.json`
+保留为各次历史条件记录，不作为后续复跑默认配置。未设置 `source_mode` 的历史
+配置仍校验固定源码摘要；运行器不会自动回滚或切换到历史源码。
+
+当前完成门检查原生对象是否存在，并对可解析的独立分类求和透视表核对源范围、
 分组、聚合、输出范围和最终回读值。缺少证据或发现不符时会报告具体目标与差异，
 直接开放检查和修复工具，无需模型先调用 `completion_revise`。
 适用范围、验证与限制见 [完成判定修复记录](docs/completion-outcomes-repair-20261021.md)。
+完成声明通过完整门禁后立即结束，不再追加终态审计；审查不通过才进入修复。
+最终完成门及第 4、147 题复跑证据见
+[最终完成审查记录](docs/final-completion-gate-20261022.md)，Qwen 空参数工具和
+分隔符修复见 [工具调用修复记录](docs/empty-tool-whitespace-repair-20261022.md)。
 
 直接调用单题或自定义任务配置时，仍可使用通用形式：
 
