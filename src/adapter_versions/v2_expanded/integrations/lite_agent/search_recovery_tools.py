@@ -142,20 +142,45 @@ def constrain_adapter_call_routes(
         # common recovery constraints after completion recovery). Preserve the
         # narrower schema already present instead of widening it back to every
         # route returned by the catalog.
-        existing = parameters.get("oneOf")
+        existing = parameters.get("x-allowed-routes")
+        existing_pairs = None
         if isinstance(existing, list):
             existing_pairs = {
-                (
-                    branch.get("properties", {}).get("adapter", {}).get("enum", [None])[0],
-                    branch.get("properties", {}).get("action", {}).get("enum", [None])[0],
-                )
-                for branch in existing
-                if isinstance(branch, dict)
-                and isinstance(branch.get("properties"), dict)
+                (route["adapter"], route["action"])
+                for route in existing
+                if isinstance(route, dict)
+                and isinstance(route.get("adapter"), str)
+                and isinstance(route.get("action"), str)
             }
-            if existing_pairs:
-                route_pairs = [pair for pair in route_pairs if pair in existing_pairs]
+            route_pairs = [pair for pair in route_pairs if pair in existing_pairs]
+        properties = parameters.get("properties", {})
+        adapter_enum = properties.get("adapter", {}).get("enum")
+        action_enum = properties.get("action", {}).get("enum")
+        # Flat enums are additional restrictions, not evidence that every
+        # adapter/action combination is allowed. Keep the exact pair metadata
+        # authoritative and filter only the requested public routes.
+        route_pairs = [
+            (adapter, action) for adapter, action in route_pairs
+            if (not isinstance(adapter_enum, list) or adapter in adapter_enum)
+            and (not isinstance(action_enum, list) or action in action_enum)
+        ]
         if not route_pairs:
+            # Disjoint constraints expose no executable route. Retaining the
+            # old wrapper here would leave a route callable outside the new
+            # request; replacing it would discard the existing restriction.
+            return [
+                candidate for candidate in constrained
+                if candidate.get("function", {}).get("name") != adapter_call_name
+            ]
+        if (
+            existing_pairs == set(route_pairs)
+            and isinstance(adapter_enum, list)
+            and set(adapter_enum) == {adapter for adapter, _ in route_pairs}
+            and isinstance(action_enum, list)
+            and set(action_enum) == {action for _, action in route_pairs}
+        ):
+            # Reapplying an equal or broader route request must also retain
+            # existing field constraints inside payload.params.
             continue
         payload_schema = parameters.get("properties", {}).get("payload", {})
         if len(route_pairs) == 1:
@@ -173,9 +198,10 @@ def constrain_adapter_call_routes(
                 "type": "string",
                 "enum": [action],
             }
-            parameters["properties"]["payload"] = _route_payload_schema(
-                payload_schema, adapter, action
-            )
+            if adapter_enum != [adapter] or action_enum != [action]:
+                parameters["properties"]["payload"] = _route_payload_schema(
+                    payload_schema, adapter, action
+                )
             parameters["required"] = ["adapter", "action", "payload"]
         else:
             # A union of nested downstream schemas is faithful JSON Schema but

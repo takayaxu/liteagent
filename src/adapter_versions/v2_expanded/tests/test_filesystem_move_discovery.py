@@ -109,6 +109,33 @@ class _NoopExecutor:
         raise AssertionError("Adapter execution is not expected")
 
 
+def test_broad_inventory_search_preserves_the_find_route_and_schema():
+    state = RuntimeState(
+        task_id="inventory-search", domain="multi_apps",
+        instruction="Organize the files and folders on the Desktop into category folders.",
+    )
+    query = "filesystem list files desktop"
+    matches = search_actions("multi_apps", query, strict_generic=True, limit=6)
+    assert len(matches) > 1
+    assert any(hit.get("downstream_action") == "filesystem.find" for hit in matches)
+    state.events.append(ExecutionEvent(
+        step=1, timestamp_utc="2026-01-01T00:00:00Z", executed=True,
+        proposed={"kind": "catalog", "tool": "tools_search", "arguments": {"query": query}},
+        result={"status": "ok", "executed": True, "matches": matches},
+    ))
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False), _NoopExecutor())
+
+    tools = agent.tools(state)
+    assert [tool["function"]["name"] for tool in tools] == ["adapter__adapter_call"]
+    schema = tools[0]["function"]["parameters"]
+    assert schema["x-allowed-routes"] == [{"adapter": "os", "action": "filesystem.find"}]
+    params = schema["properties"]["payload"]["properties"]["params"]
+    assert params["properties"]["kind"]["enum"] == ["any"]
+    assert params["properties"]["recursive"]["enum"] == [False]
+    assert {"roots", "name_patterns", "kind", "recursive"} <= set(params["required"])
+    assert len(agent.tool_catalog_hash(state)) == 64
+
+
 def _checked(state, path, directory, disposition="move"):
     observation = state.filesystem_organization_evidence({"path": path})
     state.events.append(ExecutionEvent(
