@@ -543,6 +543,12 @@ class AgentProtocolMixin:
 
     @staticmethod
     def _image_url(screenshot: bytes) -> str:
+        return AgentProtocolMixin._prepare_model_image(screenshot)[0]
+
+    @staticmethod
+    def _prepare_model_image(
+        screenshot: bytes,
+    ) -> tuple[str, dict[str, list[int]] | None]:
         # Desktop captures are commonly 1920x1080 PNGs. Sending the raw PNG
         # as base64 can consume millions of prompt characters on every turn,
         # even when the task is entirely deterministic and does not need GUI
@@ -551,17 +557,24 @@ class AgentProtocolMixin:
         # non-image callers retain the historical passthrough behavior.
         encoded = screenshot
         media_type = "image/png"
+        coordinate_frame = None
         try:
             with Image.open(io.BytesIO(screenshot)) as image:
+                desktop_size = list(image.size)
                 image = image.convert("RGB")
                 image.thumbnail((1280, 720), Image.Resampling.LANCZOS)
                 output = io.BytesIO()
                 image.save(output, format="JPEG", quality=70, optimize=True)
                 encoded = output.getvalue()
                 media_type = "image/jpeg"
+                coordinate_frame = {
+                    "model_size": list(image.size),
+                    "desktop_size": desktop_size,
+                }
         except Exception:
             pass
-        return f"data:{media_type};base64," + base64.b64encode(encoded).decode("ascii")
+        url = f"data:{media_type};base64," + base64.b64encode(encoded).decode("ascii")
+        return url, coordinate_frame
 
     def _messages(
         self,
@@ -655,11 +668,23 @@ class AgentProtocolMixin:
         evidence = state.filesystem_organization_evidence() if organization_context else None
         if evidence and evidence.get("action") == "desktop.open_path":
             include_screenshot = True
+        self._latest_gui_coordinate_frame = None
         if include_screenshot:
+            image_url, coordinate_frame = self._prepare_model_image(screenshot)
+            if coordinate_frame is not None and (not tools or "gui_action" in tool_names):
+                self._latest_gui_coordinate_frame = coordinate_frame
+                width, height = coordinate_frame["model_size"]
+                message_content[0]["text"] += (
+                    f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
+                    f"For gui_action use pixel coordinates in this image: x/to_x from 0 to {width - 1}, "
+                    f"y/to_y from 0 to {height - 1}, origin at the top left. "
+                    "Do not use normalized coordinates or scale to desktop resolution yourself; "
+                    "the executor maps these image pixels to the desktop."
+                )
             message_content.append(
                 {
                     "type": "image_url",
-                    "image_url": {"url": self._image_url(screenshot)},
+                    "image_url": {"url": image_url},
                 }
             )
         system_message = self._system_message(
@@ -758,6 +783,8 @@ class AgentProtocolMixin:
             tool_call_stop_sequence=getattr(self.config, "tool_call_stop_sequence", None),
         )
         proposal["_model_visible_tools"] = copy.deepcopy(tools)
+        if proposal.get("tool") == "gui_action" and self._latest_gui_coordinate_frame is not None:
+            proposal["_gui_coordinate_frame"] = copy.deepcopy(self._latest_gui_coordinate_frame)
         return proposal
 
     def output_token_budget(self, state: RuntimeState) -> int:

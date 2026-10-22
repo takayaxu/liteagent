@@ -264,6 +264,34 @@ GUI_REQUEST_SCHEMA: dict[str, Any] = {
 }
 
 
+def map_gui_coordinates(
+    arguments: Mapping[str, Any], coordinate_frame: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Map model-image pixel positions to desktop pixels exactly once."""
+    normalized = normalize_gui_arguments(arguments)
+    dimensions = []
+    for key in ("model_size", "desktop_size"):
+        size = coordinate_frame.get(key)
+        if (
+            not isinstance(size, (list, tuple)) or len(size) != 2
+            or any(type(value) is not int or value <= 0 for value in size)
+        ):
+            raise ValueError(f"invalid GUI coordinate frame: {key}")
+        dimensions.append(size)
+    model_size, desktop_size = dimensions
+    axes = {"click": ("x", "y"), "double_click": ("x", "y"),
+            "drag": ("x", "y", "to_x", "to_y")}.get(normalized["action"], ())
+    for field in axes:
+        axis = 0 if field in {"x", "to_x"} else 1
+        value = normalized[field]
+        source, target = model_size[axis], desktop_size[axis]
+        if not 0 <= value < source:
+            raise ValueError(f"GUI coordinate {field}={value} is outside the model image (0..{source - 1})")
+        # Round to the nearest desktop pixel, clipping only the rounded edge.
+        normalized[field] = min(target - 1, (2 * value * target + source) // (2 * source))
+    return normalized
+
+
 def build_gui_command(arguments: dict[str, Any]) -> str:
     """Validate one model-selected GUI action and translate it without defaults."""
     normalized = normalize_gui_arguments(arguments)

@@ -37,7 +37,7 @@ from .clipboard_path_semantics import (
     argument_contract_errors as clipboard_path_argument_contract_errors,
 )
 from .gui_policy import repeated_gui_action_error
-from .gui_actions import GUI_REQUEST_SCHEMA, build_gui_command
+from .gui_actions import GUI_REQUEST_SCHEMA, build_gui_command, map_gui_coordinates
 from .impress_background import background_argument_contract_errors
 from .impress_page_number import page_number_argument_contract_errors
 from .impress_role_formatting import (
@@ -355,7 +355,7 @@ class ExecutionEngineMixin:
         recorded_proposal = {
             key: value
             for key, value in proposal.items()
-            if key != "_model_visible_tools"
+            if key not in {"_model_visible_tools", "_gui_coordinate_frame"}
         }
         if model_visible_tools is not None:
             recorded_proposal["model_visible_schema_enforced"] = True
@@ -1488,20 +1488,33 @@ class ExecutionEngineMixin:
                 )
                 if gui_contract_errors:
                     raise ValueError(gui_contract_errors[0])
+                coordinate_frame = proposal.get("_gui_coordinate_frame")
+                if screenshot is not None:
+                    _, screenshot_frame = self._prepare_model_image(screenshot)
+                    if (
+                        coordinate_frame is not None and screenshot_frame is not None
+                        and coordinate_frame != screenshot_frame
+                    ):
+                        raise ValueError("GUI coordinate frame does not match the current screenshot")
+                    coordinate_frame = screenshot_frame or coordinate_frame
+                gui_arguments = arguments
+                if coordinate_frame is not None:
+                    gui_arguments = map_gui_coordinates(arguments, coordinate_frame)
+                    event.proposed["gui_coordinate_frame"] = copy.deepcopy(coordinate_frame)
                 event.validated = True
-                command = self._gui_command(arguments)
+                command = self._gui_command(gui_arguments)
                 event.proposed.update({"kind": "gui", "command": command})
-                event.proposed["gui_arguments"] = copy.deepcopy(arguments)
+                event.proposed["gui_arguments"] = copy.deepcopy(gui_arguments)
                 if policy_error := repeated_gui_action_error(
                     state.events,
                     command=command,
-                    arguments=arguments,
+                    arguments=gui_arguments,
                     step=event.step,
                     block_window_steps=ACTION_BLOCK_WINDOW_STEPS,
                 ):
                     raise RepeatedRequestBlocked(policy_error)
                 result = self.gui_executor(
-                    {**arguments, "command": event.proposed["command"]}
+                    {**gui_arguments, "command": event.proposed["command"]}
                 )
                 event.executed = bool(result.get("executed"))
                 event.result = (
