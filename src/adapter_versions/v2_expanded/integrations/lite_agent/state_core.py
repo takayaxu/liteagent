@@ -314,6 +314,13 @@ class RuntimeStateCoreMixin:
             return {"pending_phase": "outcome_verification" if issues else "outcomes_verified",
                     "outstanding_outcomes": issues}
 
+        from . import calc_formula_contract
+
+        if calc_formula_contract.request(self):
+            issues = completion_outcome_issues(self)
+            if issues:
+                return {"pending_phase": "outcome_verification", "outstanding_outcomes": issues}
+
         if pdf_table_selection.active(self):
             observed = pdf_table_selection.observations(self)
             routes = sorted(pdf_table_selection.allowed_routes(self))

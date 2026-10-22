@@ -449,3 +449,79 @@ def test_read_audit_still_owns_the_next_turn_before_calculation_recovery():
     assert "adapter__cells_set_formulas" in {
         t["function"]["name"] for t in agent.tools(state)
     }
+
+
+def test_formula_text_failure_explains_atomic_rejection_once():
+    args = write_args()
+    for row in args["values"][1:]:
+        row[1:] = [cell["value"] for cell in row[1:]]
+    errors = argument_errors(source_state(), "range.write", args)
+    assert len(errors) == 1
+    assert "plain" not in errors[0] or "literal text" in errors[0]
+    assert '"kind":"formula"' in errors[0]
+    assert "none of its year labels or values were written" in errors[0]
+    assert "precomputed literal" not in errors[0]
+
+
+def test_reference_rejection_names_observed_and_required_cells():
+    args = write_args()
+    args["values"][1][1]["value"] = "='Source data'.F5/'Source data'.F4-1"
+    errors = argument_errors(source_state(), "range.write", args)
+    assert "observed" in errors[0] and "required" in errors[0]
+    assert "F4" in errors[0] and "F6" in errors[0]
+    assert "source rows and destination rows are independent" in errors[0]
+
+
+def test_compact_recovery_keeps_native_source_pair_facts_without_generating_answers():
+    from integrations.lite_agent.calc_formula_contract import model_evidence
+
+    state = source_state()
+    evidence = model_evidence(state)
+    first = evidence["pairs"][0]
+    assert first["year"] == 2019
+    assert first["current"] == {"sheet": "Source data", "cell": "F6", "value": 125}
+    assert first["previous"] == {"sheet": "Source data", "cell": "F5", "value": 100}
+    assert first["observed_destination"] is None
+    assert "formula" not in first and "expected_result" not in first
+    state.events.append(event(4, "range.write", write_args()))
+    state.events.append(
+        event(
+            5, "cells.set_formulas", {"sheet": "Changes", "writes": []}, executed=False
+        )
+    )
+    state.events[-1].validated = False
+    # 4-turn recovery intentionally omits part of the history, but the source
+    # projection must still be reconstructed from the immutable observations.
+    agent = LiteAgent(
+        LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+        object(),
+        model_client=SimpleNamespace(client=object()),
+    )
+    messages = agent._messages(
+        state, b"invalid-image", tools=agent.tools(state), execution_recovery=True
+    )
+    text = next(
+        item["text"] for item in messages[-1]["content"] if item["type"] == "text"
+    )
+    native = json.loads(text.split("calculation_source_cells:\n")[1])
+    assert native["pairs"][0]["current"]["cell"] == "F6"
+    assert native["pairs"][0]["observed_destination"] == "I11"
+    limited = model_evidence(state, limit=1)
+    assert len(limited["pairs"]) == 1 and limited["omitted_pairs"] == 5
+
+
+def test_header_or_year_write_does_not_project_calculation_as_mutation_complete():
+    state = source_state()
+    args = write_args()
+    args["values"] = [
+        ["Year", "Cash change", "Equipment change"],
+        [2019, None, None],
+        [2020, None, None],
+        [2021, None, None],
+    ]
+    state.events.append(event(4, "range.write", args))
+    progress = state.workflow_progress()
+    assert progress["pending_phase"] == "outcome_verification"
+    assert (
+        progress["outstanding_outcomes"][0]["code"] == "calculation.output_unverified"
+    )

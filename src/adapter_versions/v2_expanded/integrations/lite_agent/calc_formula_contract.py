@@ -322,6 +322,7 @@ def argument_errors(state, action, args):
     targets, source = _targets(grid, spec), _sources(grids, spec)
     layout = _layout(grid, spec["output_headers"])
     errors = []
+    string_formulas = []
     for coordinate, value in _proposed_cells(action, args):
         literal = _literal(value)
         if isinstance(value, dict) and value.get("kind") == "formula":
@@ -337,7 +338,11 @@ def argument_errors(state, action, args):
                 value.get("value"), spec["target_sheet"]
             ) != _required_refs(source, *targets[coordinate]):
                 errors.append(
-                    f"{_coordinate(*coordinate)} must reference the observed current and previous year cells of its requested source column; qualify both source references"
+                    f"{_coordinate(*coordinate)} source reference mismatch: "
+                    f"observed {sorted(_references(value.get('value'), spec['target_sheet']))}; "
+                    f"required {sorted(_required_refs(source, *targets[coordinate]))}. "
+                    "Bind the requested year to the source year label; source rows and destination rows are independent. "
+                    "Qualify source references with their actual sheet name."
                 )
         elif isinstance(value, dict) and value.get("kind") == "formatted_text":
             errors.append(
@@ -350,6 +355,9 @@ def argument_errors(state, action, args):
                 and re.fullmatch(r"\d{4}(?:\.0+)?", str(literal))
                 and spec["start_year"] <= int(float(literal)) <= spec["end_year"]
             )
+            if isinstance(literal, str) and literal.startswith("="):
+                string_formulas.append(_coordinate(*coordinate))
+                continue
             if coordinate in targets or (
                 (
                     isinstance(literal, (int, float))
@@ -360,19 +368,97 @@ def argument_errors(state, action, args):
                 errors.append(
                     f"{_coordinate(*coordinate)} is a calculated output: submit a typed Calc formula with observed source references, not a precomputed literal"
                 )
-            elif isinstance(literal, str) and literal.startswith("="):
-                errors.append(
-                    "range.write plain strings are literal text; submit kind=formula for calculation"
-                )
-    return list(dict.fromkeys(errors))
+    if string_formulas:
+        errors.insert(
+            0,
+            "range.write formula strings are literal text at "
+            + ", ".join(string_formulas[:6])
+            + (
+                f" and {len(string_formulas) - 6} more cells"
+                if len(string_formulas) > 6
+                else ""
+            )
+            + '. Use typed {"kind":"formula","value":"=<your expression>"} cells, '
+            "or cells.set_formulas; qualify the actual source sheet. "
+            "This entire call was rejected before execution, so none of its year labels or values were written.",
+        )
+    unique = list(dict.fromkeys(errors))
+    if len(unique) > 4:
+        unique = [
+            *unique[:4],
+            f"{len(unique) - 4} additional cells violate the same calculation contract; correct the entire batch.",
+        ]
+    return unique
 
 
 def constrain_tool(function, state):
-    if request(state) and function.get("name") in {
+    if not request(state) or function.get("name") not in {
         "adapter__range_write",
         "adapter__cells_set_formulas",
     }:
-        function["description"] += GUIDANCE
+        return
+    if GUIDANCE.strip() not in function["description"]:
+        function["description"] = GUIDANCE.strip() + " " + function["description"]
+    if function["name"] == "adapter__range_write":
+        values = function["parameters"]["properties"]["values"]
+        prefix = (
+            'For calculated cells use typed {"kind":"formula","value":"=<your expression>"}; '
+            "a plain '=...' string is stored as text and will be rejected for a calculated output. "
+            "Use observed sheet-qualified source addresses, independently of destination coordinates. "
+        )
+        if not values.get("description", "").startswith(prefix):
+            values["description"] = prefix + values.get("description", "")
+
+
+def model_evidence(state, limit=24):
+    """Project native labels/addresses, never a generated expression or answer.
+
+    Keep this outside history compaction so a rejection cannot erase the
+    evidence needed to correct source/destination row and worksheet confusion.
+    """
+    spec = request(state)
+    if not spec:
+        return None
+    grids, _, _ = _grids(state)
+    source = _sources(grids, spec)
+    if source is None:
+        return None
+    sheet, grid, columns, years = source
+    target_grid = grids.get(spec["target_sheet"], {})
+    targets = {
+        value: _coordinate(*coordinate)
+        for coordinate, value in _targets(target_grid, spec).items()
+    }
+    pairs = []
+    for year in range(spec["start_year"], spec["end_year"] + 1):
+        for index, header in enumerate(spec["source_headers"]):
+            column = columns[index + 1]
+            pairs.append(
+                {
+                    "year": year,
+                    "source_column": header,
+                    "current": {
+                        "sheet": sheet,
+                        "cell": _coordinate(column, years[year]),
+                        "value": grid[(column, years[year])]["value"],
+                    },
+                    "previous": {
+                        "sheet": sheet,
+                        "cell": _coordinate(column, years[year - 1]),
+                        "value": grid[(column, years[year - 1])]["value"],
+                    },
+                    "observed_destination": targets.get((year, index)),
+                }
+            )
+    return {
+        "source": "native_cell_observations",
+        "destination_sheet": spec["target_sheet"],
+        "year_column_observed": bool(targets),
+        "pairs": pairs[:limit],
+        "omitted_pairs": max(0, len(pairs) - limit),
+        "guidance": "These are observed source cells and existing destination labels, not executed formulas. "
+        "Choose your own expression and target using these facts. A rejected batch wrote none of its labels or values.",
+    }
 
 
 def outcome_issues(state):

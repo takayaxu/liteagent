@@ -17,12 +17,20 @@ AUDIT_TOOL = {
                 'event_step': {'type': 'integer', 'minimum': 1},
                 'verdict': {'type': 'string', 'enum': ['sufficient', 'insufficient', 'unknown']},
                 'reason': {'type': 'string', 'minLength': 1},
-                'missing_evidence': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}, 'description': 'List actual missing inputs. Use [] when sufficient.'},
+                'missing_evidence': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}, 'description': 'Only missing observations or source inputs, never future writes or unfinished output. Must be [] when sufficient.'},
                 'next_action': {'type': 'string', 'enum': ['continue', 'range.read', 'workbook.inspect', 'tools_search']},
                 'next_arguments_json': {'type': 'string', 'description': 'A JSON object containing your next read/inspection/search arguments; use {} when next_action is continue.'},
             },
             'required': ['event_step', 'verdict', 'reason', 'missing_evidence', 'next_action', 'next_arguments_json'],
             'additionalProperties': False,
+            'allOf': [
+                {'if': {'properties': {'verdict': {'const': 'sufficient'}}},
+                 'then': {'properties': {'missing_evidence': {'maxItems': 0},
+                                         'next_action': {'const': 'continue'}}}},
+                {'if': {'properties': {'verdict': {'enum': ['insufficient', 'unknown']}}},
+                 'then': {'properties': {'missing_evidence': {'minItems': 1},
+                                         'next_action': {'enum': ['range.read', 'workbook.inspect', 'tools_search']}}}},
+            ],
         },
     },
 }
@@ -61,9 +69,15 @@ def messages(agent, state, protocol_error=None):
         "against the inputs needed for the user task. A successful read of the requested "
         "window is not proof of task-input sufficiency. Do not require the entire used "
         "range if the task only needs a smaller scope. Do not guess missing labels or "
-        "values. If insufficient or uncertain, describe the gap and choose a bounded "
+        "values. Judge observation sufficiency for the next action, not task completion. "
+        "A complete read showing blank or wrong output cells is sufficient evidence to repair "
+        "those cells when the needed source inputs are already observed. Missing formulas, "
+        "unsaved changes and incorrect results are state defects, not missing observations. "
+        "Do not demand another read merely because an observed output needs writing. "
+        "If required source inputs or observation scope are insufficient or uncertain, describe the gap and choose a bounded "
         "public read/inspect/search with your own arguments. If sufficient, choose "
-        "continue with {}. This call cannot edit the application or complete the task."
+        "continue with {}, and missing_evidence must be []. Required future writes belong "
+        "in reason, not missing_evidence. This call cannot edit the application or complete the task."
     ) if reviewing else (
         "The mandatory read review found missing task evidence. Its verdict supersedes "
         "automatic source-complete milestones. Use the restored public read/inspection "
