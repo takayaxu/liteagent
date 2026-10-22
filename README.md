@@ -173,6 +173,11 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 `src/adapter_versions/v2_expanded/experiments/` 已有历史配置只作证据保留；
 新结果、模型权重和虚拟环境不纳入源码提交。磁盘和缓存继续使用已有忽略路径。
 
+年度百分比变化汇总的计算列现要求模型提交源单元格引用和 Calc 公式，拒绝把心算常量
+当作派生结果写入；完成检查核对原生公式、求值、显示和保存后的回读证据。两种公开公式
+写入方式均可使用。当前适用范围与测试见
+[计算公式与回读核验](docs/calc-formula-evidence-repair-20261023.md)，本次尚未复跑 OSWorld。
+
 ## 集成与补丁
 
 本机独立集成工作树位于

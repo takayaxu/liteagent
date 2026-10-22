@@ -22,6 +22,7 @@ from .completion_policy import (
 )
 from .completion_outcomes import completion_outcome_issues
 from .calc_scaled_display import scaled_display_contract
+from .calc_formula_contract import request as calculation_request
 from .completion_review import unresolved_discrepancy
 
 
@@ -66,6 +67,8 @@ def _semantic_mutation_actions(
         if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction)
         else set()
     )
+    if calculation_request(state):
+        outcome_actions |= {"range.write", "cells.set_formulas", "range.format"}
     return {
         action
         for action in instruction_actions(state.domain, state.instruction)
@@ -82,6 +85,8 @@ def _observed_mutation_actions(state: Any) -> set[str]:
 
 def _outcome_mutation_actions(state: Any) -> set[str]:
     """Recognize legal implementations as mutations without requiring each one."""
+    if calculation_request(state):
+        return {"range.write", "cells.set_formulas", "range.format"}
     if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction):
         return {"range.copy", "range.set_scaled_display", "range.write",
                 "cells.set_formulas", "range.format"}

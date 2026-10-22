@@ -884,6 +884,9 @@ class ToolSurfaceMixin:
             ):
                 impress_semantics.constrain_tool_schema(function, state)
             batch_table_semantics.constrain_tool_schema(function, state)
+            from . import calc_formula_contract
+
+            calc_formula_contract.constrain_tool(function, state)
             calc_semantics.constrain_sort_tool_schema(function, state)
             calc_semantics.constrain_stacked_aggregate_tool_schema(
                 function,
