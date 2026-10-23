@@ -270,7 +270,7 @@ flowchart TD
 | 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 候选7f44136 run-003 failed/reward0，source/config true；恢复补丁生效；独立复核指出末页原有备注已匹配，正式失败为原始模板已含的Slide4正文尾空段与gold差异，原始/结果XML一致；未集成；证据 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current` |
 | 98 | `8e116af7-7db7-4e35-a68b-b0939c066c78` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/98-multi_apps-8e116af7-7db7-4e35-a68b-b0939c066c78)；待最新源码复跑 |
 | 99 | `337d318b-aa07-4f4f-b763-89d9a2dd013f` / multi_apps | 原始 `agent_failure`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f)；待最新源码复跑 |
-| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 候选da4ed5a（37b71b9+task_state恢复）run005正式验证中；100-v3独立审核通过，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current` |
+| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 候选da4ed5a run005正式failed/reward0，source/config true；恢复补丁生效，但只复制1张、ZIP缺失即误报完成；无新方案获批，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current` |
 | 101 | `185f29bd-5da0-40a6-b69c-ba7f4e0324ef` / multi_apps | 候选7afdebe run-002 failed/reward=0.0586，source/config true；fields结构修复生效，仅生成1/7份且内容错误，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-101-20261024-current` |
 | 102 | `869de13e-bef9-4b91-ba51-f6708c40b096` / multi_apps | 后续 `agent_failure`；[结果](/home/liuxv/liteagent-local-runs/transport-rerun-102-119-147-183-20261022/results/results.json)；待核对源码／诊断 |
 | 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 候选8159bef run-003 failed/reward0，source/config true；task_state恢复修正未触发，模型只打开文件便误报完成；效果分类后续方案未获批，候选未集成；证据 `/home/liuxv/liteagent-local-runs/repair-103-20261024-current` |
@@ -388,3 +388,6 @@ flowchart TD
 - Order97独立终态结论：Slide4尾空段在step3初始inspect已存在，不能归因于备注写入；模型还重写已完成备注并压缩双空格，尚无Adapter转换错误直接证据。审核者/root/review_order89不批准新实现；需原始文件与受控往返对照，禁止按gold清理空白。保留待修复。
 
 - 97原始XML独立对照：原始下载118598bytes与正式结果118909bytes，Slide4 Shape4均11段，尾空段XML相同；gold119034bytes为10段。首个evaluator失败来自模板/gold既有差异，并非备注写入/LO保存新增。不能据此证明移除差异即可PASS，也不授权按gold清理正文/改评估器。审核者/root/review_order89，无新方案获批。
+
+- Order100-v3候选da4ed5a run005正式failed/reward0/agent_done，44步、1409.76秒，source/config integrity true。step18拒绝后19恢复工具，修复生效；41仅copy1张，42承认余项与ZIP缺失，43仅GUI双击，44无支持声称完成。原始evaluator ZIP不存在，unzip rc9。独立审核/root/review_order89：无新具体通用方案获批，pending，不集成。
+- 本次指定八题结项核对：human_review=false，同一独立审核者/root/review_order89；89与94正式PASS且已交付；93/97/100/101/103/104仍待修复，所有失败候选未集成。完整逐轮索引：`/home/liuxv/liteagent-local-runs/selected-eight-repair-20261024-results.json`。无新获批假设，不重复碰运气复跑。
