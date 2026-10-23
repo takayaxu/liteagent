@@ -11,6 +11,7 @@ import httpx
 from jsonschema import Draft202012Validator
 from openai import OpenAI
 
+from .qwen_pivot_schema import lower_pivot_schemas
 from .reasoning import (
     SUPPORTED_REASONING_EFFORTS,
     SUPPORTED_REASONING_MODES,
@@ -32,9 +33,11 @@ QWEN_TOOL_CALL_END = "\n</function>\n</tool_call>"
 def _qwen_schema_compatible_tools(
     model: str, tools: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Omit schema keywords unsupported by the Qwen3.5 grammar backend.
+    """Prepare generation schemas for the Qwen3.5 grammar backend.
 
     The unmodified tool catalog remains authoritative for local validation.
+    Pivot intersections must become complete alternatives: XGrammar otherwise
+    compiles only the oneOf branch and silently loses required common fields.
     """
     if not re.match(r"^qwen3[.]5(?:-|$)", model, re.I):
         return tools
@@ -51,7 +54,7 @@ def _qwen_schema_compatible_tools(
                 remove_unique_items(child)
 
     remove_unique_items(compatible)
-    return compatible
+    return lower_pivot_schemas(compatible)
 
 
 def _bounded_qwen_empty_tool_constraint(

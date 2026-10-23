@@ -188,6 +188,10 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 堆叠透视表还会按指令核对精确空行数，并核验保存后的分隔单元格；相对定位可用
 平铺的 `below_range`、`blank_rows`，避免字符串/对象混合参数歧义，详见
 [透视表空行与定位修复](docs/pivot-spacing-repair-20261023.md)。
+Qwen 的透视表生成 schema 会将公共必填项、分类约束和条件定位约束展开为完整分支，
+避免 XGrammar 编译组合 schema 时丢失公共参数；返回参数仍按原始 schema 严格校验，
+不会自动补参。实现及编译器、模型端验证见
+[透视表生成契约修复](docs/qwen-pivot-schema-contract-repair-20261023.md)。
 
 直接调用单题或自定义任务配置时，也必须在上述提交工作树内运行：
 
