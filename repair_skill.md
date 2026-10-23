@@ -274,7 +274,7 @@ flowchart TD
 | 101 | `185f29bd-5da0-40a6-b69c-ba7f4e0324ef` / multi_apps | 候选7afdebe run-002 failed/reward=0.0586，source/config true；fields结构修复生效，仅生成1/7份且内容错误，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-101-20261024-current` |
 | 102 | `869de13e-bef9-4b91-ba51-f6708c40b096` / multi_apps | 后续 `agent_failure`；[结果](/home/liuxv/liteagent-local-runs/transport-rerun-102-119-147-183-20261022/results/results.json)；待核对源码／诊断 |
 | 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 候选8159bef run-003 failed/reward0，source/config true；task_state恢复修正未触发，模型只打开文件便误报完成；效果分类后续方案未获批，候选未集成；证据 `/home/liuxv/liteagent-local-runs/repair-103-20261024-current` |
-| 104 | `1f18aa87-af6f-41ef-9853-cdb8f32ebdea` / multi_apps | base904de6b run-001正在干净当前源码基线；预算/模型不变，human_review=false；证据 `/home/liuxv/liteagent-local-runs/repair-104-20261024-current` |
+| 104 | `1f18aa87-af6f-41ef-9853-cdb8f32ebdea` / multi_apps | base904de6b run-001 agent_deadline_exhausted，source/config true；37步才追加成功，未保存回读；104-v1 owner恢复说明待终态复核；证据 `/home/liuxv/liteagent-local-runs/repair-104-20261024-current` |
 | 105 | `26150609-0da3-4a7d-8868-0faf9c5f01bb` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/105-multi_apps-26150609-0da3-4a7d-8868-0faf9c5f01bb)；待最新源码复跑 |
 | 106 | `9219480b-3aed-47fc-8bac-d2cffc5849f7` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/106-multi_apps-9219480b-3aed-47fc-8bac-d2cffc5849f7)；待最新源码复跑 |
 | 107 | `881deb30-9549-4583-a841-8270c65f2a17` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-05/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17)；待最新源码复跑 |
@@ -375,3 +375,5 @@ flowchart TD
 
 - 2026-10-24T05:08+08:00：Order103候选8159bef run003正式failed/reward0/agent_done，15步、509.144秒，source/config均true。step12写D5因NO_CALC失败，14只打开文件，15即谎称已写入并获门禁通过；本轮没有触发task_state恢复，候选不集成。独立审核者继续核对通用完成证据边界，未批准新改动。Order104准备按最新活动HEAD干净基线。
 - 2026-10-24T05:10+08:00：Order103新失败独立复核：desktop.open_path仅打开文件却满足内容变更门，效果分类过宽；没有足够具体通用方案获批，候选不集成，保留待修复。Order104由/root认领，human_review=false，base904de6b，run001新干净工作树持统一guest锁当前源码基线；配置除原task身份外与活动默认完全一致，证据目录`/home/liuxv/liteagent-local-runs/repair-104-20261024-current`。
+
+- 2026-10-24T05:42+08:00：Order104基线run001正式agent_deadline_exhausted，37步、1935.925秒，无evaluator；source/config均true。原请求与返回确认Answer及两个测试完整读取，spacing约束说明完整，早期冲突为模型误用；修正参数后NO_WRITER_DOCUMENT，模型到35才找到desktop.open_path、37追加两测试答案，随后模型请求耗尽episode。104-v1仅owner无文档恢复说明已技术预审通过，终态交同一审核者核验，尚未实施。GitHub已推送并核验到4341389，新增终态记录待下一次推送。
