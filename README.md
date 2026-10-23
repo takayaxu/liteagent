@@ -72,7 +72,8 @@ requirements-liteagent.txt              运行依赖
 `liuxv` 的工作分支是 `codex/api-split-liuxv`。先读
 [大粒度 API 拆分任务](API_SPLIT_TASK.md)，完整的 216 项公开面复查、P0/P1
 清单和源码证据在 [API 粒度审计](docs/api-granularity-audit-20260920.md)。
-本任务只做 Adapter 契约拆分和针对性测试，不新增门禁，也不启动全量评测。
+API 拆分任务做 Adapter 契约拆分和针对性测试；后续完成判定修复及指定单题复跑
+按下列修复记录执行，不启动全量评测。
 
 ## 检查
 
@@ -155,6 +156,10 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 明确指定源列和目标单位列的缩放显示任务，还会核验目标原生值与实际显示结果，
 允许复制、公式或写值实现；缺项持续到保存并回读验证消除，详见
 [单元格结果核验修复](docs/scaled-display-outcomes-repair-20261022.md)。
+公共指令明确列出独立分类百分比时，还会约束同分类分组和 COUNT，并核对保存后
+最终表头、原生比例、百分比显示、分类集合、总计及分隔空行；原生检查也保留
+同字段分组与计数的重复维度，详见
+[分类百分比结果核验](docs/percentage-pivot-outcomes-repair-20261023.md)。
 
 直接调用单题或自定义任务配置时，也必须在上述提交工作树内运行：
 

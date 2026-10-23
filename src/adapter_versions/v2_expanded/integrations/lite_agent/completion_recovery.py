@@ -75,10 +75,11 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
             "populate it. Do not repeat reads of known blank cells instead of filling "
             "them; after the correction, save and read all named output ranges."
         )
-    from . import calc_formula_contract
+    from . import calc_formula_contract, calc_percentage_outcomes
 
     for tool in tools:
         calc_formula_contract.constrain_tool(tool["function"], state)
+        calc_percentage_outcomes.constrain_tool(tool["function"], state)
         tool["function"]["description"] += guidance
     return tools
 

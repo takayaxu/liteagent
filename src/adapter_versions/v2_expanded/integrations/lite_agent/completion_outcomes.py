@@ -373,6 +373,11 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
                                  actions=actions, step=inspect_event.step, mismatch=True))
         if key != "pivot_tables":
             continue
+        from .calc_percentage_outcomes import request as percentage_request, outcome_issues as percentage_issues
+
+        if percentage_spec := percentage_request(instruction, count):
+            issues.extend(percentage_issues(state, events, percentage_spec, new_objects, after, inspect_event.step))
+            continue
         spec = _independent_sums(instruction, count)
         if spec is None:
             continue
@@ -435,6 +440,14 @@ def outcome_retry_allowed(state: Any, domain: str, action: str, args: dict, afte
             return True
         if issue["code"] == "pivot.definition_mismatch":
             expected = issue["expected"]
+            if expected.get("aggregation") == "count":
+                from .calc_percentage_outcomes import valid_definition
+
+                source = {"sheet": expected["source_sheet"], "range": expected["source_range"]}
+                candidate = {"column_fields": [], "page_fields": [], **args}
+                if any(valid_definition(candidate, group, source) for group in expected["independent_groupings"]):
+                    return True
+                continue
             source = {"sheet": expected["source_sheet"], "range": expected["source_range"],
                       "measure": expected["measure"]}
             candidate = {"column_fields": [], "page_fields": [], **args}

@@ -3146,21 +3146,38 @@ def _chart_create_from_summary_rows(
 
 def _pivot_field_snapshot(pivot: Any) -> dict[str, Any]:
     """Read the actual native descriptor, including fields of persisted pivots."""
-    fields = pivot.getDataPilotFields()
+    base_fields = pivot.getDataPilotFields()
+    source_names = {str(base_fields.getByIndex(i).Name) for i in range(base_fields.getCount())}
     result = {"row_fields": [], "column_fields": [], "page_fields": [], "data_fields": []}
     keys = {"row": "row_fields", "column": "column_fields", "page": "page_fields"}
+    # getDataPilotFields() excludes duplicate dimensions. Calc creates a native
+    # duplicate when one source field serves as BOTH grouping and measure;
+    # the orientation collections include those duplicates with source names.
+    getters = ("getRowFields", "getColumnFields", "getPageFields", "getDataFields")
+    collections = [getattr(pivot, name)() for name in getters] if all(
+        callable(getattr(pivot, name, None)) for name in getters
+    ) else [base_fields]
     # Saved pivots may expose empty element names; indexed fields retain Name.
-    for index in range(fields.getCount()):
-        field = fields.getByIndex(index)
+    for field in (fields.getByIndex(index) for fields in collections for index in range(fields.getCount())):
         orientation = _enum_name(field.Orientation)
+        native_name = str(field.Name)
+        name = native_name
+        # Internal duplicates receive '*' suffixes. Resolve only against
+        # actual base dimensions, preserving literal '*' in real headers and
+        # leaving ambiguous names unresolved rather than guessing a source.
+        if name not in source_names:
+            candidates = [base for base in source_names if name.startswith(base)
+                          and name[len(base):] and not name[len(base):].strip("*")]
+            if len(candidates) == 1:
+                name = candidates[0]
         if orientation in keys:
-            result[keys[orientation]].append(str(field.Name))
+            result[keys[orientation]].append(name)
         elif orientation == "data":
             reference = field.Reference
             # UNO's optional reference struct is void for a plain aggregation.
             reference_type = reference.ReferenceType if reference is not None else 0
             result["data_fields"].append({
-                "field": str(field.Name),
+                "field": name,
                 "aggregation": _enum_name(field.Function),
                 "show_data_as": "none" if reference_type == 0 else _enum_name(reference_type),
             })
