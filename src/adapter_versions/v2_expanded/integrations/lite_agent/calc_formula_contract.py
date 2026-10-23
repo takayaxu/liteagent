@@ -31,10 +31,10 @@ ACTIONS = (
 GUIDANCE = (
     " Calculated annual changes must be model-authored Calc formulas with explicit "
     "sheet-qualified references to the observed current and previous year cells. "
-    "Do not calculate a number in prose and write it as a literal. Use range.write "
-    "typed kind=formula cells (plain strings beginning '=' are literal text), or "
-    "cells.set_formulas. Headers and requested year labels remain literal values. "
-    "If writing formulas separately, write headers and year labels first so each "
+    "Do not calculate a number in prose and write it as a literal. Use "
+    "cells.set_formulas with one explicit {cell,formula} record per calculated cell. "
+    "Use range.write for literal headers and requested year labels. "
+    "Write headers and every requested year label first so each "
     "target is identifiable. Calc evaluates the expression; inspect its returned "
     "formulas, numeric values and errors. Store fractional ratios for percentage "
     "display. Save and range.read the final output after changes; input sufficiency "
@@ -297,6 +297,21 @@ def _targets(grid, spec):
     }
 
 
+def _label_evidence(grid, spec):
+    """Report observed layout and missing labels without choosing a destination."""
+    layout = _layout(grid, spec["output_headers"])
+    years = _years(grid, layout[0], layout[1][0]) if layout else {}
+    required = list(range(spec["start_year"], spec["end_year"] + 1))
+    return {
+        "required_headers": spec["output_headers"],
+        "headers_observed": layout is not None,
+        "observed_year_column": _column(layout[1][0]) if layout else None,
+        "observed_year_cells": {str(y): _coordinate(layout[1][0], row) for y, row in years.items()} if layout else {},
+        "missing_year_labels": [year for year in required if year not in years],
+        "ready_for_formulas": bool(layout) and all(year in years for year in required),
+    }
+
+
 def _references(formula, destination):
     # Text literals, ranges and external/indirect references need a richer
     # provenance contract; do not silently count their apparent cell tokens.
@@ -356,8 +371,13 @@ def argument_errors(state, action, args):
         literal = _literal(value)
         if isinstance(value, dict) and value.get("kind") == "formula":
             if coordinate not in targets:
+                labels = _label_evidence(grid, spec)
                 errors.append(
-                    "Write the requested output headers and year labels first, so each formula target is identifiable"
+                    "Write the requested output headers and year labels first, so each formula target is identifiable. "
+                    f"Missing year labels: {labels['missing_year_labels']}; "
+                    f"observed year column: {labels['observed_year_column']}. "
+                    "Use range.write with literal labels before retrying cells.set_formulas. "
+                    "This call wrote no cells."
                 )
             elif source is None:
                 errors.append(
@@ -431,12 +451,54 @@ def constrain_tool(function, state):
     if function["name"] == "adapter__range_write":
         values = function["parameters"]["properties"]["values"]
         prefix = (
-            'For calculated cells use typed {"kind":"formula","value":"=<your expression>"}; '
-            "a plain '=...' string is stored as text and will be rejected for a calculated output. "
-            "Use observed sheet-qualified source addresses, independently of destination coordinates. "
+            "Write literal headers and year labels only with this tool. "
+            "For formulas use cells.set_formulas with explicit cell addresses; "
+            "do not put formula strings or typed formula objects in values. "
         )
+        # The XML grammar does not reliably constrain nested typed cells. Keep
+        # the literal writer simple and put model-owned expressions through the
+        # public address/formula record API. The Adapter still accepts typed
+        # matrices from other callers; no rejected matrix is silently reshaped.
+        literal = {"type": ["string", "number", "boolean", "null"]}
+        values["items"] = {"oneOf": [
+            literal,
+            {"type": "array", "minItems": 1, "items": literal},
+        ]}
         if not values.get("description", "").startswith(prefix):
-            values["description"] = prefix + values.get("description", "")
+            values["description"] = (
+                prefix + "For a single row or column use a flat list; "
+                "for a rectangle supply one nested list per worksheet row, "
+                "matching the A1 target dimensions exactly. "
+                "A failed call wrote none of its labels."
+            )
+
+
+def constrain_tools(tools, state):
+    """Keep formula writes behind their existing label evidence dependency.
+
+    This is surface selection from the current event ledger, not another
+    audit. Reads and literal repair remain available; lost/missing labels
+    immediately reopen the dependency instead of relying on call counts.
+    """
+    spec = request(state)
+    if not spec:
+        return tools
+    grids, _, _ = _grids(state)
+    labels = _label_evidence(grids.get(spec["target_sheet"], {}), spec)
+    for tool in tools:
+        function = tool.get("function", {})
+        constrain_tool(function, state)
+        if function.get("name") == "adapter__range_write" and not labels["ready_for_formulas"]:
+            function["description"] += (
+                " Before calculations, complete the literal layout. "
+                f"Required headers: {labels['required_headers']}; "
+                f"headers observed: {labels['headers_observed']}; "
+                f"missing year labels: {labels['missing_year_labels']}; "
+                f"observed year column: {labels['observed_year_column']}."
+            )
+    if labels["ready_for_formulas"]:
+        return tools
+    return [tool for tool in tools if tool.get("function", {}).get("name") != "adapter__cells_set_formulas"]
 
 
 def model_evidence(state, limit=24):
@@ -483,9 +545,12 @@ def model_evidence(state, limit=24):
         "source": "native_cell_observations",
         "destination_sheet": spec["target_sheet"],
         "year_column_observed": bool(targets),
+        "destination_labels": _label_evidence(target_grid, spec),
         "pairs": pairs[:limit],
         "omitted_pairs": max(0, len(pairs) - limit),
         "guidance": "These are observed source cells and existing destination labels, not executed formulas. "
+        "Write missing literal headers and every missing year label with range.write first. "
+        "Then use cells.set_formulas with one explicit cell/formula record per destination. "
         "Choose your own expression and target using these facts. A rejected batch wrote none of its labels or values.",
     }
 

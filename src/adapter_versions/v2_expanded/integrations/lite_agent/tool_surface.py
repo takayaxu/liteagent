@@ -904,7 +904,9 @@ class ToolSurfaceMixin:
             ),
             state,
         )
-        return soft_recovery_tools(constrained, state)
+        from . import calc_formula_contract
+
+        return calc_formula_contract.constrain_tools(soft_recovery_tools(constrained, state), state)
 
     def tools(self, state: RuntimeState) -> list[dict[str, Any]]:
         if state.done or state.failed:

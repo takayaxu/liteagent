@@ -81,7 +81,7 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
         calc_formula_contract.constrain_tool(tool["function"], state)
         calc_percentage_outcomes.constrain_tool(tool["function"], state)
         tool["function"]["description"] += guidance
-    return tools
+    return calc_formula_contract.constrain_tools(tools, state)
 
 
 def completion_review_tools(state: Any) -> list[dict[str, Any]]:

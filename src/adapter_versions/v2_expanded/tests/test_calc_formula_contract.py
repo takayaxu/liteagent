@@ -448,7 +448,10 @@ def test_read_audit_still_owns_the_next_turn_before_calculation_recovery():
         },
     )
     assert result.executed, result.error
-    assert "adapter__cells_set_formulas" in {
+    assert "adapter__range_write" in {
+        t["function"]["name"] for t in agent.tools(state)
+    }
+    assert "adapter__cells_set_formulas" not in {
         t["function"]["name"] for t in agent.tools(state)
     }
 
@@ -547,3 +550,70 @@ def test_invalid_matrix_geometry_is_rejected_before_inventing_cell_roles(area, v
     assert "RANGE_INVALID" in errors[0]
     assert "No cells were written" in errors[0]
     assert "precomputed literal" not in errors[0]
+
+
+def test_failed_typed_matrix_reopens_labels_before_explicit_formula_records():
+    """Replay the failure with shifted sheets/rows, partial labels and a repair."""
+    from integrations.lite_agent.calc_formula_contract import model_evidence
+    from jsonschema import Draft202012Validator
+
+    state = source_state()
+    agent = LiteAgent(
+        LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+        object(),
+        model_client=SimpleNamespace(client=object()),
+    )
+    args = write_args()
+    state.events.append(event(4, "range.write", {
+        "sheet": "Changes", "range": "H10:J10", "values": args["values"][0],
+    }))
+    flat = {"sheet": "Changes", "range": "I11:J13", "values": [cell for row in args["values"][1:] for cell in row[1:]]}
+    errors = argument_errors(state, "range.write", flat)
+    assert "RANGE_INVALID" in errors[0]
+    rejected = event(5, "range.write", flat, executed=False)
+    rejected.error = {"type": "ValueError", "detail": errors[0]}
+    state.events.append(rejected)
+
+    def visible():
+        return {tool["function"]["name"]: tool["function"] for tool in agent.tools(state)}
+
+    tools = visible()
+    assert "adapter__range_read" in tools
+    assert "adapter__cells_set_formulas" not in tools
+    evidence = model_evidence(state)["destination_labels"]
+    assert evidence["headers_observed"]
+    assert evidence["missing_year_labels"] == [2019, 2020, 2021]
+    assert evidence["observed_year_column"] == "H"
+    schema = tools["adapter__range_write"]["parameters"]
+    assert not list(Draft202012Validator(schema).iter_errors({"sheet": "Changes", "range": "H11:H13", "values": [2019, 2020, 2021]}))
+    assert list(Draft202012Validator(schema).iter_errors(flat))
+    assert "typed" not in tools["adapter__range_write"]["parameters"]["properties"]["values"]["description"] or "do not" in tools["adapter__range_write"]["parameters"]["properties"]["values"]["description"]
+
+    state.events.append(event(6, "range.write", {"sheet": "Changes", "range": "H11:H12", "values": [2019, 2020]}))
+    assert "adapter__cells_set_formulas" not in visible()
+    assert model_evidence(state)["destination_labels"]["missing_year_labels"] == [2021]
+    state.events.append(event(7, "range.write", {"sheet": "Changes", "range": "H13", "values": [2021]}))
+    tools = visible()
+    assert "adapter__cells_set_formulas" in tools
+    assert model_evidence(state)["destination_labels"]["ready_for_formulas"]
+    formulas = {"sheet": "Changes", "writes": [
+        {"cell": f"{column}{row}", "formula": args["values"][row - 10][index]["value"]}
+        for row in range(11, 14) for column, index in (("I", 1), ("J", 2))
+    ]}
+    assert not list(Draft202012Validator(tools["adapter__cells_set_formulas"]["parameters"]).iter_errors(formulas))
+    assert argument_errors(state, "cells.set_formulas", formulas) == []
+    # Evidence, rather than an earlier successful writer call, owns reopening.
+    state.events.append(event(8, "range.write", {"sheet": "Changes", "range": "H13", "values": [None]}))
+    assert "adapter__cells_set_formulas" not in visible()
+    errors = argument_errors(state, "cells.set_formulas", formulas)
+    assert "Missing year labels: [2021]" in errors[0]
+
+
+def test_formula_surface_change_does_not_change_unrelated_writer_schema():
+    from integrations.lite_agent.calc_formula_contract import constrain_tools
+
+    state = source_state()
+    state.instruction = "Write an inventory table and formulas as requested."
+    tools = build_tools(state.domain, ["range.write", "cells.set_formulas"], include_gui=False)
+    original = deepcopy(tools)
+    assert constrain_tools(tools, state) == original
