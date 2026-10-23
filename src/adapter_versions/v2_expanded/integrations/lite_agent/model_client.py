@@ -560,7 +560,13 @@ class StructuredToolModelClient:
         request_timeout_seconds: float,
         client: Any | None = None,
         request_observer: Callable[[dict[str, Any]], None] | None = None,
+        transport_trace_dir: str | None = None,
     ):
+        hooks = {}
+        if transport_trace_dir is not None and client is None:
+            from .model_transport_trace import ModelTransportTrace
+
+            hooks = ModelTransportTrace(transport_trace_dir).hooks
         self.client = (
             client
             if client is not None
@@ -571,6 +577,7 @@ class StructuredToolModelClient:
                 http_client=httpx.Client(
                     timeout=request_timeout_seconds,
                     trust_env=False,
+                    event_hooks=hooks,
                 ),
             )
         )

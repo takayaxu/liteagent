@@ -1422,6 +1422,7 @@ def run_task(
                 api_key=lite_config.api_key,
                 request_timeout_seconds=lite_config.request_timeout_seconds,
                 request_observer=record_model_request,
+                transport_trace_dir=str(task_dir / "model_transport"),
             ),
             holo_gui_gateway=holo_gateway,
         )
