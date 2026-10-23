@@ -150,6 +150,17 @@ required_changes：重新提交审核前必须解决的事项
 - 真正并行跑题需分配独立 guest、可写磁盘、端口及结果目录；可复用只读基盘。未获分配时排队，不停止或重置其他人的 guest、隧道或模型服务。
 - 不改共享 `model.env`、全局服务参数，不清理其他工作树，不使用 `pkill`、`reset --hard`、强推或全局缓存清理来解决并行冲突。
 
+#### 空闲资源轮询与排队
+
+当用户要求资源空闲后自动继续或明确设置 15 分钟巡检时，应配置持续运行的 Codex automation/heartbeat；任务每 15 分钟只读检查一次公共资源，并在满足运行条件后按本 skill 当前阶段自动继续修复，无需再等用户发消息。监控需要安静运行，只有资源发生可行动变化、任务启动/完成/失败或需要用户操作时才通知。检查至少包括 `./bin/guest-status.sh`、共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 的持有状态，以及 `ps`/运行目录确认是否存在未遵守共享锁的 OSWorld 任务。必要时通过当前 Codex 工作流向其他责任人确认所有权，不停止或抢占其进程。
+
+若当前会话没有可持续唤醒并接续工作的 automation/heartbeat 能力，不要用只读 cron 脚本声称已经实现“空闲后自动修复”；明确告知用户此能力不可用，并在会话可持续运行期间用不超过 15 分钟的有界等待后重查。若仅能安装周期性状态探测，应先确认探测输出与通知路径确实可用；探测本身不可获取锁、重置 guest 或启动修复。
+
+- “可启动”要求共享 guest 健康且没有其他任务占用，并且共享锁可获得；缺一项即继续排队。运行启动前再次原子获取同一绝对路径锁，并让锁覆盖准备、执行、evaluator 和清理全程。不要先依据一次空闲快照准备/重置 guest，再在锁外启动。
+- 多个排队修复按用户指定顺序或已记录的队列顺序逐个取得共享 guest；同一 guest 不并发。资源释放后重新检查审核结论、活动 HEAD、题目身份和运行配置，再决定继续基线复跑、候选复跑或其他当前阶段。
+- 若没有可持续唤醒/定时执行机制，应说明限制并在当前会话可运行期间采用不超过 15 分钟的有界等待后重查；不得声称已建立后台任务。用户明确要求配置定时任务时，优先使用 Codex automation/heartbeat 能力，并将通知策略设为仅在资源状态变化、任务启动/完成/失败或需要用户操作时通知。
+- 启动后将题目、责任人、锁路径、guest、开始时间和预期阶段写入本题 `review.md`/台账；退出前释放锁。每次检查记录时间、guest/锁/其他运行状态和决定（排队/启动）。
+
 ### 复跑结果分支
 
 - **不通过：**保留本次失败，回到第 2 步阅读本次完整轨迹，再按所选方式审核根因和方案。不要回退到旧轨迹忽略新证据，也不要丢弃本题补丁去跑未修复的活动分支冒充验证。
@@ -324,7 +335,7 @@ flowchart TD
 | 78 / `936321ce-5236-426a-9a20-e0e3c5dc536f` | 2026-10-22 21:25:51 | `7302df9`；dirty 快照；旧 endpoint Qwen3.5-9B thinking；seal `e063c7633e51` | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/results/raw/run-1/78-libreoffice_writer-936321ce-5236-426a-9a20-e0e3c5dc536f/trajectory_manifest.json) · [配置](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/config.json) · [完整性](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/final-integrity.json)；已有 PASS 导入，移出待修复 |
 | 147 / `4d117223-a354-47fb-8b45-62ab1390a95f` | 2026-10-22 16:32:09 | `c94b9c0`；dirty 快照；旧 endpoint Qwen3.5-9B thinking；seal `81c71075e1ef` | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/results/raw/run-1/147-os-4d117223-a354-47fb-8b45-62ab1390a95f/trajectory_manifest.json) · [配置](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/config.json) · [完整性](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/final-integrity.json)；已有 PASS 导入，移出待修复 |
 
-| 89 / `937087b6-f668-4ba6-9110-60682ee33441` | 2026-10-23 23:52 | `a8abe65`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/final-integrity.json)；`human_review=false`，审核者 `/root/review_order89`，89-v2 通过；本地已集成，待推送 |
+| 89 / `937087b6-f668-4ba6-9110-60682ee33441` | 2026-10-23 23:52 | `a8abe65`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/final-integrity.json)；`human_review=false`，审核者 `/root/review_order89`，89-v2 通过；已集成并推送 `80c828a`，远端 SHA 已核验 |
 
 第 48 题在 `8d5461b` 的昇腾批次中也已写入单题 `passed / reward=1.0`（[结果](/home/liuxv/liteagent-local-runs/tasks25-28-30-48-65-qwen9b-20261023T141100Z/attempt-1/results/results.json)），但核对时该批次仍为 `running`、尚无最终完整性记录；因此上表采用此前完整结束的正式 PASS，未把在跑批次标成全部完成。
 
@@ -336,3 +347,9 @@ flowchart TD
 - 2026-10-23：Order 89 由 /root 认领；human_review=false；工作目录 `/home/liuxv/liteagent-local-runs/repair-89-20261023-current`；当前阶段：候选实现完成，待正式复跑。当前服务无补丁基线 failed/reward 0；源码/配置完整性均 true，seal `936c6188ad91`；[结果](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-001/output/results/results.json) · [完整轨迹](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-001/output/results/raw/run-1/89-multi_apps-937087b6-f668-4ba6-9110-60682ee33441/lite_agent_events.jsonl) · [evaluator](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-001/output/results/raw/run-1/89-multi_apps-937087b6-f668-4ba6-9110-60682ee33441/evaluator_artifacts/manifest.json). `/root/review_order89` 对 89-v1 先给证据不足，复审 89-v2 后明确通过；完整意见在工作目录 `review.md`。候选检查：13 focused MIME/player tests、Ruff、`bin/check.sh` 通过；相邻旧测试有 8 项与候选无关的既有失败，详见 review.md。其他 7 题顺序待处理。
 
 - 2026-10-23T23:52+08:00：Order 89 候选/活动运行提交 `a8abe65b58d2597736ead986aaedcb5d2da7e7fd`，正式 PASS，源码/配置完整性 true；通用类别 MIME 展开修复已本地集成，GitHub 查询超时，待推送。队列剩余 68，已通过 13；第 93 题待基线。
+
+- 2026-10-23T23:53+08:00：Order 93 由 /root 认领；human_review=false；工作目录 `/home/liuxv/liteagent-local-runs/repair-93-20261023-current`；base_commit `80c828aec101d180171a019f6f0ed27dd19800a8`；当前阶段：当前服务无补丁基线。
+
+- 2026-10-24T00:12+08:00：Order 93 基线 run-001 为下载超时 environment_failure（未评测）；run-002 从相同原始资源镜像下载后正式 failed/reward 0，完整性 true；直接 wildcard argv 返回 rc0 空输出，模型误认为完成。独立审核 `/root/review_order89` 通过 93-v1；候选 `58b405c` 已提交，15 focused tests、Ruff、bin/check.sh 通过。run-003 候选运行生成 12 份 PDF，正式 `failed / reward=0.9988200756924308`，源码/配置完整性 true；本地逐图 pHash 核查均在阈值内，但正式 evaluator 仍非 1，差异原因未定位；候选未集成，Order 93 保留待修复。复审 93-v2 已请求 `/root/review_order89`。证据目录 `/home/liuxv/liteagent-local-runs/repair-93-20261023-current`。Order 89 推送与远端 SHA 已核验。
+
+- 2026-10-24T00:48+08:00：Order 93 run-003 evaluator 未 PASS（reward `0.9988200756924308`），不集成候选。12 个 PDF 产物在归档中齐全；离线 pHash 与 evaluator 微分差异仍未解释，按 `/root/review_order89` 复核意见决定后续调查。队列仍为 68 待修复、13 正式通过。
