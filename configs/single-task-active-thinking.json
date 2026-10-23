@@ -15,9 +15,7 @@
     "requested": "Qwen3.5-9B",
     "reasoning_mode": "thinking",
     "reasoning_profile": "qwen35_thinking_switch",
-    "base_urls": [
-      "https://qwen.jinmaoapi.cc.cd/v1"
-    ]
+    "base_urls": []
   },
   "vm": {
     "provider": "docker",

@@ -26,4 +26,5 @@ if [[ "$has_qcow2" == false ]]; then
   )
 fi
 
-exec "$PYTHON" "$ROOT/src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py" "${args[@]}"
+exec "$PYTHON" "$ROOT/bin/model_env.py" \
+  "$ROOT/src/adapter_versions/v2_expanded/scripts/run_lite_agent_pilot.py" "${args[@]}"

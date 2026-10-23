@@ -11,6 +11,8 @@ from pathlib import Path
 import shutil
 import subprocess
 
+from model_env import load_model_environment
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -24,7 +26,14 @@ def main():
     parser.add_argument("--orders", nargs="+", type=int, required=True)
     parser.add_argument("--result-dir", type=Path)
     args = parser.parse_args()
+    load_model_environment()
     config = json.loads(args.config.read_text())
+    model = config["model"]
+    base_url = os.environ.get("QWEN_BASE_URL") or next(iter(model.get("base_urls", [])), None)
+    if not base_url:
+        parser.error("set QWEN_BASE_URL or configure ~/.config/liteagent/model.env")
+    model["base_urls"] = [base_url]
+    model["requested"] = os.environ.get("QWEN_MODEL", model["requested"])
     tasks = {task["order"]: task for task in config["tasks"]}
     if len(set(args.orders)) != len(args.orders) or any(n not in tasks for n in args.orders):
         parser.error("orders must be unique and present in the config")
@@ -69,7 +78,7 @@ def main():
     protocol, model = config["protocol"], config["model"]
     command = [str(source / "bin/run-liteagent.sh"), "--config", str(job / "config.json"),
                "--result-dir", str(job / "results"), "--orders", *map(str, args.orders),
-               "--base-url", os.environ.get("QWEN_BASE_URL", model["base_urls"][0]),
+               "--base-url", model["base_urls"][0],
                "--model", model["requested"], "--reasoning-mode", protocol["reasoning_mode"],
                "--qcow2", "/var/lib/liteagent-shared/Ubuntu.qcow2"]
     for name in ("max_steps", "initial_step_budget", "max_local_steps", "max_soft_restarts",

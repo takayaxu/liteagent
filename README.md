@@ -104,6 +104,31 @@ export QWEN_MODEL='Qwen3.5-9B'
 export QWEN_API_KEY='EMPTY'
 ```
 
+本机后续模型测试默认调用华为云昇腾上的 Qwen3.5-9B。V100 通过用户级服务
+`qwen-modelarts-tunnel.service` 建立 SSH 隧道，断线后自动重连，并已设置登录外
+持续运行和开机启动。模型仍在华为云执行推理。
+
+机器配置位于仓库外的 `~/.config/liteagent/model.env`，保存上述三个环境变量；
+私钥位于 `~/.ssh/liuxv-modelarts.pem`，不要提交到仓库。`bin/run-osworld.py` 和
+`bin/run-liteagent.sh` 会自动读取机器配置，独立运行工作树也使用同一份配置。
+显式环境变量优先于机器配置；`run-liteagent.sh` 的命令行参数仍可覆盖环境变量。
+`run-osworld.py` 会把实际使用的模型名和地址写入本次结果的配置快照，历史配置和
+结果不回写。其他需要调用模型的程序，可先执行 `set -a; . ~/.config/liteagent/model.env; set +a`。
+
+检查隧道及模型连通性：
+
+```bash
+systemctl --user status qwen-modelarts-tunnel.service
+set -a
+. ~/.config/liteagent/model.env
+set +a
+curl --fail --silent --show-error "$QWEN_BASE_URL/models"
+```
+
+隧道日志通过 `journalctl --user -u qwen-modelarts-tunnel.service` 查看；需要重新
+连接时执行 `systemctl --user restart qwen-modelarts-tunnel.service`。华为云实例及
+模型服务须保持运行；实例重建或 SSH 端口变更后，更新本机 systemd 服务再重启隧道。
+
 本地串行配置位于 `configs/single-task-active-thinking.json`，保持 Qwen3.5-9B thinking、每题
 100 步和 1800 秒，并配置完整的工具调用
 结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
