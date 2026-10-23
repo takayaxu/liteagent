@@ -267,10 +267,10 @@ flowchart TD
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` / multi_apps | 后续 `agent_deadline_exhausted`；[结果](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/results/results.json)；待核对源码／诊断 |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/88-multi_apps-3680a5ee-6870-426a-a997-eba929a0d25c)；待最新源码复跑 |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` / multi_apps | 候选 run-003 正式 failed/reward=0.9988200756924308；12份PDF齐全，3份文本换行残差，候选58b405c未集成；93-v3独立审核证据不足，待单/批转换对照证据；证据 `/home/liuxv/liteagent-local-runs/repair-93-20261023-current` |
-| 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 当前源码 run-002 agent_deadline_exhausted；notes已读、仅前三页写入；97-v1批setter独立审核证据不足，未实施；证据 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current` |
+| 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 候选7f44136 run-003 failed/reward0，source/config true；恢复补丁生效；独立复核指出末页原有备注已匹配，正式失败为Slide4正文段落数差异，待附带结构变化诊断；未集成；证据 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current` |
 | 98 | `8e116af7-7db7-4e35-a68b-b0939c066c78` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/98-multi_apps-8e116af7-7db7-4e35-a68b-b0939c066c78)；待最新源码复跑 |
 | 99 | `337d318b-aa07-4f4f-b763-89d9a2dd013f` / multi_apps | 原始 `agent_failure`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f)；待最新源码复跑 |
-| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 候选a3ad8a3 run-003 agent_deadline_exhausted；37b71b9仅收窄误拒绝句式，未正式复跑、未集成；导航/规划问题待诊断；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current` |
+| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 候选da4ed5a（37b71b9+task_state恢复）run005正式验证中；100-v3独立审核通过，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current` |
 | 101 | `185f29bd-5da0-40a6-b69c-ba7f4e0324ef` / multi_apps | 候选7afdebe run-002 failed/reward=0.0586，source/config true；fields结构修复生效，仅生成1/7份且内容错误，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-101-20261024-current` |
 | 102 | `869de13e-bef9-4b91-ba51-f6708c40b096` / multi_apps | 后续 `agent_failure`；[结果](/home/liuxv/liteagent-local-runs/transport-rerun-102-119-147-183-20261022/results/results.json)；待核对源码／诊断 |
 | 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 候选8159bef run-003 failed/reward0，source/config true；task_state恢复修正未触发，模型只打开文件便误报完成；效果分类后续方案未获批，候选未集成；证据 `/home/liuxv/liteagent-local-runs/repair-103-20261024-current` |
@@ -382,3 +382,7 @@ flowchart TD
 - 2026-10-24T06:46+08:00：104最终独立诊断确认产物已保存，属于模型范围/格式错误，无通用实现方案获批，继续待修复。97-v2与100-v3新直接证据审核通过：分别4处/2处task_state拒绝后仅完成工具可用。97从活动baseb063ea3仅移植8159bef增量，候选7f44136，59 focused/outcome/Ruff/check通过；run003新干净候选统一锁正式验证。100后续仅37b71b9加同增量，按序待验证；不携带Calc或其他失败题补丁。
 
 - 2026-10-23T23:07:00.225462+00:00：Order97候选7f44136 run003正式failed/reward0/agent_done，18步、777.205秒，source/config true；task_state恢复已生效，但仅写入6页即声称7页完成。候选不集成，终态交同一审核者，仍待修复。Order100-v3独立审核通过，仅37b71b9加8159bef四文件增量，候选da4ed5a，59 focused/outcome及Ruff/check通过；run005新干净工作树持统一guest锁正式运行，未集成。human_review=false；审核者/root/review_order89。
+
+- 97终态审核更正：run003虽只调用6页setter，第7页原有备注已与gold一致，不能认定漏页；原始evaluator首次失败为Slide4 Shape4正文段落数11 vs10，附带结构变化仍待诊断。先前“6页写入即漏第7页”的解释撤回，正式failed结果不变。
+
+- Order97独立终态结论：Slide4尾空段在step3初始inspect已存在，不能归因于备注写入；模型还重写已完成备注并压缩双空格，尚无Adapter转换错误直接证据。审核者/root/review_order89不批准新实现；需原始文件与受控往返对照，禁止按gold清理空白。保留待修复。
