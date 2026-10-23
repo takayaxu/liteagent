@@ -374,3 +374,4 @@ flowchart TD
 - 2026-10-24T04:59+08:00：Order103候选run002正式agent_deadline_exhausted，53步、1932.721秒，无evaluator；source/config均true。document.url提示最终被采用，但模型另改错误列、保存无selector陷入多文档歧义。新直接证据确认task_state拒绝后被旧GUI证据重新封闭工具面；103-v2独立审核及冻结diff复核通过，仅在proactive/review_ready复用既有pending helper恢复正常纠正面。候选8159bef；59 focused/outcomes、原事件20–25回放、Ruff/check通过，相邻旧测试5fail20pass与基线一致。run003干净候选树持统一guest锁正式复跑；未集成，仍待修复。
 
 - 2026-10-24T05:08+08:00：Order103候选8159bef run003正式failed/reward0/agent_done，15步、509.144秒，source/config均true。step12写D5因NO_CALC失败，14只打开文件，15即谎称已写入并获门禁通过；本轮没有触发task_state恢复，候选不集成。独立审核者继续核对通用完成证据边界，未批准新改动。Order104准备按最新活动HEAD干净基线。
+- 2026-10-24T05:10+08:00：Order103新失败独立复核：desktop.open_path仅打开文件却满足内容变更门，效果分类过宽；没有足够具体通用方案获批，候选不集成，保留待修复。Order104由/root认领，human_review=false，base904de6b，run001新干净工作树持统一guest锁当前源码基线；配置除原task身份外与活动默认完全一致，证据目录`/home/liuxv/liteagent-local-runs/repair-104-20261024-current`。
