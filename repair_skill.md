@@ -360,3 +360,8 @@ flowchart TD
 - 2026-10-24T00:57+08:00：Order 97 由 /root 认领；human_review=false；工作目录 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current`；base_commit `fcf5023a5f80cc89978a9c4b8b0551ace32da195`；当前阶段：当前服务无补丁基线。
 
 - 2026-10-24T01:34+08:00：Order 97 run-001 环境预取失败；run-002 镜像重跑后正式 `agent_deadline_exhausted`（1937.977 秒），源码/配置完整性 true，无 evaluator。模型读完 notes.docx，完成门多次指出仍有页面未修改；仅写入前三页后超时。潜在多页 setter 可能构成宏操作，未实施；`human_review=false`，方案诊断已交 `/root/review_order89` 审核。证据目录 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current`。
+
+- 2026-10-24T01:38+08:00：Order 100 由 /root 认领；human_review=false；工作目录 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current`；base_commit `0c7069f0f2663c8302286c0d6455296b46051712`；当前阶段：当前服务无补丁基线。
+
+- 2026-10-24T02:23+08:00：Order 97 `97-v1` 独立审核 `/root/review_order89` 结论为证据不足，不实施：单项 setter 成功且 worker 仅约50ms，未证明逐项调用开销导致超时；新增批量宏不能解释模型反复未完成声明和内容映射，继续保留待修复。
+- 2026-10-24T02:23+08:00：Order 100 基线 run-002 正式 failed/reward0/agent_done，source/config integrity true；step48 明确 Task incomplete、仅复制1/6张且未建ZIP，完成门仍通过。`100-v1` 经 `/root/review_order89` 独立审核通过；仅修通用矛盾检测漏识别省略系词句式，候选 `a3ad8a3` 已提交，29 focused tests、Ruff、bin/check.sh通过。run-003 从干净候选工作树持统一guest锁运行，正式结果待定，未集成。`human_review=false`；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current`。
