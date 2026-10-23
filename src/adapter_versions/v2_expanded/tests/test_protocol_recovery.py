@@ -964,6 +964,57 @@ def test_complete_tool_call_is_accepted_when_reasoning_finish_is_length() -> Non
     assert proposal["arguments_raw"] == arguments
 
 
+def test_qwen_wire_schema_drops_unique_items_but_local_validation_keeps_it() -> None:
+    tools = _schema_tools(
+        "adapter__presentation_inspect",
+        {
+            "type": "object",
+            "properties": {
+                "slides": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "uniqueItems": True,
+                }
+            },
+            "additionalProperties": False,
+        },
+    )
+    transport = _FakeCompletionClient(
+        tool_calls=[
+            _tool_call(
+                '{"slides":[2,3,2]}',
+                name="adapter__presentation_inspect",
+            )
+        ],
+        finish_reason="tool_calls",
+    )
+    client = StructuredToolModelClient(
+        base_url="http://unused/v1",
+        api_key="EMPTY",
+        request_timeout_seconds=1,
+        client=transport,
+    )
+
+    with pytest.raises(StructuredToolProtocolError) as raised:
+        client.propose(
+            model="Qwen3.5-9B",
+            messages=[],
+            tools=tools,
+            temperature=0.0,
+            output_token_budget=4096,
+            enable_thinking=True,
+        )
+
+    sent_schema = transport.requests[0]["tools"][0]["function"]["parameters"]
+    assert "uniqueItems" not in sent_schema["properties"]["slides"]
+    assert tools[0]["function"]["parameters"]["properties"]["slides"][
+        "uniqueItems"
+    ] is True
+    assert raised.value.schema_hints == (
+        "slides: remove duplicate items; include each item only once",
+    )
+
+
 def test_model_request_carries_explicit_reasoning_effort_and_observation() -> None:
     arguments = '{"sheet":"Sheet1","range":"A1:A1","values":[["ok"]]}'
     transport = _FakeCompletionClient(
@@ -1021,6 +1072,49 @@ def test_qwen_binary_thinking_mode_uses_only_enable_thinking() -> None:
     assert request["extra_body"]["chat_template_kwargs"] == {"enable_thinking": True}
     assert proposal["reasoning_mode_requested"] == "thinking"
     assert proposal["reasoning_mode_effective"] == "thinking"
+
+
+def test_non_qwen_wire_schema_keeps_unique_items() -> None:
+    transport = _FakeCompletionClient(
+        tool_calls=[
+            _tool_call(
+                '{"slides":[2]}',
+                name="adapter__presentation_inspect",
+            )
+        ],
+        finish_reason="tool_calls",
+    )
+    client = StructuredToolModelClient(
+        base_url="http://unused/v1",
+        api_key="EMPTY",
+        request_timeout_seconds=1,
+        client=transport,
+    )
+
+    client.propose(
+        model="other-model",
+        messages=[],
+        tools=_schema_tools(
+            "adapter__presentation_inspect",
+            {
+                "type": "object",
+                "properties": {
+                    "slides": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "uniqueItems": True,
+                    }
+                },
+                "additionalProperties": False,
+            },
+        ),
+        temperature=0.0,
+        output_token_budget=4096,
+        enable_thinking=True,
+    )
+
+    sent_schema = transport.requests[0]["tools"][0]["function"]["parameters"]
+    assert sent_schema["properties"]["slides"]["uniqueItems"] is True
 
 
 @pytest.mark.parametrize(

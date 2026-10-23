@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from collections.abc import Callable
 from types import SimpleNamespace
 from typing import Any
@@ -26,6 +27,31 @@ _SCHEMA_HINT_ITEM_MAX = 180
 # count in the episode ledger.
 MODEL_SDK_MAX_RETRIES = 0
 QWEN_TOOL_CALL_END = "\n</function>\n</tool_call>"
+
+
+def _qwen_schema_compatible_tools(
+    model: str, tools: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Omit schema keywords unsupported by the Qwen3.5 grammar backend.
+
+    The unmodified tool catalog remains authoritative for local validation.
+    """
+    if not re.match(r"^qwen3[.]5(?:-|$)", model, re.I):
+        return tools
+
+    compatible = deepcopy(tools)
+
+    def remove_unique_items(value: Any) -> None:
+        if isinstance(value, dict):
+            value.pop("uniqueItems", None)
+            for child in value.values():
+                remove_unique_items(child)
+        elif isinstance(value, list):
+            for child in value:
+                remove_unique_items(child)
+
+    remove_unique_items(compatible)
+    return compatible
 
 
 def _bounded_qwen_empty_tool_constraint(
@@ -621,10 +647,11 @@ class StructuredToolModelClient:
                 raise ValueError(
                     "enable_thinking does not match the requested reasoning mode"
                 )
+        request_tools = _qwen_schema_compatible_tools(model, tools)
         request = {
             "model": model,
             "messages": messages,
-            "tools": tools,
+            "tools": request_tools,
             "tool_choice": "required",
             "parallel_tool_calls": False,
             "stream": True,
@@ -644,7 +671,9 @@ class StructuredToolModelClient:
             # Retain the complete native delimiter for the provider's tool parser.
             request["stop"] = [tool_call_stop_sequence]
             request["extra_body"]["include_stop_str_in_output"] = True
-        constraint = _bounded_qwen_empty_tool_constraint(model, tools, tool_call_stop_sequence)
+        constraint = _bounded_qwen_empty_tool_constraint(
+            model, request_tools, tool_call_stop_sequence
+        )
         if constraint is not None:
             # required/named choices cause vLLM to replace explicit constraints.
             # The explicit grammar enforces the same requirement (at_least_one)
