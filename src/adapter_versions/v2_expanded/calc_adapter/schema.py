@@ -141,6 +141,19 @@ PIVOT_DESTINATION_SCHEMA = {
 }
 
 
+def pivot_destination(params: Mapping[str, Any]) -> Any:
+    """Resolve explicit flat relative fields; never decode strings or guess a gap."""
+    if "below_range" not in params and "blank_rows" not in params:
+        return params.get("destination")
+    if "destination" in params:
+        raise AdapterError("INVALID_REQUEST", "use destination OR below_range and blank_rows, not both")
+    _required_a1_range(params, "below_range")
+    gap = params.get("blank_rows")
+    if isinstance(gap, bool) or not isinstance(gap, int) or gap < 0:
+        raise AdapterError("INVALID_REQUEST", "params.blank_rows must be a non-negative integer")
+    return {"below_range": params["below_range"], "blank_rows": gap}
+
+
 @dataclass(frozen=True)
 class ActionRequest:
     request_id: str
@@ -932,7 +945,7 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
         _required_string(params, "source_sheet")
         _required_string(params, "source_range")
         _required_string(params, "destination_sheet")
-        destination = params.get("destination")
+        destination = pivot_destination(params)
         if isinstance(destination, Mapping):
             if set(destination) != {"below_range", "blank_rows"}:
                 raise AdapterError(

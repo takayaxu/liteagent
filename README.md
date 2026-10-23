@@ -185,6 +185,9 @@ HF_ENDPOINT=https://hf-mirror.com python bin/run-osworld.py \
 最终表头、原生比例、百分比显示、分类集合、总计及分隔空行；原生检查也保留
 同字段分组与计数的重复维度，详见
 [分类百分比结果核验](docs/percentage-pivot-outcomes-repair-20261023.md)。
+堆叠透视表还会按指令核对精确空行数，并核验保存后的分隔单元格；相对定位可用
+平铺的 `below_range`、`blank_rows`，避免字符串/对象混合参数歧义，详见
+[透视表空行与定位修复](docs/pivot-spacing-repair-20261023.md)。
 
 直接调用单题或自定义任务配置时，也必须在上述提交工作树内运行：
 

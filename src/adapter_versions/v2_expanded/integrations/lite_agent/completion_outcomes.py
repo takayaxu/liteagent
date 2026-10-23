@@ -373,6 +373,9 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
                                  actions=actions, step=inspect_event.step, mismatch=True))
         if key != "pivot_tables":
             continue
+        from .calc_pivot_layout import layout_issues
+
+        issues.extend(layout_issues(state, events, new_objects, after, inspect_event.step))
         from .calc_percentage_outcomes import request as percentage_request, outcome_issues as percentage_issues
 
         if percentage_spec := percentage_request(instruction, count):
@@ -438,6 +441,11 @@ def outcome_retry_allowed(state: Any, domain: str, action: str, args: dict, afte
             continue
         if issue["code"] == "pivot.output_mismatch":
             return True
+        if issue["code"] == "pivot.layout_mismatch":
+            from .calc_pivot_layout import retry_matches
+
+            if retry_matches(issue, args):
+                return True
         if issue["code"] == "pivot.definition_mismatch":
             expected = issue["expected"]
             if expected.get("aggregation") == "count":

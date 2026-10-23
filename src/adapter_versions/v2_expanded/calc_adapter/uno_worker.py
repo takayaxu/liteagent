@@ -22,7 +22,7 @@ from urllib.parse import unquote, urlparse
 
 from .errors import AdapterError, error_payload
 from .pivot_semantics import resolve_stacked_aggregate_fields
-from .schema import explicit_format_ranges, normalize_pivot_data_field, orient_typed_values
+from .schema import explicit_format_ranges, normalize_pivot_data_field, orient_typed_values, pivot_destination
 from .semantic_tables import (
     SemanticTableError,
     contiguous_table_row_count,
@@ -3188,7 +3188,7 @@ def _pivot_create(session: CalcSession, params: dict[str, Any]) -> dict[str, Any
     uno, _ = _uno_modules()
     source_sheet = session.sheet(params["source_sheet"])
     destination_sheet = session.sheet(params["destination_sheet"])
-    requested_destination = params["destination"]
+    requested_destination = pivot_destination(params)
     resolved_destination = requested_destination
     placement = {}
     if isinstance(requested_destination, dict):

@@ -213,23 +213,6 @@ def outcome_issues(state: Any, events: list, spec: dict, objects: list, after: i
             issue = output_issue(cells, sheet, pivot, group, source["counts"][group], after)
             if issue:
                 issues.append(issue)
-    if re.search(r"\bstacked\b", state.instruction, re.I):
-        ordered = [(s, p, rectangle(p.get("output_range"))) for s, p in objects]
-        ordered = sorted((item for item in ordered if item[2]), key=lambda item: (item[0], item[2][1]))
-        for (sheet, _, left), (other_sheet, _, right) in zip(ordered, ordered[1:]):
-            blank = bool(re.search(r"\bblank\s+(?:line|row)", state.instruction, re.I))
-            if sheet != other_sheet or left[0] != right[0] or right[1] <= left[3] + int(blank):
-                issues.append(_issue("pivot.layout_mismatch", sheet, "stacked disjoint outputs with requested blank row",
-                                     [left, right], actions=ACTIONS, step=inventory_step, mismatch=True))
-            elif blank:
-                gap = [_cell(cells, sheet, c, r, after)
-                       for r in range(left[3] + 1, right[1]) for c in range(left[0], max(left[2], right[2]) + 1)]
-                if any(cell is None for cell in gap):
-                    issues.append(_issue("pivot.gap_unverified", {"sheet": sheet, "rows": [left[3] + 1, right[1] - 1]},
-                                         "read blank separator cells after save", None, actions=ACTIONS))
-                elif any(cell["display"] or cell.get("kinds") != "blank" or cell.get("values") is not None for cell in gap):
-                    issues.append(_issue("pivot.gap_mismatch", sheet, "blank separator cells", gap,
-                                         actions=ACTIONS, step=max(c["step"] for c in gap), mismatch=True))
     return issues
 
 

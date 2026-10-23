@@ -2111,8 +2111,9 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                 "Create one pivot table, writing worksheet cells at destination. "
                 "Different names do not allocate separate output areas; reusing an "
                 "occupied destination overlaps the earlier table. Choose a non-overlapping "
-                "destination from the observed output_range. For stacked tables, use destination={below_range, "
-                "blank_rows} to express the exact gap without row arithmetic. Use an A1 "
+                "destination from the observed output_range. For stacked tables, use top-level below_range "
+                "and blank_rows to express the exact gap without row arithmetic. Do not also pass destination. "
+                "The legacy destination={below_range, blank_rows} form remains accepted. Use an A1 "
                 "cell when an exact anchor is requested. The response preserves "
                 "requested_destination and resolved destination. "
                 "Returns destination_sheet and output_range, "
@@ -2155,6 +2156,19 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                     "description": "Exact destination worksheet name only, without ! or a cell.",
                 },
                 "destination": copy.deepcopy(PIVOT_DESTINATION_SCHEMA),
+                "below_range": {
+                    "type": "string",
+                    "pattern": r"^\$?[A-Za-z]{1,4}\$?[1-9][0-9]*(?::\$?[A-Za-z]{1,4}\$?[1-9][0-9]*)?$",
+                    "description": (
+                        "Relative placement: copy the complete preceding output_range, including its leftmost "
+                        "column, and pass blank_rows beside this field. Omit destination. The Adapter places "
+                        "the new table below that rectangle, aligned to its left column."
+                    ),
+                },
+                "blank_rows": {
+                    "type": "integer", "minimum": 0,
+                    "description": "Exact number of empty rows between below_range and the new pivot, excluding headers and totals.",
+                },
                 "name": {
                     "type": "string",
                     "minLength": 1,
@@ -2207,10 +2221,15 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                 "source_sheet",
                 "source_range",
                 "destination_sheet",
-                "destination",
                 "name",
                 "data_fields",
             ],
+            "allOf": [{"oneOf": [
+                {"required": ["destination"], "not": {"anyOf": [
+                    {"required": ["below_range"]}, {"required": ["blank_rows"]},
+                ]}},
+                {"required": ["below_range", "blank_rows"], "not": {"required": ["destination"]}},
+            ]}],
         },
         "chart.create": {
             "description": (
