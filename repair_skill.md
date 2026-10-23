@@ -232,13 +232,13 @@ flowchart TD
 
 “已修复”在本次导入中表示已有正式 PASS、从活动队列移出，包含无新增补丁的复跑通过；不声称每题都新增了修复。12 题均为 `passed / reward=1.0`，但不是都在当前 HEAD 或当前昇腾服务上验证。旧服务和 dirty 快照的条件在表中明示；它们按用户要求作为已有通过记录导入，不作为未来候选可跳过干净提交复跑的先例。
 
-### 待修复题单（69 题）
+### 待修复题单（67 题）
 
 分类沿用原始题单，便于追溯；它不是最新根因分类。表内已有后续失败则链接最新找到的结果，否则回到原失败日志按本文第 1 步核对和复跑。此处不认领任务、不启动运行。
 
 | 原始状态 | 剩余数量 | 题号 |
 | --- | ---: | --- |
-| `failed` | 42 | 23、25、28、30、65、77、79、82、87、89、93、94、97、100、101、103、104、105、106、107、108、109、118、120、122、124、125、126、128、131、132、136、142、143、145、146、151、161、163、164、166、174 |
+| `failed` | 40 | 23、25、28、30、65、77、79、82、87、93、97、100、101、103、104、105、106、107、108、109、118、120、122、124、125、126、128、131、132、136、142、143、145、146、151、161、163、164、166、174 |
 | `agent_deadline_exhausted` | 11 | 37、54、74、86、88、98、117、127、130、167、189 |
 | `agent_failure` | 2 | 99、114 |
 | `model_protocol_failure` | 6 | 110、113、115、141、155、172 |
@@ -266,15 +266,15 @@ flowchart TD
 | 86 | `2c9fc0de-3ee7-45e1-a5df-c86206ad78b5` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/86-multi_apps-2c9fc0de-3ee7-45e1-a5df-c86206ad78b5)；待最新源码复跑 |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` / multi_apps | 后续 `agent_deadline_exhausted`；[结果](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/results/results.json)；待核对源码／诊断 |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/88-multi_apps-3680a5ee-6870-426a-a997-eba929a0d25c)；待最新源码复跑 |
-| 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/93-multi_apps-f7dfbef3-7697-431c-883a-db8583a4e4f9)；待最新源码复跑 |
-| 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-01/raw/run-1/97-multi_apps-eb303e01-261e-4972-8c07-c9b4e7a4922a)；待最新源码复跑 |
+| 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` / multi_apps | 候选 run-003 正式 failed/reward=0.9988200756924308；12份PDF齐全，3份文本换行残差，候选58b405c未集成；93-v3独立审核证据不足，待单/批转换对照证据；证据 `/home/liuxv/liteagent-local-runs/repair-93-20261023-current` |
+| 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 当前源码 run-002 agent_deadline_exhausted；notes已读、仅前三页写入；97-v1批setter独立审核证据不足，未实施；证据 `/home/liuxv/liteagent-local-runs/repair-97-20261024-current` |
 | 98 | `8e116af7-7db7-4e35-a68b-b0939c066c78` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/98-multi_apps-8e116af7-7db7-4e35-a68b-b0939c066c78)；待最新源码复跑 |
 | 99 | `337d318b-aa07-4f4f-b763-89d9a2dd013f` / multi_apps | 原始 `agent_failure`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f)；待最新源码复跑 |
-| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/100-multi_apps-82e3c869-49f6-4305-a7ce-f3e64a0618e7)；待最新源码复跑 |
-| 101 | `185f29bd-5da0-40a6-b69c-ba7f4e0324ef` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-05/raw/run-1/101-multi_apps-185f29bd-5da0-40a6-b69c-ba7f4e0324ef)；待最新源码复跑 |
+| 100 | `82e3c869-49f6-4305-a7ce-f3e64a0618e7` / multi_apps | 候选a3ad8a3 run-003 agent_deadline_exhausted；37b71b9仅收窄误拒绝句式，未正式复跑、未集成；导航/规划问题待诊断；证据 `/home/liuxv/liteagent-local-runs/repair-100-20261024-current` |
+| 101 | `185f29bd-5da0-40a6-b69c-ba7f4e0324ef` / multi_apps | 候选7afdebe run-002 failed/reward=0.0586，source/config true；fields结构修复生效，仅生成1/7份且内容错误，未集成；证据 `/home/liuxv/liteagent-local-runs/repair-101-20261024-current` |
 | 102 | `869de13e-bef9-4b91-ba51-f6708c40b096` / multi_apps | 后续 `agent_failure`；[结果](/home/liuxv/liteagent-local-runs/transport-rerun-102-119-147-183-20261022/results/results.json)；待核对源码／诊断 |
-| 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-01/raw/run-1/103-multi_apps-3a93cae4-ad3e-403e-8c12-65303b271818)；待最新源码复跑 |
-| 104 | `1f18aa87-af6f-41ef-9853-cdb8f32ebdea` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/104-multi_apps-1f18aa87-af6f-41ef-9853-cdb8f32ebdea)；待最新源码复跑 |
+| 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 基线run-001 failed/reward0；103-v1候选fc2a12e run-002正在正式复跑，未集成；103-v2技术预审通过，待终态核验；证据 `/home/liuxv/liteagent-local-runs/repair-103-20261024-current` |
+| 104 | `1f18aa87-af6f-41ef-9853-cdb8f32ebdea` / multi_apps | 已核对原任务身份及旧轨迹，待按启动时活动HEAD进行干净基线复跑；证据 `/home/liuxv/liteagent-local-runs/repair-104-20261024-current` |
 | 105 | `26150609-0da3-4a7d-8868-0faf9c5f01bb` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/105-multi_apps-26150609-0da3-4a7d-8868-0faf9c5f01bb)；待最新源码复跑 |
 | 106 | `9219480b-3aed-47fc-8bac-d2cffc5849f7` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/106-multi_apps-9219480b-3aed-47fc-8bac-d2cffc5849f7)；待最新源码复跑 |
 | 107 | `881deb30-9549-4583-a841-8270c65f2a17` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-05/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17)；待最新源码复跑 |
