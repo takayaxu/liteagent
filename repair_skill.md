@@ -226,7 +226,7 @@ flowchart TD
 
 原始范围：[thinking100 未通过题单](/home/liuxv/liteagent1021/reports/20261022-thinking100-full189/wrong-tasks.md)，对应 [结构化题单](/home/liuxv/liteagent1021/reports/20261022-thinking100-full189/wrong-tasks.json)。原始全量 189 题中 108 题通过、81 题未通过；原始结果及题单保持历史事实，本文只维护后续修复队列。
 
-**当前待修复 68 题；已确认正式 OSWorld 通过并移出队列 13 题。** 已通过题号：4、6、15、19、20、24、47、48、55、60、78、89、147。
+**当前待修复 67 题；已确认正式 OSWorld 通过并移出队列 14 题。** 已通过题号：4、6、15、19、20、24、47、48、55、60、78、89、94、147。
 
 本次核对原始 `results.json`、任务身份、单题轨迹 outcome、配置和 `final-integrity.json`；采用原失败之后、已完成且源码/配置完整性均通过的运行。15、47 的串行复跑发生在全量批次结束前，但晚于各自原失败，按单题时间核对。未把早于本轮失败的历史 PASS 用作销项证据。
 
@@ -267,7 +267,6 @@ flowchart TD
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` / multi_apps | 后续 `agent_deadline_exhausted`；[结果](/home/liuxv/liteagent-local-runs/selected13-active-20261022T114201557379Z/run/results/results.json)；待核对源码／诊断 |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/88-multi_apps-3680a5ee-6870-426a-a997-eba929a0d25c)；待最新源码复跑 |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/93-multi_apps-f7dfbef3-7697-431c-883a-db8583a4e4f9)；待最新源码复跑 |
-| 94 | `f918266a-b3e0-4914-865d-4faa564f1aef` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/94-multi_apps-f918266a-b3e0-4914-865d-4faa564f1aef)；待最新源码复跑 |
 | 97 | `eb303e01-261e-4972-8c07-c9b4e7a4922a` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-01/raw/run-1/97-multi_apps-eb303e01-261e-4972-8c07-c9b4e7a4922a)；待最新源码复跑 |
 | 98 | `8e116af7-7db7-4e35-a68b-b0939c066c78` / multi_apps | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-02/raw/run-1/98-multi_apps-8e116af7-7db7-4e35-a68b-b0939c066c78)；待最新源码复跑 |
 | 99 | `337d318b-aa07-4f4f-b763-89d9a2dd013f` / multi_apps | 原始 `agent_failure`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f)；待最新源码复跑 |
@@ -316,7 +315,7 @@ flowchart TD
 | 183 | `6ed0a554-cbee-4b44-84ea-fd6c042f4fe1` / vs_code | 后续 `model_protocol_failure`；[结果](/home/liuxv/liteagent-local-runs/active-thinking-serial-20261022T044210521731Z/results/results.json)；待核对源码／诊断 |
 | 189 | `7aeae0e2-70ee-4705-821d-1bba5d5b2ddd` / vs_code | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/189-vs_code-7aeae0e2-70ee-4705-821d-1bba5d5b2ddd)；待最新源码复跑 |
 
-### 已修复／已通过题单（13 题）
+### 已修复／已通过题单（14 题）
 
 每条均有完整结束的正式运行及 `source_matches=true / config_matches=true`。提交列为运行配置记录的提交；标为 dirty 时必须同时以源码 seal 和配置快照追溯，不能声称该 SHA 独自包含全部运行代码。所有现有记录的审核过程与推送状态不在本次追认范围，后续新增修复按第 3、6 步记录。
 
@@ -336,6 +335,7 @@ flowchart TD
 | 147 / `4d117223-a354-47fb-8b45-62ab1390a95f` | 2026-10-22 16:32:09 | `c94b9c0`；dirty 快照；旧 endpoint Qwen3.5-9B thinking；seal `81c71075e1ef` | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/results/raw/run-1/147-os-4d117223-a354-47fb-8b45-62ab1390a95f/trajectory_manifest.json) · [配置](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/config.json) · [完整性](/home/liuxv/liteagent-local-runs/final-completion-gate-20261022/final-integrity.json)；已有 PASS 导入，移出待修复 |
 
 | 89 / `937087b6-f668-4ba6-9110-60682ee33441` | 2026-10-23 23:52 | `a8abe65`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/final-integrity.json)；`human_review=false`，审核者 `/root/review_order89`，89-v2 通过；已集成并推送 `80c828a`，远端 SHA 已核验 |
+| 94 / `f918266a-b3e0-4914-865d-4faa564f1aef` | 2026-10-24 00:56 | `8bb2ef1`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/results/raw/run-1/94-multi_apps-f918266a-b3e0-4914-865d-4faa564f1aef/trajectory_manifest.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/final-integrity.json)；无代码补丁，使用 HF 镜像获取相同原始输入；result/expected log SHA256 完全一致；从活动待修复表移出 |
 
 第 48 题在 `8d5461b` 的昇腾批次中也已写入单题 `passed / reward=1.0`（[结果](/home/liuxv/liteagent-local-runs/tasks25-28-30-48-65-qwen9b-20261023T141100Z/attempt-1/results/results.json)），但核对时该批次仍为 `running`、尚无最终完整性记录；因此上表采用此前完整结束的正式 PASS，未把在跑批次标成全部完成。
 
@@ -353,5 +353,6 @@ flowchart TD
 - 2026-10-24T00:12+08:00：Order 93 基线 run-001 为下载超时 environment_failure（未评测）；run-002 从相同原始资源镜像下载后正式 failed/reward 0，完整性 true；直接 wildcard argv 返回 rc0 空输出，模型误认为完成。独立审核 `/root/review_order89` 通过 93-v1；候选 `58b405c` 已提交，15 focused tests、Ruff、bin/check.sh 通过。run-003 候选运行生成 12 份 PDF，正式 `failed / reward=0.9988200756924308`，源码/配置完整性 true；离线用 pinned `compare_pdfs` 文本指标逐项复核，3 份 PDF 只有换行不同，逐项 0.992/0.990/0.990，其余 9 份为 1；均值精确复现正式 reward。早前“pHash”判断有误，已更正；候选未集成，Order 93 保留待修复。93-v2 审核结论为证据不足/不支持命令提示改动；93-v3 拟公开未接入的通用批转换能力，已交 `/root/review_order89` 审核。证据目录 `/home/liuxv/liteagent-local-runs/repair-93-20261023-current`。Order 89 推送与远端 SHA 已核验。
 
 - 2026-10-24T00:48+08:00：Order 93 run-003 evaluator 未 PASS（reward `0.9988200756924308`），不集成候选。12 个 PDF 产物在归档中齐全；离线 pHash 与 evaluator 微分差异仍未解释，按 `/root/review_order89` 复核意见决定后续调查。队列仍为 68 待修复、13 正式通过。
+- 2026-10-24T00:56+08:00：Order 94 当前源码基线 run-002 正式 PASS/reward1，source/config integrity true；run-001 仅因官方 HF 超时在模型前 environment_failure。使用相同原始资源的 HF 镜像重跑，无代码改动；result 与 expected log SHA256 均为 `936a6de07f8d181e921dd725984f254472ed23563e9dee5706d0ec94b489de8f`。从待修复表移出，计数 67 待修复、14 正式通过；`human_review=false`，基线通过无需方案审核。
 
 - 2026-10-24T00:49+08:00：Order 94 由 /root 认领；human_review=false；工作目录 `/home/liuxv/liteagent-local-runs/repair-94-20261024-current`；base_commit `71f422f780fe6b8783573248a542a4839210d52b`；当前阶段：当前服务无补丁基线。
