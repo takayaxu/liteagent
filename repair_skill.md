@@ -377,3 +377,4 @@ flowchart TD
 - 2026-10-24T05:10+08:00：Order103新失败独立复核：desktop.open_path仅打开文件却满足内容变更门，效果分类过宽；没有足够具体通用方案获批，候选不集成，保留待修复。Order104由/root认领，human_review=false，base904de6b，run001新干净工作树持统一guest锁当前源码基线；配置除原task身份外与活动默认完全一致，证据目录`/home/liuxv/liteagent-local-runs/repair-104-20261024-current`。
 
 - 2026-10-24T05:42+08:00：Order104基线run001正式agent_deadline_exhausted，37步、1935.925秒，无evaluator；source/config均true。原请求与返回确认Answer及两个测试完整读取，spacing约束说明完整，早期冲突为模型误用；修正参数后NO_WRITER_DOCUMENT，模型到35才找到desktop.open_path、37追加两测试答案，随后模型请求耗尽episode。104-v1仅owner无文档恢复说明已技术预审通过，终态交同一审核者核验，尚未实施。GitHub已推送并核验到4341389，新增终态记录待下一次推送。
+- 2026-10-24T05:47+08:00：Order104终态独立复核维持104-v1通过；候选9deeca8仅补Writer无文档错误恢复说明，明确read_file不打开editable、Writer选择器不自动打开，模型可选已有desktop.open_path/GUI。17 focused、Ruff/check通过，原搜索2项失败已基线复现；实际diff复核通过。run002新干净候选工作树持统一guest锁正式验证，未集成，仍待修复。
