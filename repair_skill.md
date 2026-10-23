@@ -378,3 +378,4 @@ flowchart TD
 
 - 2026-10-24T05:42+08:00：Order104基线run001正式agent_deadline_exhausted，37步、1935.925秒，无evaluator；source/config均true。原请求与返回确认Answer及两个测试完整读取，spacing约束说明完整，早期冲突为模型误用；修正参数后NO_WRITER_DOCUMENT，模型到35才找到desktop.open_path、37追加两测试答案，随后模型请求耗尽episode。104-v1仅owner无文档恢复说明已技术预审通过，终态交同一审核者核验，尚未实施。GitHub已推送并核验到4341389，新增终态记录待下一次推送。
 - 2026-10-24T05:45+08:00：Order104终态独立复核维持104-v1通过；候选9deeca8仅补Writer无文档错误恢复说明，明确read_file不打开editable、Writer选择器不自动打开，模型可选已有desktop.open_path/GUI。17 focused、Ruff/check通过，原搜索2项失败已基线复现；实际diff复核通过。run002新干净候选工作树持统一guest锁正式验证，未集成，仍待修复。
+- 2026-10-24T06:44+08:00：Order104 run002正式deadline、69步、1934.185秒，source/config true；task_state拒绝后只剩完成工具重复循环。104-v2独立审核通过，仅复用8159bef两处恢复修正（不带Calc改动）于9deeca8，候选a67d723，25 focused/Ruff/diff通过；run003正式failed/reward0/agent_done，23步、1370.816秒，source/config true。owner恢复说明成功促使模型搜索并打开文档，随后追加1大段含额外标题/完整题型答案，未按原简短格式满足evaluator；候选不集成，仍待修复。另只读发现97/100原task_state拒绝后同样完成工具封闭的6条直接证据，已交同一审核者评估新假设。
