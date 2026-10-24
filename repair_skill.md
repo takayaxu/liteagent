@@ -397,3 +397,5 @@ flowchart TD
 - 2026-10-24：Order93用户明确批准93-human-v1。A候选e34f1d2在新独立分支codex/repair-93-20261024-human冻结，7focused/Ruff/diff/check通过；B受控3残差+1正常文档，同环境shell批转换与单文件隔离转换文本均完全一致且复现旧输出，排除批模式假设。未重复整题、未集成，仍failed。追加93-human-v2仅临时子进程字体可用性对照诊断待人工审批；未改全局字体/正式条件。证据与完整方案`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/review.md`。
 
 - 2026-10-24：Order93-human-v2经用户明确批准后完成：3残差+1正常原DOC，同LO及其余字体条件；仅诊断子进程屏蔽Open Sans时自然回退DejaVuSans，3残差原文本指标全部1.0，available组精确复现旧输出，正常对照均1.0。全局fontconfig摘要/字体清单/默认匹配前后不变。确认本组残差由字体可用性引起，但不把诊断配置用于正式评测、不按gold替换字体。Open-Sans.ttf时间戳2024年，官方亦要求额外字体包，尚无独立依据判当前字体环境错误。e34f1d2仍独立候选未集成；正式仍failed/0.9988200756924308。v2范围完成，后续环境兼容方案需另行人工审核；证据`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/font-v2-comparison.json`。
+
+- 2026-10-24：Order93按用户要求追查正确字体并下载。原DOC临时FODT样式确认3残差实际指定Open Sans。已从OSWorld文档官方字体包镜像获取82.3MB归档，SHA256与上游LFS元数据一致、全ZIP CRC通过；官方Open Sans3.003不同于已装1.10。临时进程分别加载官方static和patch版，fc-match确认实际3.003，转换文本均逐字符复现旧输出、残差分数不变，正常对照1.0。DejaVuSans2.37早已安装。补装/更新OpenSans不能解决本残差；未改全局字体/正式条件，仍待修复，未集成。来源、下载及结果`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/font-sources/README.md`。
