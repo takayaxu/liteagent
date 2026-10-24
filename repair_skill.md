@@ -403,3 +403,5 @@ flowchart TD
 - 2026-10-24T12:28:34.817658+08:00：Order93用户最新明确要求按参考规范执行，human_review=true授权参考字体兼容条件；候选b009269（含通用命令提示及可选临时guest字体profile）从独立树冻结，18focused/Ruff/diff/check通过、真实guest安装/撤销smoke通过。配置单独记录vm.fontconfig，Open Sans不可用时核验自然回退DejaVuSans；默认字体历史评分不改。run-reference-001干净候选持统一锁正式验证中，100步/1800秒、原任务/原evaluator不变；候选未集成。证据`/home/liuxv/liteagent-local-runs/repair-93-20261024-human`。
 
 - 2026-10-24：Order93参考兼容字体条件run-reference-001终态failed/reward0/agent_done，4步272.885秒，source/config true；fontprofile成功生效并撤销，但直接argv字面*.doc无转换，结果PDF归档45bytes。b009269未集成。新93-human-v4只拟将已有argv通配符/进程验证语义前移到command.run顶层发现说明，等待人工审核，未实施；证据与具体diff`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/93-human-v4-review.md`。
+
+- 2026-10-24：Order93-human-v4用户明确批准；仅将通配符与产物验证语义前移到command.run顶层发现说明，候选45a455f，19focused/Ruff/diff/check通过。run-reference-002新干净detached源码、沿用已批准reference-config；公共guest由105占用，统一锁排队中（session6903），取得锁后重查活动runtime/guest再自动运行。human_review=true，尚未集成。
