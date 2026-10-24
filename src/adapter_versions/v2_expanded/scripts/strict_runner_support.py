@@ -9,7 +9,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, MutableMapping
+from typing import Any, Callable, MutableMapping
 
 import requests
 
@@ -211,13 +211,16 @@ def install_post_reset_prepare(
     env: Any,
     domain: str,
     adapter_urls: dict[str, str],
+    before_prepare: Callable[[], Any] | None = None,
 ) -> None:
-    if domain not in PREPARE_AFTER_RESET_DOMAINS:
+    if domain not in PREPARE_AFTER_RESET_DOMAINS and before_prepare is None:
         return
     original_reset = env.reset
 
     def reset_with_prepare(*args: Any, **kwargs: Any) -> Any:
         result = original_reset(*args, **kwargs)
+        if before_prepare is not None:
+            before_prepare()
         prepare_adapter_after_reset(domain, adapter_urls)
         task_config = kwargs.get("task_config")
         if task_config is None and args:

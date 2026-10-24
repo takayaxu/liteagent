@@ -74,6 +74,7 @@ from scripts.frozen_condition import (  # noqa: E402
     _promotion_gate_required,
     enforce_runner_condition,
 )
+from scripts.guest_font_profile import GuestFontProfile  # noqa: E402
 from scripts.openapa_trajectory import build_trajectory_manifest, write_manifest  # noqa: E402
 from scripts.organization_step_budget import estimate_organization_step_budget  # noqa: E402
 from scripts.office_episode_recovery import (  # noqa: E402
@@ -1198,6 +1199,7 @@ def run_task(
     started_at = utc_now()
     started = time.monotonic()
     env = None
+    font_profile = None
     recording_started = False
     interrupted = False
     phase = "setup"
@@ -1258,6 +1260,10 @@ def run_task(
             client_password="password",
             cache_dir=str(DEFAULT_CACHE_DIR),
         )
+        font_profile = GuestFontProfile(
+            env.controller, config.get("vm", {}).get("fontconfig")
+        )
+        record["guest_font_profile"] = font_profile.apply()
         adapter_urls = deploy_generic_stack(env, task["domain"])
         record["generic_guest_sanitization"] = sanitize_generic_guest_deployment(
             env.controller
@@ -1266,7 +1272,10 @@ def run_task(
             env.controller,
             example,
         )
-        install_post_reset_prepare(env, task["domain"], adapter_urls)
+        install_post_reset_prepare(
+            env, task["domain"], adapter_urls,
+            before_prepare=font_profile.apply if font_profile.xml is not None else None,
+        )
         observation = env.reset(task_config=reset_task_config(example))
         if not hasattr(env.provider, "assert_agent_egress_policy"):
             raise RuntimeError("strict OSWorld provider has no guest egress boundary")
@@ -2109,6 +2118,11 @@ def run_task(
                     )
                 except Exception as exc:
                     record.setdefault("recording_error", str(exc))
+            try:
+                if font_profile is not None:
+                    record["guest_font_profile_cleanup"] = font_profile.restore()
+            except Exception as exc:
+                record["font_profile_cleanup_error"] = str(exc)
             try:
                 env.close()
             except KeyboardInterrupt:
