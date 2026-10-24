@@ -226,19 +226,19 @@ flowchart TD
 
 原始范围：[thinking100 未通过题单](/home/liuxv/liteagent1021/reports/20261022-thinking100-full189/wrong-tasks.md)，对应 [结构化题单](/home/liuxv/liteagent1021/reports/20261022-thinking100-full189/wrong-tasks.json)。原始全量 189 题中 108 题通过、81 题未通过；原始结果及题单保持历史事实，本文只维护后续修复队列。
 
-**当前待修复 66 题；已确认正式 OSWorld 通过并移出队列 15 题。** 已通过题号：4、6、15、19、20、24、47、48、55、60、78、89、93、94、147。
+**当前待修复 65 题；已确认正式 OSWorld 通过并移出队列 16 题。** 已通过题号：4、6、15、19、20、24、47、48、55、60、78、89、93、94、105、147。
 
 本次核对原始 `results.json`、任务身份、单题轨迹 outcome、配置和 `final-integrity.json`；采用原失败之后、已完成且源码/配置完整性均通过的运行。15、47 的串行复跑发生在全量批次结束前，但晚于各自原失败，按单题时间核对。未把早于本轮失败的历史 PASS 用作销项证据。
 
 “已修复”在本次导入中表示已有正式 PASS、从活动队列移出，包含无新增补丁的复跑通过；不声称每题都新增了修复。12 题均为 `passed / reward=1.0`，但不是都在当前 HEAD 或当前昇腾服务上验证。旧服务和 dirty 快照的条件在表中明示；它们按用户要求作为已有通过记录导入，不作为未来候选可跳过干净提交复跑的先例。
 
-### 待修复题单（66 题）
+### 待修复题单（65 题）
 
 分类沿用原始题单，便于追溯；它不是最新根因分类。表内已有后续失败则链接最新找到的结果，否则回到原失败日志按本文第 1 步核对和复跑。此处不认领任务、不启动运行。
 
 | 原始状态 | 剩余数量 | 题号 |
 | --- | ---: | --- |
-| `failed` | 39 | 23、25、28、30、65、77、79、82、87、97、100、101、103、104、105、106、107、108、109、118、120、122、124、125、126、128、131、132、136、142、143、145、146、151、161、163、164、166、174 |
+| `failed` | 38 | 23、25、28、30、65、77、79、82、87、97、100、101、103、104、106、107、108、109、118、120、122、124、125、126、128、131、132、136、142、143、145、146、151、161、163、164、166、174 |
 | `agent_deadline_exhausted` | 11 | 37、54、74、86、88、98、117、127、130、167、189 |
 | `agent_failure` | 2 | 99、114 |
 | `model_protocol_failure` | 6 | 110、113、115、141、155、172 |
@@ -274,7 +274,6 @@ flowchart TD
 | 102 | `869de13e-bef9-4b91-ba51-f6708c40b096` / multi_apps | 后续 `agent_failure`；[结果](/home/liuxv/liteagent-local-runs/transport-rerun-102-119-147-183-20261022/results/results.json)；待核对源码／诊断 |
 | 103 | `3a93cae4-ad3e-403e-8c12-65303b271818` / multi_apps | 候选8159bef run-003 failed/reward0，source/config true；task_state恢复修正未触发，模型只打开文件便误报完成；效果分类后续方案未获批，候选未集成；证据 `/home/liuxv/liteagent-local-runs/repair-103-20261024-current` |
 | 104 | `1f18aa87-af6f-41ef-9853-cdb8f32ebdea` / multi_apps | 候选a67d723 run-003 failed/reward0，source/config true；恢复说明促成打开及追加，输出内容/格式仍不符，未集成，待诊断；证据 `/home/liuxv/liteagent-local-runs/repair-104-20261024-current` |
-| 105 | `26150609-0da3-4a7d-8868-0faf9c5f01bb` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/105-multi_apps-26150609-0da3-4a7d-8868-0faf9c5f01bb)；待最新源码复跑 |
 | 106 | `9219480b-3aed-47fc-8bac-d2cffc5849f7` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-04/raw/run-1/106-multi_apps-9219480b-3aed-47fc-8bac-d2cffc5849f7)；待最新源码复跑 |
 | 107 | `881deb30-9549-4583-a841-8270c65f2a17` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-05/raw/run-1/107-multi_apps-881deb30-9549-4583-a841-8270c65f2a17)；待最新源码复跑 |
 | 108 | `7e287123-70ca-47b9-8521-47db09b69b14` / multi_apps | 原始 `failed`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-06/raw/run-1/108-multi_apps-7e287123-70ca-47b9-8521-47db09b69b14)；待最新源码复跑 |
@@ -314,7 +313,7 @@ flowchart TD
 | 183 | `6ed0a554-cbee-4b44-84ea-fd6c042f4fe1` / vs_code | 后续 `model_protocol_failure`；[结果](/home/liuxv/liteagent-local-runs/active-thinking-serial-20261022T044210521731Z/results/results.json)；待核对源码／诊断 |
 | 189 | `7aeae0e2-70ee-4705-821d-1bba5d5b2ddd` / vs_code | 原始 `agent_deadline_exhausted`；[失败日志](/home/liuxv/liteagent1021/runs/liteagent1021-thinking100-20261021T062953289949Z/results/workers/worker-03/raw/run-1/189-vs_code-7aeae0e2-70ee-4705-821d-1bba5d5b2ddd)；待最新源码复跑 |
 
-### 已修复／已通过题单（15 题）
+### 已修复／已通过题单（16 题）
 
 每条均有完整结束的正式运行及 `source_matches=true / config_matches=true`。提交列为运行配置记录的提交；标为 dirty 时必须同时以源码 seal 和配置快照追溯，不能声称该 SHA 独自包含全部运行代码。所有现有记录的审核过程与推送状态不在本次追认范围，后续新增修复按第 3、6 步记录。
 
@@ -336,6 +335,7 @@ flowchart TD
 | 89 / `937087b6-f668-4ba6-9110-60682ee33441` | 2026-10-23 23:52 | `a8abe65`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-89-20261023-current/run-002/output/final-integrity.json)；`human_review=false`，审核者 `/root/review_order89`，89-v2 通过；已集成并推送 `80c828a`，远端 SHA 已核验 |
 | 93 / `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 2026-10-24T13:25:39.156792+08:00 | `45a455f`；干净提交；昇腾Qwen3.5-9B thinking；100步/1800秒；用户明确批准的参考字体兼容条件 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-93-20261024-human/run-reference-002/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-93-20261024-human/run-reference-002/output/final-integrity.json)；source/config true、fontconfig撤销成功。human_review=true，93-human-v4人工通过；已集成55d23bc，待推送；[复现配置](/home/liuxv/liteagent/configs/single-task-reference-fonts.json)。默认字体历史0.998820不改写 |
 | 94 / `f918266a-b3e0-4914-865d-4faa564f1aef` | 2026-10-24 00:56 | `8bb2ef1`；干净提交；昇腾 Qwen3.5-9B thinking；100 步/1800 秒 | `passed / 1.0`；[结果](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/results/raw/run-1/94-multi_apps-f918266a-b3e0-4914-865d-4faa564f1aef/trajectory_manifest.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-94-20261024-current/run-002/output/final-integrity.json)；无代码补丁，使用 HF 镜像获取相同原始输入；result/expected log SHA256 完全一致；从活动待修复表移出 |
+| 105 / `26150609-0da3-4a7d-8868-0faf9c5f01bb` | 2026-10-24T23:01:41.989708+08:00 | `bd72209`；干净提交；seal `dd61c4bdccf3`；昇腾 Qwen3.5-9B thinking；100步/1800秒/8192 token；原始任务与evaluator，pygame2.6.1 | `passed / 1.0 / agent_done`，23步；[结果](/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/run-008/output/results/results.json) · [轨迹](/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/run-008/output/results/raw/run-1/105-multi_apps-26150609-0da3-4a7d-8868-0faf9c5f01bb/trajectory_manifest.json) · [配置](/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/run-008/output/config.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/run-008/output/final-integrity.json)；source/config true；human_review=false，审核 `/root/audit105_current`、`/root/audit105_failure006`，Plan105-v3.1/DEP105-v1/PLAN105-surface-v1.1/PLAN105-reasoning-v1及实际diff通过；两次循环检测后恢复，原失败全部保留；同源码/依赖/配置集成 `d13c114`，本地已集成、待推送；[回执](/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/review.md) |
 
 第 48 题在 `8d5461b` 的昇腾批次中也已写入单题 `passed / reward=1.0`（[结果](/home/liuxv/liteagent-local-runs/tasks25-28-30-48-65-qwen9b-20261023T141100Z/attempt-1/results/results.json)），但核对时该批次仍为 `running`、尚无最终完整性记录；因此上表采用此前完整结束的正式 PASS，未把在跑批次标成全部完成。
 
@@ -402,22 +402,48 @@ flowchart TD
 
 - 2026-10-24T12:28:34.817658+08:00：Order93用户最新明确要求按参考规范执行，human_review=true授权参考字体兼容条件；候选b009269（含通用命令提示及可选临时guest字体profile）从独立树冻结，18focused/Ruff/diff/check通过、真实guest安装/撤销smoke通过。配置单独记录vm.fontconfig，Open Sans不可用时核验自然回退DejaVuSans；默认字体历史评分不改。run-reference-001干净候选持统一锁正式验证中，100步/1800秒、原任务/原evaluator不变；候选未集成。证据`/home/liuxv/liteagent-local-runs/repair-93-20261024-human`。
 
+- 2026-10-24（北京时间）：Order 105 由当前 chat /root 认领；队列 105、106、107、108、109、118、120、122、124，`human_review=false`，资源空闲自动继续；个人目录 `/home/liuxv/liteagent-local-runs/repair-105-20261024-auto`；认领基点 `cacb154`；阶段：等待公共锁后从最新活动 HEAD 无补丁复跑。前轮 food.py 坐标修改属于题目答案，不作为 LiteAgent 候选；无此类补丁实施。
+
+- 2026-10-24：Order 105 当前阶段：干净 `cacb154` 无补丁基线运行中；已确认 guest 截图接口可用、无其他 OSWorld runner、取得统一公共锁；证据目录 `/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/run-001/output`。
+
 - 2026-10-24：Order93参考兼容字体条件run-reference-001终态failed/reward0/agent_done，4步272.885秒，source/config true；fontprofile成功生效并撤销，但直接argv字面*.doc无转换，结果PDF归档45bytes。b009269未集成。新93-human-v4只拟将已有argv通配符/进程验证语义前移到command.run顶层发现说明，等待人工审核，未实施；证据与具体diff`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/93-human-v4-review.md`。
 
 - 2026-10-24：Order93-human-v4用户明确批准；仅将通配符与产物验证语义前移到command.run顶层发现说明，候选45a455f，19focused/Ruff/diff/check通过。run-reference-002新干净detached源码、沿用已批准reference-config；公共guest由105占用，统一锁排队中（session6903），取得锁后重查活动runtime/guest再自动运行。human_review=true，尚未集成。
 
+- 2026-10-24：Order105 当前基线正式 failed/reward0/stalled_no_progress，源码/配置完整性均 true；审核者 `/root/audit105_current` 已通过 Plan105-v3.1；候选 `20877fa` 仅修复本地文件读取搜索排序与显式整理意图，18 focused checks/Ruff/check.sh 通过，无新增相邻测试失败；阶段：等待公共锁后从候选新建的 run-002/source 正式复跑，尚未集成/推送。
+
 - 2026-10-24T13:25:39.156792+08:00：Order93候选45a455f run-reference-002正式PASS/reward1.0/agent_done，16步，source/config true，fontprofile撤销成功。按用户明确批准的参考字体兼容条件验证；默认环境历史分数保留。已将同seal源码与同字节配置集成55d23bc，19focused/Ruff/check通过，从待修复移出；队列66、已通过15。推送待核验。
 
+- 2026-10-24：Order105 候选 `20877fa` 的 run-002 在模型执行前 `environment_failure`（OS Adapter OCR 依赖安装超时，后续 dpkg 锁冲突）；源码/配置完整性 true，无正式 PASS，未集成。失败 guest 已由运行器清理；正在独立审核单次保留条件的环境重试，详见本题 review.md；其他8题仍排队。
+
+- 2026-10-24T16:12:20.431945+08:00：Order105 最新候选 `4fe8f2f`（审核者 `/root/audit105_current`；Plan105-v3.1 + DEP105-v1，通过；基点 `ccd4deb`）run-004 因主机重启中断，无正式评分/最终完整性，不销项。Docker daemon 未启动且 `sudo -n systemctl start docker` 要求密码；模型和 pygame 正常。当前阶段：等待有权限账号恢复 Docker 后新建运行目录继续正式复跑；未集成/推送，其他8题仍按顺序排队。完整记录 `/home/liuxv/liteagent-local-runs/repair-105-20261024-auto/review.md`。
+
 - 2026-10-24T16:15:03.526823+08:00：Order97按用户最新请求human_review=true重新认领，base ccd4deb；已准备`/home/liuxv/liteagent-local-runs/repair-97-20261024-human/run-001/source`干净当前提交基线及原条件配置（无93字体profile）。Docker服务inactive、socket不存在且sudo -n需密码，未能启动基线；当前仅只读诊断。原slides4/5/7备注本已完成，旧候选改坏slide5空白；原Slide4正文尾空段与gold差异仍在，禁止未经审核按gold清理。待有权限账号恢复Docker后先当前源码无补丁复跑，再人工审核具体通用方案；候选未实施。
+
+- 2026-10-24T16:36:13.448502+08:00：Order105 按用户要求重试基础设施检查；Docker 仍 inactive、socket 缺失，启动要求 sudo 密码；模型HTTP200、pygame正常、公共锁空闲。保留候选4fe8f2f，待恢复Docker后继续新目录复跑，未启动无效评测。
+
+- 2026-10-24T17:24:10.062977+08:00: Docker active29.1.3/API healthy, shared guest restored via documented compose. No OSWorld runners/public lock holders observed; acquired same outer flock. Fresh detached run005/source at approved4fe8f2f launched sameconfig100steps1800s. Pygame2.6.1 importOK. Active c21ebf0 differs from candidatebaseccd4deb only ledger, runtime unchanged. Prior run004 interrupted by reboot preserved without rewriting stale raw outcome.
+
+- 2026-10-24T17:26:29.651690+08:00: run005 terminal environment_failure before model, rewardNone, integrity source/config true. Docker active29.1.3; shared compose restored; fresh guest egress installation exit3: ip6tables legacy filter table missing. lsmod lacks ip6table_filter/ip6_tables; modinfo file exists for kernel5.15.0-198. sudo -n modprobe ip6table_filter requires password. No egress bypass/evaluator change; candidate4fe8f2f unintegrated. Administrator kernel-module restoration required before newrun.
+
+2026-10-24T17:33:18.576264+08:00: user requested continue. ip6table_filter/ip6_tables now loaded, Docker29.1.3 healthy; public lock currently Order97 run003. Prepared new detached run006/source at unchanged approved4fe8f2f; blocking outer flock queued, after acquisition rechecks other runner/module/Docker before sameconfig formal Order105 run. Activec21ebf0 only ledger changes vs approvedbase. No runtime/evaluator/budget changes.
 
 - 2026-10-24T10:02:04+00:00：Order97恢复后按human_review=true继续。run-002在模型前environment_failure（ip6tables filter不可用），完整性true；外部模块恢复且查询成功后，run-003从干净c21ebf0同原条件正式基线，agent_deadline_exhausted、46events、1967.293秒、无evaluator、source/config true。第9步唯一写入，10–46反复未完成声明；原请求及只读回放确认pending task_state被旧review_ready/strict_proactive审查面覆盖。97-human-v1仅拟修两处恢复判断，待用户人工批准，未实施；注意模型整份inspect只见前三页、另4页明确省略，原备注reader完整；旧正文/gold尾空段差异不按答案清理。完整材料 `/home/liuxv/liteagent-local-runs/repair-97-20261024-human/97-human-v1-review.md`，结果索引run-003-diagnosis.json。
 
 - 2026-10-24（北京时间18:49后）：用户“实施”批准97-human-v1，候选7923b96已在独立repair分支提交。59focused/outcomes通过；邻近5fail20pass在当前无补丁基线完全复现（候选总79pass5既有fail）；Ruff/diff/check.sh及真实失败事件回放通过。run-004干净候选、原配置持公共锁正式启动，但模型前environment_failure：PermissionError /tmp/docker_port_allocation.lck，source/config true，无评分。锁属pengzhe 0664，liuxv非owner/group，无写权限；另账号多任务运行中，不删除锁或绕过互斥。sudo -n需密码，需owner/admin恢复共同锁读写后新目录复跑。候选未集成/推送，批准仍有效，无新方案待审批。
 
+- 2026-10-24：Order105 run-006正式failed/reward0，source/config true；搜索已修复但模型错误编辑，独立审核 `/root/audit105_failure006` 复核中，无新候选获批，不重复碰运气。候选4fe8f2f未集成。Order106由/root认领，human_review=false，个人目录 `/home/liuxv/liteagent-local-runs/repair-106-20261024-auto`，基点f6c7f6a，阶段：最新活动源码无补丁基线。
+
 - 2026-10-24（北京时间）：用户要求按repair_skill修100、不开启人工review；human_review=false，/root重新认领，启动base f6c7f6a。旧候选da4ed5a正式failed0不得带入；当前源码不同，先最新干净提交无补丁复跑。公共guest由106 run001持统一锁，已用同锁排队；端口锁此时不存在，不沿用97旧权限快照。新材料 `/home/liuxv/liteagent-local-runs/repair-100-20261024-restart`；旧审核者当前已不可用，新独立只读/root/review_order100_restart保留旧意见核对证据，无新方案通过、未实施。
+
+- 2026-10-24：用户重新指定105、human_review=false；原审核者 `/root/audit105_failure006` 对新增直接证据批准 PLAN105-surface-v1.1，并复核实际diff通过。恢复结构就绪后正常调查工具，保留可选revise/原门禁；41focusedpass，邻近5fail基线同样复现。冻结候选 `fbfcf15`，个人目录不变；新run-007等待公共锁正式复跑，无强制工具顺序/题目答案，未集成。
+
+- 2026-10-24T20:43:51.834841+08:00：Order105 run-007 正式终态 `agent_deadline_exhausted / reward=null`，17events，源码/配置完整性true；模型正确编辑后重复推理，原始evaluator未评分，不能销项。独立审核 `/root/audit105_failure006` 确认工具可用且观察真实，当前无证据支持新增补丁或不变重试；候选fbfcf15保留独立分支、未集成/推送。详见本题review.md及run-007/output。
 
 - 2026-10-24 20:46（北京时间）：Order100 human_review=false。最新干净de009e0无补丁run001模型前environment_failure（全局端口锁PermissionError），source/config true、无评分；原FileLock单次最小检查曾成功，独立审核/root/review_order100_restart通过ENV100-retry-v1仅一次原条件重试。该重试在原FileLock preflight再次EACCES，锁pengzhe:pengzhe0664，O_CREAT及无O_CREAT回退都无写权限；未创建run002运行树、未启动第二次正式任务。按审批边界停止环境阻塞，需owner/admin协调跨账号共同锁权限后恢复。旧失败候选保留不集成，未实施新LiteAgent补丁；无人工方案审批请求。
 
 - 2026-10-24 21:57（北京时间）：用户新指令修101、human_review=false；/root重新认领base e04d675，独立审核/root/review_order101_restart保留旧审核限制。当前源码不同，先新干净run001无补丁基线；原条件100步1800秒，无字体profile，原任务/evaluator，统一公共锁持全生命周期。端口原FileLock预检及Adapter初始化成功，正式模型/评估待定；旧7afdebe失败不移植、不集成。新目录 `/home/liuxv/liteagent-local-runs/repair-101-20261024-restart`。
 
 - 2026-10-24 22:40（北京时间）：Order101最新无补丁run001正式failed/reward0/agent_loop_time_budget_exhausted，19events、source/config true，原evaluator7输出404；首响应length、steps11/12/14–17 dict字段被拒绝。101-restart-v1通用结构摘要两文件经/root/review_order101_restart正式及冻结diff复核通过；独立候选987feac，8结构tests、真实请求回放、Ruff/diff/check通过，邻近7fail10pass与无补丁基线一致。run002新干净候选原条件复跑已统一锁排队，105run008持有锁，未集成。输入/evaluator既有差异及模型mapping/库存限制保留，不按gold改答案。
+
+- 2026-10-24T23:01:41.989708+08:00：Order105 run-008 正式PASS/reward1.0/agent_done，23步1428.709秒，source/config true；候选bd72209。按用户要求继续追查run-007超时，独立审核通过PLAN105-reasoning-v1并复核实际diff；真实步骤19/22精确reasoning循环被显式中断，既有限重试恢复，23完成。最新活动文档组合的运行源码seal/依赖/配置与PASS完全相同，已集成d13c114，题单65待修/16通过；GitHub待推送。全部早期失败、审核否决和修订保留于本题review.md。
