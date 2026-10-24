@@ -3323,6 +3323,7 @@ def search_actions(
             instruction_tokens=instruction_tokens,
             error_tokens=error_tokens,
             query=query,
+            instruction=instruction,
             limit=limit,
             excluded_actions=set(excluded_actions),
             excluded_routes=set(excluded_routes),
@@ -3436,6 +3437,7 @@ def _search_multi_app_actions(
     instruction_tokens: set[str],
     error_tokens: set[str],
     query: str,
+    instruction: str,
     limit: int,
     excluded_actions: set[str],
     excluded_routes: set[tuple[str, str]],
@@ -3582,10 +3584,43 @@ def _search_multi_app_actions(
             {"active", "current", "open", "identity", "path", "ranges", "read"}
         )
     )
+    # Reading a local file is not necessarily a spreadsheet operation. Infer
+    # the format from the current query before falling back to instruction
+    # context; expanded synonyms such as file -> folder are not format evidence.
+    text_extensions = {
+        "txt", "md", "log", "json", "yaml", "yml", "toml", "ini", "xml",
+        "html", "css", "tsv", "py", "rs", "c", "cc", "cpp", "cs", "go",
+        "java", "js", "jsx", "mjs", "php", "pl", "rb", "sh", "ts", "tsx",
+    }
+    table_extensions = {"csv", "ods", "xlsx"}
+    other_extensions = {"pdf", "doc", "docx", "odt", "rtf", "xls"}
+    code_words = {"code", "source", "python", "javascript"}
+    table_words = {"spreadsheet", "workbook", "worksheet", "calc"}
+    other_words = {"pdf", "writer", "document"}
+
+    def read_formats(value: str) -> tuple[bool, bool, bool]:
+        tokens = _tokens(value)
+        extensions = set(re.findall(r"\.([a-z0-9]+)\b", value.casefold()))
+        table = bool(extensions.intersection(table_extensions)
+                     or tokens.intersection(table_words | table_extensions))
+        other = bool(extensions.intersection(other_extensions)
+                     or tokens.intersection(other_words | other_extensions))
+        text = bool(extensions.intersection(text_extensions)
+                    or tokens.intersection(code_words)
+                    or (tokens.intersection({"text", "txt"}) and not (table or other)))
+        return text, table, other
+
+    text_read, table_read, other_read = read_formats(query)
+    if not (text_read or table_read or other_read):
+        text_read, table_read, other_read = read_formats(instruction)
     local_file_read_search = bool(
-        search_tokens.intersection({"read", "extract"})
-        and search_tokens.intersection({"local", "file", "csv", "spreadsheet"})
-        and not search_tokens.intersection({"copy", "move", "write", "rename"})
+        exact_query_tokens.intersection({"read", "reading", "inspect", "extract"})
+        and (text_read or table_read or re.search(r"\.[a-z0-9]+\b", query.casefold())
+             or exact_query_tokens.intersection({"local", "file", "files", "path"}))
+        and not exact_query_tokens.intersection({"copy", "move", "write", "rename"})
+    )
+    local_text_read_search = local_file_read_search and (
+        text_read or not (table_read or other_read)
     )
     local_file_path_search = bool(
         search_tokens.intersection({"find", "locate", "search"})
@@ -3609,12 +3644,14 @@ def _search_multi_app_actions(
         and query_tokens.intersection({"write", "cell", "cells", "range"})
     )
     desktop_association_search = _desktop_association_intent(search_tokens)
+    # Organization requires an operation in the current query, not an
+    # incidental instruction word or a noun injected by synonym expansion.
     file_organization_search = bool(
-        search_tokens.intersection(
-            {"copy", "move", "organize", "place", "put", "folder", "directory"}
+        exact_query_tokens.intersection(
+            {"copy", "move", "organize", "place", "put", "create", "make"}
         )
-        and search_tokens.intersection(
-            {"file", "files", "invoice", "invoices", "problematic", "matching"}
+        and exact_query_tokens.intersection(
+            {"file", "files", "folder", "directory", "invoice", "invoices"}
         )
     )
 
@@ -3727,7 +3764,8 @@ def _search_multi_app_actions(
                 score += 5000
             if local_file_read_search:
                 score += {
-                    ("libreoffice_calc", "workbook.read_file"): 5000,
+                    ("vs_code", "file.read_text"): 5000 if local_text_read_search else 0,
+                    ("libreoffice_calc", "workbook.read_file"): 5000 if table_read else 0,
                     ("os", "filesystem.find"): 4500,
                 }.get((route_domain, action), 0)
             if local_file_path_search and (route_domain, action) == (
