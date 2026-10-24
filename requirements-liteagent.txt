@@ -39,3 +39,4 @@ PyPDF2>=3.0
 rapidfuzz>=3.0
 tldextract>=5.0
 xmltodict>=0.13
+pygame==2.6.1
