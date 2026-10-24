@@ -78,9 +78,9 @@ def test_final_gate_commits_without_another_model_turn_and_cannot_reopen():
     current = state()
     current.defer_terminal_audit = True
     worker = agent()
-    assert {t["function"]["name"] for t in worker.tools(current)} == {
-        "propose_done", "fail_task", "completion_revise",
-    }
+    names = {t["function"]["name"] for t in worker.tools(current)}
+    assert {"propose_done", "fail_task", "completion_revise"} <= names
+    assert "tools_search" in names
     result = claim(worker, current)
     assert result.executed, result.error
     assert result.result["gate"] == {"passed": True, "missing": []}

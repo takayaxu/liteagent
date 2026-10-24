@@ -8,6 +8,7 @@ from . import (
     calc_semantics,
     clipboard_path_semantics,
     completion_recovery,
+    completion_review,
     impress_semantics,
     source_execution_semantics,
     spreadsheet_open_semantics,
@@ -910,6 +911,20 @@ class ToolSurfaceMixin:
         return calc_formula_contract.constrain_tools(soft_recovery_tools(constrained, state), state)
 
     def tools(self, state: RuntimeState) -> list[dict[str, Any]]:
+        tools = self._tools_for_state(state)
+        names = {tool["function"]["name"] for tool in tools}
+        if (
+            not state.done and not state.failed
+            and "propose_done" in names
+            and completion_review.TOOL_NAME not in names
+            and completion_review.review_ready(state, self._generic_completion_gate(state))
+        ):
+            # A failed self-review remains optional beside the ordinary tools.
+            # Do not add controls to an audit or recovery-only surface.
+            tools = [*tools, completion_review.revision_tool()]
+        return tools
+
+    def _tools_for_state(self, state: RuntimeState) -> list[dict[str, Any]]:
         if state.done or state.failed:
             return []
         from . import read_audit_gate

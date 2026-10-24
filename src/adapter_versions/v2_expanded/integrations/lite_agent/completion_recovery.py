@@ -419,7 +419,9 @@ def strict_proactive_completion_tools(
     if outcome_tools is not None:
         return outcome_tools
     if completion_review.review_ready(state, gate):
-        return completion_review_tools(state)
+        # Structural readiness permits a claim; it does not establish that
+        # the model has no remaining inspection or correction to perform.
+        return None
     # Successful calls do not prove task completion. Only the model's rejected
     # claim starts closing work; a later content change reopens normal tools.
     for event in reversed(state.events):
