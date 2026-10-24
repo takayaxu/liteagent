@@ -932,6 +932,25 @@ def test_protocol_recovery_preserves_tools_and_reasoning_budget() -> None:
     assert "Protocol recovery is active" in call["messages"][0]["content"]
 
 
+def test_reasoning_cycle_recovery_is_truthful_without_selecting_a_task_action() -> None:
+    client = RecordingModelClient()
+    agent = _agent(client)
+    state = _large_state()
+    normal_tools = agent.tools(state)
+    agent.propose(
+        state, b"png", protocol_recovery=True,
+        protocol_error={"reason": "reasoning stream repeated without a tool call"},
+    )
+    call = client.calls[0]
+    system = call["messages"][0]["content"]
+    assert "client interrupted that response" in system
+    assert "no action from it executed" in system
+    assert "If uncertain, choose the safest available observation" not in system
+    assert call["tools"] == normal_tools
+    assert call["output_token_budget"] == 4096
+    assert call["enable_thinking"] is True
+
+
 def test_truncated_protocol_recovery_gets_bounded_extra_output_budget() -> None:
     client = RecordingModelClient()
     agent = _agent(client)

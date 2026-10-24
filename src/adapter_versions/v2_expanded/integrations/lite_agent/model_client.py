@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections import deque
 from copy import deepcopy
 from collections.abc import Callable
 from types import SimpleNamespace
@@ -150,6 +151,76 @@ def _jsonable(value: Any, *, exclude_none: bool = False) -> Any:
     return value
 
 
+class _ReasoningCycleDetector:
+    """Conservative liveness guard for exact multi-paragraph reasoning cycles.
+
+    Three verbatim periods of at least 1024 characters are a recoverable
+    generation failure, not evidence of task completion. Quoted/code text is
+    excluded; a fence without an unambiguous close leaves detection suspended.
+    """
+
+    def __init__(self) -> None:
+        self.pending = ""
+        self.paragraphs: deque[str] = deque(maxlen=36)
+        self.fence: str | None = None
+        self.quote: str | None = None
+
+    def feed(self, value: str) -> dict[str, int] | None:
+        self.pending += value
+        while "\n\n" in self.pending:
+            paragraph, self.pending = self.pending.split("\n\n", 1)
+            if self.quote is not None:
+                if re.search(r"(?<!\\)" + re.escape(self.quote) + r"[.,;:!?]?\s*$", paragraph):
+                    self.quote = None
+                continue
+            fences = re.findall(r"(?m)^ {0,3}(`{3,}|~{3,})([^\n]*)", paragraph)
+            if fences:
+                self.paragraphs.clear()
+                for fence, suffix in fences:
+                    if self.fence is None:
+                        self.fence = fence
+                    elif (
+                        fence[0] == self.fence[0] and len(fence) >= len(self.fence)
+                        and not suffix.strip()
+                    ):
+                        self.fence = None
+                continue
+            if self.fence is not None:
+                continue
+            stripped = paragraph.lstrip()
+            if stripped.startswith(('"', "'", "“", "‘")):
+                closer = {"“": "”", "‘": "’"}.get(stripped[0], stripped[0])
+                if not re.search(r"(?<!\\)" + re.escape(closer) + r"[.,;:!?]?\s*$", stripped[1:]):
+                    self.quote = closer
+                self.paragraphs.clear()
+                continue
+            # An inline/ambiguous fence may be quoted code. Fail open until
+            # an unambiguous matching closing fence is observed.
+            for marker in ("```", "~~~"):
+                if marker in paragraph:
+                    self.fence = marker
+                    self.paragraphs.clear()
+                    break
+            if self.fence is not None:
+                continue
+            if (
+                stripped.startswith(">")
+                or paragraph.startswith(("    ", "\t"))
+            ):
+                self.paragraphs.clear()
+                continue
+            self.paragraphs.append(paragraph)
+            paragraphs = list(self.paragraphs)
+            for width in range(1, len(paragraphs) // 3 + 1):
+                period = paragraphs[-width:]
+                period_chars = len("\n\n".join(period))
+                if period_chars < 1024 or len({p for p in period if p.strip()}) < 2:
+                    continue
+                if period == paragraphs[-2 * width:-width] == paragraphs[-3 * width:-2 * width]:
+                    return {"period_paragraphs": width, "period_chars": period_chars, "repetitions": 3}
+        return None
+
+
 def _aggregate_stream_response(response: Any) -> Any:
     """Aggregate streamed Chat Completions deltas into the normal response shape."""
     choices = _stream_value(response, "choices")
@@ -167,12 +238,26 @@ def _aggregate_stream_response(response: Any) -> Any:
     reasoning: list[str] = []
     reasoning_content: list[str] = []
     calls: dict[int, dict[str, Any]] = {}
+    detectors = {key: _ReasoningCycleDetector() for key in ("reasoning", "reasoning_content")}
+    output_started = False
     for chunk in response:
         model = _stream_value(chunk, "model", model)
         chunk_usage = _stream_value(chunk, "usage")
         if chunk_usage is not None:
             usage = chunk_usage
-        for choice in _stream_value(chunk, "choices", []) or []:
+        chunk_choices = _stream_value(chunk, "choices", []) or []
+        # A valid call/content in this very chunk wins over reasoning deltas.
+        # Once output starts, never interrupt partially generated arguments.
+        output_started |= any(
+            _stream_value(_stream_value(choice, "delta"), "content")
+            or _stream_value(_stream_value(choice, "delta"), "tool_calls")
+            for choice in chunk_choices
+        )
+        terminal_chunk = any(
+            _stream_value(choice, "finish_reason") is not None for choice in chunk_choices
+        )
+        repetition = None
+        for choice in chunk_choices:
             finish = _stream_value(choice, "finish_reason")
             if finish is not None:
                 finish_reason = finish
@@ -186,6 +271,10 @@ def _aggregate_stream_response(response: Any) -> Any:
                 value = _stream_value(delta, key)
                 if isinstance(value, str):
                     target.append(value)
+                    if not output_started and not terminal_chunk and repetition is None:
+                        evidence = detectors[key].feed(value)
+                        if evidence is not None:
+                            repetition = {"channel": key, **evidence}
             for call in _stream_value(delta, "tool_calls", []) or []:
                 index = _stream_value(call, "index", 0)
                 if not isinstance(index, int) or index < 0:
@@ -204,6 +293,29 @@ def _aggregate_stream_response(response: Any) -> Any:
                     entry["name"] += name
                 if isinstance(arguments, str):
                     entry["arguments"].append(arguments)
+        if repetition is not None:
+            snapshot = {
+                "model": model,
+                "usage": _jsonable(usage),
+                "finish_reason": None,
+                "client_interrupted": True,
+                "repetition": repetition,
+                "message": {
+                    "content": "".join(content) or None,
+                    "reasoning": "".join(reasoning) or None,
+                    "reasoning_content": "".join(reasoning_content) or None,
+                    "tool_calls": [],
+                },
+            }
+            closer = getattr(response, "close", None)
+            if callable(closer):
+                try:
+                    closer()
+                except Exception:
+                    pass  # Preserve the generation failure if cleanup also fails.
+            raise StructuredToolProtocolError(
+                "reasoning stream repeated without a tool call", response_snapshot=snapshot,
+            )
 
     tool_calls = [
         SimpleNamespace(

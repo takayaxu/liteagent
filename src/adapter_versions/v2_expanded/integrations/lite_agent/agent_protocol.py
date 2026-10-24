@@ -315,6 +315,10 @@ class AgentProtocolMixin:
                         "currently exposed adapter/action pair."
                         + rejected_text
                     )
+        repeated_reasoning = bool(
+            protocol_recovery and isinstance(protocol_error, dict)
+            and protocol_error.get("reason") == "reasoning stream repeated without a tool call"
+        )
         if protocol_recovery or execution_recovery:
             recovery_guidance = (
                 (
@@ -326,6 +330,12 @@ class AgentProtocolMixin:
                     )
                     if execution_recovery
                     else (
+                        " Protocol recovery is active because the previous reasoning stream "
+                        "repeated long identical paragraph cycles without producing a tool call. "
+                        "The client interrupted that response; no action from it executed. "
+                        "Use the current truthful observations to choose one provided tool. "
+                        "Keep reasoning brief and do not repeat a hypothesis without new evidence."
+                    ) if repeated_reasoning else (
                         " Protocol recovery is active because the previous model response "
                         "was not one complete schema-valid structured call. Emit exactly "
                         "one complete call from the provided tools now; keep reasoning "
