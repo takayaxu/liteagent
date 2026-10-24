@@ -393,3 +393,5 @@ flowchart TD
 - 本次指定八题结项核对：human_review=false，同一独立审核者/root/review_order89；89与94正式PASS且已交付；93/97/100/101/103/104仍待修复，所有失败候选未集成。完整逐轮索引：`/home/liuxv/liteagent-local-runs/selected-eight-repair-20261024-results.json`。无新获批假设，不重复碰运气复跑。
 
 - 2026-10-24：Order93按用户新指令改为human_review=true；活动base 8bdeddc，与原基线src/bin/configs完全一致；认领者/root，独立材料目录`/home/liuxv/liteagent-local-runs/repair-93-20261024-human`。93-human-v1为待人工审核：通用命令结果语义提示最小移植 + 同输入同环境shell批转换/单文件转换受控诊断。未实施、未改共享运行条件；正式仍failed/reward0.9988200756924308、待修复。完整方案见该目录review.md。
+
+- 2026-10-24：Order93用户明确批准93-human-v1。A候选e34f1d2在新独立分支codex/repair-93-20261024-human冻结，7focused/Ruff/diff/check通过；B受控3残差+1正常文档，同环境shell批转换与单文件隔离转换文本均完全一致且复现旧输出，排除批模式假设。未重复整题、未集成，仍failed。追加93-human-v2仅临时子进程字体可用性对照诊断待人工审批；未改全局字体/正式条件。证据与完整方案`/home/liuxv/liteagent-local-runs/repair-93-20261024-human/review.md`。
