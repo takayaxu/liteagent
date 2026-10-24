@@ -407,3 +407,5 @@ flowchart TD
 - 2026-10-24：Order93-human-v4用户明确批准；仅将通配符与产物验证语义前移到command.run顶层发现说明，候选45a455f，19focused/Ruff/diff/check通过。run-reference-002新干净detached源码、沿用已批准reference-config；公共guest由105占用，统一锁排队中（session6903），取得锁后重查活动runtime/guest再自动运行。human_review=true，尚未集成。
 
 - 2026-10-24T13:25:39.156792+08:00：Order93候选45a455f run-reference-002正式PASS/reward1.0/agent_done，16步，source/config true，fontprofile撤销成功。按用户明确批准的参考字体兼容条件验证；默认环境历史分数保留。已将同seal源码与同字节配置集成55d23bc，19focused/Ruff/check通过，从待修复移出；队列66、已通过15。推送待核验。
+
+- 2026-10-24T16:15:03.526823+08:00：Order97按用户最新请求human_review=true重新认领，base ccd4deb；已准备`/home/liuxv/liteagent-local-runs/repair-97-20261024-human/run-001/source`干净当前提交基线及原条件配置（无93字体profile）。Docker服务inactive、socket不存在且sudo -n需密码，未能启动基线；当前仅只读诊断。原slides4/5/7备注本已完成，旧候选改坏slide5空白；原Slide4正文尾空段与gold差异仍在，禁止未经审核按gold清理。待有权限账号恢复Docker后先当前源码无补丁复跑，再人工审核具体通用方案；候选未实施。
