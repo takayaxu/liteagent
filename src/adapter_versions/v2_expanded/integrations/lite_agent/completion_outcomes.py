@@ -373,6 +373,11 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
             issues.append(_issue(f"{key}.{code}", target_sheet or "current workbook", count,
                                  {"count": len(new_objects), "names": [p.get("name") for _, p in new_objects]},
                                  actions=actions, step=inspect_event.step, mismatch=True))
+        if key == "charts":
+            from .calc_chart_outcomes import source_issues
+
+            issues.extend(source_issues(state, events, new_objects, inspect_event.step))
+            continue
         if key != "pivot_tables":
             continue
         from .calc_pivot_layout import layout_issues
