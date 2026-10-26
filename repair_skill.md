@@ -287,6 +287,8 @@ flowchart TD
 
 - 2026-10-27 Order 28 run-002正式failed/reward0/agent_done，27步836.826秒，source/config true，seal `bd6ad2340a061917b8fc572a401d962c8c1c370ae70082b34d6f31494c74f7a6`；v1新检查在实际request0018报告number_format_mismatch，模型step18改General，终态仅C20绿色且显示数字。新失败为step5全列公式额外乘100，24个结果均为正确值100倍。`cd35267`留独立分支、不集成。Plan28-v2向同一审核者 `/root/review27` 待审：仅补通用native数值/百分点/百分比显示尺度指导，不生成金融公式、不加题目数值完成门；human_review=false，不等待人工。
 
+- 2026-10-27 Order 28 Plan28-v2计划及实际diff经 `/root/review27` 通过。仅替换Calc系统通用百分比尺度指导，普通/错误恢复/strict实际消息投影均验证可见，其他domain原句保留。候选 `c9607ca`（保留v1已审增量），109focused通过；2个multi_apps GRF/repair_confirm旧断言在干净cd35267同样复现，不改无关测试；Ruff/diff/check通过。run-003新干净detached候选、原run-001同配置/模型/100步1800秒/原evaluator，统一绝对锁，owner `liuxv-repair28-run003-20261027`；输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-003/output`，待正式结果，未集成。human_review=false。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
