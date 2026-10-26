@@ -308,7 +308,9 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
 
     from .calc_formula_contract import outcome_issues as calculation_issues
 
-    scaled_issues = [*scaled_display_issues(state), *calculation_issues(state)]
+    from .calc_period_outcomes import outcome_issues as period_issues
+
+    scaled_issues = [*scaled_display_issues(state), *calculation_issues(state), *period_issues(state)]
     instruction = str(state.instruction)
     counts = {"pivot_tables": requested_pivot_count(instruction), "charts": requested_chart_count(instruction)}
     counts = {key: value for key, value in counts.items() if value}
