@@ -281,6 +281,8 @@ flowchart TD
 - Order 27交付核验：审核者 `/root/review27` 独立终态检查通过，request0008包含新轴差异，最终绑定及排序正确、无参考答案暴露。候选与台账已正常推送，活动与远端同为 `c8f6568d96dd32bbecdb668988843e0bc7f281bc`。
 - 2026-10-27 Order 28 / `21ab7b40-77c2-4ae6-8321-e00d3a086c73`：human_review=false，/root按队列认领；题意为新增Period Rate (%)列计算期间利率、转换为数值类型并将最高值字体设#00ff00。活动源码已更新，从干净 `c8f6568` 无补丁基线run-001；默认配置未含28，仓库外config-input.json仅补原任务身份，其余原模型/协议/预算/VM条件不变，统一绝对锁，owner `liuxv-repair28-run001-20261027`。输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-001/output`，待正式结果；无28候选实施，新方案由独立子agent审核、不再等待人工。
 
+- 2026-10-27 Order 28 run-001正式failed/reward0，14步491.337秒，source/config true。全部表值与参考一致；原evaluator样式解析唯一差异是非极值C19额外绿色，C20正确绿色；另百分比显示违背显式number要求。Plan28-v1经独立审核 `/root/review27` 通过：通用命名计算列极值字体及数字显示完成检查，补原生条件格式元数据，未知/复杂规则保守处理，保留既有颜色，只识别本轮新增错误着色；不改计算公式、不强制条件格式。实际diff与隔离原生CF实验待核验；human_review=false，不请求人工批准。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
