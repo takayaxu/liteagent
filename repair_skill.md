@@ -252,7 +252,7 @@ flowchart TD
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。审核方式 `human_review=true`，审核材料只在当前对话中提交；旧批次 PASS 不用于本轮销项。
 
-- 待修复 12 题：24、27、28、35、63、77、79、87、93、97、98、100；正式验证通过 3 题：11、13、15。按指定顺序一次处理一题。
+- 待修复 11 题：27、28、35、63、77、79、87、93、97、98、100；正式验证通过 4 题：11、13、15、24。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
 - Order 11 run-001：模型调用前 Hugging Face 原域名连接超时，`environment_failure`；源码/配置完整性均 true。证据 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/output/run-001`。改用 README 已有镜像设置，不修改任务、evaluator 或模型预算。
 - Order 11 run-002：北京时间 2026-10-26 19:56 起，候选干净独立工作树正式复跑；持绝对共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 覆盖全生命周期。配置 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/config.json`（SHA256 `ba76727b85351885558a76ab2341efefdbf0493d82a9a3e7806f5b9809c539d3`），原模型与100步/1800秒条件。模型完成11步，原 evaluator `failed / reward=0.0 / agent_done`，source/config integrity 均 true。格式化遗漏 B6、B7（44个周末日期中42个标红）；这两项在完整 A1:F33 返回及模型请求中可见，非截断。首次非连续区域回读参数被拒后恢复；保存并二次回读仍未发现两处遗漏，完成门通过属于模型自报，不能替代 evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun002-20261026/output`。批准的 Plan-v2 方案1未通过，运行源码不可集成；下一步按新证据提出修订方案并重新人工审核。
@@ -273,6 +273,7 @@ flowchart TD
 - Order 15 run-002正式终态：北京时间2026-10-26 23:21，原 evaluator `passed / reward=1.0 / agent_done`，8步、578.955秒，source/config integrity均true。候选 `fc529ec`，seal `ca5731210b19d0584c87d93c8a7bdb7991ef167eb0f43eec4e023e9530b3fadf`。模型读取两表后直接创建A3:A14+I3:I14与A20:A31+I20:I31的两张column图，6保存、7原生inspect、8完成；本次无错误边界修复调用，新门拦截能力以真实run-001回放证实，不将本次模型选对范围单独归因于新门。结果文件表格值与参考完全一致，两图类型/方向/来源也一致。取得集成锁后快进活动源码到 `b468cc5`，src/bin/configs与通过候选相同，重新计算seal一致；移出待修队列。GitHub直连TLS后无响应，已验证现有127.0.0.1:7890代理仅单次Git参数可恢复访问，不改全局代理、模型或评估条件；正常推送后核验远端。原full189快照不改写。
 - Order 15交付核验：候选运行源码与台账已推送 `codex/v4`，本地及远端同为 `85478abbb94e287c19481d67fd839c0bacd3502f`，原源码seal核对一致。
 - Order 24 / `30e3e107-1cfb-46ee-a755-2cd080d7ba6a`：按队列认领，human_review=true。题意为新Sheet2合并A1:C1制作蓝底白色粗体标题，并将Sex/Civil Status/Highest Educational Attainment三张百分比透视表竖向排列、各隔一空行。活动源码含11/13/15正式通过修复；从干净 `85478ab` 做最新无补丁基线。首次命令因默认配置未收录24在参数校验阶段拒绝，无模型/输出目录产生；仓库外配置 `/home/liuxv/liteagent-local-runs/repair-24-20261026/run-001/config-input.json` 仅增加原任务身份，其他模型/协议/预算/VM等逐项相同，启动同run-001，owner `liuxv-repair24-run001-20261026`，统一绝对任务锁覆盖全生命周期。输出 `/home/liuxv/liteagent-local-runs/repair-24-20261026/run-001/output`，待正式结果；无24候选实施。
+- Order 24 run-001正式终态：北京时间2026-10-26 23:37，最新活动源码无补丁基线 `passed / reward=1.0 / agent_done`，15步、773.401秒，source/config integrity均true，seal `ca5731210b19d0584c87d93c8a7bdb7991ef167eb0f43eec4e023e9530b3fadf`。首个模型响应持续流式传输约253秒后恢复，非断连；本次正常创建Sheet2、合并A1:C1并写入正确蓝底白色粗体标题，三张percentage透视表位于A2:B5/A7:B11/A13:B17，间隔一空行；原生读取与结果文件核对标题/颜色/字体/合并及各类比例正确。最新源码已通过，无第24题新补丁；移出待修队列，原full189失败历史不改写。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
