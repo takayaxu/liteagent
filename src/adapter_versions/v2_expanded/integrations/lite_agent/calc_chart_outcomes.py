@@ -92,6 +92,9 @@ def source_issues(state, events, objects, step):
             issues.append(_issue("charts.source_unverified", target, "native categories and value series",
                                  None, actions=ACTIONS, step=step))
             continue
+        from .calc_chart_axes import axis_issues
+
+        issues.extend(axis_issues(state.instruction, chart, sheet, observations, step))
         if len(axes) != 1:
             continue  # Multiple coordinate systems/automatic categories are unsupported.
         default = chart.get("source_sheet", sheet)
