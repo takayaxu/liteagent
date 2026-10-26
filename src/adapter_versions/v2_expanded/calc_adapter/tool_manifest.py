@@ -294,6 +294,17 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "cells.set_formulas": {
         "description": (
+            "For period-over-period growth, align each result with its current period's "
+            "observed header, not the preceding period's column. Use "
+            "(current-previous)/previous from the same requested measure; when comparing "
+            "aggregate totals, reference those totals rather than one detail record. "
+            "If the first period has no observed predecessor, leave that growth cell "
+            "blank unless the instruction specifies another treatment. Store the "
+            "fractional ratio without multiplying by 100; percentage display is a "
+            "number format, unless a numeric percent-point value is explicitly requested. "
+            "Place the requested row label on the same row as its calculated results "
+            "using range.write. Read the actual period headers and row labels to select "
+            "each destination and reference. "
             "Use native Calc formulas: =ROUND(C4;3). Semicolons separate function "
             "arguments; punctuation inside quoted strings is literal text and stays "
             "unchanged. ROUND controls numeric precision; it does not preserve trailing "
