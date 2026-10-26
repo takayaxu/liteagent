@@ -9,6 +9,7 @@ with urllib.request.urlopen("http://127.0.0.1:8769/health", timeout=5) as respon
 if (
     payload.get("status") != "ok"
     or not payload.get("all_commands_available")
+    or not payload.get("clipboard_available")
     or not payload.get("dbus_available")
     or not payload.get("flask_available")
 ):

@@ -10,6 +10,8 @@ from typing import Any
 
 import httpx
 from jsonschema import Draft202012Validator
+
+from .atomic_tool_surface import atomic_provider_surface, restore_adapter_arguments
 from openai import OpenAI
 
 from .qwen_pivot_schema import lower_pivot_schemas
@@ -31,6 +33,47 @@ MODEL_SDK_MAX_RETRIES = 0
 QWEN_TOOL_CALL_END = "\n</function>\n</tool_call>"
 
 
+def _provider_array_uniqueness(schema: Any) -> Any:
+    """Move unsupported generation constraints to text, retaining runtime validation.
+
+    Visit schema positions only: properties named uniqueItems and literal JSON
+    in defaults/enums must not be mistaken for schema keywords. The caller
+    validates returned arguments against the untouched original tool schema.
+    """
+    if not isinstance(schema, dict):
+        return deepcopy(schema)
+    result = deepcopy(schema)
+    if isinstance(result.get("uniqueItems"), bool):
+        unique = result.pop("uniqueItems")
+        if unique:
+            hint = "Array items must be unique; duplicate items are rejected before execution."
+            description = result.get("description", "")
+            result["description"] = f"{description}\n{hint}" if description else hint
+    for key in ("properties", "patternProperties", "$defs", "definitions", "dependentSchemas"):
+        mapping = result.get(key)
+        if isinstance(mapping, dict):
+            result[key] = {name: _provider_array_uniqueness(value) for name, value in mapping.items()}
+    for key in ("items", "additionalItems", "additionalProperties", "contains",
+                "propertyNames", "not", "if", "then", "else",
+                "unevaluatedItems", "unevaluatedProperties"):
+        child = result.get(key)
+        if isinstance(child, dict):
+            result[key] = _provider_array_uniqueness(child)
+        elif key == "items" and isinstance(child, list):
+            result[key] = [_provider_array_uniqueness(item) for item in child]
+    for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+        children = result.get(key)
+        if isinstance(children, list):
+            result[key] = [_provider_array_uniqueness(item) for item in children]
+    dependencies = result.get("dependencies")
+    if isinstance(dependencies, dict):
+        result["dependencies"] = {
+            key: _provider_array_uniqueness(value) if isinstance(value, dict) else value
+            for key, value in dependencies.items()
+        }
+    return result
+
+
 def _qwen_schema_compatible_tools(
     model: str, tools: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
@@ -45,16 +88,10 @@ def _qwen_schema_compatible_tools(
 
     compatible = deepcopy(tools)
 
-    def remove_unique_items(value: Any) -> None:
-        if isinstance(value, dict):
-            value.pop("uniqueItems", None)
-            for child in value.values():
-                remove_unique_items(child)
-        elif isinstance(value, list):
-            for child in value:
-                remove_unique_items(child)
-
-    remove_unique_items(compatible)
+    for tool in compatible:
+        function = tool.get("function", {})
+        if "parameters" in function:
+            function["parameters"] = _provider_array_uniqueness(function["parameters"])
     return lower_pivot_schemas(compatible)
 
 
@@ -762,10 +799,25 @@ class StructuredToolModelClient:
                 raise ValueError(
                     "enable_thinking does not match the requested reasoning mode"
                 )
-        request_tools = _qwen_schema_compatible_tools(model, tools)
+        provider_surface, atomic_bindings = atomic_provider_surface(tools)
+        request_messages = deepcopy(messages)
+        if atomic_bindings:
+            guidance = (
+                "Discovered atomic__ tools accept action arguments directly at the top level. "
+                "Do not supply adapter/action/payload/params wrappers. Put optional request "
+                "metadata in request_options. Each call executes one discovered operation."
+            )
+            first_system = next((m for m in request_messages if m.get("role") == "system"), None)
+            if first_system is None:
+                request_messages.insert(0, {"role": "system", "content": guidance})
+            elif isinstance(first_system.get("content"), list):
+                first_system["content"].append({"type": "text", "text": guidance})
+            else:
+                first_system["content"] = str(first_system.get("content") or "") + "\n" + guidance
+        request_tools = _qwen_schema_compatible_tools(model, provider_surface)
         request = {
             "model": model,
-            "messages": messages,
+            "messages": request_messages,
             "tools": request_tools,
             "tool_choice": "required",
             "parallel_tool_calls": False,
@@ -887,6 +939,26 @@ class StructuredToolModelClient:
                 response_snapshot=self._response_snapshot(response, choice, message),
                 tool_name=tool,
             )
+        provider_tool = tool
+        provider_arguments_raw = arguments_raw
+        binding = atomic_bindings.get(tool)
+        if binding is not None:
+            atomic_errors = sorted(
+                Draft202012Validator(binding["schema"]).iter_errors(arguments),
+                key=lambda error: error.message,
+            )
+            if atomic_errors:
+                actionable = _actionable_validation_errors(atomic_errors)
+                raise StructuredToolProtocolError(
+                    "tool arguments do not satisfy the exposed atomic schema",
+                    response_snapshot=self._response_snapshot(response, choice, message),
+                    tool_name=tool,
+                    missing_fields=_safe_missing_fields(actionable),
+                    schema_hints=_schema_validation_hints(actionable, instance=arguments),
+                )
+            arguments = restore_adapter_arguments(arguments, binding)
+            arguments_raw = json.dumps(arguments, ensure_ascii=False)
+            tool = "adapter__adapter_call"
         schema = self._tool_schema(tools, tool)
         if schema is None:
             raise StructuredToolProtocolError(
@@ -978,6 +1050,8 @@ class StructuredToolModelClient:
             "id": call.id,
             "tool": tool,
             "arguments_raw": arguments_raw,
+            "provider_tool": provider_tool,
+            "provider_arguments_raw": provider_arguments_raw,
             "model_actual": response.model,
             "usage": _jsonable(response.usage),
             "finish_reason": choice.finish_reason,

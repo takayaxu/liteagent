@@ -64,6 +64,12 @@ WRITER_IMAGE_SUFFIXES = (
 
 ACTIONS = frozenset(
     {
+        "document.create",
+        "document.deduplicate_records",
+        "document.append_text_file",
+        "document.export_file_pdf",
+        "text.set_format_in_match",
+
         "document.inspect",
         "document.read_file",
         "document.extract_images",
@@ -638,7 +644,85 @@ def _validate_paragraph_format_fields(data: Mapping[str, Any], prefix: str) -> N
 
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
-    if action == "document.inspect":
+    if action == "text.set_format_in_match":
+        allowed = {
+            "literal",
+            "occurrence",
+            "match_start_offset",
+            "match_end_offset",
+            "case_sensitive",
+        } | CHARACTER_FORMAT_FIELDS
+        unexpected = sorted(set(params) - allowed)
+        if unexpected:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "text.set_format_in_match received unsupported parameters",
+                {"unexpected": unexpected, "allowed": sorted(allowed)},
+            )
+        _string(params, "literal")
+        for field in ("occurrence", "match_start_offset", "match_end_offset"):
+            _nonnegative_int(params, field)
+        if params["match_end_offset"] <= params["match_start_offset"]:
+            raise _text_range_mismatch(
+                params["match_start_offset"], params["match_end_offset"], "", nonempty=True
+            )
+        if "case_sensitive" in params and not isinstance(params["case_sensitive"], bool):
+            raise AdapterError("INVALID_REQUEST", "params.case_sensitive must be boolean")
+        _validate_character_format(
+            {key: params[key] for key in CHARACTER_FORMAT_FIELDS if key in params}
+        )
+    elif action == "document.export_file_pdf":
+        allowed = {"source_path", "output_path", "preserve_soft_wrap_spaces"}
+        if set(params) - allowed:
+            raise AdapterError(
+                "INVALID_REQUEST", "document.export_file_pdf received unsupported parameters"
+            )
+        _local_path(_string(params, "source_path"), "params.source_path")
+        output = _string(params, "output_path")
+        _local_path(output, "params.output_path")
+        if not output.lower().endswith(".pdf"):
+            raise AdapterError("INVALID_REQUEST", "params.output_path must end in .pdf")
+        if "preserve_soft_wrap_spaces" in params and not isinstance(
+            params["preserve_soft_wrap_spaces"], bool
+        ):
+            raise AdapterError(
+                "INVALID_REQUEST", "params.preserve_soft_wrap_spaces must be a boolean"
+            )
+    elif action == "document.append_text_file":
+        _string(params, "path")
+        if set(params) - {"path", "separator", "encoding"}:
+            raise AdapterError("INVALID_REQUEST", "append_text_file accepts path, separator and encoding only")
+        if not isinstance(params.get("separator", ""), str):
+            raise AdapterError("INVALID_REQUEST", "separator must be a string")
+        if params.get("encoding", "utf-8") not in {"utf-8", "utf-8-sig"}:
+            raise AdapterError("INVALID_REQUEST", "encoding must be utf-8 or utf-8-sig")
+    elif action == "document.deduplicate_records":
+        allowed = {"delimiter", "key_column", "trim_key", "case_sensitive", "skip_blank"}
+        unexpected = sorted(set(params) - allowed)
+        if unexpected:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "document.deduplicate_records received unsupported parameters",
+                {"unexpected": unexpected, "allowed": sorted(allowed)},
+            )
+        delimiter = params.get("delimiter")
+        if not isinstance(delimiter, str) or len(delimiter) != 1 or delimiter in "\r\n":
+            raise AdapterError(
+                "INVALID_REQUEST", "params.delimiter must be one non-newline character"
+            )
+        _nonnegative_int(params, "key_column")
+        for field in ("trim_key", "case_sensitive", "skip_blank"):
+            if field in params and not isinstance(params[field], bool):
+                raise AdapterError(
+                    "INVALID_REQUEST", f"params.{field} must be a boolean"
+                )
+    elif action == "document.create":
+        if set(params) - {"path"}:
+            raise AdapterError("INVALID_REQUEST", "document.create accepts only params.path")
+        path = _local_path(_string(params, "path"), "params.path")
+        if not path.lower().endswith((".docx", ".odt")):
+            raise AdapterError("INVALID_REQUEST", "params.path must end in .docx or .odt")
+    elif action == "document.inspect":
         if "paragraph_start" in params:
             _nonnegative_int(params, "paragraph_start")
         if "paragraph_limit" in params:

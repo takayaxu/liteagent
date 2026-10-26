@@ -1,5 +1,9 @@
 # LiteAgent 开发与集成工作区
 
+v4 集成候选位于 `codex/v4`，基于本地 `131a465`，吸收固定上游的通用能力，
+用于一次 12 并发、189 题、Qwen3.5-9B thinking 评测。
+范围、检查和原始 evaluator 说明见 [v4 集成回执](docs/integration/v4-20261026.md)。
+
 本仓库保留 LiteAgent 的运行源码、测试和历史开发记录。当前开发分支为
 `codex/api-split-liuxv`，冻结 v3 源码基线提交为 `026e829`。
 冻结 v3 是历史基线；后续复跑默认使用当前开发分支最新的 Git 提交（启动时的

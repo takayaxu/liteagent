@@ -1055,4 +1055,112 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["font_name"],
     },
+    "document.create": {
+        "description": (
+            "Create and activate one empty Writer document at a new .docx or .odt path. "
+            "The parent directory must exist; existing files are rejected. This creates "
+            "no text or tables. Use separate append/format operations after creation. "
+            "The returned identity identifies the new saved document for later edits."
+        ),
+        "properties": {
+            "path": {"type": "string", "pattern": r"^(?:/|~/|file://(?:localhost)?/).+\.(?:[dD][oO][cC][xX]|[oO][dD][tT])$"},
+        },
+        "required": ["path"],
+    },
+    "document.deduplicate_records": {
+        "description": (
+            "Remove later duplicate body paragraphs using one delimited field as the key. "
+            "The first occurrence is kept, original order and complete record text are "
+            "preserved, and blank paragraphs are kept by default. This is one bounded "
+            "document mutation: inspect the body first, choose the delimiter and zero-based "
+            "key_column from the observed records, then save/read back the result. It does "
+            "not sort records, rewrite fields, or infer a key."
+        ),
+        "properties": {
+            "delimiter": {
+                "type": "string", "minLength": 1, "maxLength": 1,
+                "pattern": r"[^\r\n]",
+                "description": "One character separating fields in each body paragraph, such as a comma.",
+            },
+            "key_column": {
+                "type": "integer", "minimum": 0,
+                "description": "Zero-based field number used to identify duplicates; choose from inspected records.",
+            },
+            "trim_key": {
+                "type": "boolean",
+                "description": "Trim surrounding key whitespace before comparing; defaults to true.",
+            },
+            "case_sensitive": {
+                "type": "boolean",
+                "description": "Whether key comparison preserves case; defaults to true.",
+            },
+            "skip_blank": {
+                "type": "boolean",
+                "description": "Keep blank paragraphs without treating them as records; defaults to true.",
+            },
+        },
+        "required": ["delimiter", "key_column"],
+        "additionalProperties": False,
+    },
+    "document.export_file_pdf": {
+        "description": (
+            "Export one explicitly selected saved Writer file to one PDF. "
+            "source_path identifies the input file; output_path identifies the PDF. "
+            "Reads a private disk snapshot without activating, saving, or closing any "
+            "open editor document. Unsaved editor changes are not included; save them "
+            "first, or use document.export_pdf for the current open document. "
+            "Returns the actual source and output identities."
+        ),
+        "properties": {
+            "source_path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": r"^(?:/|~/).+",
+                "description": "Exact observed absolute path of the saved input document.",
+            },
+            "output_path": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": r"^(?:/|~/).+\.[Pp][Dd][Ff]$",
+                "description": "Explicit output PDF path; must differ from the source file.",
+            },
+            "preserve_soft_wrap_spaces": {
+                "type": "boolean",
+                "default": True,
+                "description": "Preserve DOCX paragraph spaces at visual soft line wraps.",
+            },
+        },
+        "required": ["source_path", "output_path"],
+    },
+    "text.set_format_in_match": {
+        "description": (
+            "Apply character formatting to a zero-based, end-exclusive substring inside "
+            "one zero-based occurrence of a literal in body paragraphs. This action finds "
+            "the occurrence and resolves absolute paragraph offsets itself; use it when "
+            "formatting one character within a token such as the 2 in H2O. occurrence=0 "
+            "selects the first exact match across the document."
+        ),
+        "properties": {
+            "literal": {"type": "string", "minLength": 1},
+            "occurrence": {"type": "integer", "minimum": 0},
+            "match_start_offset": {"type": "integer", "minimum": 0},
+            "match_end_offset": {"type": "integer", "minimum": 1},
+            "case_sensitive": {"type": "boolean", "default": True},
+            **CHARACTER_FORMAT_PROPERTIES,
+        },
+        "required": ["literal", "occurrence", "match_start_offset", "match_end_offset"],
+        "additionalProperties": False,
+        "anyOf": [
+            {"required": [field]} for field in ("font_size", "bold", "italic", "script")
+        ],
+    },
+    "document.append_text_file": {
+        "description": "Append the exact content of ONE observed local plain-text file at the end of the active Writer document. Preserves text and logical line breaks (CRLF/CR normalize to LF). No summarizing, sorting, globbing, or automatic separators. For several files, call once per file in model-selected order; use separator='' for exact concatenation. The caller selects the document and saves/exports separately.",
+        "properties": {
+            "path": {"type": "string", "minLength": 1, "description": "Exact observed local path of one plain-text file."},
+            "separator": {"type": "string", "default": "", "description": "Literal text inserted before this file when the document is nonempty. Default adds nothing."},
+            "encoding": {"type": "string", "enum": ["utf-8", "utf-8-sig"], "default": "utf-8"},
+        },
+        "required": ["path"],
+    },
 }

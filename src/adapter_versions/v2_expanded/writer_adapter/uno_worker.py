@@ -24,7 +24,8 @@ from .native_references import (
 )
 from .pdf_export import preserve_docx_soft_wrap_spaces
 from .schema import TAB_STOP_UNITS, parse_rgb_color
-from .text_format import set_text_format
+from .paragraph_dedup import plan_paragraph_deduplication
+from .text_format import set_text_format, set_text_format_in_match
 from .text_search import find_text
 
 
@@ -1961,44 +1962,10 @@ def _pdf_export_path(session: WriterSession, params: dict[str, Any]) -> Path:
 
 def _export_pdf(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
     path = _pdf_export_path(session, params)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        session.doc.storeToURL(
-            _file_url(str(path)),
-            (
-                _property("FilterName", "writer_pdf_Export"),
-                _property("Overwrite", True),
-            ),
-        )
-    except Exception as exc:
-        raise AdapterError(
-            "EXPORT_FAILED", "failed to export Writer PDF", str(exc), 500
-        ) from exc
-    state = _saved_file_state(path)
-    if not state["exists"] or path.read_bytes()[:5] != b"%PDF-":
-        raise AdapterError(
-            "VERIFICATION_FAILED", "exported PDF is missing or invalid", state
-        )
-    soft_wrap_spaces = (
-        preserve_docx_soft_wrap_spaces(session.path, path)
-        if params.get("preserve_soft_wrap_spaces", True)
-        else {
-            "status": "disabled",
-            "source_format": session.path.suffix.lower() if session.path else None,
-            "target_count": 0,
-            "patched_trailing_spaces": 0,
-        }
+    return _export_pdf_document(
+        session.doc, session.path, path,
+        preserve_soft_wrap_spaces=params.get("preserve_soft_wrap_spaces", True),
     )
-    state = _saved_file_state(path)
-    if not state["exists"] or path.read_bytes()[:5] != b"%PDF-":
-        raise AdapterError(
-            "VERIFICATION_FAILED", "normalized PDF is missing or invalid", state
-        )
-    return {
-        **state,
-        "pdf_header": True,
-        "soft_wrap_space_preservation": soft_wrap_spaces,
-    }
 
 
 def _set_font(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
@@ -2825,6 +2792,268 @@ def _set_default_font(session: WriterSession, params: dict[str, Any]) -> dict[st
     }
 
 
+def _create_blank_document(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
+    raw_path = params["path"]
+    path = _url_path(raw_path) if raw_path.startswith("file://") else Path(raw_path).expanduser()
+    if path is None or not path.is_absolute() or path.suffix.lower() not in {".odt", ".docx"}:
+        raise AdapterError("INVALID_REQUEST", "new Writer path must be an absolute .docx or .odt path")
+    if path.exists() or path.is_symlink():
+        raise AdapterError("DESTINATION_EXISTS", "new document path already exists", {"path": str(path)}, 409)
+    if not path.parent.is_dir():
+        raise AdapterError("PATH_NOT_FOUND", "new document parent directory does not exist", {"path": str(path.parent)}, 404)
+    previous = session.desktop.getCurrentComponent()
+    document = session.desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, ())
+    try:
+        if document is None or not document.supportsService("com.sun.star.text.TextDocument"):
+            raise AdapterError("DOCUMENT_CREATE_FAILED", "LibreOffice did not create a Writer document")
+        filter_name = "writer8" if path.suffix.lower() == ".odt" else "Office Open XML Text"
+        document.storeAsURL(_file_url(str(path)), (
+            _property("FilterName", filter_name), _property("Overwrite", False),
+        ))
+        document.getCurrentController().getFrame().activate()
+        session.doc = document
+        saved = session.save()
+        return {"created": True, "blank": document.Text.String == "",
+                "activates_document": session.desktop.getCurrentComponent() == document,
+                "identity": session.identity(), **saved}
+    except Exception as exc:
+        if document is not None:
+            _close_component(document)
+        try:
+            if previous is not None:
+                previous.getCurrentController().getFrame().activate()
+        except Exception:
+            pass
+        if isinstance(exc, AdapterError):
+            raise
+        raise AdapterError("DOCUMENT_CREATE_FAILED", "failed to create blank Writer document", str(exc), 500) from exc
+
+
+def _append_text_file(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
+    path = _url_path(params["path"]) if params["path"].startswith("file:") else Path(params["path"]).expanduser()
+    if path is None or not path.is_file():
+        raise AdapterError("FILE_NOT_FOUND", "plain-text source file does not exist")
+    if path.stat().st_size > 4_000_000:
+        raise AdapterError("INVALID_REQUEST", "text source exceeds the 4 MB limit")
+    raw = path.read_bytes()
+    try:
+        content = raw.decode(params.get("encoding", "utf-8"))
+    except UnicodeDecodeError as exc:
+        raise AdapterError("INVALID_REQUEST", "source is not valid text in the selected encoding") from exc
+    if "\x00" in content:
+        raise AdapterError("INVALID_REQUEST", "binary content cannot be appended as plain text")
+    # UNO treats CR and LF separately; normalize before insertion so CRLF
+    # creates one paragraph boundary rather than an extra blank paragraph.
+    def normalize(value):
+        return value.replace("\r\n", "\n").replace("\r", "\n")
+    text = session.doc.Text
+    before = str(text.String)
+    separator = params.get("separator", "") if before else ""
+    inserted = normalize(separator + content)
+    cursor = text.createTextCursorByRange(text.getEnd())
+    text.insertString(cursor, inserted, False)
+    actual = str(text.String)
+    verified = normalize(actual) == normalize(before) + inserted
+    return {"source_path": str(path.resolve()), "source_sha256": hashlib.sha256(raw).hexdigest(),
+            "source_chars": len(content), "inserted_chars": len(inserted),
+            "separator": separator, "content_verified": verified,
+            "document_chars": len(actual)}
+
+
+def _deduplicate_records(
+    session: WriterSession, params: dict[str, Any]
+) -> dict[str, Any]:
+    """Remove later body records with an already-seen delimited key.
+
+    The whole plan is computed before mutation.  Removing from the end keeps
+    the observed paragraph indices stable and avoids a read/search/delete loop
+    that can silently leave duplicate records after an earlier deletion.
+    """
+    text = session.doc.Text
+    before = [str(paragraph.String) for paragraph in _paragraphs(text)]
+    try:
+        plan = plan_paragraph_deduplication(
+            before,
+            delimiter=params["delimiter"],
+            key_column=params["key_column"],
+            trim_key=params.get("trim_key", True),
+            case_sensitive=params.get("case_sensitive", True),
+            skip_blank=params.get("skip_blank", True),
+        )
+    except (KeyError, ValueError) as exc:
+        raise AdapterError("INVALID_REQUEST", str(exc)) from exc
+
+    removed: list[int] = []
+    for original_index in reversed(plan["remove_indices"]):
+        current = _paragraphs(text)
+        if original_index >= len(current):
+            raise AdapterError(
+                "VERIFICATION_FAILED",
+                "paragraph indices changed while removing duplicate records",
+                {"index": original_index, "paragraph_count": len(current)},
+            )
+        paragraph = current[original_index]
+        cursor = text.createTextCursorByRange(paragraph.getStart())
+        if original_index + 1 < len(current):
+            # Include this paragraph's terminating boundary, leaving the next
+            # paragraph as a separate item at the removed row's former index.
+            cursor.gotoRange(current[original_index + 1].getStart(), True)
+        elif original_index > 0:
+            # For a final duplicate, remove its leading boundary and content so
+            # no synthetic blank record remains at the end of the document.
+            cursor = text.createTextCursorByRange(current[original_index - 1].getEnd())
+            cursor.gotoRange(paragraph.getEnd(), True)
+        else:
+            raise AdapterError(
+                "VERIFICATION_FAILED",
+                "cannot remove the only remaining document paragraph",
+            )
+        cursor.String = ""
+        removed.append(original_index)
+
+    after = [str(paragraph.String) for paragraph in _paragraphs(text)]
+    try:
+        remaining = plan_paragraph_deduplication(
+            after,
+            delimiter=params["delimiter"],
+            key_column=params["key_column"],
+            trim_key=params.get("trim_key", True),
+            case_sensitive=params.get("case_sensitive", True),
+            skip_blank=params.get("skip_blank", True),
+        )
+    except ValueError as exc:
+        raise AdapterError("VERIFICATION_FAILED", str(exc)) from exc
+    if remaining["remove_indices"]:
+        raise AdapterError(
+            "VERIFICATION_FAILED",
+            "duplicate record removal did not leave unique keys",
+            {"remaining_duplicate_indices": remaining["remove_indices"]},
+        )
+    expected = [before[index] for index in plan["keep_indices"]]
+    if after != expected:
+        raise AdapterError("VERIFICATION_FAILED", "deduplication changed retained records or their order",
+                           {"expected_paragraphs": expected, "observed_paragraphs": after})
+    expected_count = len(before) - len(plan["remove_indices"])
+    if len(after) != expected_count:
+        raise AdapterError(
+            "VERIFICATION_FAILED",
+            "duplicate record removal changed unexpected paragraph boundaries",
+            {
+                "expected_paragraph_count": expected_count,
+                "observed_paragraph_count": len(after),
+            },
+        )
+    return {
+        **plan,
+        "removed_indices": sorted(removed),
+        "paragraph_count_before": len(before),
+        "paragraph_count_after": len(after),
+        "paragraphs": after,
+        "order_preserved": True,
+    }
+
+
+def _export_pdf_document(
+    document: Any, source: Path | None, path: Path, *, preserve_soft_wrap_spaces: bool
+) -> dict[str, Any]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        document.storeToURL(
+            _file_url(str(path)),
+            (
+                _property("FilterName", "writer_pdf_Export"),
+                _property("Overwrite", True),
+            ),
+        )
+    except Exception as exc:
+        raise AdapterError(
+            "EXPORT_FAILED", "failed to export Writer PDF", str(exc), 500
+        ) from exc
+    state = _saved_file_state(path)
+    if not state["exists"] or path.read_bytes()[:5] != b"%PDF-":
+        raise AdapterError(
+            "VERIFICATION_FAILED", "exported PDF is missing or invalid", state
+        )
+    soft_wrap_spaces = (
+        preserve_docx_soft_wrap_spaces(source, path)
+        if preserve_soft_wrap_spaces
+        else {
+            "status": "disabled",
+            "source_format": source.suffix.lower() if source else None,
+            "target_count": 0,
+            "patched_trailing_spaces": 0,
+        }
+    )
+    state = _saved_file_state(path)
+    if not state["exists"] or path.read_bytes()[:5] != b"%PDF-":
+        raise AdapterError(
+            "VERIFICATION_FAILED", "normalized PDF is missing or invalid", state
+        )
+    return {
+        **state,
+        "source_path": str(source) if source else None,
+        "source_url": str(getattr(document, "URL", "") or ""),
+        "pdf_header": True,
+        "soft_wrap_space_preservation": soft_wrap_spaces,
+    }
+
+
+def _export_file_pdf(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
+    source_url = _file_url(params["source_path"])
+    source = _url_path(source_url)
+    target = _url_path(_file_url(params["output_path"]))
+    if source is None or not source.is_file():
+        raise AdapterError("FILE_NOT_FOUND", "input document does not exist", http_status=404)
+    if target is None or target.suffix.lower() != ".pdf":
+        raise AdapterError("INVALID_REQUEST", "output_path must be a local PDF path")
+    if source.resolve() == target.resolve() or (
+        target.exists() and os.path.samefile(source, target)
+    ):
+        raise AdapterError("INVALID_REQUEST", "PDF destination must not overwrite the source")
+    uno, _ = _uno_modules()
+    properties = (
+        _property("Hidden", True),
+        _property("ReadOnly", True),
+        _property("AsTemplate", True),
+        _property(
+            "MacroExecutionMode",
+            uno.getConstantByName("com.sun.star.document.MacroExecMode.NEVER_EXECUTE"),
+        ),
+        _property(
+            "UpdateDocMode",
+            uno.getConstantByName("com.sun.star.document.UpdateDocMode.NO_UPDATE"),
+        ),
+    )
+    document = None
+    try:
+        document = session.desktop.loadComponentFromURL(source_url, "_blank", 0, properties)
+        if document is None or not document.supportsService("com.sun.star.text.TextDocument"):
+            raise AdapterError(
+                "DOCUMENT_OPEN_FAILED", "input file did not open as a Writer document",
+                {"path": str(source)}, 422,
+            )
+        result = _export_pdf_document(
+            document, source, target,
+            preserve_soft_wrap_spaces=params.get("preserve_soft_wrap_spaces", True),
+        )
+        return {
+            **result, "source_url": source_url,
+            "export_mode": "saved_file_snapshot", "activates_document": False,
+            "output_path": str(target), "output_bytes": target.stat().st_size,
+            "output_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+        }
+    except AdapterError:
+        raise
+    except Exception as exc:
+        raise AdapterError(
+            "EXPORT_FAILED", "failed to export the source Writer file",
+            {"source_path": str(source), "output_path": str(target), "error": str(exc)}, 500,
+        ) from exc
+    finally:
+        if document is not None:
+            _close_component(document)
+
+
 GENERIC_ACTIONS = {
     "document.inspect": _inspect,
     "document.save": _save_action,
@@ -2852,6 +3081,9 @@ GENERIC_ACTIONS = {
     "table.set_cell_text_color": _set_table_cell_text_color,
     "image.insert_at_cursor": _insert_image_at_cursor,
     "settings.set_default_font": _set_default_font,
+    "document.deduplicate_records": _deduplicate_records,
+    "document.append_text_file": _append_text_file,
+    "text.set_format_in_match": set_text_format_in_match,
 }
 
 NO_AUTO_SAVE_ACTIONS = frozenset(
@@ -2930,11 +3162,19 @@ def _implicit_action_verification(
     session: WriterSession,
     result: dict[str, Any],
 ) -> dict[str, Any]:
+    if action == "document.append_text_file":
+        passed = result.get("content_verified") is True
+        return _verification(passed, [{"type": "verbatim_text_append", "passed": passed}], result, {"content_verified": True})
+    if action == "document.create":
+        expected = {"created": True, "blank": True, "activates_document": True,
+                    "exists": True, "valid": True}
+        passed = all(result.get(key) == value for key, value in expected.items())
+        return _verification(passed, [{"type": "new_blank_document", "passed": passed}], result, expected)
     if action == "settings.set_default_font":
         return _verify_requested(
             session, [{"type": "default_font", "expected": result["font_name"]}]
         )
-    if action == "document.export_pdf":
+    if action in {"document.export_pdf", "document.export_file_pdf"}:
         expected = {"exists": True, "valid": True, "pdf_header": True}
         passed = all(result.get(key) == value for key, value in expected.items())
         return _verification(
@@ -2998,6 +3238,21 @@ def _implicit_action_verification(
 
 def execute(payload: dict[str, Any]) -> dict[str, Any]:
     action = payload.get("action")
+    if action == "document.export_file_pdf":
+        session = WriterSession({}, allow_no_document=True)
+        result = _export_file_pdf(session, payload.get("params") or {})
+        return {
+            "result": result,
+            "verification": _implicit_action_verification(action, session, result),
+            "logs": [],
+        }
+    if action == "document.create":
+        session = WriterSession({}, allow_no_document=True)
+        result = _create_blank_document(session, payload.get("params") or {})
+        checks = payload.get("verify") or []
+        verification = (_verify_requested(session, checks) if checks else
+                        _implicit_action_verification(action, session, result))
+        return {"result": result, "verification": verification, "logs": []}
     if action == "document.read_file":
         session = WriterSession({}, allow_no_document=True)
         result = _read_file(session, payload.get("params") or {})

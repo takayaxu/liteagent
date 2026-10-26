@@ -114,4 +114,30 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["source"],
         "additionalProperties": False,
     },
+    "media.flip_video": {
+        "description": (
+            "Flip one complete local video and save a new MP4. Choose vertical to reverse "
+            "top and bottom for an upside-down flipped picture; choose horizontal only "
+            "for a left/right mirror image. This does not trim or select a clip."
+        ),
+        "properties": {
+            "input_path": {
+                "type": "string", "minLength": 1,
+                "description": "Absolute path of the existing source video.",
+            },
+            "output_path": {
+                "type": "string", "minLength": 1, "pattern": r"^/.*\.[mM][pP]4$",
+                "description": "Distinct absolute .mp4 output path selected from the request.",
+            },
+            "axis": {
+                "type": "string", "enum": ["vertical", "horizontal"],
+                "description": (
+                    "vertical reverses top/bottom; horizontal mirrors left/right. "
+                    "Select exactly one axis."
+                ),
+            },
+        },
+        "required": ["input_path", "output_path", "axis"],
+        "additionalProperties": False,
+    },
 }

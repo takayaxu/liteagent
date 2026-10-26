@@ -50,6 +50,7 @@ class OSLifecycle:
         return {
             "commands": commands,
             "all_commands_available": all(commands.values()),
+            "clipboard_available": any(shutil.which(name) for name in ("xsel", "xclip")),
             "display": os.environ.get("DISPLAY", ":0"),
             "dbus_socket": str(runtime / "bus"),
             "dbus_available": (runtime / "bus").exists(),
@@ -76,6 +77,11 @@ class OSLifecycle:
         if not status["dbus_available"]:
             raise AdapterError(
                 "OS_UNAVAILABLE", "desktop DBus session is unavailable", status, 503
+            )
+        if not status["clipboard_available"]:
+            raise AdapterError(
+                "CLIPBOARD_UNAVAILABLE", "required clipboard backend is unavailable",
+                {"required_commands": ["xsel", "xclip"]}, 503,
             )
         return {"ready": True, **status}
 

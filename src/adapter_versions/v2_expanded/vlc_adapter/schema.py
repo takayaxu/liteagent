@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -15,6 +16,8 @@ DEFAULT_TIMEOUT_MS = 60_000
 
 ACTIONS = frozenset(
     {
+        "media.flip_video",
+
         "config.update",
         "preferences.configure",
         "playback.open",
@@ -138,7 +141,31 @@ def _verification(value: Any) -> list[dict[str, Any]]:
 
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
-    if action == "config.update":
+    if action == "media.flip_video":
+        allowed = {"input_path", "output_path", "axis"}
+        unknown = sorted(set(params) - allowed)
+        if unknown:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "media.flip_video accepts one axis and one input/output video pair",
+                {"conflicting_fields": unknown, "allowed": sorted(allowed)},
+            )
+        _string(params, "input_path")
+        _string(params, "output_path")
+        if params.get("axis") not in {"vertical", "horizontal"}:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.axis must be vertical (top/bottom) or horizontal (left/right)",
+                {"axis": params.get("axis")},
+            )
+        if Path(params["input_path"]).expanduser().resolve() == Path(
+            params["output_path"]
+        ).expanduser().resolve():
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "media.flip_video requires a separate output_path; keep input_path unchanged",
+            )
+    elif action == "config.update":
         values = params.get("values")
         if not isinstance(values, Mapping) or not values:
             raise AdapterError(

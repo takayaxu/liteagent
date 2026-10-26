@@ -1825,6 +1825,53 @@ ACTION_KEYWORDS = {
         "slide",
         "width",
     },
+    ("libreoffice_writer", "document.create"): {
+        "create", "new", "blank", "empty", "writer", "document", "docx", "odt",
+    },
+    ("libreoffice_writer", "document.export_file_pdf"): {
+        "convert", "doc", "docx", "document", "export", "file", "odt",
+        "pdf", "saved", "source", "writer",
+    },
+    ("libreoffice_writer", "document.deduplicate_records"): {
+        "deduplicate",
+        "duplicate",
+        "duplicates",
+        "entries",
+        "first",
+        "identifier",
+        "ids",
+        "keep",
+        "lines",
+        "records",
+        "remove",
+        "rows",
+        "train",
+        "unique",
+    },
+    ("vlc", "media.flip_video"): {
+        "correct",
+        "flip",
+        "flipped",
+        "mirror",
+        "orientation",
+        "right",
+        "save",
+        "screen",
+        "upside",
+        "video",
+    },
+    ("libreoffice_writer", "text.set_format_in_match"): {
+        "character", "format", "formatting", "literal", "match", "subscript",
+        "substring", "superscript", "text", "token",
+    },
+    ("libreoffice_writer", "document.append_text_file"): {
+        "append", "insert", "import", "text", "txt", "file", "files", "verbatim", "combine", "concatenate", "merge", "writer", "document",
+    },
+    ("thunderbird", "messages.update_flags"): {
+        "add", "all", "email", "emails", "flag", "folder", "mail", "mark",
+        "message", "messages", "remove", "selected", "star", "starred",
+        "thunderbird", "update",
+    },
 }
 
 IMPRESS_SELECTOR_SCHEMA: dict[str, Any] = {

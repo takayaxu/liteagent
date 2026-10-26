@@ -17,7 +17,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = ROOT.parent if ROOT.name == "baseline" else ROOT.parents[1]
+PROJECT_ROOT = (ROOT.parents[2] if ROOT.parents[1].name == "src" else
+                ROOT.parent if ROOT.name == "baseline" else ROOT.parents[1])
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

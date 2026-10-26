@@ -134,9 +134,9 @@
       "dest": "supported_rate.xlsx"
     },
     "expected": {
-      "type": "local_file",
-      "path": "evaluation_examples/assets/order107-supported-rate-overall.xlsx",
-      "dest": "supported_rate-overall-gt.xlsx"
+      "type": "cloud_file",
+      "path": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/multi_apps/881deb30-9549-4583-a841-8270c65f2a17/supported_rate_gt.xlsx",
+      "dest": "supported_rate-gt.xlsx"
     },
     "options": {
       "rules": [

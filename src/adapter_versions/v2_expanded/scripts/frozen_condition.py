@@ -22,7 +22,7 @@ from integrations.lite_agent.reasoning import (
 
 CONDITION_SCHEMA = "trusted_generic_only_condition.v1"
 V2_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = V2_ROOT.parents[1]
+PROJECT_ROOT = V2_ROOT.parents[2] if V2_ROOT.parents[1].name == "src" else V2_ROOT.parents[1]
 TRUSTED_GIT = Path("/usr/bin/git")
 PROMOTION_ROLE_MARKERS = (
     "baseline",
@@ -593,7 +593,7 @@ def _verify_repository_state(
             "invalid_configuration: promotion gate source scope is dirty"
         )
 
-    osworld_root = project_root / "third_party" / "OSWorld"
+    osworld_root = project_root / ("src/third_party/OSWorld" if (project_root / "src/third_party/OSWorld").is_dir() else "third_party/OSWorld")
     osworld_identity = _verify_repository_identity(osworld_root, "osworld")
     osworld_commit = config["osworld_commit"]
     _require_equal(

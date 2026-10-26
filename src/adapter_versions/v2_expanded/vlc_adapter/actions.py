@@ -786,3 +786,50 @@ class VlcActions:
                 "UNSUPPORTED_ACTION", f"unsupported VLC action: {action}"
             )
         return method(params, timeout)
+
+
+    def media_flip_video(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        source = _file(params["input_path"])
+        output = Path(params["output_path"]).expanduser()
+        if output.suffix.casefold() != ".mp4":
+            raise AdapterError(
+                "UNSUPPORTED_FORMAT", "media.flip_video output_path must end in .mp4",
+                {"output_path": str(output)}, 422,
+            )
+        if source == output.resolve():
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "media.flip_video requires a separate output_path; keep input_path unchanged",
+            )
+        axis = params["axis"]
+        filter_name = {"vertical": "vflip", "horizontal": "hflip"}[axis]
+        temporary = _temporary_output(output)
+        try:
+            command = self.runner.run(
+                [
+                    "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                    "-i", str(source), "-map", "0:v:0", "-map", "0:a?",
+                    "-vf", filter_name, "-c:v", "libx264", "-preset", "medium",
+                    "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac",
+                    "-movflags", "+faststart", str(temporary),
+                ],
+                timeout=timeout,
+                error_code="TRANSCODE_FAILED",
+                error_message="video flipping failed",
+            )
+            if not temporary.is_file() or temporary.stat().st_size == 0:
+                raise AdapterError(
+                    "TRANSCODE_FAILED", "video flipping produced no output", command, 422
+                )
+            os.replace(temporary, output)
+        finally:
+            temporary.unlink(missing_ok=True)
+        return {
+            "input_path": str(source),
+            "output_path": str(output),
+            "axis": axis,
+            "strategy": f"ffmpeg_{filter_name}_h264_aac",
+            "probe": probe_media(self.runner, output),
+        }

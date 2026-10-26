@@ -20,6 +20,16 @@ from .verifier import verify_specs
 def _default_specs(
     action: str, params: dict[str, Any], result: dict[str, Any]
 ) -> list[dict[str, Any]]:
+    if action == "messages.update_flags":
+        return [
+            {
+                "type": "message_flags",
+                "folder_name": params["folder_name"],
+                "mailbox_indices": params["mailbox_indices"],
+                "flag": params["flag"],
+                "value": params["value"],
+            }
+        ]
     if action in SEMANTIC_SETTING_ACTIONS:
         update = semantic_preference_update(action, params)
         checks: list[dict[str, Any]] = []

@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import time
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -50,7 +51,7 @@ def source_files(repo_root: Path, *, strict_generic: bool = True) -> list[Path]:
         if path.is_file()
         and "__pycache__" not in path.parts
         and path.name != "deploy_host.py"
-        and path.suffix in {".py", ".sh", ".service", ".md", ".whl"}
+        and path.suffix in {".py", ".sh", ".service", ".md", ".whl", ".deb", ".sha256"}
     )
     return filter_source_files(package, paths, strict_generic=strict_generic)
 
@@ -66,6 +67,7 @@ def wait_health(adapter_url: str, timeout: float = 60) -> dict[str, Any]:
             if (
                 payload.get("status") == "ok"
                 and payload.get("all_commands_available")
+                and payload.get("clipboard_available")
                 and payload.get("dbus_available")
                 and payload.get("flask_available")
                 and payload.get("pypdf_available")
@@ -76,6 +78,55 @@ def wait_health(adapter_url: str, timeout: float = 60) -> dict[str, Any]:
             error = exc
         time.sleep(0.25)
     raise TimeoutError(f"OS Adapter health check failed: {error}")
+
+
+INSTALL_WORKER = r'''
+import json, os, subprocess, sys
+from pathlib import Path
+directory = Path(sys.argv[1])
+with (directory / 'install.log').open('w') as log:
+    try:
+        result = subprocess.run(sys.argv[2:], stdout=log, stderr=subprocess.STDOUT, timeout=900)
+        status = {'returncode': result.returncode}
+    except Exception as error:
+        status = {'returncode': -1, 'error': type(error).__name__ + ': ' + str(error)}
+temporary = directory / 'status.tmp'
+temporary.write_text(json.dumps(status))
+os.replace(temporary, directory / 'status.json')
+'''
+
+
+def install_payload(control_url: str, command: list[str], timeout: float = 930) -> None:
+    """Poll a detached install so the guest HTTP server's 120s limit cannot kill it.
+
+    All files are unique to this attempt. Retries happen only after a reported
+    failure; a still-running install is never re-launched by this function.
+    """
+    directory = f"/tmp/osworld-os-install-{uuid.uuid4().hex}"
+    launch = (
+        "import pathlib, subprocess, sys; "
+        "p=pathlib.Path(sys.argv[1]); p.mkdir(); "
+        "f=(p/'worker.log').open('w'); "
+        "subprocess.Popen([sys.executable, '-c', sys.argv[2], sys.argv[1], *sys.argv[3:]], "
+        "stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, start_new_session=True)"
+    )
+    execute(control_url, ["/usr/bin/python3", "-c", launch, directory, INSTALL_WORKER, *command], timeout=30)
+    poll = (
+        "import json,pathlib,sys; p=pathlib.Path(sys.argv[1]); s=p/'status.json'; "
+        "v=json.loads(s.read_text()) if s.exists() else {'running': True}; "
+        "v.update(log=(p/'install.log').read_text()[-6000:]) if s.exists() and (p/'install.log').exists() else None; "
+        "print(json.dumps(v))"
+    )
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        result = execute(control_url, ["/usr/bin/python3", "-c", poll, directory], timeout=30)
+        status = json.loads(result["output"])
+        if not status.get("running"):
+            if status.get("returncode") != 0:
+                raise RuntimeError(f"OS Adapter install failed: {status}")
+            return
+        time.sleep(2)
+    raise TimeoutError(f"OS Adapter install status unavailable after {timeout}s: {directory}")
 
 
 def deploy(
@@ -98,7 +149,7 @@ def deploy(
         pymupdf_wheel,
         f"{REMOTE_PAYLOAD}/os_adapter/vendor/{pymupdf_wheel.name}",
     )
-    execute(
+    install_payload(
         control_url,
         ["bash", f"{REMOTE_PAYLOAD}/os_adapter/deploy/install.sh", REMOTE_PAYLOAD],
     )

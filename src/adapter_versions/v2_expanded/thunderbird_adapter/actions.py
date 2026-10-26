@@ -19,6 +19,7 @@ from .profile import (
     remove_account,
     resolve_filter_rules_path,
     save_attachment,
+    update_message_flags,
     update_json_path,
     update_preferences,
     write_filters,
@@ -412,3 +413,18 @@ class ThunderbirdActions:
                 {"action": action},
             )
         return method(params, timeout)
+
+
+    def messages_update_flags(
+        self, params: dict[str, Any], timeout: float
+    ) -> dict[str, Any]:
+        return self._profile_action(
+            lambda profile: update_message_flags(
+                profile,
+                params["folder_name"],
+                mailbox_indices=params["mailbox_indices"],
+                flag=params["flag"],
+                value=params["value"],
+            ),
+            timeout,
+        )

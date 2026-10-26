@@ -21,8 +21,9 @@ from urllib.parse import urlsplit
 
 
 V2_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = V2_ROOT.parent if V2_ROOT.name == "baseline" else V2_ROOT.parents[1]
-OSWORLD_ROOT = PROJECT_ROOT / "third_party" / "OSWorld"
+PROJECT_ROOT = (V2_ROOT.parents[2] if V2_ROOT.parents[1].name == "src" else
+                V2_ROOT.parent if V2_ROOT.name == "baseline" else V2_ROOT.parents[1])
+OSWORLD_ROOT = PROJECT_ROOT / ("src/third_party/OSWorld" if (PROJECT_ROOT / "src/third_party/OSWorld").is_dir() else "third_party/OSWorld")
 V2_SCRIPTS = V2_ROOT / "scripts"
 for path in (V2_ROOT, V2_SCRIPTS, OSWORLD_ROOT):
     if str(path) not in sys.path:

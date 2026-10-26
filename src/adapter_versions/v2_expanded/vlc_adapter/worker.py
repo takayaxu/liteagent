@@ -42,7 +42,7 @@ def _default_specs(
                 "cue_count": result["cue_count"],
             }
         ]
-    if action == "media.transcode_clip":
+    if action in {"media.transcode_clip", "media.flip_video"}:
         return [
             {"type": "media", "path": result["output_path"], "stream_type": "video"}
         ]

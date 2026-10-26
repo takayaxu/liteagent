@@ -1485,6 +1485,8 @@ def thunderbird_message_query_context(result: dict[str, Any]) -> dict[str, Any]:
             if isinstance(message.get("attachment_names"), list)
             else [],
         }
+        if isinstance(message.get("starred"), bool):
+            row["starred"] = message["starred"]
         message_id = message.get("message_id")
         if isinstance(message_id, str) and message_id.strip():
             row["message_id"] = message_id.strip()[:300]
@@ -3239,6 +3241,29 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
     result = body.get("result")
     if not isinstance(result, dict):
         return None
+    if domain == "libreoffice_writer" and action in {
+        "document.create", "document.export_file_pdf", "document.append_text_file",
+        "document.deduplicate_records", "text.set_format_in_match",
+    }:
+        fields = (
+            "path", "source_path", "source_url", "output_path", "output_bytes", "output_sha256",
+            "export_mode", "activates_document", "created", "blank", "exists", "valid",
+            "source_chars", "inserted_chars", "source_sha256", "content_verified", "document_chars",
+            "removed_indices", "paragraph_count_before", "paragraph_count_after", "order_preserved",
+            "paragraph_index", "start_offset", "end_offset", "text", "format", "text_unchanged",
+        )
+        return {key: result[key] for key in fields if key in result} | {
+            "verification_passed": (body.get("verification") or {}).get("passed")
+        }
+    if domain == "thunderbird" and action == "messages.update_flags":
+        return {key: result[key] for key in (
+            "folder", "flag", "value", "mailbox_indices", "before", "after",
+            "changed_count", "matched_count", "verification_passed",
+        ) if key in result}
+    if domain == "vlc" and action == "media.flip_video":
+        return {key: result[key] for key in (
+            "input_path", "output_path", "axis", "strategy", "probe",
+        ) if key in result} | {"verification_passed": (body.get("verification") or {}).get("passed")}
     if domain == "libreoffice_calc" and action == "range.text_transform":
         readback = result.get("readback")
         display = readback.get("display_text") if isinstance(readback, dict) else None

@@ -17,48 +17,7 @@ for command in gio gsettings pactl timedatectl gnome-terminal gnome-screenshot w
 done
 /usr/bin/python3 -c 'import flask'
 
-if ! command -v tesseract >/dev/null || ! tesseract --list-langs 2>/dev/null | grep -qx eng; then
-  PYTHONPATH="${payload_dir}" /usr/bin/python3 - <<'PY'
-import time
-
-from os_adapter.command import CommandRunner
-from os_adapter.errors import AdapterError
-
-runner = CommandRunner()
-for arguments, timeout in (
-    (["apt-get", "update"], 45),
-    (["apt-get", "install", "-y", "--no-install-recommends", "tesseract-ocr", "tesseract-ocr-eng"], 60),
-):
-    # Waiting for index locks must not consume the package installation's time.
-    install_deadline = time.monotonic() + 90
-    while True:
-        remaining = install_deadline - time.monotonic()
-        if remaining <= 0:
-            raise TimeoutError("OCR package stage exceeded its 90-second setup budget")
-        try:
-            result = runner.sudo(
-                ["env", "DEBIAN_FRONTEND=noninteractive", *arguments],
-                timeout=min(timeout, remaining),
-            )
-            break
-        except AdapterError as error:
-            print(error.details, flush=True)
-            details = error.details if isinstance(error.details, dict) else {}
-            remaining = install_deadline - time.monotonic()
-            if (
-                details.get("returncode") != 100
-                or "could not get lock" not in str(details.get("stderr", "")).casefold()
-                or remaining <= 0
-            ):
-                raise
-            # PackageKit may still be updating the fresh guest. Leave its locks intact.
-            time.sleep(min(3, remaining))
-            if time.monotonic() >= install_deadline:
-                raise
-    print(result["stdout"], end="")
-    print(result["stderr"], end="")
-PY
-fi
+PYTHONPATH="${payload_dir}" /usr/bin/python3 -m os_adapter.desktop_dependencies "${payload_dir}/os_adapter/vendor"
 
 mkdir -p "${install_dir}" "${unit_dir}"
 rm -rf "${install_dir}/os_adapter"
