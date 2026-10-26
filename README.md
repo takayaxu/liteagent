@@ -4,6 +4,7 @@
 提交为 `a65c4ab`（标签 `v4`），基于本地 `131a465` 增量集成上游通用能力。
 12 并发、189 题全量已完成：**138/189 PASS（73.02%）**，最终完整性检查通过。
 结果摘要见 [v4 全量回执](docs/integration/v4-full189-result-20261026.json)。
+本轮 51 道未通过题目及逐题日志见 [v4 错误题单](reports/20261026-v4-full189/wrong-tasks.md)。
 范围、检查和原始 evaluator 说明见 [v4 集成回执](docs/integration/v4-20261026.md)。
 
 本仓库保留 LiteAgent 的运行源码、测试和历史开发记录。当前开发分支为
