@@ -76,3 +76,25 @@ def test_complete_white_background_read_is_distinct_from_missing_metadata():
     complete = adapter_context_hint("libreoffice_calc", "range.read", body)
     assert complete["background_cells"] == {}
     assert "white only when that map is complete" in complete["guidance"]
+
+
+def test_conditional_formatting_guidance_requires_complete_target_coverage():
+    hint = adapter_context_hint(
+        "libreoffice_calc",
+        "range.read",
+        {
+            "result": {
+                "sheet": "Calendar",
+                "range": "B3:F33",
+                "display_text": [["date"]],
+                "date_cells": {"B3": {"date": "2032-04-10", "weekday": "Saturday"}},
+                "background_cells": {},
+            }
+        },
+    )
+
+    guidance = hint["guidance"]
+    assert "every relevant populated row shown by workbook.inspect" in guidance
+    assert "enumerate all matching A1 addresses" in guidance
+    assert "check every expected address against background_cells" in guidance
+    assert "successful format action does not prove" in guidance

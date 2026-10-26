@@ -3423,7 +3423,13 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                     " background_cells maps non-white backgrounds by A1 address; "
                     "unlisted cells are white only when that map is complete. "
                     "date_cells maps native dates and weekdays to their exact A1 addresses. "
-                    "If any metadata is truncated, read a smaller range to check missing cells."
+                    "If any metadata is truncated, read a smaller range to check missing cells. "
+                    "For instructions to format every cell matching a condition, first make "
+                    "sure the read range covers every relevant populated row shown by "
+                    "workbook.inspect, then enumerate all matching A1 addresses from the "
+                    "observed cell data before formatting. Read the formatted cells back and "
+                    "check every expected address against background_cells; a successful "
+                    "format action does not prove that all matching cells were selected."
                     if cell_metadata
                     else ""
                 )
