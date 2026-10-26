@@ -289,6 +289,8 @@ flowchart TD
 
 - 2026-10-27 Order 28 Plan28-v2计划及实际diff经 `/root/review27` 通过。仅替换Calc系统通用百分比尺度指导，普通/错误恢复/strict实际消息投影均验证可见，其他domain原句保留。候选 `c9607ca`（保留v1已审增量），109focused通过；2个multi_apps GRF/repair_confirm旧断言在干净cd35267同样复现，不改无关测试；Ruff/diff/check通过。run-003新干净detached候选、原run-001同配置/模型/100步1800秒/原evaluator，统一绝对锁，owner `liuxv-repair28-run003-20261027`；输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-003/output`，待正式结果，未集成。human_review=false。
 
+- 2026-10-27 Order 28 run-003模型前environment_failure：公共 `/tmp/docker_port_allocation.lck` 他账号pengzhe0664，本账号无write；source/config true，无模型评分。未碰其锁/容器；原持有者自然释放移除后，同绝对外层锁内原FileLock非阻塞preflight正常取得/释放。独立审核 `/root/review27` 批准ENV28-retry-v1仅一次恢复后原条件重试，锁兼容源码方案暂不实施。run-004新干净 `c9607ca`，启动前再次在统一外层锁内原FileLock预检，原配置/模型/预算/evaluator不变，owner `liuxv-repair28-run004-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-004/output`，待正式结果。human_review=false。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
