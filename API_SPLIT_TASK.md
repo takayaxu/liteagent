@@ -9,7 +9,7 @@ Order 99 checker 判定/理由一致性修复：**PASS / reward=1.0，18 步，4
 
 > 2026-10-10 全部 28 题结果与轨迹已核对：请从 [统一逐题入口](/home/liuxv/liteagent/src/adapter_versions/v2_expanded/docs/osworld-task-results-index-20261010.md) 查询。固定批次 23/28 PASS；91、99、102 后续单题 PASS；最新已核对结果 26/28 PASS，仅 107、108 仍 FAIL。下方旧日期段落中的“当前/最新/PASS”只适用于各自记录的运行条件。
 
-工作分支：`codex/api-split-liuxv`
+历史 API 拆分工作分支：`codex/api-split-liuxv`。2026-10-26 起主活动源码为 `/home/liuxv/liteagent` 的 `codex/v4`；后续工作以 README 和当前活动分支为准。
 
 完整复查见 [`docs/api-granularity-audit-20260920.md`](docs/api-granularity-audit-20260920.md)。实际执行边界以 [`task.md`](task.md) 的 28 道固定 Order 为准；除原 Calc、Impress、Writer、Thunderbird 范围外，还包括 `os.pdf.extract_text_batch` 的完整六题组。
 

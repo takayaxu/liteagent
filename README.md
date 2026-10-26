@@ -1,23 +1,32 @@
 # LiteAgent 开发与集成工作区
 
-v4 集成候选位于 `codex/v4`，基于本地 `131a465`，吸收固定上游的通用能力，
-用于一次 12 并发、189 题、Qwen3.5-9B thinking 评测。
+当前主活动源码位于 `/home/liuxv/liteagent` 的 `codex/v4` 分支。v4 运行源码
+提交为 `a65c4ab`（标签 `v4`），基于本地 `131a465` 增量集成上游通用能力。
+12 并发、189 题全量已完成：**138/189 PASS（73.02%）**，最终完整性检查通过。
+结果摘要见 [v4 全量回执](docs/integration/v4-full189-result-20261026.json)。
 范围、检查和原始 evaluator 说明见 [v4 集成回执](docs/integration/v4-20261026.md)。
 
 本仓库保留 LiteAgent 的运行源码、测试和历史开发记录。当前开发分支为
-`codex/api-split-liuxv`，冻结 v3 源码基线提交为 `026e829`。
+`codex/v4`；原 `codex/api-split-liuxv` 保留为历史开发分支。
+冻结 v3 源码基线提交为 `026e829`。
 冻结 v3 是历史基线；后续复跑默认使用当前开发分支最新的 Git 提交（启动时的
 `HEAD`），不包含未提交、已暂存但未提交或未跟踪的源码改动。需要验证修复时，
 先完成源码提交，再从该提交创建独立运行工作树。只有明确指定历史版本时，
 才使用对应历史提交。
-冻结 v3 的运行范围为 562 个文件，SHA-256：
+当前 v4 运行范围为 614 个文件，SHA-256：
+
+```text
+e8cabb760b51c6aa5c1f8a56e5f3ba1d05106f9f64846deeba7ed3f64c8b0886
+```
+
+历史冻结 v3 的运行范围为 562 个文件，SHA-256：
 
 ```text
 8ed6671fb2928c99e379880007d60638d9768d321ba2dde94cf61b4bafea780b
 ```
 
 源码与包入口保持 `src/adapter_versions/v2_expanded/`；`v2_expanded` 是历史目录名。
-本次目录与文档整理没有修改运行源码。
+v4 集成范围和原始评分条件见上方回执。
 
 独立集成分支 `codex/integration-api-split-20261021` 从最初导入基线 `b800fd9`
 派生，候选提交为 `1bcf3718d1b8ec65c31c792ef29c8d65fe303745`。其增量仅含
@@ -73,7 +82,7 @@ requirements-liteagent.txt              运行依赖
 
 ## 当前开发任务
 
-`liuxv` 的工作分支是 `codex/api-split-liuxv`。先读
+`liuxv` 的主活动工作分支是 `codex/v4`。以下 API 拆分文档保留为历史背景；后续修复从该分支最新提交建立独立工作树。先读
 [大粒度 API 拆分任务](API_SPLIT_TASK.md)，完整的 216 项公开面复查、P0/P1
 清单和源码证据在 [API 粒度审计](docs/api-granularity-audit-20260920.md)。
 API 拆分任务做 Adapter 契约拆分和针对性测试；后续完成判定修复及指定单题复跑

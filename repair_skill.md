@@ -17,7 +17,7 @@ description: 按失败轨迹诊断 LiteAgent 的单题 OSWorld 故障，经人�
 
 | 项目 | 当前约定 |
 | --- | --- |
-| 活动目录与分支 | `/home/liuxv/liteagent`，`codex/api-split-liuxv`；“主活动源码”指这个开发分支，不指 Git 的 `main` |
+| 活动目录与分支 | `/home/liuxv/liteagent`，`codex/v4`；2026-10-26 用户指定 v4 为主活动源码；修复基点取该分支启动时最新 HEAD，不指 Git 的 `main` |
 | 运行源码 | `src/adapter_versions/v2_expanded/` |
 | 单题运行入口 | `bin/run-osworld.py --orders <ORDER>` |
 | 默认配置 | `configs/single-task-active-thinking.json` |
