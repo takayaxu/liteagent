@@ -274,6 +274,7 @@ flowchart TD
 - Order 15交付核验：候选运行源码与台账已推送 `codex/v4`，本地及远端同为 `85478abbb94e287c19481d67fd839c0bacd3502f`，原源码seal核对一致。
 - Order 24 / `30e3e107-1cfb-46ee-a755-2cd080d7ba6a`：按队列认领，human_review=true。题意为新Sheet2合并A1:C1制作蓝底白色粗体标题，并将Sex/Civil Status/Highest Educational Attainment三张百分比透视表竖向排列、各隔一空行。活动源码含11/13/15正式通过修复；从干净 `85478ab` 做最新无补丁基线。首次命令因默认配置未收录24在参数校验阶段拒绝，无模型/输出目录产生；仓库外配置 `/home/liuxv/liteagent-local-runs/repair-24-20261026/run-001/config-input.json` 仅增加原任务身份，其他模型/协议/预算/VM等逐项相同，启动同run-001，owner `liuxv-repair24-run001-20261026`，统一绝对任务锁覆盖全生命周期。输出 `/home/liuxv/liteagent-local-runs/repair-24-20261026/run-001/output`，待正式结果；无24候选实施。
 - Order 24 run-001正式终态：北京时间2026-10-26 23:37，最新活动源码无补丁基线 `passed / reward=1.0 / agent_done`，15步、773.401秒，source/config integrity均true，seal `ca5731210b19d0584c87d93c8a7bdb7991ef167eb0f43eec4e023e9530b3fadf`。首个模型响应持续流式传输约253秒后恢复，非断连；本次正常创建Sheet2、合并A1:C1并写入正确蓝底白色粗体标题，三张percentage透视表位于A2:B5/A7:B11/A13:B17，间隔一空行；原生读取与结果文件核对标题/颜色/字体/合并及各类比例正确。最新源码已通过，无第24题新补丁；移出待修队列，原full189失败历史不改写。
+- Order 27 / `3a7c8185-25c1-4941-bd7b-96e823c9f21f`：按队列认领，human_review=true；题意为整表按A列升序排序，以Date Time为X轴、quantity为Y轴创建折线图。活动源码含11/13/15通过修复且24无补丁PASS；从干净 `99081d1` 启动最新源码无补丁run-001，原默认模型/协议/预算、统一绝对任务锁，owner `liuxv-repair27-run001-20261026`。输出 `/home/liuxv/liteagent-local-runs/repair-27-20261026/run-001/output`，待正式结果；无27候选实施。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
