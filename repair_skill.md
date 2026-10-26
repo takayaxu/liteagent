@@ -291,6 +291,8 @@ flowchart TD
 
 - 2026-10-27 Order 28 run-003模型前environment_failure：公共 `/tmp/docker_port_allocation.lck` 他账号pengzhe0664，本账号无write；source/config true，无模型评分。未碰其锁/容器；原持有者自然释放移除后，同绝对外层锁内原FileLock非阻塞preflight正常取得/释放。独立审核 `/root/review27` 批准ENV28-retry-v1仅一次恢复后原条件重试，锁兼容源码方案暂不实施。run-004新干净 `c9607ca`，启动前再次在统一外层锁内原FileLock预检，原配置/模型/预算/evaluator不变，owner `liuxv-repair28-run004-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-004/output`，待正式结果。human_review=false。
 
+- 2026-10-27 Order 28 run-004因宿主环境阻塞由repair agent有界中断，原生 `interrupted/reward=null/0steps`，680.837秒，source/config true；不能以exit0销项。独立审核 `/root/review27` 直接核对自有guest的VERIFY shell D态、runc僵尸及Docker exec等待，主机数千D态/load>4000；guest截图200，模型未调用。初次校验17:37:01曾恢复并完成文件setup，随后模型前再次assert校验阻塞；SIGINT17:37:52只发本chat pilot，原生“by user”是默认文本，实际actor另记context。SDK env.close停容器70秒ReadTimeout，控制进程/统一任务锁已退出释放；自有待清理容器 `85cfac43b13d/crazy_chatelet`，owner `liuxv-repair28-run004-20261027`，不得认定已清理，不触碰他人容器/网络/共享Docker服务。保留候选 `c9607ca` 独立未集成，28及后续35/63/77/79/87/93/97/98/100仍待修；无新整题启动或网络绕过，待宿主Docker exec健康恢复后先完成自有清理再审恢复复跑。证据 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-004/output`、`run-004-interruption-context.json`。human_review=false持续有效。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
