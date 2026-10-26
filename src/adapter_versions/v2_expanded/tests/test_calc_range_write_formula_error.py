@@ -213,6 +213,57 @@ def test_formula_error_restores_mixed_target_atomically_and_preserves_args() -> 
     assert params == original_params
 
 
+def test_literal_overwrite_receipt_retains_original_data_without_blocking_write():
+    session, _, _ = _session(
+        [[_Cell(kind="number", value=19), _Cell(kind="string", value="original")]],
+        start_column=7, start_row=8,
+    )
+    result = uno_worker._write(session, {
+        "sheet": "Synthetic", "range": "H9:I9", "values": [["label", "replacement"]],
+    })
+    targets = result["mutation_observation"]["targets"]
+    assert targets[0]["cell"] == "H9"
+    assert targets[0]["before"]["value"] == 19
+    assert targets[0]["after"]["value"] == "label"
+    assert targets[1]["before"]["value"] == "original"
+    assert result["values"] == [["label", "replacement"]]
+
+
+def test_native_reference_receipt_is_bounded_and_unknown_is_explicit():
+    source = _Range([[_Cell(kind="number", value=i) for i in range(12)]])
+    target = _Cell(kind="formula", formula="=SUM(A1:L1)")
+    target.queryPrecedents = lambda recursive: SimpleNamespace(
+        getRangeAddresses=lambda: [SimpleNamespace(
+            Sheet=0, StartColumn=0, EndColumn=11, StartRow=0, EndRow=0,
+        ), SimpleNamespace(Sheet=1, StartColumn=13, EndColumn=13, StartRow=3, EndRow=3)],
+    )
+    sheet = SimpleNamespace(getName=lambda: "Sources", getCellByPosition=source.getCellByPosition)
+    session = SimpleNamespace(doc=SimpleNamespace(
+        getSheets=lambda: SimpleNamespace(getByIndex=lambda index: (
+            sheet if index == 0 else SimpleNamespace(getName=lambda: "Output")
+        ))
+    ))
+    entries = [("N4", target)]
+    receipt = uno_worker._mutation_after(session, "Output", entries, uno_worker._mutation_before(entries))
+    references = receipt["targets"][0]["references"]
+    assert references["cell_count"] == 12
+    assert references["cells_omitted_count"] == 4
+    assert [x["cell"] for x in references["cells"]] == [f"{c}1" for c in "ABCDEFGH"]
+    assert references["cells"][0]["sheet"] == "Sources"
+    assert references["cells"][7]["value"] == 7
+    del target.queryPrecedents
+    unknown = uno_worker._mutation_after(session, "Output", entries, uno_worker._mutation_before(entries))
+    assert unknown["targets"][0]["references"] == {"status": "unknown"}
+
+
+def test_mutation_receipt_marks_omitted_targets():
+    entries = [(f"J{i + 1}", _Cell()) for i in range(30)]
+    receipt = uno_worker._mutation_before(entries)
+    assert receipt["target_count"] == 30
+    assert receipt["targets_omitted_count"] == 6
+    assert len(receipt["targets"]) == 24
+
+
 def test_formula_error_restores_number_format_applied_by_write(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

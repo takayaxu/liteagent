@@ -898,6 +898,91 @@ def _formula_error_recovery(error_cells: list[dict[str, Any]], fallback: str) ->
     return fallback
 
 
+def _observed_cell_content(cell: Any) -> dict[str, Any]:
+    kind = _cell_kind(cell)
+    return {
+        "kind": kind,
+        "formula": str(cell.getFormula()) if kind == "formula" else "",
+        "value": cell.getValue() if kind in {"number", "formula"} else (
+            cell.getString() if kind == "string" else None
+        ),
+        "display_text": str(cell.getString()),
+    }
+
+
+def _mutation_before(entries: list[tuple[str, Any]], target_count: int | None = None) -> dict[str, Any]:
+    target_count = len(entries) if target_count is None else target_count
+    return {
+        "target_count": target_count,
+        "targets_omitted_count": max(0, target_count - 24),
+        "targets": [
+            {"cell": address, "before": _observed_cell_content(cell)}
+            for address, cell in entries[:24]
+        ],
+    }
+
+
+def _mutation_after(
+    session: CalcSession, sheet_name: str, entries: list[tuple[str, Any]],
+    observation: dict[str, Any],
+) -> dict[str, Any]:
+    """Return bounded native evidence, without selecting or validating targets."""
+    observation["sheet"] = sheet_name
+    remaining_sources = 96
+    for target, (_, cell) in zip(observation["targets"], entries):
+        target["after"] = _observed_cell_content(cell)
+        if target["after"]["kind"] != "formula":
+            continue
+        try:
+            ranges = cell.queryPrecedents(False).getRangeAddresses()
+            source_count = 0
+            source_ranges = []
+            for area in ranges:
+                source_sheet = session.doc.getSheets().getByIndex(area.Sheet)
+                source_count += (area.EndColumn - area.StartColumn + 1) * (
+                    area.EndRow - area.StartRow + 1
+                )
+                # UNO queryPrecedents includes the queried cell itself.
+                position = re.fullmatch(r"\$?([A-Za-z]+)\$?([1-9][0-9]*)", target["cell"])
+                own_column = 0
+                for letter in position[1].upper():
+                    own_column = own_column * 26 + ord(letter) - ord("A") + 1
+                own_row = int(position[2]) - 1
+                own_column -= 1
+                same_sheet = source_sheet.getName() == sheet_name
+                if same_sheet and area.StartColumn <= own_column <= area.EndColumn and area.StartRow <= own_row <= area.EndRow:
+                    source_count -= 1
+                source_ranges.append((source_sheet, area, same_sheet, own_column, own_row))
+            sources = []
+            for source_sheet, area, same_sheet, own_column, own_row in source_ranges:
+                for row in range(area.StartRow, area.EndRow + 1):
+                    for column in range(area.StartColumn, area.EndColumn + 1):
+                        if same_sheet and column == own_column and row == own_row:
+                            continue
+                        if len(sources) >= min(8, remaining_sources):
+                            break
+                        sources.append({
+                            "sheet": source_sheet.getName(),
+                            "cell": f"{_column_label(column)}{row + 1}",
+                            **_observed_cell_content(source_sheet.getCellByPosition(column, row)),
+                        })
+                    if len(sources) >= min(8, remaining_sources):
+                        break
+                if len(sources) >= min(8, remaining_sources):
+                    break
+            remaining_sources -= len(sources)
+            target["references"] = {
+                "status": "observed", "cells": sources,
+                "cell_count": source_count,
+                "cells_omitted_count": source_count - len(sources),
+            }
+        except Exception:
+            # Some formula kinds or worker bridges do not expose precedents.
+            # Unknown dependencies must never be presented as an empty set.
+            target["references"] = {"status": "unknown"}
+    return observation
+
+
 def _write(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     cell_range = session.sheet(params["sheet"]).getCellRangeByName(params["range"])
     address = cell_range.getRangeAddress()
@@ -927,6 +1012,13 @@ def _write(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
         if literal_cells
         else None
     )
+    entries = [
+        (f"{_column_label(address.StartColumn + column)}{address.StartRow + row + 1}",
+         cell_range.getCellByPosition(column, row))
+        for index in range(min(rows * columns, 24))
+        for row, column in [divmod(index, columns)]
+    ]
+    mutation = _mutation_before(entries, rows * columns)
     try:
         result = _write_values(session, params, cell_range, values)
     except Exception as exc:
@@ -948,6 +1040,7 @@ def _write(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
         ) from exc
     if conversion is not None:
         result["argument_conversion"] = conversion
+    result["mutation_observation"] = _mutation_after(session, params["sheet"], entries, mutation)
     return result
 
 
@@ -1074,6 +1167,8 @@ def _set_formulas(session: CalcSession, params: dict[str, Any]) -> dict[str, Any
         (write, sheet.getCellRangeByName(write["cell"])) for write in params["writes"]
     ]
     before = [_cell_state(cell) for _, cell in resolved]
+    entries = [(write["cell"], cell) for write, cell in resolved]
+    mutation = _mutation_before(entries)
     try:
         for write, cell in resolved:
             cell.setFormula(write["formula"])
@@ -1146,6 +1241,8 @@ def _set_formulas(session: CalcSession, params: dict[str, Any]) -> dict[str, Any
         ) from exc
     return {
         "sheet": params["sheet"],
+        "workbook_url": str(getattr(session.doc, "URL", "") or ""),
+        "mutation_observation": _mutation_after(session, params["sheet"], entries, mutation),
         "written_cells": len(resolved),
         "cells": [
             {

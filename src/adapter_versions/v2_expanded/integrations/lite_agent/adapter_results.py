@@ -12,6 +12,7 @@ from typing import Any
 from impress_adapter.geometry_contract import order_shapes_by_position
 
 from .calc_column_reorder import column_reorder_context
+from .calc_mutation_observation import with_calc_mutation_labels
 from .filesystem_contexts import filesystem_rename_context
 from .vscode_workspace_context import workspace_mutation_context
 from .context_projection import (
@@ -759,6 +760,8 @@ def execution_context_summary(
     """Compatibility wrapper for the bounded execution transcript."""
     events = _compact_redundant_pdf_text_events(events, domain)
     events = _compact_completed_ecs_table_events(events, domain)
+    if domain == "libreoffice_calc":
+        events = with_calc_mutation_labels(events)
     return _summarize_events(
         events,
         domain,
@@ -3529,9 +3532,35 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             "sheet": result.get("sheet"),
             "written_cells": result.get("written_cells"),
             "cells": result.get("cells"),
+            "workbook_url": result.get("workbook_url"),
+            "mutation_observation": result.get("mutation_observation"),
+            "context_char_budget": 16_000,
+            "guidance": (
+                "mutation_observation shows before/after content and native direct formula "
+                "references, with nearby text from prior reads. Compare source measure, "
+                "period headers and target row against the instruction. Unknown references "
+                "or null nearby text require a range.read; omitted cells are unobserved. "
+                "Successful writing verifies execution only."
+            ),
             "verification_passed": verification.get("passed")
             if isinstance(verification, dict)
             else None,
+        }
+    if domain == "libreoffice_calc" and action == "range.write" and isinstance(result.get("mutation_observation"), dict):
+        return {
+            **{key: result[key] for key in (
+                "sheet", "range", "workbook_url", "written_cells", "display_text",
+                "values", "formulas", "kinds", "cell_addresses", "mutation_observation",
+            ) if key in result},
+            "context_char_budget": 16_000,
+            "guidance": (
+                "mutation_observation records the overwritten content and resulting values. "
+                "Check overwrote_nonblank targets against the instruction, including row "
+                "and column text from prior reads. Restore unintended changes using observed "
+                "before values. Labels must identify their intended calculation row; a "
+                "successful write alone does not establish correct placement. Null text "
+                "and omitted targets are unknown; inspect them with range.read."
+            ),
         }
     if domain == "libreoffice_calc" and action == "chart.create":
         verification = body.get("verification")
