@@ -283,6 +283,10 @@ flowchart TD
 
 - 2026-10-27 Order 28 run-001正式failed/reward0，14步491.337秒，source/config true。全部表值与参考一致；原evaluator样式解析唯一差异是非极值C19额外绿色，C20正确绿色；另百分比显示违背显式number要求。Plan28-v1经独立审核 `/root/review27` 通过：通用命名计算列极值字体及数字显示完成检查，补原生条件格式元数据，未知/复杂规则保守处理，保留既有颜色，只识别本轮新增错误着色；不改计算公式、不强制条件格式。实际diff与隔离原生CF实验待核验；human_review=false，不请求人工批准。
 
+- 2026-10-27 Order 28 Plan28-v1实际diff经 `/root/review27` 复核通过（初审多列/否定指令意见已修并加回归）；候选 `cd35267`，188focused/Ruff/diff/check通过。真实独立LO验证基础字体/单CF/SourcePosition/公式result_types，失败产物副本原生读取及只读回放保留旧字体基线未知，不补造历史字段。run-002从候选干净detached树，沿用run-001同一外部config、原模型100步1800秒，持统一绝对锁正式复跑；owner `liuxv-repair28-run002-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-002/output`。共享guest截图500且rootfs临时目录不可写另记；正式runner创建独立guest/可写卷，按该guest实际准备结果核验，不改共享环境。候选尚未集成、待正式结果。
+
+- 2026-10-27 Order 28 run-002正式failed/reward0/agent_done，27步836.826秒，source/config true，seal `bd6ad2340a061917b8fc572a401d962c8c1c370ae70082b34d6f31494c74f7a6`；v1新检查在实际request0018报告number_format_mismatch，模型step18改General，终态仅C20绿色且显示数字。新失败为step5全列公式额外乘100，24个结果均为正确值100倍。`cd35267`留独立分支、不集成。Plan28-v2向同一审核者 `/root/review27` 待审：仅补通用native数值/百分点/百分比显示尺度指导，不生成金融公式、不加题目数值完成门；human_review=false，不等待人工。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
