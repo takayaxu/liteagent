@@ -636,6 +636,47 @@ def _native_date_observation(
     return {"date": observed_date.isoformat(), "weekday": weekdays[observed_date.weekday()]}
 
 
+def _font_snapshot(cell: Any, doc: Any | None = None) -> dict[str, Any]:
+    """Base font and native conditional rules, never claim the base is effective."""
+    color = int(cell.CharColor)
+    observation = {"font_color": f"#{color:06x}" if color >= 0 else "automatic"}
+    try:
+        entries = cell.ConditionalFormat
+        count = int(entries.getCount())
+        metadata = {"status": "known", "count": count, "rules": []}
+        if count > 1:
+            metadata["status"] = "unsupported"
+        elif count:
+            rule = entries.getByIndex(0)
+            position = rule.SourcePosition
+            style = doc.getStyleFamilies().getByName("CellStyles").getByName(rule.StyleName)
+            style_color = int(style.CharColor)
+            metadata["rules"].append({
+                "operator": _enum_name(rule.Operator),
+                "formula1": str(rule.Formula1), "formula2": str(rule.Formula2),
+                "style_name": str(rule.StyleName),
+                "font_color": f"#{style_color:06x}" if style_color >= 0 else "automatic",
+                "source_position": {"sheet": doc.Sheets.getByIndex(position.Sheet).getName(),
+                                    "column": int(position.Column) + 1, "row": int(position.Row) + 1},
+            })
+        observation["conditional_format"] = metadata
+    except Exception as exc:
+        observation["conditional_format"] = {"status": "unknown", "error": str(exc)}
+    return observation
+
+
+def _result_type(cell: Any, kind: str) -> str:
+    if kind != "formula":
+        return kind
+    try:
+        if cell.getError():
+            return "error"
+        result = _enum_name(cell.FormulaResultType)
+        return "number" if result in {"value", "1"} else "string" if result in {"text", "2"} else "unknown"
+    except Exception:
+        return "unknown"
+
+
 def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
     address = cell_range.getRangeAddress()
     cell_addresses = [
@@ -653,6 +694,7 @@ def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
     formats: list[list[int]] = []
     styles: list[list[dict[str, Any]]] = []
     number_formats: list[list[dict[str, Any]]] = []
+    result_types: list[list[str]] = []
     background_cells: dict[str, str] = {}
     date_cells: dict[str, dict[str, str]] = {}
     null_date = _document_null_date(doc) if doc is not None else None
@@ -661,6 +703,7 @@ def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
         formula_row = []
         display_row = []
         kind_row = []
+        result_type_row = []
         format_row = []
         style_row = []
         number_format_row = []
@@ -676,11 +719,12 @@ def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
             formula_row.append(str(cell.getFormula()) if kind == "formula" else "")
             display_row.append(str(cell.getString()))
             kind_row.append(kind)
+            result_type_row.append(_result_type(cell, kind))
             format_row.append(int(cell.NumberFormat))
             style_row.append(
                 {
                     "background_color": f"#{int(cell.CellBackColor) & 0xFFFFFF:06x}",
-                    "font_color": f"#{int(cell.CharColor) & 0xFFFFFF:06x}",
+                    **_font_snapshot(cell, doc),
                     "bold": float(cell.CharWeight) >= 150,
                     "number_format_id": int(cell.NumberFormat),
                 }
@@ -703,6 +747,7 @@ def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
         formulas.append(formula_row)
         display.append(display_row)
         kinds.append(kind_row)
+        result_types.append(result_type_row)
         formats.append(format_row)
         styles.append(style_row)
         if doc is not None:
@@ -712,6 +757,7 @@ def _range_snapshot(cell_range: Any, doc: Any | None = None) -> dict[str, Any]:
         "formulas": formulas,
         "display_text": display,
         "kinds": kinds,
+        "result_types": result_types,
         "cell_addresses": cell_addresses,
         "number_format_ids": formats,
         "styles": styles,
@@ -898,10 +944,11 @@ def _formula_error_recovery(error_cells: list[dict[str, Any]], fallback: str) ->
     return fallback
 
 
-def _observed_cell_content(cell: Any) -> dict[str, Any]:
+def _observed_cell_content(cell: Any, doc: Any | None = None, *, include_style: bool = False) -> dict[str, Any]:
     kind = _cell_kind(cell)
     return {
         "kind": kind,
+        **({"styles": _font_snapshot(cell, doc)} if include_style else {}),
         "formula": str(cell.getFormula()) if kind == "formula" else "",
         "value": cell.getValue() if kind in {"number", "formula"} else (
             cell.getString() if kind == "string" else None
@@ -910,13 +957,13 @@ def _observed_cell_content(cell: Any) -> dict[str, Any]:
     }
 
 
-def _mutation_before(entries: list[tuple[str, Any]], target_count: int | None = None) -> dict[str, Any]:
+def _mutation_before(entries: list[tuple[str, Any]], target_count: int | None = None, doc: Any | None = None) -> dict[str, Any]:
     target_count = len(entries) if target_count is None else target_count
     return {
         "target_count": target_count,
         "targets_omitted_count": max(0, target_count - 24),
         "targets": [
-            {"cell": address, "before": _observed_cell_content(cell)}
+            {"cell": address, "before": _observed_cell_content(cell, doc, include_style=True)}
             for address, cell in entries[:24]
         ],
     }
@@ -930,7 +977,7 @@ def _mutation_after(
     observation["sheet"] = sheet_name
     remaining_sources = 96
     for target, (_, cell) in zip(observation["targets"], entries):
-        target["after"] = _observed_cell_content(cell)
+        target["after"] = _observed_cell_content(cell, session.doc)
         if target["after"]["kind"] != "formula":
             continue
         try:
@@ -1018,7 +1065,7 @@ def _write(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
         for index in range(min(rows * columns, 24))
         for row, column in [divmod(index, columns)]
     ]
-    mutation = _mutation_before(entries, rows * columns)
+    mutation = _mutation_before(entries, rows * columns, session.doc)
     try:
         result = _write_values(session, params, cell_range, values)
     except Exception as exc:
@@ -1168,7 +1215,7 @@ def _set_formulas(session: CalcSession, params: dict[str, Any]) -> dict[str, Any
     ]
     before = [_cell_state(cell) for _, cell in resolved]
     entries = [(write["cell"], cell) for write, cell in resolved]
-    mutation = _mutation_before(entries)
+    mutation = _mutation_before(entries, doc=session.doc)
     try:
         for write, cell in resolved:
             cell.setFormula(write["formula"])
