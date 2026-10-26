@@ -987,6 +987,56 @@ def range_cell_addresses(cell_range: Any) -> list[list[str]] | None:
     ]
 
 
+def calc_date_weekday_context(result: dict[str, Any]) -> dict[str, Any]:
+    """Group observed native dates, without choosing a formatting target."""
+    dates = result.get("date_cells")
+    if not isinstance(dates, dict) or not dates:
+        return {}
+    backgrounds = result.get("background_cells")
+    backgrounds = backgrounds if isinstance(backgrounds, dict) else None
+    partial = bool(result.get("truncated") or result.get("context_truncated"))
+    backgrounds_complete = backgrounds is not None and not (
+        partial or result.get("background_cells_truncated")
+    )
+    groups: dict[str, Any] = {}
+    for weekday in (
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    ):
+        addresses = [
+            address
+            for address, observation in dates.items()
+            if isinstance(address, str)
+            and re.fullmatch(r"[A-Z]+[1-9][0-9]*", address)
+            and isinstance(observation, dict)
+            and observation.get("weekday") == weekday
+        ]
+        addresses.sort(key=lambda address: (
+            column_number(re.match(r"[A-Z]+", address).group()),
+            int(re.search(r"[0-9]+", address).group()),
+        ))
+        if not addresses:
+            continue
+        by_background: dict[str, list[str]] = {}
+        for address in addresses:
+            color = backgrounds.get(address) if backgrounds is not None else None
+            if not isinstance(color, str):
+                color = "#ffffff" if backgrounds_complete else "unknown"
+            by_background.setdefault(color, []).append(address)
+        groups[weekday] = {
+            "count": len(addresses),
+            "addresses": addresses,
+            "by_background": by_background,
+        }
+    return {
+        "date_weekday_summary": {
+            "range": result.get("range"),
+            "date_cells_complete": not (partial or result.get("date_cells_truncated")),
+            "background_cells_complete": backgrounds_complete,
+            "weekdays": groups,
+        }
+    }
+
+
 def calc_summary_row_context(
     display_text: Any, kinds: Any, addresses: Any
 ) -> list[dict[str, Any]]:
@@ -3365,6 +3415,14 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             for key in ("background_cells", "date_cells")
             if isinstance(result.get(key), dict)
         }
+        coverage_metadata = {
+            key: result[key]
+            for key in (
+                "truncated", "context_truncated", "date_cells_truncated",
+                "background_cells_truncated",
+            )
+            if key in result
+        }
         matrices = {
             key: result.get(key)
             for key in ("display_text", "values", "formulas", "kinds", "cell_addresses", "number_formats")
@@ -3408,6 +3466,8 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             **({"workbook_url": result["workbook_url"]} if result.get("workbook_url") else {}),
             **matrices,
             **cell_metadata,
+            **coverage_metadata,
+            **calc_date_weekday_context(result),
             **summary_context,
             "context_char_budget": 64_000,
             "guidance": (
@@ -3423,6 +3483,14 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                     " background_cells maps non-white backgrounds by A1 address; "
                     "unlisted cells are white only when that map is complete. "
                     "date_cells maps native dates and weekdays to their exact A1 addresses. "
+                    "date_weekday_summary groups all observed weekdays with counts, "
+                    "addresses in column/row order, and by_background address lists. "
+                    "Choose the required weekday groups from the instruction and compare "
+                    "their entire address lists with by_background on read-back. Counts "
+                    "refer to the observed range only; if coverage is incomplete or any "
+                    "summary has context_truncated=true, read a smaller explicit range "
+                    "before treating its address lists as exhaustive. Unknown backgrounds "
+                    "are not evidence of white cells. "
                     "If any metadata is truncated, read a smaller range to check missing cells. "
                     "For instructions to format every cell matching a condition, first make "
                     "sure the read range covers every relevant populated row shown by "
