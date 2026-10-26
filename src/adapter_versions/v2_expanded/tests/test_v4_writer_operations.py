@@ -70,4 +70,3 @@ def test_writer_record_deduplication_is_one_stable_atomic_operation() -> None:
     )[0]["function"]["parameters"]
     jsonschema.Draft202012Validator.check_schema(exposed)
     assert exposed["required"] == ["delimiter", "key_column"]
-
