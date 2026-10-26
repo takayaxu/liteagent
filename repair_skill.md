@@ -260,7 +260,7 @@ flowchart TD
 - Order 11 Plan-v3：用户明确选择“11 Plan-v3 方案 1”，批准通用日期观察摘要；按全部星期分组地址、计数及背景分布，保留范围/截断与未知背景语义，不改完成门。候选 `ec99ce69234e2941e7e4a3d37b9435d77141c1cc`，10 focused checks、Ruff、diff check、bin/check.sh 均通过；用 run-002 原始读取结果只读回放可见周六/周日各22个及B6/B7仍白色。run-003 从候选干净 detached 工作树启动，沿用 run-002 相同配置与镜像环境，持同一绝对共享锁。北京时间 2026-10-26 20:27 正式 `passed / reward=1.0 / agent_done`，8步、326.026秒，source/config integrity 均 true；44个周末日期全部标红，无额外红色单元格。运行源码 seal `b9e5ba8cdb4092891d9e7d5b07950218007c7936c7955aa0123d3460dd80e770`。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun003-20261026/output`。活动分支与远端同在原基点后，持集成锁快进至候选；已移出待修队列。交付时将本台账提交与候选一并正常推送并核验远端 SHA，若推送失败则仍记为待推送。原始full189快照仍为138/189，不改写历史批次分数。
 
 - Order 11 交付核验：运行源码 `ec99ce6` 与台账提交 `60a018abe4a39520d6182e02bb34a3f0a2a76420` 已正常推送 GitHub `codex/v4`，`git ls-remote` 与本地 HEAD 一致。
-- Order 13 / `0326d92d-d218-48a8-9ca1-981cd6d064c7`：human_review=true，/root 按队列认领；旧 full189 轨迹中增长率引用首位销售人员数据并错位，图表未完整绑定正确增长行。活动运行源码已由11修复更新，先从干净 `60a018a` 做无补丁当前基线复跑；独立目录 `/home/liuxv/liteagent-local-runs/repair-13-20261026/run-001`，原默认模型/配置/预算，统一绝对共享锁覆盖全生命周期；正式结果待定，13尚无方案获批、未实施候选补丁。
+- Order 13 / `0326d92d-d218-48a8-9ca1-981cd6d064c7`：human_review=true，/root 按队列认领；旧 full189 轨迹中增长率引用首位销售人员数据并错位，图表未完整绑定正确增长行。活动运行源码已由11修复更新，从干净 `60a018a` 做无补丁当前基线复跑；独立目录 `/home/liuxv/liteagent-local-runs/repair-13-20261026/run-001`，原默认模型/配置/预算，统一绝对共享锁覆盖全生命周期。正式 `failed / reward=0.0 / agent_done`，15步、393.677秒，source/config integrity 均 true。新轨迹：Total求和正确；Growth公式已用Total行，但二月至六月写入B13:F13（左移一列），乘100；标签写A14而公式在13行；增长图类别Jan–May；两图放新增Charts工作表，原Sheet1无图。模型回读A1:G13及inspect后仍宣告正确。Plan13-v1在对话待审核，无候选补丁实施。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
