@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
+import json
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -13,6 +15,7 @@ from .geometry_contract import (
 from .image_contract import validate_local_image_path
 from .slide_reference import require_slide_index
 from .table_contract import validate_table_placement
+from .tool_manifest import STRICT_ACTION_PARAM_SCHEMAS
 
 
 ADAPTER_NAME = "libreoffice_impress"
@@ -717,6 +720,57 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 )
 
 
+def _parameter_type(spec: Mapping[str, Any]) -> str:
+    """Small public type summary for error contexts with a limited text budget."""
+    if "oneOf" in spec or "anyOf" in spec:
+        return " OR ".join(_parameter_type(s) for s in spec.get("oneOf", spec.get("anyOf", [])))
+    label = str(spec.get("type", "enum" if "enum" in spec else "value"))
+    if label == "array" and isinstance(spec.get("items"), Mapping):
+        label += "<" + _parameter_type(spec["items"]) + ">"
+    for keyword, symbol in (("minimum", ">="), ("maximum", "<="), ("enum", " in ")):
+        if keyword in spec:
+            label += symbol + json.dumps(spec[keyword])
+    if spec.get("type") == "integer" and isinstance(spec.get("description"), str):
+        label += " (" + spec["description"].split(":", 1)[0].split(". ", 1)[0].rstrip(".") + ")"
+    return label
+
+
+def _parameter_error(error: AdapterError, action: str, params: Any) -> AdapterError:
+    """Return the public contract with a rejected request, without choosing values."""
+    schema = STRICT_ACTION_PARAM_SCHEMAS.get(action)
+    if error.code != "INVALID_REQUEST" or schema is None:
+        return error
+    contract = {
+        "type": "object",
+        "required": list(schema.get("required", [])),
+        "additionalProperties": False,
+        "properties": deepcopy(schema.get("properties", {})),
+    }
+    for keyword in ("allOf", "anyOf", "oneOf", "not"):
+        if keyword in schema:
+            contract[keyword] = deepcopy(schema[keyword])
+    details = deepcopy(error.details) if isinstance(error.details, dict) else {}
+    if error.details is not None and not isinstance(error.details, dict):
+        details["validation_details"] = error.details
+    details.update({
+        "action": action,
+        "location": "params",
+        "executed": False,
+    })
+    if isinstance(params, Mapping):
+        details["unexpected_fields"] = sorted(str(k) for k in set(params) - set(contract["properties"]))
+        details["missing_fields"] = sorted(set(contract["required"]) - set(params))
+    # Keep an actionable shallow summary even if the full nested schema is
+    # shortened in a model-facing execution/repeated-request error context.
+    fields = "; ".join(f"{name}={_parameter_type(spec)}" for name, spec in contract["properties"].items())
+    details["detail"] = (
+        f"params required={json.dumps(contract['required'])}; {fields}; "
+        f"unexpected={','.join(details.get('unexpected_fields', []))}"
+    )
+    details["parameter_contract"] = contract
+    return AdapterError(error.code, error.message, details, error.http_status)
+
+
 def parse_action_request(payload: Any) -> ActionRequest:
     data = _mapping(payload, "request")
     request_id = data.get("request_id") or str(uuid4())
@@ -748,8 +802,14 @@ def parse_action_request(payload: Any) -> ActionRequest:
     for field in ("url", "title"):
         if field in document:
             _required_string(document, field, "document")
-    params = _mapping(data.get("params"), "params")
-    validate_action_params(action, params)
+    try:
+        params = _mapping(data.get("params"), "params")
+        validate_action_params(action, params)
+    except AdapterError as error:
+        enriched = _parameter_error(error, action, data.get("params"))
+        if enriched is error:
+            raise
+        raise enriched from error
     return ActionRequest(
         request_id,
         adapter,
