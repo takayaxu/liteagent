@@ -10,7 +10,7 @@ from integrations.lite_agent.adapter_results import (
     compact_context_hint_for_model, compact_presentation_hint_for_model,
 )
 from integrations.lite_agent.completion import CompletionMixin
-from integrations.lite_agent.notes_preservation import argument_errors, requested, source_texts
+from integrations.lite_agent.notes_preservation import argument_errors, requested, source_texts, model_progress
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.tool_catalog import build_tools
 
@@ -312,3 +312,41 @@ def test_public_source_reference_schema_native_validation_and_worker_preserve_te
     plain = {'slide': 0, 'text': 'Newly authored notes'}
     validate_action_params('slide.set_notes', plain)
     assert 'source_reference' not in uno_worker._set_notes(session, plain)
+
+
+@pytest.mark.parametrize('original', ['You should also try to answer!\n', 'Keep dataset wording.\n'])
+def test_protection_reason_survives_both_filters_without_embedding_document_text(original):
+    from integrations.lite_agent.context_projection import sanitize
+    from integrations.lite_agent.safety import sanitize_agent_visible_result
+    s = state(inspection(1, ['', original]))
+    error = {'type': 'ValueError', 'detail': errors(s, 1, 'Reworded')[0]}
+    safe = sanitize(sanitize_agent_visible_result(error, s.task_id))
+    assert 'already had notes' in safe['detail']
+    assert 'Skip this page' in safe['detail']
+    assert original not in safe['detail']
+    # Existing protection against sensitive metadata in error prose is intact.
+    assert sanitize({'error': {'detail': original}})['error']['detail'] == '<internal-benchmark-metadata>'
+
+
+def test_progress_distinguishes_original_preservation_from_remaining_save_and_readback():
+    initial = ['', 'You should also try to answer!\n']
+    s = state(inspection(1, initial), write(2, 0, 'Source text'),
+              inspection(3, ['Source text', initial[1]]))
+    progress = model_progress(s)
+    assert progress['pages'][1]['status'] == 'original retained; no write needed'
+    assert progress['pages'][0]['status'] == 'filled and source checked'
+    assert progress['save_required']
+    s.events.append(event(4, 'presentation.save'))
+    progress = model_progress(s)
+    assert not progress['save_required']
+    assert all(page['final_readback_required'] for page in progress['pages'])
+    s.events.append(inspection(5, ['Source text', initial[1]]))
+    assert not any(page['final_readback_required'] for page in model_progress(s)['pages'])
+    assert gate(s)['passed']
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused/v1', include_gui=False),
+                      SimpleNamespace(), model_client=SimpleNamespace(client=object()))
+    messages = json.dumps(agent._messages(s, b'png'), ensure_ascii=False)
+    assert 'notes_progress' in messages
+    assert 'original retained; no write needed' in messages
+    s.instruction = 'Write new notes for the presentation.'
+    assert model_progress(s) is None

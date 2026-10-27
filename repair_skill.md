@@ -393,6 +393,8 @@ flowchart TD
 
 - Order97 Plan-v5待对话人工审核，未实施：方案1只修保护错误的反馈表达，不在敏感error.detail内拼接源/目的正文；用独立结构化状态说明该页原备注已完成应跳过、查看原文请inspect，完成缺口同时列保留页已满足与剩余保存/回读，保证模型能看到拒绝原因，保持隐藏元数据过滤及逐字符保护不变、不自动保存或替模型选工具；真实request12/13重建应保留跳过原因，原文含answer/dataset等仍按现有边界过滤，原条件正式复跑。方案2保留本轮正确归档及未完成/验收差异、97待修先推进98。推荐1；更换错误反馈及完成提示属新版本，human_review=true需批准后才实施，不提前整题重跑。
 
+- 2026-10-27用户回复“1”，明确批准97 Plan-v5方案1。独立repair树保留728ceff并合活动99a446e仅文档。最小修改只涉及备注保护错误不再内嵌原文，以及从同一原始事件推导notes_progress独立状态：已有原备注且相同标明保留完成无需写；新备注列源检查/读回状态；保存未完成时明确save_required及保存后全页读回，结构或状态不明不冒充已完成。普通自行撰写不启用，源对应/逐字符保护/完成门不放松；不改metadata过滤、不代填/自动保存/代选工具。112focused、真实run005 step11完整执行/实际messages重建/双层过滤检查通过，原answer/dataset在敏感错误上下文仍过滤；step30回放列4页已补、3页已保留、save_required=true与所有页保存后读回要求。邻近context_projection共79passed/24failed，原728ceff无补丁完全相同24项失败（既有mixin fixture缺config等），对照结果保存在v5-baseline-context-tests.txt/v5-candidate-context-tests.txt。Ruff/diff/check.sh通过；证据plan-v5-replay.json。候选将提交后新run006按原run001配置正式验证，不改模型/预算/evaluator/正文参考差异；未PASS不集成，human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。

@@ -232,13 +232,56 @@ def argument_errors(state: Any, action: str, args: dict) -> list[str]:
     if original.strip() and args.get("text") != original:
         return [f"Display slide {index + 1} already had notes. The instruction only asks "
                 "to complete missing notes: preserve its original text, spaces and punctuation. "
-                "Skip this page; if restoring a changed page, use the observed original text "
-                f"exactly: {original!r}. No mutation executed."]
+                "Skip this page. If restoring a changed page, read the observed original "
+                "text with presentation.inspect and restore it exactly. No mutation executed."]
     # Exact restoration of a previously completed page does not need a script.
     if original.strip():
         return []
     return source_read_errors(state) or reference_errors(
         state, index, args.get("text"), args.get("source_reference"))
+
+
+def model_progress(state: Any) -> dict | None:
+    """Separate observable status from document text and sensitive error prose."""
+    if not requested(state):
+        return None
+    snapshot = _snapshot(state)
+    if not snapshot:
+        return None
+    pages = []
+    final_step = max(snapshot["last_change"], snapshot["last_save"])
+    save_required = bool(snapshot["last_change"] and snapshot["last_save"] <= snapshot["last_change"])
+    for index, original in sorted(snapshot["initial"].items()):
+        live = snapshot["live"].get(index)
+        if original.strip():
+            status = ("original retained; no write needed" if live and live[0] == original
+                      else "original content requires inspection or exact restoration")
+        elif live and live[0].strip():
+            reference = snapshot["writes"].get(index, {}).get("source_reference")
+            status = ("filled and source checked" if not reference_errors(state, index, live[0], reference)
+                      else "filled text requires source correction")
+        elif index in snapshot["writes"] and live is None:
+            status = "written; current text requires read-back"
+        else:
+            status = "blank or unverified; fill only from the observed source"
+        pages.append({"display_slide_number": index + 1, "slide_index": index,
+                      "initially_had_notes": bool(original.strip()), "status": status,
+                      "final_readback_required": save_required or live is None or live[1] <= final_step})
+    return {
+        "slide_count": snapshot["count"], "pages": pages[:64],
+        "pages_omitted": max(0, len(pages) - 64),
+        "initial_inventory_complete": (not snapshot["uncertain_structure"]
+                                       and snapshot["count"] is not None
+                                       and set(snapshot["initial"]) == set(range(snapshot["count"]))),
+        "save_required": save_required,
+        "guidance": (
+            "Pages marked original retained already satisfy the preservation requirement; "
+            "do not rewrite them to match source formatting. Original text is available via "
+            "presentation.inspect. A rejected change did not create unfinished work on an "
+            "already completed page. All filled pages still require document save and "
+            "post-save read-back. If a needed operation is undiscovered, use tools_search."
+        ),
+    }
 
 
 def outcome_issues(state: Any, issue: Any) -> list[dict]:

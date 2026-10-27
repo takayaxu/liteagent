@@ -673,6 +673,11 @@ class AgentProtocolMixin:
         outcomes = completion_outcome_issues(state)
         if outcomes:
             state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import notes_preservation
+
+        notes_progress = notes_preservation.model_progress(state)
+        if notes_progress is not None:
+            state_text += "\nnotes_progress:\n" + json.dumps(notes_progress, ensure_ascii=False)
         from . import calc_formula_contract
 
         calculation_evidence = calc_formula_contract.model_evidence(state)
