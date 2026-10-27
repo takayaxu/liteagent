@@ -361,6 +361,8 @@ flowchart TD
 
 - 2026-10-27用户要求追清97为何多改，并要求今后review先讲清对象数量、应改/实际改对象、对错及根本原因。已更新本skill永久表达与诊断要求，未将追查视为运行补丁批准，未启动98。97真实事件只读回放确认：原生inspect读到全部7页，但12000字符模型投影只留1/2/3页详情、明确省略4页；缺少全页备注状态摘要。request7模型明确承认后4页未展示及部分已完成，却从step6已将任务解释为逐页写全部备注；step10把“剩余”当成本轮尚未写的页，未聚焦读取已有备注。set_notes实际工具说明已含preserve completed notes，提示并非缺失。step11/13原始模型参数本身已丢第5页双空格/第7页额外句点，Adapter返回逐字符等于参数，排除Adapter偷偷改字。接口负责整段替换，没有本任务“只补缺失”的范围检查。completion-root-cause-replay复现仅写第1页step7门即passed=true（后续及最终claim同样通过）：multi_apps保存要求仅覆盖少数Calc动作、未覆盖Impress；verifier_readback按外层multi_apps允许mutation verification.passed=true替代读回，实际checks=[]且无保存证据；没有对照初始非空备注或空白页覆盖。实际request8起系统提示implemented completion checks currently pass、pending_phase=completion_review，是错误完成反馈，非强制逐页写入脚本。根因链：压缩丢后页备注状态→模型忽略已有部分、自选全页替换→无范围保护→完成检查未检查保留/覆盖且过早放行；不能声称单改投影必然修好。外部证据run-001/overwrite-root-cause.json、completion-root-cause-replay.json及实际request7/8/10/11/13/14；未改运行源码/正式输入/评分。97 Plan-v2对话待审：方案1优先完整已观察备注状态摘要，对明确“只补缺失”请求保护初始非空备注，完成时核对缺失页覆盖、既有内容保留及所属Office保存回读；仅报差异交模型修正，不自动拆讲稿/代写/固定页码，不删正文空段。方案2仅摘要及说明；方案3仅完成检查，事后发现多改。需定向回放、边界检查、原条件正式复跑；正文输入/参考段数差异单列，不保证原PASS。human_review=true，未实施v2。
 
+- 2026-10-27用户明确“按照1修复”，批准97 Plan-v2方案1：完整备注状态观察；对明确仅补缺失请求保护初始非空备注；完成检查覆盖缺失页、保留原内容及Office保存回读。保留模型自选源文本/目标/参数，普通主动改备注兼容，不自动填讲稿或固定页码，不删正文末尾空段、不改评测。human_review=true；独立repair树实施/定向检查/冻结候选/原配置run002正式验证，仅正式PASS后集成；原正文参考段数差异仍可能阻挡原评分。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
