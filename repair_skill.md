@@ -252,7 +252,7 @@ flowchart TD
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。北京时间2026-10-27用户再次明确“开启人工review”，从该消息起持续切回 `human_review=true`；Order35当前无补丁基线继续收集证据，后续新方案/重试修订必须直接对话结构化审核并等待人工明确批准，不能沿用自动审核作为实施授权。既有已交付PASS保留；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
 
-- 待修复 9 题：35、63、77、79、87、93、97、98、100；正式验证通过 6 题：11、13、15、24、27、28。按指定顺序一次处理一题。
+- 待修复 8 题：63、77、79、87、93、97、98、100；正式验证通过 7 题：11、13、15、24、27、28、35。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
 - Order 11 run-001：模型调用前 Hugging Face 原域名连接超时，`environment_failure`；源码/配置完整性均 true。证据 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/output/run-001`。改用 README 已有镜像设置，不修改任务、evaluator 或模型预算。
 - Order 11 run-002：北京时间 2026-10-26 19:56 起，候选干净独立工作树正式复跑；持绝对共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 覆盖全生命周期。配置 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/config.json`（SHA256 `ba76727b85351885558a76ab2341efefdbf0493d82a9a3e7806f5b9809c539d3`），原模型与100步/1800秒条件。模型完成11步，原 evaluator `failed / reward=0.0 / agent_done`，source/config integrity 均 true。格式化遗漏 B6、B7（44个周末日期中42个标红）；这两项在完整 A1:F33 返回及模型请求中可见，非截断。首次非连续区域回读参数被拒后恢复；保存并二次回读仍未发现两处遗漏，完成门通过属于模型自报，不能替代 evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun002-20261026/output`。批准的 Plan-v2 方案1未通过，运行源码不可集成；下一步按新证据提出修订方案并重新人工审核。
@@ -309,7 +309,11 @@ flowchart TD
 
 - 2026-10-27 Order35用户明确批准“选择方案1的同时加强图片页完成检查”：Plan35-v1方案1人工通过，human_review=true持续；从当前0048ece独立分支codex/repair-35-20261027、独立repair树实施通用插入位置契约修复，并加强明确图片页的总页数、每页图片数量/顺序、残留对象与保存后完整观察检查。运行代码不含题目固定页数/文件名/参考数据，不安排固定清理操作，差异交模型选择修复。基线f6f8d1c至0048ece的src/bin/config逐字相同，基线证据仍适用，无需重复。尚无正式候选PASS。
 
+- 2026-10-27 Order35人工批准Plan35-v1方案1已冻结候选 `e85c82a`（独立repair树）；通用零基插入位置/原页身份核验、图片页数量/残留对象/原生内容指纹顺序及最终写入保存后完整回读。126focused通过；3项相邻旧失败在干净基线复现；原生前插中插追加、指纹保存重开稳定及run001只读失败回放通过，Ruff/diff/check通过。run002从干净detached候选正式启动，原run001外部config、原模型100步1800秒与evaluator不变；统一绝对lock全生命周期，owner liuxv-repair35-run002-20261027，输出 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-002/output`。尚无正式PASS，不集成候选；human_review=true持续。
+
 - 2026-10-27 Order35 Plan35-v1方案1已按人工批准实施：slide.create规范零基插入位置，前插使用原生页面排序器、逐页对象身份/顺序核验，失败只撤销新页；图片页检查比对完整页数/对象数、空占位框、可见性及原生位图内容顺序，写入或保存后必须重新观察，缺证据不通过；presentation.inspect增加可选模型选择image_paths作只读来源指纹观察，正常修复工具保持可用，无自动清理。独立LO实测前插/中插/追加保留原页身份、source→insert→save→reopen指纹稳定；原run001只读回放精确拦截第一页3对象。126focused通过；3个相邻旧失败在干净基线同样复现；Ruff/diff/check.sh通过。当前独立repair树，待冻结候选后按原配置正式run002，尚未PASS/集成。human_review=true。
+
+- 2026-10-27 Order35 run002正式passed/reward1.0/agent_done，19步399.976秒，source/config true；候选e85c82a，seal `acebf01a867efcda668bf21a969b54189a924b273a0f5bca9febdf6ccd66c0cf`。step8/9模型自行删两空占位框，10–15按序插图；16保存，17新完成门拒绝缺最终读回，18读全6页，原生逐页数量与内容指纹均通过，19完成。保存产物6页各1picture、无其他shape，原evaluator1.0；插入0/中间/追加另有原生身份/顺序实测。按人工批准Plan35-v1方案1完成，human_review=true持续；保留原失败不改分，移出本轮待修队列。待持集成锁组合当前台账、验证src/bin/config与PASS逐字一致及seal后快进活动分支，正常推送并核验远端。证据 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-002/output`。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
