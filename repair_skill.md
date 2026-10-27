@@ -329,6 +329,8 @@ flowchart TD
 
 - 2026-10-27 Order77候选d7f68db run002正式failed/reward0/agent_done，5步227.142秒，source/config true，seal fb9df96e6f6394b49f471b6f9bdb0fa4a4cd8856b9226da28805012662c646bb；候选保留独立分支、不集成。实际request0003已包含新段末/空段指导；step3模型一次选六个句间标点[.,.,.,!,.,.]，没有末句末尾拆分，28→40段，全文字符不变；4回读、5完成。保存产物与Gold1/3逐段strip后完全相同，但严格原文7段不同：六个原有句间空格留在新段开头，参考留在左段末尾。原compare_docx_files并未读取配置strip_whitespace选项；同原始文件分别传false/true均0。只在内存将六个已观察分隔空格归到前句后，全部原始段落与Gold1逐字符一致；无文件/evaluator/任务改动，非正式PASS。run001也有同空白差异；上一轮只列规范化相等不足以代表原验收，已补充工作流要求核对选项实际实现及原始空白。证据 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-002/output`、外部run-002/whitespace-diagnosis.json。human_review=true，Plan77-v2直接对话待人工：方案1通用句间空白边界顶层说明及原生parts前后空白计数/投影，保留显式位置选择和全部字符，不自动改参；方案2仅说明；方案3新增before_text边界能力（范围更大）。推荐1；未实施v2，不不变重跑，后续79/87/93/97/98/100仍等待。
 
+- 2026-10-27 Order77 Plan-v2：用户明确选择“方案1”，批准保留v1观察改进，加强paragraph.split顶层句间空白归属说明，并为原生parts增加前后空白计数、保留模型投影；显式边界及原始字符不变，不自动改参数，不新增before_text。human_review=true；独立修复树实施后定向检查、原生烟测、冻结候选，再以原配置正式run-003；仅正式PASS后集成。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
