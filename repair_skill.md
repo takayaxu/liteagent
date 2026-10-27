@@ -431,6 +431,8 @@ flowchart TD
 
 - 97 Plan-v7待对话人工审核，未实施：方案1在Impress参数校验失败的反馈中附带当前动作的公开参数契约，明确非法字段、合法字段/必填项、类型、数组元素及索引约定，复用公开schema而非填入本题页码/段号；保留原严格校验，不自动把slide改成slides、不代选目标、不接管保存流程。用run009错误请求回放确认完整契约能进入下一轮模型可见错误及重复动作恢复上下文，核对其他合法动作兼容并完成必要检查，再沿用已批准附加题意、原模型/100步1800秒/原evaluator，从原输入新目录正式复跑，成绩单列。方案2保留97待修及已交付手工文件，按队列推进98；不改变97原失败。推荐1，human_review=true，须人工明确批准Plan-v7后才修改运行源码；本次只完成已批准v6复跑、只读诊断及台账，无v7补丁或重复整题。
 
+- 2026-10-27用户“1”明确批准97 Plan-v7方案1。独立repair树合活动aa846ea仅台账，候选 `be78194` 仅新增Impress参数校验错误反馈及5项契约测试：严格校验原样拒绝，附当前公开schema、必填/非法字段和类型摘要；摘要按原schema说明零基索引，不填用户页码/段号、不转换参数、不选择目标。真实run009的25/27/30步错误只读回放证明：完整嵌套schema会被既有上下文压缩，但简短类型提示在普通轮/恢复轮共6种投影均完整可见，见 `/home/liuxv/liteagent-local-runs/repair-97-20261027/plan-v7-replay.json`。50 focused tests、Ruff、diff及bin/check.sh通过；邻近focused_inspection的3项失败在未改候选66dbcb3同样复现，留存v7-baseline-focused-inspection.txt，不改无关测试/运行逻辑。run010新工作树仅沿用已批准附加题意的任务instruction，setup/参考/evaluator/model/100步1800秒不变，配置仅purpose说明更新；统一锁全生命周期、owner liuxv-repair97-run010-v7-20261027，从原始输入完整复跑，输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-010/output`。原始OSWorld97失败与附加任务结果单列；human_review=true，未PASS不集成。空闲共享guest截图HTTP500单独记录，新轮使用运行器独立任务guest，不重置共享服务；正式环境准备及结果待核验。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
