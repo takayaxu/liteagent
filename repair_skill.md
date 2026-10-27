@@ -417,6 +417,12 @@ flowchart TD
 
 - 97 Plan-v6待对话人工审核，未实施：方案1修复动作对象识别，让“删除正文段落”与“仅补缺失备注”的独立约束同时生效，明确改写/删除备注仍按合法请求放行，歧义不擅自保护；增加通用单段删除原子操作，由模型自选slide/selector/原生段落索引和观察到的原文，UNO仅移除选定段及分隔符、保留其他段/文字片段格式，执行前核对目标未变化，执行后回读段数及剩余内容/格式。同步schema/manifest/worker、公开目录及常规保存回读；不硬编码4页/11段/空段/答案、不自动选段、不接管流程、不修改普通整框写语义。定向验证混合正文+备注指令、显式改备注兼容、真实run007错误参数和新增局部删除格式边界，原条件附加题目再从原输入完整复跑，成绩单列。方案2只修备注识别，正文删除由模型自主GUI完成，不能保证其找到可靠操作。方案3保留run007失败及已交付手工文件、先推进98。推荐1；当前human_review=true，新范围须用户批准后实施，未提前改运行源码/重复整题。
 
+- 2026-10-27用户“1”明确批准97 Plan-v6方案1。独立repair树合活动cb21382仅文档，通用修改：备注变更动词绑定对象，独立正文删除/标题替换不再关闭备注源读取/保留/完成检查，明确改备注或对象歧义仍合法；新增shape.delete_paragraph原子操作（slide/selector/paragraph_index/expected_text），原生范围删一段，保留其他段与字符属性，未知/过期/唯一段/不支持字段执行前拒绝，格式校验失败时局部恢复并报告。公开schema/manifest/worker同步，不改整框写语义、task/evaluator/model/预算，不自动选页/段或代填。原生测试确认Impress不可靠记录UNO文本的undo，改用仅恢复被删范围并逐属性恢复快照；非BMP文字使用UTF16范围，URL字段在保留段中原生核对不扁平化。
+
+- Plan-v6验证：92 focused tests、Ruff、diff及bin/check.sh通过；真实run007错误参数只读回放拒绝9空备注无来源、20错误来源片段和21/22/24已有备注覆盖，恢复notes_progress及完成检查；搜索可发现新增原子操作。独立owner guest统一锁下12项真实原生检查通过：首/中/末非空段、首/中/末空段、中文/emoji混合格式、唯一段/过期原文/越界拒绝、强制保留校验失败恢复、原题正文空段删除；保存后PPT原第4正文前10段及所有run文字/字体/字号/粗斜体/层级与输入及参考均一致。证据plan-v6-replay.json及plan-v6-native/{native-results.json,saved-body-comparison.json,smoke-response.json}。probe自有guest清理后从冻结候选准备run008，沿用用户已批准附加任务指令、原setup/参考/evaluator/model/100步1800秒；不使用手工文件，结果与原始OSWorld分开报告，human_review=true，不需再次批准同方案。
+
+- 2026-10-27 Order97 Plan-v6冻结运行候选3694724，附加指令独立运行提交66dbcb3（仅本轮任务副本instruction差异），run008干净工作树启动。runtime/src/bin/configs与3694724一致，原setup/参考/evaluator及9B thinking100步1800秒不变；owner liuxv-repair97-run008-v6-20261027，统一绝对锁全生命周期，输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-008/output`，待正式终态，不使用手工成品；原始97失败与用户附加条件结果分开报告，未PASS不集成，human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
