@@ -331,6 +331,8 @@ flowchart TD
 
 - 2026-10-27 Order77 Plan-v2：用户明确选择“方案1”，批准保留v1观察改进，加强paragraph.split顶层句间空白归属说明，并为原生parts增加前后空白计数、保留模型投影；显式边界及原始字符不变，不自动改参数，不新增before_text。human_review=true；独立修复树实施后定向检查、原生烟测、冻结候选，再以原配置正式run-003；仅正式PASS后集成。
 
+- 2026-10-27 Order77 Plan-v2方案1已实施：顶层明确句间已有空白随after_text保留在左段，同时尊重显式空白/位置要求；parts增加leading_whitespace_count/trailing_whitespace_count，投影原样保留及解释，不改拆分算法/参数。49项定向检查通过；排除10项已在干净基线确认的旧失败。Ruff/diff/check.sh通过；独立原生LO对比不含空白/含空白锚点及段末拆分，观察计数、全文字符及邻段均正确，证据native-split-whitespace-v2.json。待冻结候选、原配置run003正式复跑，未PASS/集成。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。

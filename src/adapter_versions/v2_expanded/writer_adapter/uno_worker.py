@@ -2362,7 +2362,9 @@ def _split_paragraph(session: WriterSession, params: dict[str, Any]) -> dict[str
         "paragraphs": observed,
         "parts": [
             {"index": index + offset, "text": text,
-             "is_empty": text == "", "is_blank": not text.strip()}
+             "is_empty": text == "", "is_blank": not text.strip(),
+             "leading_whitespace_count": len(text) - len(text.lstrip()),
+             "trailing_whitespace_count": len(text) - len(text.rstrip())}
             for offset, text in enumerate(observed)
         ],
         "split_at_paragraph_end": search_start == len(original_text),

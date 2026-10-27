@@ -296,7 +296,10 @@ def test_interior_split_parts_can_be_used_without_calculating_a_new_index(sessio
     right = result["parts"][-1]
     assert right["index"] == result["right_paragraph_index"] == 3
     assert right["text"] == "  Middle?  Tail \u201cZ\u201d."
-    assert result["parts"][1] == {"index": 2, "text": "", "is_empty": True, "is_blank": True}
+    assert result["parts"][1] == {
+        "index": 2, "text": "", "is_empty": True, "is_blank": True,
+        "leading_whitespace_count": 0, "trailing_whitespace_count": 0,
+    }
     next_result = uno_worker._split_paragraph(session, {
         "index": right["index"], "after_text": "Middle?", "blank_paragraphs_between": 1,
     })
@@ -310,19 +313,24 @@ def test_end_of_document_and_whitespace_right_part_have_distinct_observations(se
     result = uno_worker._split_paragraph(session, {"index": 0, "after_text": "."})
     assert result["split_at_paragraph_end"] is False
     assert result["right_part_empty"] is False
-    assert result["parts"][-1] == {"index": 1, "text": "  ", "is_empty": False, "is_blank": True}
+    assert result["parts"][-1] == {
+        "index": 1, "text": "  ", "is_empty": False, "is_blank": True,
+        "leading_whitespace_count": 2, "trailing_whitespace_count": 2,
+    }
     assert result["following_paragraph"] is None
 
 
 @pytest.mark.parametrize("recovery", [False, True])
-def test_split_observation_reaches_actual_model_messages(session, recovery):
+@pytest.mark.parametrize("anchor,at_end", [("\u201d.", True), ("notes.  ", False)])
+def test_split_observation_reaches_actual_model_messages(session, recovery, anchor, at_end):
     result = uno_worker._split_paragraph(session, {
-        "index": 1, "after_text": "\u201d.", "blank_paragraphs_between": 1,
+        "index": 1, "after_text": anchor, "blank_paragraphs_between": 1,
     })
     hint = adapter_context_hint("libreoffice_writer", "paragraph.split", {"result": result})
     compact = compact_context_hint_for_model(hint, remaining_chars=2000)
-    assert compact["split_at_paragraph_end"] is True
-    assert compact["right_part_empty"] is True
+    assert compact["split_at_paragraph_end"] is at_end
+    assert compact["right_part_empty"] is at_end
+    assert compact["parts"] == result["parts"]
     assert compact["parts"][-1]["index"] == 3
     assert compact["following_paragraph"]["text"] == "Unchanged tail"
     state = RuntimeState(
@@ -349,7 +357,29 @@ def test_split_observation_reaches_actual_model_messages(session, recovery):
                 yield from strings(item)
 
     text = "\n".join(strings(messages))
-    assert '"split_at_paragraph_end": true' in text
-    assert '"right_part_empty": true' in text
+    assert f'"split_at_paragraph_end": {str(at_end).lower()}' in text
+    assert f'"right_part_empty": {str(at_end).lower()}' in text
+    assert '"leading_whitespace_count": 0' in text
+    assert f'"trailing_whitespace_count": {0 if at_end else 2}' in text
     assert '"following_paragraph"' in text
     assert '"parts"' in text
+
+
+@pytest.mark.parametrize("anchor,left_tail,right_head", [(".", 0, 3), (". \t\u00a0", 3, 0)])
+def test_split_observes_whitespace_ownership_without_changing_explicit_anchor(
+    session, anchor, left_tail, right_head,
+):
+    body = session.doc.Text
+    original = "\u2003Left. \t\u00a0Right!\t"
+    body.paragraphs = [Paragraph(original, body)]
+    params = {"index": 0, "after_text": anchor, "blank_paragraphs_between": 1}
+    requested = deepcopy(params)
+    result = uno_worker._split_paragraph(session, params)
+    left, blank, right = result["parts"]
+    assert left["leading_whitespace_count"] == 1
+    assert left["trailing_whitespace_count"] == left_tail
+    assert right["leading_whitespace_count"] == right_head
+    assert right["trailing_whitespace_count"] == 1
+    assert blank["leading_whitespace_count"] == blank["trailing_whitespace_count"] == 0
+    assert "".join(p.String for p in body.paragraphs) == original
+    assert params == requested

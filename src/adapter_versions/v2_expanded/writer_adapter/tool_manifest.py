@@ -524,6 +524,12 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "matches its first occurrence after the previous boundary. Only native "
             "paragraph breaks are inserted; existing characters and spaces stay unchanged. "
             "The caller selects every boundary; sentences are not detected automatically. "
+            "When separating sentences without a requested whitespace change, put the "
+            "boundary immediately before the next sentence's first character: include "
+            "the existing inter-sentence whitespace in after_text so it stays at the "
+            "end of the left part, rather than indenting the new paragraph. Respect "
+            "explicitly requested boundary placement or whitespace. No spaces are "
+            "added, removed, or normalized, and anchors are never rewritten. "
             "Returns the observed parts and each new right_paragraph_index. "
             "After splitting, the old index refers only to the left part. "
             "The original paragraph's text now spans the returned parts; when a right "
@@ -535,7 +541,8 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "following paragraphs. For sentence separation, select boundaries between "
             "sentences; the existing paragraph end already ends its final sentence. "
             "Choose an end split only when an additional paragraph is intended there. "
-            "Verify the full returned parts and following_paragraph when checking spacing."
+            "Verify the full returned parts, their leading_whitespace_count and "
+            "trailing_whitespace_count, and following_paragraph when checking spacing."
         ),
         "properties": {
             "index": {

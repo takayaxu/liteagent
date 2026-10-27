@@ -4405,7 +4405,12 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "Use right_paragraph_index for the right part; the old index now covers "
                 "only the left part. Inspect the full parts span and following_paragraph "
                 "to verify spacing. An end split creates an empty right part in addition "
-                "to the requested separator blanks and existing following paragraphs."
+                "to the requested separator blanks and existing following paragraphs. "
+                "Each part's leading_whitespace_count and trailing_whitespace_count "
+                "count its observed whitespace characters without changing them. "
+                "For sentence separation, keep existing inter-sentence whitespace "
+                "on the left by including it in after_text, unless the requested "
+                "boundary or whitespace placement says otherwise."
             ),
         }
     if domain == "libreoffice_writer" and action == "paragraph.clear_text":
