@@ -389,6 +389,10 @@ flowchart TD
 
 - 2026-10-27用户要求重试Docker后：第一次自有OSWorld镜像create仍在20秒客户端超时，但随后查到Created容器826bec1fb999；上次run004及两probe也延迟生成Created容器0d3ab6bba2d1/f90bd4853229/58c2ccecf9a1，纠正前次“无遗留”仅当时快照。已逐个按确切owner核对并删除这4个自有未启动容器；新probe10521ccdfe31在1.181秒创建成功并已删除，确认创建能力恢复。ping/info/list正常、磁盘充足，无证据确认底层锁/存储根因，不重启共享Docker、不碰其他容器或改运行条件。证据docker-retry-20261027.json。活动HEADf0b2fa8相对候选基点仅文档，本题批准持续有效；新run005从同一728ceff干净detached树、原run001配置正式重试，owner liuxv-repair97-run005-20261027，统一绝对锁覆盖全生命周期，输出repair-97-20261027/run-005/output。结果待定、候选未集成，human_review=true。
 
+- 2026-10-27 Order97 Plan-v4候选728ceff run005 Docker恢复后正式failed/reward0.0/agent_loop_time_budget_exhausted，30步1939.088秒，source/config integrity均true。任务guest已正常创建并执行，故Docker阻塞已解除；runner退出、自有guest清理、公共任务锁释放。仅8/9/10/16四次成功写第1/2/3/6页，均有对应source_reference及原文，归档产物逐页相对gold.notes.strip全部相等，既有第4/5/7页备注逐字符保留，正文文本对输入无变化；第4正文11/10末空段参考差异仍在。模型多次尝试改已有4/5/7页均被拦。新直接根因：第11步保护错误引用原第4页备注“You should also try to answer!”；error.detail被视为敏感上下文，正文中answer触发context_projection及safety双重通用过滤，整条可操作原因变成<internal-benchmark-metadata>。实际request12/13确认skip理由消失，模型仅见ValueError并重试；不是工具偷偷覆盖，不能放宽隐藏评测元数据过滤。23未发现presentation.save直接请求被拒，此后24搜set_notes、反复读/写已有页，未成功原生保存，也未宣告完成。最后step30读全7页后耗尽预算。原evaluator postconfig Ctrl+S后首次09:05:02.451下载118598bytes、评分读第1页备注为空并0分；09:05:02.523归档再次下载118942bytes，备注已全正确。该时序证明评分读与稍后归档不同，模型未原生保存不能靠postconfig稳妥补救；不将归档正确改写成PASS、不改评估等待/评分。证据run005/output/results/results.json、final-integrity.json、runner.log、run005/notes-diagnosis.json、error-feedback-diagnosis.json、root-cause.json；原评分和稍后正确产物事实并存，10通过/5待修，失败候选未集成。
+
+- Order97 Plan-v5待对话人工审核，未实施：方案1只修保护错误的反馈表达，不在敏感error.detail内拼接源/目的正文；用独立结构化状态说明该页原备注已完成应跳过、查看原文请inspect，完成缺口同时列保留页已满足与剩余保存/回读，保证模型能看到拒绝原因，保持隐藏元数据过滤及逐字符保护不变、不自动保存或替模型选工具；真实request12/13重建应保留跳过原因，原文含answer/dataset等仍按现有边界过滤，原条件正式复跑。方案2保留本轮正确归档及未完成/验收差异、97待修先推进98。推荐1；更换错误反馈及完成提示属新版本，human_review=true需批准后才实施，不提前整题重跑。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
