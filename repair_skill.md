@@ -425,6 +425,12 @@ flowchart TD
 
 - 2026-10-27 Plan-v6 run008模型前environment_failure/reward=null，68.903秒，Docker create60秒ReadTimeout，source/config true，无模型/写入/评分。原生probe guest停止API亦超时，核对owner后定向删除自有6a5eef1ce37c；创建探测cc57e2002baa在2.035秒成功并清理，run008超时后迟生成bb5605381fea/created亦逐个核对owner移除。证据run008/docker-recovery.json，未重启Docker/更改超时或碰其他owner。恢复后新run009从同66dbcb3干净detached、原run008字节相同配置正式重试，owner liuxv-repair97-run009-v6-20261027，统一锁全生命周期，输出repair-97-20261027/run-009/output；同一已批准v6方案，无新范围，待终态、未集成。
 
+- 2026-10-27 Order97 Plan-v6 run009终态 `agent_deadline_exhausted / reward=null`，37个事件、2129.315秒，source/config integrity均true。共7页：原缺备注1/2/3/6页在13–16步补对，18及37步原生回读确认；4/5/7页已有备注逐字符保持原样，17/19/22等覆盖尝试被保护拒绝，混合正文删除指令不再关闭备注保护及来源检查。附加要求的第4页正文末尾空段未删：35步模型选段落索引4（该段非空），新原子操作按expected_text空串校验拒绝且executed=false；37步正文仍与初始完全相同、11段、末段空。模型搜索到保存工具但未调用，没有保存产物、未进入原evaluator，不能报0分或PASS；备注正确仅为终态内存回读。原始任务run006失败0保留，附加任务本轮不销项；10通过/5待修，候选3694724/独立指令66dbcb3均未集成。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-009/{root-cause.json,trace-diagnosis.json,body-before-after-inspect.json,output/results/results.json,output/final-integrity.json}`。停止guest曾超时，核对owner后仅定向删除自有514390da0811，复查已不存在、公共锁空闲；container-cleanup.json留证，未重启共享Docker或干扰其他owner。
+
+- run009根因核实：原生整份inspect含第4页完整段落，但模型侧整份摘要省略较后页正文；response25/27明确因此要求单页查看。25/27/30却反复传 `presentation.inspect` 的 `slide:3`，合法字段为 `slides` 数组；校验错误仅列optional slides/image_paths、details=null，未给数组元素类型/索引约定。当前恢复轮只暴露通用adapter.call，其payload.params为无动作类型约束的object，未直接提供inspect专属schema；已有错误被保留但不足以促成纠正。模型随后35步猜段落索引4，工具安全拒绝，最终超时未保存。新增删除工具的参数/说明在request25/27/35可见，不归因为工具不可用；不能证明参数提示修复必然消除后续模型错误。
+
+- 97 Plan-v7待对话人工审核，未实施：方案1在Impress参数校验失败的反馈中附带当前动作的公开参数契约，明确非法字段、合法字段/必填项、类型、数组元素及索引约定，复用公开schema而非填入本题页码/段号；保留原严格校验，不自动把slide改成slides、不代选目标、不接管保存流程。用run009错误请求回放确认完整契约能进入下一轮模型可见错误及重复动作恢复上下文，核对其他合法动作兼容并完成必要检查，再沿用已批准附加题意、原模型/100步1800秒/原evaluator，从原输入新目录正式复跑，成绩单列。方案2保留97待修及已交付手工文件，按队列推进98；不改变97原失败。推荐1，human_review=true，须人工明确批准Plan-v7后才修改运行源码；本次只完成已批准v6复跑、只读诊断及台账，无v7补丁或重复整题。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
