@@ -307,6 +307,8 @@ flowchart TD
 
 - 2026-10-27 Order35当前基线run001正式failed/reward0/agent_done，17步612.715秒，source/config true；basef6f8d1c，seal与28PASS相同f439690cc91e7e52c94ffa7f4320cb6fea40313c9faa2fc76f729b16d496e9de。所有6张图片SHA1及顺序与参考一致，第一页残留2个空title/subtitle占位框（3shapes vs1），最终request0017完整可见仍接受。原生独立hidden Impress实验直接确认insertNewByIndex(0)实际页索引1，而当前slide.create回报请求index0，存在插入位置契约不符；修正该契约不能单独保证模型清理原模板页。只在外部诊断副本删除观察到的2个空占位框、原evaluator同options得1，正式产物/评分0不改，不冒称正式PASS。证据 native-insertion-probe.json、placeholder-diagnostic.json（均在本题外部目录）。Plan35-v1待人工对话审核：方案1修通用插入位置契约+明确纯图片页结果核验及可操作恢复；方案2仅插入契约+通用指导；方案3仅纯图片页结果核验，保留API缺陷风险。尚无批准、未创建35候选或改运行源码；human_review=true。
 
+- 2026-10-27 Order35用户明确批准“选择方案1的同时加强图片页完成检查”：Plan35-v1方案1人工通过，human_review=true持续；从当前0048ece独立分支codex/repair-35-20261027、独立repair树实施通用插入位置契约修复，并加强明确图片页的总页数、每页图片数量/顺序、残留对象与保存后完整观察检查。运行代码不含题目固定页数/文件名/参考数据，不安排固定清理操作，差异交模型选择修复。基线f6f8d1c至0048ece的src/bin/config逐字相同，基线证据仍适用，无需重复。尚无正式候选PASS。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
