@@ -90,6 +90,8 @@ description: 按失败轨迹诊断 LiteAgent 的单题 OSWorld 故障，经人�
 
 涉及保留已有内容的任务，分别比较原始输入、模型修改后产物和参考。将模型新引入的错误与输入中已存在的参考差异分开记录；尤其只改备注时，原正文的空段/段数差异不能归为备注写入副作用，也不能未经授权删除来适配参考。完成提示、原生保存及只读诊断均不能覆盖原始评分中的其他失败。
 
+追查输入/参考一致性时，优先用上游内容哈希（如LFS SHA-256）核对本地文件，再核对题目配置和固定版本评分代码是否与上游一致；定位到原始XML/段落以及实际失败的比较条件。文件修改时间、修订号和保存应用只作为来源线索，不能据此断言作者执行了哪个编辑动作；没有作者轨迹时明确保留不确定性。逐页只读诊断与整题正式评分分开记录，不把局部通过或参考差异诊断用于销项。
+
 ## 2. 找到根因，提出通用最小方案
 
 从最早偏离正确契约的环节向后追踪因果链，区分模型决策、工具 schema/生成约束、传输协议、Adapter 实现、执行环境、观察反馈和完成判定。基础设施错误也要保留原始响应；例如 HTTP 200 中的 grammar 错误不能归为正常模型回复或直接当成断流。
@@ -394,6 +396,26 @@ flowchart TD
 - Order97 Plan-v5待对话人工审核，未实施：方案1只修保护错误的反馈表达，不在敏感error.detail内拼接源/目的正文；用独立结构化状态说明该页原备注已完成应跳过、查看原文请inspect，完成缺口同时列保留页已满足与剩余保存/回读，保证模型能看到拒绝原因，保持隐藏元数据过滤及逐字符保护不变、不自动保存或替模型选工具；真实request12/13重建应保留跳过原因，原文含answer/dataset等仍按现有边界过滤，原条件正式复跑。方案2保留本轮正确归档及未完成/验收差异、97待修先推进98。推荐1；更换错误反馈及完成提示属新版本，human_review=true需批准后才实施，不提前整题重跑。
 
 - 2026-10-27用户回复“1”，明确批准97 Plan-v5方案1。独立repair树保留728ceff并合活动99a446e仅文档。最小修改只涉及备注保护错误不再内嵌原文，以及从同一原始事件推导notes_progress独立状态：已有原备注且相同标明保留完成无需写；新备注列源检查/读回状态；保存未完成时明确save_required及保存后全页读回，结构或状态不明不冒充已完成。普通自行撰写不启用，源对应/逐字符保护/完成门不放松；不改metadata过滤、不代填/自动保存/代选工具。112focused、真实run005 step11完整执行/实际messages重建/双层过滤检查通过，原answer/dataset在敏感错误上下文仍过滤；step30回放列4页已补、3页已保留、save_required=true与所有页保存后读回要求。邻近context_projection共79passed/24failed，原728ceff无补丁完全相同24项失败（既有mixin fixture缺config等），对照结果保存在v5-baseline-context-tests.txt/v5-candidate-context-tests.txt。Ruff/diff/check.sh通过；证据plan-v5-replay.json。候选将提交后新run006按原run001配置正式验证，不改模型/预算/evaluator/正文参考差异；未PASS不集成，human_review=true。
+
+- 2026-10-27 Order97 Plan-v5方案1候选 `19f2af7` 已冻结，新run006从其干净detached树、原run001外部配置正式启动。模型/100步1800秒/原evaluator不变，统一绝对锁持全生命周期，owner liuxv-repair97-run006-20261027；输出repair-97-20261027/run-006/output。其他账号独立guest/模型18035不触碰，本次实际任务guest环境和模型调用结果待定；候选未集成，10通过/5待修，human_review=true。
+
+- 2026-10-27 Order97 Plan-v5候选 `19f2af7` run006正式 `failed/reward0.0/agent_done`，36步、1638.443秒，source/config integrity均true。7页中原缺1/2/3/6，实际仅15/19/20/22步成功补这4页；第2页首次把换行变空格在16步被拒，19步原样复制后成功。21/25步尝试覆盖已有4/5页均被执行前保护拒绝，原4/5/7备注逐字符保留；第7页无改写。34步原生presentation.save成功117315bytes，35步保存后全7页inspect，36步完成门通过。21步新安全跳过理由在实际request22完整可见、未被metadata过滤，随后22步补第6页；notes_progress也实际可见，证实v5反馈分支生效，但不声称消除模型所有重复尝试。全7页备注按原evaluator.notes.strip规则与参考相等，正文文本对输入无变化。
+
+- 本次97原评分首个真实失败点已核对runner.log947–952行：人类第4页第4个正文对象，输出11段、参考10段；原输入同为11段，末尾空段既存，非备注工具或保存新增。原evaluator首次与随后归档均下载117315bytes，本轮不存在run005首次旧文件/稍后正确文件的大小分歧；正式0分不可改写为PASS。剩余诊断事实：前10步GUI开文件对话框/错误点击，17/23步虚构slide.inspect、27步presentation.inspect传slide而非slides被拒，30/33步正确恢复读取；接口选择低效但最终保存/全页回读已完成，不据此另造补丁或不变重跑。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-006/output`、run006/notes-diagnosis.json、root-cause.json、trace-diagnosis.json、v5-feedback-evidence.json。runner退出、自有guest查询无残留、统一公共锁已释放；失败候选保持独立不集成，10通过/5待修、human_review=true。下一步对话审核：方案1保留97原失败与备注已正确事实，先推进98当前源码基线；方案2先只读追查上游输入/参考一致性，不修改正式任务/参考/evaluator或按gold删除正文空段。未批准前不启动98或新增实现。
+
+- 2026-10-27用户选择“2”，批准97继续只读追查原始/参考来源。已核对上游HuggingFace LFS：原输入118598bytes/SHA256 ab4b65d92b40ad172f01f2ca5d7decd72fb1e970dc6ff2f7e8d25b09c7b57b44、参考119034bytes/dbefcaa98ecf1511016ac3063cba1c2ca70ac7e51d5e590d773afa95cb7591e0均与本地逐字一致；上游最近上传分别98dcf66/bc44e06，排除本地损坏/错下载。题目配置与pinned091f5ef及查询时上游main逐字相同，评分slides.py与pinned逐字相同。历史2024-03-04题目已分别引用原始/参考两个GoogleDrive ID，2025-05迁移到HF；未取旧Drive二进制，不声称证实迁移前字节。原文件元数据revision500/modified2024-03-03T15:03:18Z，参考502/16:02:21Z，均LibreOffice7.3.7.2；仅证明文件自述编辑线索，不能判定手动删除还是参考制作保存行为。
+
+- 97来源追查结论：第4页正文前10段内容及结构一致，原文件/本轮输出均另有无文字、无run的第11段，参考没有。输入/输出该正文XML仅尺寸精度差360EMU，所有段落原样保留；输出/参考7页slide XML差异仅页码字段UUID及第4页末空段。原compare_pptx_files先用text.strip比较，再无条件比较段数（slides.py516），examine_shape=false及examine_bullets=false均不关闭此检查，构成题意只补备注与参考正文结构/严格评分的上游一致性冲突。未改函数代码的逐页内存视图只读诊断：1/2/3/5/6/7为1，第4页为0；完整原函数仍0，正式失败保留，不等同重新正式PASS。无作者编辑录像，空段在参考制作时具体如何消失仍未知。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/reference-investigation/summary.json`及同目录上游响应、历史题目、XML和contract-diagnosis.json；无新运行补丁、无正式复跑、未改任务/参考/正文/评分器，19f2af7保持独立不集成，10通过/5待修，98未启动、human_review=true。
+
+- 2026-10-27用户新增要求并明确澄清：删除第4页正文末尾空段，保留全部7页；不是删除第7页。已在仓库外 `repair-97-20261027/user-requested-edit/` 从run006归档结果制作独立PPT副本，只删除第4页Piazza正文框最后一个无文字/无run的a:p，段数11→10。ZIP仅ppt/slides/slide4.xml内容变化，7页及全部备注逐字符保留；原始正式产物、参考文件、任务及评分器未改。修改后文件 `lecture1-2021-with-ink-completed.pptx` SHA256 c61ffff67cef18513ec8cabea2345ec7e3459749008a82b7dc6b7d50d6f0cf28，原compare_pptx_files和原题options本地完整比较为1，原正式产物仍为0。附加要求另存task-with-user-extra-requirement.json，核验verification.json；本次是用户授权文件修改及本地评分函数验证，不是agent自主正式复跑PASS，不改写run006失败、不销项或集成19f2af7。human_review=true，原队列仍10通过/5待修。
+
+- 2026-10-27用户问“OSworld跑一轮能过吗”，按请求启动97附加要求的完整自主复跑run007。独立干净提交 `d0dd769` 基于已批准19f2af7，仅修改本轮独立题目副本instruction，增加用户确认的删除第4页正文末空段/保留7页要求；运行src/bin/configs与19f2af7逐字一致，原官方任务、参考、evaluator及setup逐字不变，不使用手工改好的PPT。仓库外config只改用途说明，原9B thinking/100步1800秒不变；配置/题目差异及评分分类在run007/variant-provenance.json，结果与原始OSWorld分开报告，不能改写原run006或自动集成失败候选。owner liuxv-repair97-run007-extra-20261027，统一公共锁全生命周期，输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-007/output`，当前结果待定、human_review=true；本次请求不授权新运行源码方案。
+
+- 2026-10-27 Order97附加要求run007终态 `agent_deadline_exhausted/reward=null`，25个已完成事件、1967.752秒，source/config integrity均true；没有成功presentation.save，没有最终保存后回读，未进入evaluator、无评分/归档PPT，不将此轮说成0分或PASS。四缺失页均曾写入，1/2/6内容正确，第3页step20原始参数夹带Slide4标题及第4页备注，Adapter原样写入；21/22/24又改原有5/4/7备注，4/5去尾换行、7删额外句点。第14步整框shape.write_text确实删除末空段（第25步原生回读10段），但原正文嵌套层级1全部变0、两段原缩进丢失，整体字体观察由混合未知/LiberationSerif24变ArialUnicodeMS28；原生回读证实格式受损，缺最终文件不推测具体run级字体。root-cause.json及body-before-after-inspect.json保留直接证据。
+
+- run007新根因只读复现：notes_preservation.requested()全指令搜索replace/rewrite/overwrite/revise/correct/delete/remove即停用，未绑定动作对象；本次remove指向正文空段，却误关独立备注源读取、逐字来源/页对应、已有备注保留和进度。原指令requests_missing_notes_transfer=true/requested=true，附加指令transfer=true/requested=false；实际request12无notes_progress/source_unread，9步空备注无来源也放行。正文整框写接口底层shape.String替换整个框，不能实现保格式的局部删除；目录无单段删除操作，模型先误用format_text5/6/10，13搜索后选14整框写。response12/21重复推理分别394.119/153.056秒，被已有重复保护明确中断（11段1751字×3、6段1756字×3）后重试，最后26请求到整题deadline；不能归Docker/断流或放大预算。证据run007/scope-recognition-diagnosis.json、trace-diagnosis.json、root-cause.json及原始requests/events/transport。runner结束、统一锁释放、自有owner查询无残留，d0dd769/19f2af7不集成，10通过/5待修。
+
+- 97 Plan-v6待对话人工审核，未实施：方案1修复动作对象识别，让“删除正文段落”与“仅补缺失备注”的独立约束同时生效，明确改写/删除备注仍按合法请求放行，歧义不擅自保护；增加通用单段删除原子操作，由模型自选slide/selector/原生段落索引和观察到的原文，UNO仅移除选定段及分隔符、保留其他段/文字片段格式，执行前核对目标未变化，执行后回读段数及剩余内容/格式。同步schema/manifest/worker、公开目录及常规保存回读；不硬编码4页/11段/空段/答案、不自动选段、不接管流程、不修改普通整框写语义。定向验证混合正文+备注指令、显式改备注兼容、真实run007错误参数和新增局部删除格式边界，原条件附加题目再从原输入完整复跑，成绩单列。方案2只修备注识别，正文删除由模型自主GUI完成，不能保证其找到可靠操作。方案3保留run007失败及已交付手工文件、先推进98。推荐1；当前human_review=true，新范围须用户批准后实施，未提前改运行源码/重复整题。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
