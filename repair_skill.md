@@ -254,7 +254,7 @@ flowchart TD
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。北京时间2026-10-27用户再次明确“开启人工review”，从该消息起持续切回 `human_review=true`；Order35当前无补丁基线继续收集证据，后续新方案/重试修订必须直接对话结构化审核并等待人工明确批准，不能沿用自动审核作为实施授权。既有已交付PASS保留；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
 
-- 待修复 7 题：77、79、87、93、97、98、100；正式验证通过 8 题：11、13、15、24、27、28、35、63。按指定顺序一次处理一题。
+- 待修复 6 题：79、87、93、97、98、100；正式验证通过 9 题：11、13、15、24、27、28、35、63、77。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
 - Order 11 run-001：模型调用前 Hugging Face 原域名连接超时，`environment_failure`；源码/配置完整性均 true。证据 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/output/run-001`。改用 README 已有镜像设置，不修改任务、evaluator 或模型预算。
 - Order 11 run-002：北京时间 2026-10-26 19:56 起，候选干净独立工作树正式复跑；持绝对共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 覆盖全生命周期。配置 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/config.json`（SHA256 `ba76727b85351885558a76ab2341efefdbf0493d82a9a3e7806f5b9809c539d3`），原模型与100步/1800秒条件。模型完成11步，原 evaluator `failed / reward=0.0 / agent_done`，source/config integrity 均 true。格式化遗漏 B6、B7（44个周末日期中42个标红）；这两项在完整 A1:F33 返回及模型请求中可见，非截断。首次非连续区域回读参数被拒后恢复；保存并二次回读仍未发现两处遗漏，完成门通过属于模型自报，不能替代 evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun002-20261026/output`。批准的 Plan-v2 方案1未通过，运行源码不可集成；下一步按新证据提出修订方案并重新人工审核。
@@ -334,6 +334,8 @@ flowchart TD
 - 2026-10-27 Order77 Plan-v2方案1已实施：顶层明确句间已有空白随after_text保留在左段，同时尊重显式空白/位置要求；parts增加leading_whitespace_count/trailing_whitespace_count，投影原样保留及解释，不改拆分算法/参数。49项定向检查通过；排除10项已在干净基线确认的旧失败。Ruff/diff/check.sh通过；独立原生LO对比不含空白/含空白锚点及段末拆分，观察计数、全文字符及邻段均正确，证据native-split-whitespace-v2.json。待冻结候选、原配置run003正式复跑，未PASS/集成。
 
 - 2026-10-27 Order77 Plan-v2方案1候选 `96e4ee4e9ff27f96ed9c5d44f661e9b62a19df77` 已冻结，49定向检查/原生LO/实际消息投影/Ruff/diff/check通过；保留10项基线旧失败说明。run003从干净候选正式启动，source seal `286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9`；与run002实际配置除源码身份/experiment ID外逐项相同，原模型100步1800秒/evaluator不变。统一绝对任务锁覆盖全生命周期，owner liuxv-repair77-run003-20261027；输出 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-003/output`。正式结果待定，候选未集成；human_review=true。
+
+- 2026-10-27 Order77候选96e4ee4 run003正式passed/reward1.0/agent_done，8步247.962秒，source/config integrity均true，seal `286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9`。step3直引号锚点不匹配原文弯引号、原子拒绝无修改；4重新读取、5用原文锚点及已有句间空格一次拆六处、6保存、7回读、8完成。40段，六处原空格均在左段尾，实际request6含前后空白计数；最终所有原始段落逐字符等于Gold1/Gold3，无strip归一化。原模型/预算/任务/evaluator均未改变。已通过候选待串行集成与正常推送，9通过/6待修；human_review=true持续。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
