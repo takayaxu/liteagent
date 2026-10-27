@@ -387,6 +387,8 @@ flowchart TD
 
 - 2026-10-27 Order97 Plan-v4候选728ceff run004模型前 `environment_failure/reward=null`，63.318秒，source/config integrity均true。失败发生在Docker create_container_from_config，SDK等待60秒无返回，未进入guest准备或模型，无备注写入、无evaluator。独立自有不启动/无网络OSWorld镜像create探测15秒同样ReadTimeout；另本地registry:2小镜像CLI create20秒仍超时，排除只针对候选、原镜像或SDK调用的故障。SDK与CLI同Docker daemon，ping/info/list可返回（300容器、info报告27running），磁盘6.6TB可用，创建路径阻塞但底层锁/存储原因尚无法确认；无system journal读取权限、sudo -n需密码，不重启共享Docker或清理其他人的容器/镜像。两probe及任务按owner/name查询均无遗留容器，runner已退出、统一任务锁释放。证据run004/output/results/results.json、final-integrity.json、exception.txt及run004/environment-diagnosis.json。已批准Plan-v4实现/109checks/真实step11/17和完成检查回放有效，正式效果尚未验证；候选保持独立不集成，10通过/5待修，human_review=true。恢复Docker创建能力后从同一728ceff新run005按原配置继续，无新方案/运行条件变更请求，不用重复碰运气整题复跑代替环境修复。
 
+- 2026-10-27用户要求重试Docker后：第一次自有OSWorld镜像create仍在20秒客户端超时，但随后查到Created容器826bec1fb999；上次run004及两probe也延迟生成Created容器0d3ab6bba2d1/f90bd4853229/58c2ccecf9a1，纠正前次“无遗留”仅当时快照。已逐个按确切owner核对并删除这4个自有未启动容器；新probe10521ccdfe31在1.181秒创建成功并已删除，确认创建能力恢复。ping/info/list正常、磁盘充足，无证据确认底层锁/存储根因，不重启共享Docker、不碰其他容器或改运行条件。证据docker-retry-20261027.json。活动HEADf0b2fa8相对候选基点仅文档，本题批准持续有效；新run005从同一728ceff干净detached树、原run001配置正式重试，owner liuxv-repair97-run005-20261027，统一绝对锁覆盖全生命周期，输出repair-97-20261027/run-005/output。结果待定、候选未集成，human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
