@@ -363,6 +363,10 @@ flowchart TD
 
 - 2026-10-27用户明确“按照1修复”，批准97 Plan-v2方案1：完整备注状态观察；对明确仅补缺失请求保护初始非空备注；完成检查覆盖缺失页、保留原内容及Office保存回读。保留模型自选源文本/目标/参数，普通主动改备注兼容，不自动填讲稿或固定页码，不删正文末尾空段、不改评测。human_review=true；独立repair树实施/定向检查/冻结候选/原配置run002正式验证，仅正式PASS后集成；原正文参考段数差异仍可能阻挡原评分。
 
+- 2026-10-27 Order97 Plan-v2方案1实施验证：独立repair树增加优先备注状态摘要、仅补缺失请求的初始非空备注执行前保护、缺失页覆盖/原备注逐字符保留/保存后原生回读检查；未知或过期状态必须重新inspect，普通显式重写请求保持合法。真实run001事件回放：step7/8/9/12对应第1/2/3/6页允许；step10/11/13对应第4/5/7页改写在执行前拒绝；step7过早完成现被覆盖/保存/回读缺口拒绝，adapter.call及tools_search仍可用。原生响应被通用envelope截断时读取保留的完整downstream_context，单页备注截断不作原文证据。新增11项用例通过（含multi_apps应用设置不受文档保存要求影响），其中前10项加相邻检查46passed；广一些的focused为66passed/6failed，6项在无补丁基线原样复现（路由顺序1项、旧oneOf schema断言5项），不改无关测试。Ruff、git diff --check及bin/check.sh通过。回放与检查保存在 `/home/liuxv/liteagent-local-runs/repair-97-20261027/plan-v2-replay.json`、`focused-checks.txt`；局部检查不代表正式PASS。即将冻结候选、原配置新run002，未集成运行源码。human_review=true，批准仍为97 Plan-v2方案1。
+
+- 2026-10-27 Order97 Plan-v2方案1候选 `a20fc4d`（含acc5b96）已冻结；run002从该提交新建干净detached树，原run001外部配置不变、无字体覆盖、原100步1800秒及原始evaluator。统一绝对锁持整题及清理生命周期，owner `liuxv-repair97-run002-20261027`；输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-002/output`，当前正式运行中、结果待定。主活动运行源码未集成候选，10通过/5待修；human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
