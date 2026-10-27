@@ -299,7 +299,9 @@ flowchart TD
 
 - 2026-10-27 Order28 Plan28-v3经/root/review27计划及实际diff复核通过：仅range.write顶层工具说明增加通用单位/百分比尺度自查，11行；原properties/required/schema逐字不变，普通/schema恢复/completion恢复tool投影可见，无金融公式/固定坐标/新门禁。66 focused通过，含protocol131pass及2个已证基线multi_apps旧fail；Ruff/diff/check通过。新候选 `a614561` 从独立repair树冻结；run-006新干净detached候选、原config/model/100步1800秒/evaluator，统一lock全生命周期，owner `liuxv-repair28-run006-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-006/output`，待正式结果、未集成。human_review=false。
 
-- 2026-10-27 Order28 run-006正式passed/reward1.0/agent_done，23步646.84秒，source/config true；候选 `a614561`，seal `f439690cc91e7e52c94ffa7f4320cb6fea40313c9faa2fc76f729b16d496e9de`。模型step4/5自主写直接相除公式，最终所有表格值与参考一致、仅最高值C20绿色、普通数字0.00；原任务/evaluator/预算不变。独立终态复核/root/review27进行中；活动组合 `5b97df5` 仅合台账变化，src/bin/config与PASS候选逐字一致，seal重算匹配，持集成锁快进；已移出活动待修队列。此前失败及环境中断原证据保留，human_review=false。交付台账正常推送后再核验远端。
+- 2026-10-27 Order28 run-006正式passed/reward1.0/agent_done，23步646.84秒，source/config true；候选 `a614561`，seal `f439690cc91e7e52c94ffa7f4320cb6fea40313c9faa2fc76f729b16d496e9de`。模型step4/5自主写直接相除公式，最终所有表格值与参考一致、仅最高值C20绿色、普通数字0.00；原任务/evaluator/预算不变。独立终态复核/root/review27明确通过，run006自有guest已由runner清理；活动组合 `5b97df5` 仅合台账变化，src/bin/config与PASS候选逐字一致，seal重算匹配，持集成锁快进；已移出活动待修队列。此前失败及环境中断原证据保留，human_review=false。交付台账正常推送后再核验远端。
+
+- 2026-10-27 Order28交付：活动与GitHub正常推送 `f6f8d1c`，待远端SHA最终核验；Order35 / `bf4e9888-f10f-47af-8dba-76413038b73c` 按队列认领，human_review=false，最新干净f6f8d1c无补丁基线run001。外部config仅加35身份，其余原模型/预算/VM/evaluator不变；统一lock、owner `liuxv-repair35-run001-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-001/output`，待正式结果。未实施35候选。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
