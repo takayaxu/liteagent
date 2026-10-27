@@ -293,6 +293,8 @@ flowchart TD
 
 - 2026-10-27 Order 28 run-004因宿主环境阻塞由repair agent有界中断，原生 `interrupted/reward=null/0steps`，680.837秒，source/config true；不能以exit0销项。独立审核 `/root/review27` 直接核对自有guest的VERIFY shell D态、runc僵尸及Docker exec等待，主机数千D态/load>4000；guest截图200，模型未调用。初次校验17:37:01曾恢复并完成文件setup，随后模型前再次assert校验阻塞；SIGINT17:37:52只发本chat pilot，原生“by user”是默认文本，实际actor另记context。SDK env.close停容器70秒ReadTimeout，控制进程/统一任务锁已退出释放；自有待清理容器 `85cfac43b13d/crazy_chatelet`，owner `liuxv-repair28-run004-20261027`，不得认定已清理，不触碰他人容器/网络/共享Docker服务。保留候选 `c9607ca` 独立未集成，28及后续35/63/77/79/87/93/97/98/100仍待修；无新整题启动或网络绕过，待宿主Docker exec健康恢复后先完成自有清理再审恢复复跑。证据 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-004/output`、`run-004-interruption-context.json`。human_review=false持续有效。
 
+- 2026-10-27 10:15（北京时间）继续Order28：宿主load约30、Docker29.1.3及exec恢复（只读true0.166秒），旧自有guest85cfac43已自然Exited，仅精确owner容器及匿名卷定向移除成功；公共端口锁root0666、原FileLock同路径inode取得释放成功，未改权限/网络/服务。独立审核 `/root/review27` 通过ENV28-retry-v2一次原条件恢复重试。run-005新干净 `c9607ca` detached源码、沿用原config-input/model/100步1800秒/evaluator，统一绝对任务锁覆盖全生命周期；owner `liuxv-repair28-run005-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-005/output`。旧interrupted原证据不变，候选未集成，human_review=false。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
