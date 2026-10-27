@@ -252,7 +252,7 @@ flowchart TD
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。北京时间2026-10-27用户再次明确“开启人工review”，从该消息起持续切回 `human_review=true`；Order35当前无补丁基线继续收集证据，后续新方案/重试修订必须直接对话结构化审核并等待人工明确批准，不能沿用自动审核作为实施授权。既有已交付PASS保留；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
 
-- 待修复 8 题：63、77、79、87、93、97、98、100；正式验证通过 7 题：11、13、15、24、27、28、35。按指定顺序一次处理一题。
+- 待修复 7 题：77、79、87、93、97、98、100；正式验证通过 8 题：11、13、15、24、27、28、35、63。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
 - Order 11 run-001：模型调用前 Hugging Face 原域名连接超时，`environment_failure`；源码/配置完整性均 true。证据 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/output/run-001`。改用 README 已有镜像设置，不修改任务、evaluator 或模型预算。
 - Order 11 run-002：北京时间 2026-10-26 19:56 起，候选干净独立工作树正式复跑；持绝对共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 覆盖全生命周期。配置 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/config.json`（SHA256 `ba76727b85351885558a76ab2341efefdbf0493d82a9a3e7806f5b9809c539d3`），原模型与100步/1800秒条件。模型完成11步，原 evaluator `failed / reward=0.0 / agent_done`，source/config integrity 均 true。格式化遗漏 B6、B7（44个周末日期中42个标红）；这两项在完整 A1:F33 返回及模型请求中可见，非截断。首次非连续区域回读参数被拒后恢复；保存并二次回读仍未发现两处遗漏，完成门通过属于模型自报，不能替代 evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun002-20261026/output`。批准的 Plan-v2 方案1未通过，运行源码不可集成；下一步按新证据提出修订方案并重新人工审核。
@@ -316,6 +316,8 @@ flowchart TD
 - 2026-10-27 Order35 run002正式passed/reward1.0/agent_done，19步399.976秒，source/config true；候选e85c82a，seal `acebf01a867efcda668bf21a969b54189a924b273a0f5bca9febdf6ccd66c0cf`。step8/9模型自行删两空占位框，10–15按序插图；16保存，17新完成门拒绝缺最终读回，18读全6页，原生逐页数量与内容指纹均通过，19完成。保存产物6页各1picture、无其他shape，原evaluator1.0；插入0/中间/追加另有原生身份/顺序实测。按人工批准Plan35-v1方案1完成，human_review=true持续；保留原失败不改分，移出本轮待修队列。待持集成锁组合当前台账、验证src/bin/config与PASS逐字一致及seal后快进活动分支，正常推送并核验远端。证据 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-002/output`。
 
 - 2026-10-27 Order35交付核验：运行源码组合 `2b3698375b59ca26cfaac71dfadd570381e9288d` 已正常推送GitHub且远端同SHA；src/bin/config与正式PASS候选e85c82a逐字相同，活动seal重算匹配。原run001失败及所有原始产物保留。本轮7通过/8待修，human_review=true。按原队列认领Order63 / 04578141-1d42-4146-b9cf-6fab4ce5fd74（第一页三个文本框从上到下精确黄/红/绿），先从当前干净提交做无补丁基线run001；外部配置仅补任务身份，其余默认条件不变，新方案须人工对话审核，不提前实施。独立目录 `/home/liuxv/liteagent-local-runs/repair-63-20261027`。
+
+- 2026-10-27 Order63最新活动源码 `4be8b97` 无新增补丁run001正式passed/reward1.0/agent_done，8步391.419秒，source/config true；seal同35PASS `acebf01a867efcda668bf21a969b54189a924b273a0f5bca9febdf6ccd66c0cf`。本次模型按观察的y顺序使用原生yellow/red/green颜色名，green=0x00A933；保存后完整读回，原evaluator通过。旧full189失败保留，不把本次PASS归因于未验证的特定补丁；移出本轮待修集合，8通过/7待修。证据 `/home/liuxv/liteagent-local-runs/repair-63-20261027/run-001/output`。按原队列认领Order77 / 88fe4b2d-3040-4c70-9a70-546a47764b48，先当前干净提交无补丁基线；独立目录 `/home/liuxv/liteagent-local-runs/repair-77-20261027`，外部config仅补任务身份，原模型/预算/evaluator不变、统一lock；human_review=true，新方案直接对话人工审核，不提前实施。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
