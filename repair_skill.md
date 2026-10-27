@@ -367,6 +367,10 @@ flowchart TD
 
 - 2026-10-27 Order97 Plan-v2方案1候选 `a20fc4d`（含acc5b96）已冻结；run002从该提交新建干净detached树，原run001外部配置不变、无字体覆盖、原100步1800秒及原始evaluator。统一绝对锁持整题及清理生命周期，owner `liuxv-repair97-run002-20261027`；输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-002/output`，当前正式运行中、结果待定。主活动运行源码未集成候选，10通过/5待修；human_review=true。
 
+- 2026-10-27 Order97 Plan-v2方案1候选a20fc4d run002正式 `agent_deadline_exhausted/reward=null`，10个已记录事件、1928.862秒（含准备/收尾），source/config integrity均true，seal `24fb32156ef96e42e5cc859c0c174dc78ff902b8533900b4f89782254cb205d9`。共7页，应补1/2/3/6页，保留4/5/7页；本轮成功补写0页，没有成功set_notes，不得称备注任务已修好或把无评分算PASS。step3猜0…99页越界、4读全7页；实际request5已包含完整notes_status，但模型把第6页2个空白字符误读为有内容，忽略桌面讲稿，5/6/9/10用GUI type索要内容（GUI输入并非对用户发消息）；7未读讲稿自行生成欢迎词，因GUI后观察过期被拒，8重新读1/2/3/6页仍未查找来源。已有备注保护对真实旧请求的完整execute_proposal回放3处均在executor之前拒绝，外部execution-replay.json；只证明局部保护，不代表本轮最终产物验证。无evaluator产物或最终备注读回，不能声称最终全部内容逐字不变。response6/10分别618.931/786.771秒、7003/6957个tool_calls=[]片段，完整GUI参数早已生成仍等finish；HTTP read timeout因持续bytes未触发，现有循环检测只看reasoning且输出后停用，整题deadline最终生效，不能归因set_notes慢或guest故障。第11次请求在整题deadline被取消，原始响应/异常保留。runner已退出、统一锁释放，自有guest无存活；失败候选独立保留、不集成，10通过/5待修。证据output/results/results.json、final-integrity.json及run-002/trace-diagnosis.json。
+
+- Order97 Plan-v3待人工对话审核，未实施：方案1在v2基础上补“转移现有文本必须有指定来源已读证据”的通用参数/完成检查，未读或部分读取只报缺口并保留搜索/读取能力，不自动选文件/分讲稿/代写；对流式响应按语义新增内容判定进展，连续空工具片段不能无限续命，使用既有请求时限及重试/整题预算中断为协议失败，不把未终止JSON当成功执行。保留普通自行撰写请求、正常慢速有内容响应及所有已有备注保护。定向真实SSE回放/来源边界/原条件正式复跑，仍不改正文参考差异。方案2仅修空响应耗时，来源决策问题保留；方案3保留97待修先推进98。推荐1，需用户明确批准97 Plan-v3，当前不实施/不启动新整题，human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
