@@ -337,6 +337,8 @@ flowchart TD
 
 - 2026-10-27 Order77候选96e4ee4 run003正式passed/reward1.0/agent_done，8步247.962秒，source/config integrity均true，seal `286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9`。step3直引号锚点不匹配原文弯引号、原子拒绝无修改；4重新读取、5用原文锚点及已有句间空格一次拆六处、6保存、7回读、8完成。40段，六处原空格均在左段尾，实际request6含前后空白计数；最终所有原始段落逐字符等于Gold1/Gold3，无strip归一化。原模型/预算/任务/evaluator均未改变。已通过候选待串行集成与正常推送，9通过/6待修；human_review=true持续。
 
+- 2026-10-27 Order77交付核验：持集成锁快进至 `34568fb1ad7ea62bc9fe69a20b3e78d916c58d9c`，src/bin/configs与正式PASS候选96e4ee4逐字相同、活动seal重算匹配；正常推送GitHub codex/v4，ls-remote同SHA。原失败及产物保留，9通过/6待修。按原队列认领Order79 / adf5e2c3-64c7-4644-b7b6-d2f0167927e7（增加指定参考文献及第四段标记处插入编号交叉引用）；旧full189在文末追加编号14并完成，但旧源码已变化，先最新活动源码无补丁run001。独立目录 `/home/liuxv/liteagent-local-runs/repair-79-20261027`；外部config仅补原任务身份source_order170，其余默认模型/预算/evaluator不变。统一任务lock，human_review=true，新方案直接对话审核、不提前实施。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
