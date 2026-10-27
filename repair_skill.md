@@ -315,6 +315,8 @@ flowchart TD
 
 - 2026-10-27 Order35 run002正式passed/reward1.0/agent_done，19步399.976秒，source/config true；候选e85c82a，seal `acebf01a867efcda668bf21a969b54189a924b273a0f5bca9febdf6ccd66c0cf`。step8/9模型自行删两空占位框，10–15按序插图；16保存，17新完成门拒绝缺最终读回，18读全6页，原生逐页数量与内容指纹均通过，19完成。保存产物6页各1picture、无其他shape，原evaluator1.0；插入0/中间/追加另有原生身份/顺序实测。按人工批准Plan35-v1方案1完成，human_review=true持续；保留原失败不改分，移出本轮待修队列。待持集成锁组合当前台账、验证src/bin/config与PASS逐字一致及seal后快进活动分支，正常推送并核验远端。证据 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-002/output`。
 
+- 2026-10-27 Order35交付核验：运行源码组合 `2b3698375b59ca26cfaac71dfadd570381e9288d` 已正常推送GitHub且远端同SHA；src/bin/config与正式PASS候选e85c82a逐字相同，活动seal重算匹配。原run001失败及所有原始产物保留。本轮7通过/8待修，human_review=true。按原队列认领Order63 / 04578141-1d42-4146-b9cf-6fab4ce5fd74（第一页三个文本框从上到下精确黄/红/绿），先从当前干净提交做无补丁基线run001；外部配置仅补任务身份，其余默认条件不变，新方案须人工对话审核，不提前实施。独立目录 `/home/liuxv/liteagent-local-runs/repair-63-20261027`。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
