@@ -409,6 +409,14 @@ flowchart TD
 
 - 2026-10-27用户新增要求并明确澄清：删除第4页正文末尾空段，保留全部7页；不是删除第7页。已在仓库外 `repair-97-20261027/user-requested-edit/` 从run006归档结果制作独立PPT副本，只删除第4页Piazza正文框最后一个无文字/无run的a:p，段数11→10。ZIP仅ppt/slides/slide4.xml内容变化，7页及全部备注逐字符保留；原始正式产物、参考文件、任务及评分器未改。修改后文件 `lecture1-2021-with-ink-completed.pptx` SHA256 c61ffff67cef18513ec8cabea2345ec7e3459749008a82b7dc6b7d50d6f0cf28，原compare_pptx_files和原题options本地完整比较为1，原正式产物仍为0。附加要求另存task-with-user-extra-requirement.json，核验verification.json；本次是用户授权文件修改及本地评分函数验证，不是agent自主正式复跑PASS，不改写run006失败、不销项或集成19f2af7。human_review=true，原队列仍10通过/5待修。
 
+- 2026-10-27用户问“OSworld跑一轮能过吗”，按请求启动97附加要求的完整自主复跑run007。独立干净提交 `d0dd769` 基于已批准19f2af7，仅修改本轮独立题目副本instruction，增加用户确认的删除第4页正文末空段/保留7页要求；运行src/bin/configs与19f2af7逐字一致，原官方任务、参考、evaluator及setup逐字不变，不使用手工改好的PPT。仓库外config只改用途说明，原9B thinking/100步1800秒不变；配置/题目差异及评分分类在run007/variant-provenance.json，结果与原始OSWorld分开报告，不能改写原run006或自动集成失败候选。owner liuxv-repair97-run007-extra-20261027，统一公共锁全生命周期，输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-007/output`，当前结果待定、human_review=true；本次请求不授权新运行源码方案。
+
+- 2026-10-27 Order97附加要求run007终态 `agent_deadline_exhausted/reward=null`，25个已完成事件、1967.752秒，source/config integrity均true；没有成功presentation.save，没有最终保存后回读，未进入evaluator、无评分/归档PPT，不将此轮说成0分或PASS。四缺失页均曾写入，1/2/6内容正确，第3页step20原始参数夹带Slide4标题及第4页备注，Adapter原样写入；21/22/24又改原有5/4/7备注，4/5去尾换行、7删额外句点。第14步整框shape.write_text确实删除末空段（第25步原生回读10段），但原正文嵌套层级1全部变0、两段原缩进丢失，整体字体观察由混合未知/LiberationSerif24变ArialUnicodeMS28；原生回读证实格式受损，缺最终文件不推测具体run级字体。root-cause.json及body-before-after-inspect.json保留直接证据。
+
+- run007新根因只读复现：notes_preservation.requested()全指令搜索replace/rewrite/overwrite/revise/correct/delete/remove即停用，未绑定动作对象；本次remove指向正文空段，却误关独立备注源读取、逐字来源/页对应、已有备注保留和进度。原指令requests_missing_notes_transfer=true/requested=true，附加指令transfer=true/requested=false；实际request12无notes_progress/source_unread，9步空备注无来源也放行。正文整框写接口底层shape.String替换整个框，不能实现保格式的局部删除；目录无单段删除操作，模型先误用format_text5/6/10，13搜索后选14整框写。response12/21重复推理分别394.119/153.056秒，被已有重复保护明确中断（11段1751字×3、6段1756字×3）后重试，最后26请求到整题deadline；不能归Docker/断流或放大预算。证据run007/scope-recognition-diagnosis.json、trace-diagnosis.json、root-cause.json及原始requests/events/transport。runner结束、统一锁释放、自有owner查询无残留，d0dd769/19f2af7不集成，10通过/5待修。
+
+- 97 Plan-v6待对话人工审核，未实施：方案1修复动作对象识别，让“删除正文段落”与“仅补缺失备注”的独立约束同时生效，明确改写/删除备注仍按合法请求放行，歧义不擅自保护；增加通用单段删除原子操作，由模型自选slide/selector/原生段落索引和观察到的原文，UNO仅移除选定段及分隔符、保留其他段/文字片段格式，执行前核对目标未变化，执行后回读段数及剩余内容/格式。同步schema/manifest/worker、公开目录及常规保存回读；不硬编码4页/11段/空段/答案、不自动选段、不接管流程、不修改普通整框写语义。定向验证混合正文+备注指令、显式改备注兼容、真实run007错误参数和新增局部删除格式边界，原条件附加题目再从原输入完整复跑，成绩单列。方案2只修备注识别，正文删除由模型自主GUI完成，不能保证其找到可靠操作。方案3保留run007失败及已交付手工文件、先推进98。推荐1；当前human_review=true，新范围须用户批准后实施，未提前改运行源码/重复整题。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
