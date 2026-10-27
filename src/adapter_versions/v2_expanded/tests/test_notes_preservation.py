@@ -385,3 +385,39 @@ def test_explicit_or_ambiguous_notes_edit_remains_legal(note_edit):
     s.instruction += ' ' + note_edit
     assert not requested(s)
     assert not errors(s, 0, 'Revised')
+
+
+@pytest.mark.parametrize('constraint', [
+    'Do not merely hide it, remove a bullet, or apply formatting.',
+    "Don't simply overwrite notes or remove their paragraphs.",
+    'Never rewrite existing notes and delete their paragraphs.',
+    'Do not just remove notes, or merely revise them.',
+    'Do not hide the empty body paragraph and remove a bullet instead of deleting it.',
+    'Do not overwrite notes; remove the empty body paragraph.',
+    'Never revise notes, but remove the empty body paragraph.',
+])
+def test_negative_coordinated_actions_keep_preservation_and_source_checks(constraint):
+    s = state(inspection(1, ['', 'Keep  this. .']))
+    s.instruction += ' ' + constraint
+    assert requested(s)
+    assert errors(s, 1, 'Keep this.')
+    assert errors(s, 0, 'Source text plus another passage')
+    assert model_progress(s)['pages'][1]['status'] == 'original retained; no write needed'
+
+
+@pytest.mark.parametrize('constraint', [
+    'Do not remove the title, but rewrite existing notes.',
+    'Do not remove the title; rewrite existing notes.',
+    'Do not remove the title. Rewrite existing notes.',
+    'Never hide the title; instead remove existing notes.',
+    'Do not hide the title, then revise notes.',
+    'Do not hide the title, also revise notes.',
+    'Do not hide the title and do remove existing notes.',
+    'Do not hide the title, but revise them.',
+    'Replace the title and notes.',
+])
+def test_independent_affirmative_notes_edits_remain_legal_after_negative_command(constraint):
+    s = state(inspection(1, ['Original']))
+    s.instruction += ' ' + constraint
+    assert not requested(s)
+    assert not errors(s, 0, 'Revised')

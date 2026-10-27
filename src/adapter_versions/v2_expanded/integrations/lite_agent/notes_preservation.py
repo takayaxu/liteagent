@@ -128,35 +128,54 @@ def source_read_errors(state: Any) -> list[str]:
 def _may_change_existing_notes(instruction: str) -> bool:
     """Keep unrelated body edits separate; ambiguous edit objects opt out."""
     verbs = r"replace|rewrite|overwrite|revise|correct|delete|remove"
-    # Split independent instructions, including a coordinated verb. Retaining
-    # the whole object list lets 'replace titles and notes' remain an opt-out.
+    actions = rf"{verbs}|hide|apply|keep|preserve|add|fill|complete|insert|copy|transfer"
+    modifiers = r"(?:(?:merely|just|simply|only|ever|please)\s+)*"
+    command_prefix = rf"(?:(?:do\s+not|don't|never|do|please\s+do)\s+)?{modifiers}"
+    # Sentences and explicit transitions start independent commands. Within a
+    # coordinated command, negation also covers later verbs and modifiers:
+    # 'Do not merely hide it, remove a bullet, or apply formatting'. Split
+    # only before another verb so 'replace titles and notes' keeps its objects.
     clauses = re.split(
-        rf"[;.!?\n]+|\b(?:and|then|also|but|while)\s+"
-        rf"(?=(?:{verbs}|keep|preserve|add|fill|complete|insert|copy|transfer)\b)",
+        r"[;.!?\n]+|\b(?:then|also|but|however|instead|while)\b",
         instruction, flags=re.I,
     )
     for clause in clauses:
-        for match in re.finditer(rf"\b(?:{verbs})\b", clause, re.I):
-            if re.search(r"\b(?:do not|don't|never)\s*$", clause[:match.start()], re.I):
-                continue
-            target = clause[match.end():]
-            # Only clearly named presentation-body objects are independent.
-            # Pronouns, unspecified objects and unfamiliar wording stay outside
-            # this protection rather than blocking a possibly requested edit.
-            direct_object = re.split(r"\b(?:from|with|using|in|on|of|to)\b", target,
-                                     maxsplit=1, flags=re.I)[0]
-            if re.search(r"\b(?:notes?|remarks?)\b", direct_object, re.I):
-                return True
-            if re.search(r"\b(?:paragraphs?|text|words?)\b", direct_object, re.I) and re.search(
-                r"\b(?:from|in|of)\s+(?:(?:the|existing|speaker|speaking|presenter|slide)\s+)*"
-                r"(?:notes?|remarks?)\b", target, re.I,
-            ):
-                return True
-            if not re.search(r"\b(?:paragraphs?|text\s+box(?:es)?|body|titles?|"
-                             r"subtitles?|shapes?|pictures?|images?|slides?|"
-                             r"backgrounds?|tables?)\b", direct_object, re.I):
-                return True
+        negative = False
+        fragments = re.split(
+            rf"(?:,\s*(?:(?:and|or)\s+)?|\b(?:and|or)\s+)"
+            rf"(?={command_prefix}(?:{actions})\b)", clause, flags=re.I,
+        )
+        for fragment in fragments:
+            for match in re.finditer(rf"\b(?:{actions})\b", fragment, re.I):
+                prefix = fragment[:match.start()]
+                if re.search(rf"\b(?:do\s+not|don't|never)\s+{modifiers}$", prefix, re.I):
+                    negative = True
+                elif re.search(rf"\bdo\s+{modifiers}$", prefix, re.I):
+                    negative = False  # Explicit affirmative 'and do remove ...'.
+                if negative or not re.fullmatch(verbs, match.group(), re.I):
+                    continue
+                target = fragment[match.end():]
+                if _notes_edit_object(target):
+                    return True
     return False
+
+
+def _notes_edit_object(target: str) -> bool:
+    """A positive edit of notes or an ambiguous object may change notes."""
+    # Pronouns and unspecified objects remain outside this protection rather
+    # than blocking a possibly requested edit of existing notes.
+    direct_object = re.split(r"\b(?:from|with|using|in|on|of|to)\b", target,
+                             maxsplit=1, flags=re.I)[0]
+    if re.search(r"\b(?:notes?|remarks?)\b", direct_object, re.I):
+        return True
+    if re.search(r"\b(?:paragraphs?|text|words?)\b", direct_object, re.I) and re.search(
+        r"\b(?:from|in|of)\s+(?:(?:the|existing|speaker|speaking|presenter|slide)\s+)*"
+        r"(?:notes?|remarks?)\b", target, re.I,
+    ):
+        return True
+    return not re.search(r"\b(?:paragraphs?|text\s+box(?:es)?|body|titles?|"
+                         r"subtitles?|shapes?|pictures?|images?|slides?|"
+                         r"backgrounds?|tables?)\b", direct_object, re.I)
 
 
 def requested(state: Any) -> bool:
