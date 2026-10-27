@@ -175,7 +175,18 @@ def test_ordered_image_deck_does_not_require_both_cleanup_strategies(cleanup):
     assert any("save" in item for item in before_save["missing"])
     assert not any("have not succeeded" in item for item in before_save["missing"])
 
-    state.events.extend([_save(len(events) + 1), _inspect(len(events) + 2, [8000] * 3)])
+    final = _inspect(len(events) + 2, [8000] * 3)
+    inventory = final.result["context_hint"]
+    inventory["source_images"] = []
+    for index, page in enumerate(inventory["slides"]):
+        fingerprint = {"status": "known", "algorithm": "sha256-native-dib-v1",
+                       "sha256": f"{index:064x}", "pixel_width": 10, "pixel_height": 10}
+        page["shape_count"] = 1
+        for collection in ("graphic_shapes", "all_shapes", "picture_containers"):
+            page[collection][0].update(visible=True, graphic_fingerprint=fingerprint)
+        inventory["source_images"].append({"source_path": f"/tmp/frame{index + 1}.png",
+                                            "graphic_fingerprint": fingerprint})
+    state.events.extend([_save(len(events) + 1), final])
     assert CompletionMixin._generic_completion_gate(state) == {"passed": True, "missing": []}
 
 

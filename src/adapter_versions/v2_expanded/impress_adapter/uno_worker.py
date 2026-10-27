@@ -632,6 +632,40 @@ def _shape_fill_style(shape: Any) -> str:
     return _enum_name(value).strip().lower()
 
 
+def _graphic_fingerprint(graphic: Any) -> dict[str, Any]:
+    """Compare decoded native bitmaps, independent of file names and encoding."""
+    try:
+        size = graphic.getSize()
+        width, height = int(size.Width), int(size.Height)
+        if width <= 0 or height <= 0 or width * height > 16_000_000:
+            return {"status": "unknown", "reason": "unsupported bitmap dimensions"}
+        digest = hashlib.sha256()
+        for index, value in enumerate((graphic.getDIB(), graphic.getMaskDIB())):
+            data = value.value if hasattr(value, "value") else bytes(value)
+            if (index == 0 and not data) or len(data) > 64_000_000:
+                return {"status": "unknown", "reason": "bitmap exceeds observation limit"}
+            digest.update(len(data).to_bytes(8, "big"))
+            digest.update(data)
+        return {"status": "known", "algorithm": "sha256-native-dib-v1",
+                "sha256": digest.hexdigest(), "pixel_width": width, "pixel_height": height}
+    except Exception:
+        return {"status": "unknown", "reason": "native bitmap unavailable"}
+
+
+def _source_image_summary(session: ImpressSession, path: str) -> dict[str, Any]:
+    source = _path_from_input(path)
+    result = {"source_path": str(source.resolve())}
+    try:
+        provider = session.service_manager.createInstanceWithContext(
+            "com.sun.star.graphic.GraphicProvider", session.context
+        )
+        graphic = provider.queryGraphic((_property("URL", _file_url(str(source))),))
+        result["graphic_fingerprint"] = _graphic_fingerprint(graphic)
+    except Exception:
+        result["graphic_fingerprint"] = {"status": "unknown", "reason": "source image unavailable"}
+    return result
+
+
 def _shape_summary_at_path(shape: Any, path: list[int]) -> dict[str, Any]:
     pos = getattr(shape, "Position", None)
     size = getattr(shape, "Size", None)
@@ -660,6 +694,8 @@ def _shape_summary_at_path(shape: Any, path: list[int]) -> dict[str, Any]:
     graphic_url = str(getattr(shape, "GraphicURL", "") or "")
     if graphic_url.startswith(("file://", "http://", "https://")):
         summary["graphic_url"] = graphic_url
+    if "graphicobjectshape" in summary["kind"].casefold():
+        summary["graphic_fingerprint"] = _graphic_fingerprint(getattr(shape, "Graphic", None))
     if summary["is_text"]:
         bold_weight = float(_text_property(shape, "CharWeight", 0.0))
         summary["text_style"] = {
@@ -763,6 +799,7 @@ def _page_summary(session: ImpressSession, index: int) -> dict[str, Any]:
             "duration": float(page.TransitionDuration),
         },
         "notes": speaker_notes_text(notes),
+        "shape_count": page.getCount(),
         "shapes": [
             _shape_summary(page.getByIndex(i), i) for i in range(page.getCount())
         ],
@@ -1325,6 +1362,7 @@ def _inspect(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
         "slide_count": session.pages.getCount(),
         "inspected_slides": list(indices),
         "slides": [_page_summary(session, i) for i in indices],
+        "source_images": [_source_image_summary(session, path) for path in params.get("image_paths", [])],
     }
 
 
@@ -1535,17 +1573,66 @@ def _export_shape_image(
 
 
 def _create_slide(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
-    index = params.get("index", session.pages.getCount())
-    if index > session.pages.getCount():
+    originals = [session.pages.getByIndex(i) for i in range(session.pages.getCount())]
+    index = params.get("index", len(originals))
+    if index < 0 or index > len(originals):
         raise AdapterError("INVALID_REQUEST", "slide index is past the end")
-    page = session.pages.insertNewByIndex(index)
-    if "layout" in params:
-        page.Layout = int(params["layout"])
+    # Impress inserts AFTER the indexed page. Middle/append positions need
+    # the preceding page; position zero additionally needs a native reorder.
+    page = session.pages.insertNewByIndex(max(0, index - 1))
+    try:
+        if index == 0 and originals:
+            _move_new_page_first(session, page)
+        expected = [*originals[:index], page, *originals[index:]]
+        if (session.pages.getCount() != len(expected) or any(
+                session.pages.getByIndex(i) != expected_page
+                for i, expected_page in enumerate(expected))):
+            raise AdapterError("INSERT_POSITION_FAILED", "native insertion position could not be verified")
+        if "layout" in params:
+            page.Layout = int(params["layout"])
+    except Exception:
+        # Remove only our new page, keeping every pre-existing page object.
+        session.pages.remove(page)
+        raise
     return {
         "index": index,
         "count": session.pages.getCount(),
         "layout": int(page.Layout),
+        "insertion_position_verified": True,
     }
+
+
+def _move_new_page_first(session: ImpressSession, page: Any) -> None:
+    """Select the actual page in the native sorter, not the shape selection."""
+    uno, _ = _uno_modules()
+    controller = session.doc.getCurrentController()
+    previous_page = controller.getCurrentPage()
+    config = controller.getConfigurationController()
+    resources = config.getCurrentConfiguration().getResources(
+        None, "", uno.Enum("com.sun.star.drawing.framework.AnchorBindingMode", "INDIRECT")
+    )
+    center_views = [rid.getResourceURL() for rid in resources
+                    if rid.getResourceURL().startswith("private:resource/view/")
+                    and rid.getAnchor() is not None
+                    and rid.getAnchor().getResourceURL() == "private:resource/pane/CenterPane"]
+    was_sorter = "private:resource/view/SlideSorter" in center_views
+    try:
+        if not was_sorter:
+            _dispatch(session, ".uno:DiaMode")
+        controller = session.doc.getCurrentController()
+        uno.invoke(controller, "select", (uno.Any("[]com.sun.star.drawing.XDrawPage", (page,)),))
+        _dispatch(session, ".uno:MovePageFirst")
+        if session.pages.getByIndex(0) != page:
+            raise AdapterError("INSERT_POSITION_FAILED", "LibreOffice did not move the new page to the requested position")
+    finally:
+        if not was_sorter:
+            restore = {
+                "private:resource/view/NotesView": ".uno:NotesMode",
+                "private:resource/view/HandoutView": ".uno:HandoutMode",
+                "private:resource/view/OutlineView": ".uno:OutlineMode",
+            }.get(center_views[0] if center_views else "", ".uno:NormalMultiPaneGUI")
+            _dispatch(session, restore)
+        session.doc.getCurrentController().setCurrentPage(previous_page)
 
 
 def _clear_page_shapes(page: Any) -> None:
@@ -2305,6 +2392,8 @@ def _insert_image(session: ImpressSession, params: dict[str, Any]) -> dict[str, 
             "requested_path": params["path"],
             "source_path": str(path.resolve()),
             "source_loaded": source_loaded,
+            "source_image": _source_image_summary(session, str(path)),
+            "identity": session.identity(),
             "requested_measurements": {
                 field: params[field]
                 for field in ("width_measurement", "height_measurement")

@@ -289,10 +289,17 @@ def _slide_index(data: Mapping[str, Any], prefix: str = "params") -> None:
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     if action == "presentation.inspect":
-        if set(params).difference({"slides"}):
+        if set(params).difference({"slides", "image_paths"}):
             raise AdapterError(
-                "INVALID_REQUEST", "presentation.inspect accepts only optional slides"
+                "INVALID_REQUEST", "presentation.inspect accepts only optional slides and image_paths"
             )
+        if "image_paths" in params:
+            paths = params["image_paths"]
+            if (not isinstance(paths, list) or len(paths) > 100
+                    or any(not isinstance(path, str) or not path.strip() for path in paths)):
+                raise AdapterError("INVALID_REQUEST", "params.image_paths must contain at most 100 non-empty paths")
+            for path in paths:
+                validate_local_image_path(path)
         if "slides" in params:
             slides = params["slides"]
             if (

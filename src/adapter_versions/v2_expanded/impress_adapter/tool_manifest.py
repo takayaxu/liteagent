@@ -240,8 +240,15 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "and keep their full detail. Indices are zero-based; human page 1 is index 0. "
             "Omit slides to read the whole presentation. slide_count is the total "
             "document count; inspected_slides identifies the returned pages."
+            " graphic_fingerprint compares native decoded image content, independent of shape names."
+            " Supply image_paths to observe source image fingerprints when verifying picture content/order."
         ),
         "properties": {
+            "image_paths": {
+                "type": "array", "maxItems": 100,
+                "items": {"type": "string", "minLength": 1, "pattern": IMAGE_PATH_OR_FILE_URL_PATTERN},
+                "description": "Optional model-selected local source images to fingerprint without changing the presentation.",
+            },
             "slides": {
                 **SLIDE_INDICES,
                 "description": "Explicit zero-based slide indices to inspect, in the requested order.",

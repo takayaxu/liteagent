@@ -285,7 +285,7 @@ def _compact_presentation_hint_for_model(
         return {}
     result: dict[str, Any] = {
         key: value.get(key)
-        for key in ("identity", "url", "title", "slide_count", "inspected_slides")
+        for key in ("identity", "url", "title", "slide_count", "inspected_slides", "source_images")
         if key in value
     }
     slides: list[dict[str, Any]] = []
@@ -297,16 +297,19 @@ def _compact_presentation_hint_for_model(
         "graphic_shapes",
         "picture_containers",
         "table_shapes",
+        "all_shapes",
     )
     result["slides"] = slides
     result["slides_omitted_from_context"] = value.get(
         "slides_omitted_from_context", 0
     ) + len(sources)
-    result["guidance"] = value.get("guidance") or (
+    # Keep the smaller observation budget for actual selectors and content.
+    result["guidance"] = (
         PRESENTATION_SELECTOR_GUIDANCE + " "
         "shape.export_image writes a picture to your output_path for file tools. "
         "media_shapes lists existing audio/video URLs and native selectors; inspect "
-        "it before inserting media."
+        "it before inserting media. Omitted counts require focused inspection. "
+        "shape_count includes empty placeholders; image_paths observes source image fingerprints."
     )
     # Add slides with their selectors in document order. A full-deck empty
     # index must not consume the space needed for actionable observations.
@@ -320,6 +323,7 @@ def _compact_presentation_hint_for_model(
                     "width",
                     "height",
                     "orientation",
+                    "shape_count",
                     "text_shape_order",
                     "notes",
                 )
@@ -371,6 +375,8 @@ def _compact_presentation_hint_for_model(
                         "rows",
                         "columns",
                         "media_url",
+                        "graphic_fingerprint",
+                        "visible",
                     )
                     if shape.get(key) is not None
                 }
@@ -446,6 +452,7 @@ def _compact_picture_candidate(
             "width",
             "height",
             "visible",
+            "graphic_fingerprint",
         )
     }
     summary.update(
@@ -501,6 +508,7 @@ def compact_presentation_hint_for_model(
     remaining_media_shapes = 12
     remaining_text_shapes = 24
     remaining_tables = 12
+    remaining_all_shapes = 24
     for slide in raw_slides[:64]:
         if not isinstance(slide, dict):
             continue
@@ -542,6 +550,9 @@ def compact_presentation_hint_for_model(
         contextual_media_shapes = media_shapes[:remaining_media_shapes]
         contextual_text_shapes = text_shapes[:remaining_text_shapes]
         contextual_tables = tables[:remaining_tables]
+        all_shapes = slide.get("all_shapes", [])
+        contextual_all_shapes = all_shapes[:remaining_all_shapes]
+        remaining_all_shapes -= len(contextual_all_shapes)
         remaining_picture_containers -= len(contextual_picture_containers)
         remaining_graphics -= len(contextual_graphics)
         remaining_media_shapes -= len(contextual_media_shapes)
@@ -560,6 +571,13 @@ def compact_presentation_hint_for_model(
                 "height": slide.get("height"),
                 "orientation": slide.get("orientation"),
                 "background": slide.get("background"),
+                "shape_count": slide.get("shape_count"),
+                "all_shapes": [
+                    {**{k: shape.get(k) for k in ("index", "path", "name", "kind")},
+                     **_shape_tool_target(shape, slide)}
+                    for shape in contextual_all_shapes if isinstance(shape, dict)
+                ],
+                "all_shapes_omitted": slide.get("all_shapes_omitted", 0) + len(all_shapes) - len(contextual_all_shapes),
                 "picture_containers": [
                     _compact_picture_candidate(shape, slide)
                     for shape in contextual_picture_containers
@@ -679,6 +697,7 @@ def compact_presentation_hint_for_model(
             else {}
         ),
         "slides": slide_summaries,
+        "source_images": value.get("source_images", []),
         "slides_omitted_from_context": max(0, len(raw_slides) - len(slide_summaries)),
         "context_char_budget": 12_000,
         "guidance": (
@@ -4443,6 +4462,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             "url": identity.get("url"),
             "title": identity.get("title"),
             "slide_count": result.get("slide_count"),
+            "source_images": result.get("source_images", []),
             **(
                 {"inspected_slides": result["inspected_slides"]}
                 if "inspected_slides" in result
@@ -4460,7 +4480,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                         if isinstance(slide.get("notes"), str)
                         else {}
                     ),
-                    "shape_count": len(slide.get("shapes", [])),
+                    "shape_count": slide.get("shape_count", len(slide.get("shapes", []))),
                     "all_shapes": [
                         {
                             key: shape.get(key)
@@ -4490,6 +4510,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                                 "name",
                                 "kind",
                                 "graphic_url",
+                                "graphic_fingerprint",
                                 "x",
                                 "y",
                                 "width",
@@ -4729,6 +4750,9 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "requested_path",
                 "source_path",
                 "source_loaded",
+                "source_image",
+                "graphic_fingerprint",
+                "identity",
                 "requested_measurements",
                 "resolved_geometry",
                 "verification_passed",

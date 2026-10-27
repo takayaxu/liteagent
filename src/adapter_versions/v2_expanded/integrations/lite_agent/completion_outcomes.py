@@ -298,6 +298,10 @@ def _output_issue(events: list, sheet: str, pivot: dict, totals: dict, after: in
 
 def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
     """Return live defects, distinguishing wrong state from absent evidence."""
+    if getattr(state, "domain", None) == "libreoffice_impress":
+        from .impress_image_outcomes import outcome_issues
+
+        return outcome_issues(state, result_payload, _issue)
     if getattr(state, "domain", None) == "os":
         from .filesystem_permission_semantics import outcome_issues
 
