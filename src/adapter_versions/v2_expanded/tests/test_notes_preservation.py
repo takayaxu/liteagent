@@ -10,7 +10,7 @@ from integrations.lite_agent.adapter_results import (
     compact_context_hint_for_model, compact_presentation_hint_for_model,
 )
 from integrations.lite_agent.completion import CompletionMixin
-from integrations.lite_agent.notes_preservation import argument_errors, requested
+from integrations.lite_agent.notes_preservation import argument_errors, requested, source_texts
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.tool_catalog import build_tools
 
@@ -46,19 +46,21 @@ def state(*events):
                         instruction=INSTRUCTION, events=[source_read(), *events])
 
 
-def source_read(step=0, text='Observed source script', path='/tmp/script.docx', **metadata):
+def source_read(step=0, text='Slide 1:\nSource text\nSlide 2:\nSecond note\nSlide 3:\nLast new note', path='/tmp/script.docx', **metadata):
     return event(step, 'document.read_file', {'path': path}, {
         'path': path, 'text': text, 'source_truncated': False, **metadata},
         domain='libreoffice_writer')
 
 
 def write(step, index, text):
-    return event(step, 'slide.set_notes', {'slide': index, 'text': text},
+    return event(step, 'slide.set_notes', {'slide': index, 'text': text, 'source_reference': {
+        'path': '/tmp/script.docx', 'heading': f'Slide {index + 1}:'}},
                  {'slide': index, 'text': text})
 
 
-def errors(s, index, text, forwarded=True):
-    args = {'slide': index, 'text': text}
+def errors(s, index, text, forwarded=True, reference=None):
+    args = {'slide': index, 'text': text, 'source_reference': reference or {
+        'path': '/tmp/script.docx', 'heading': f'Slide {index + 1}:'}}
     if forwarded:
         return argument_errors(s, 'adapter.call', {
             'adapter': 'libreoffice_impress', 'action': 'slide.set_notes',
@@ -88,30 +90,30 @@ def test_unknown_or_stale_target_is_not_treated_as_blank():
     s.events.append(write(2, 0, 'Observed source'))
     assert errors(s, 0, 'Another version')
     s.events.append(inspection(3, ['Observed source'], [0], count=3))
-    assert not errors(s, 0, 'A deliberate correction')
+    assert not errors(s, 0, 'Source text')
     assert not gate(s)['passed']  # Other initial pages remain unknown.
 
 
 def test_completion_requires_every_missing_page_preservation_save_and_final_readback():
     initial = ['', 'Existing  notes! . ', ' \n']
-    s = state(inspection(1, initial), write(2, 0, 'First new note'))
+    s = state(inspection(1, initial), write(2, 0, 'Source text'))
     assert not gate(s)['passed']  # One successful write used to pass this gate.
-    s.events += [write(3, 2, 'Last new note'), inspection(4, ['First new note', initial[1], 'Last new note'])]
+    s.events += [write(3, 2, 'Last new note'), inspection(4, ['Source text', initial[1], 'Last new note'])]
     assert not gate(s)['passed']  # Read-back without a save is insufficient.
     s.events.append(event(5, 'presentation.save'))
     assert not gate(s)['passed']  # Inspection must describe persisted state.
-    s.events.append(inspection(6, ['First new note', initial[1], 'Last new note']))
+    s.events.append(inspection(6, ['Source text', initial[1], 'Last new note']))
     assert gate(s)['passed']
 
 
 def test_changed_existing_notes_are_detected_and_exact_restoration_is_allowed():
-    s = state(inspection(1, ['', 'Keep  spacing. .']), write(2, 0, 'New note'),
+    s = state(inspection(1, ['', 'Keep  spacing. .']), write(2, 0, 'Source text'),
               write(3, 1, 'Keep spacing.'), event(4, 'presentation.save'),
-              inspection(5, ['New note', 'Keep spacing.']))
+              inspection(5, ['Source text', 'Keep spacing.']))
     assert 'notes.existing_changed' in str(gate(s))
     assert not errors(s, 1, 'Keep  spacing. .')
     s.events += [write(6, 1, 'Keep  spacing. .'), event(7, 'presentation.save'),
-                 inspection(8, ['New note', 'Keep  spacing. .'])]
+                 inspection(8, ['Source text', 'Keep  spacing. .'])]
     assert gate(s)['passed']
 
 
@@ -128,7 +130,7 @@ def test_explicit_replacement_keeps_public_set_notes_legal():
 def test_document_switch_and_gui_do_not_reuse_stale_target_observations():
     s = state(inspection(1, ['Keep!']),
               inspection(2, [''], url='file:///tmp/Other.pptx'))
-    assert not errors(s, 0, 'New')
+    assert not errors(s, 0, 'Source text')
     s.events.append(inspection(3, ['Keep!']))
     assert errors(s, 0, 'New')
     s.events.append(ExecutionEvent(step=4, timestamp_utc='2030-01-01T00:00:00Z',
@@ -147,7 +149,9 @@ def test_notes_inventory_survives_shape_compaction_in_actual_messages():
     hint = compact_presentation_hint_for_model(native)
     compact = compact_context_hint_for_model(hint, remaining_chars=6000)
     assert [p['has_speaker_notes'] for p in compact['notes_status']] == [False, True, False, True]
-    assert compact['slides_omitted_from_context'] > 0
+    assert compact['slides_omitted_from_context'] > 0 or any(
+        slide.get('text_shapes_omitted', 0) for slide in compact['slides'])
+    assert [page['display_slide_number'] for page in compact['notes_status']] == [1, 2, 3, 4]
     s = state()
     s.events = [ExecutionEvent(step=1, timestamp_utc='2030-01-01T00:00:00Z', executed=True,
                               proposed={'kind': 'adapter', 'action': 'presentation.inspect', 'arguments': {}},
@@ -167,7 +171,7 @@ def test_truncated_envelope_uses_exact_retained_notes_but_not_truncated_note_tex
     initial.result = {'adapter_response': {'truncated': True, 'preview': 'not JSON'},
                       'context_hint': {'downstream_context': payload}}
     s = state(initial)
-    assert not errors(s, 0, 'Fill this blank')
+    assert not errors(s, 0, 'Source text')
     assert errors(s, 1, 'Reworded')
     payload['slides'][0]['notes'] = '...<truncated>...'
     assert errors(s, 0, 'Cannot guess original')
@@ -208,7 +212,7 @@ def test_transfer_needs_actual_source_text_not_destination_or_listing():
         'matches': [{'path': '/tmp/script.docx'}]}, domain='os'))
     assert errors(s, 0, 'Invented script')
     s.events.append(source_read(3))
-    assert not errors(s, 0, 'Model-selected source excerpt')
+    assert not errors(s, 0, 'Source text')
 
 
 def test_named_source_and_complete_window_coverage_are_required():
@@ -226,7 +230,7 @@ def test_named_source_and_complete_window_coverage_are_required():
     assert errors(s, 0, 'Gap in read coverage')
     s.events.append(source_read(5, 'd', path='/tmp/remarks.docx',
                    source_start_char=3, source_end_char=4, source_total_chars=6))
-    assert not errors(s, 0, 'abc')
+    assert source_texts(s)['/tmp/remarks.docx'] == 'abcdef'
     s.events.append(event(6, 'file.write_text', {'path': '/tmp/remarks.docx'}, domain='vs_code'))
     assert errors(s, 0, 'Stale source')
 
@@ -241,3 +245,70 @@ def test_failed_or_projected_truncated_source_read_is_not_proof():
     assert errors(s, 0, 'Unproven source')
     s.instruction = 'Write new speaker notes for all PowerPoint slides.'
     assert not errors(s, 0, 'Newly authored text is explicitly requested')
+
+
+def test_exact_page_reference_preserves_internal_newline_and_double_spaces():
+    original = 'First  sentence.\nSecond sentence!'
+    s = state(inspection(1, ['', '']))
+    s.events[0] = source_read(text=f'Notes\nSlide 1:\n\t{original}\nSlide 2:\nOther page')
+    assert not errors(s, 0, original)
+    assert errors(s, 0, original.replace('\n', ' '))
+    assert errors(s, 0, original.replace('  ', ' '))
+    assert errors(s, 0, 'First  sentence.')  # Must not silently omit a sentence.
+    assert errors(s, 1, original, reference={'path': '/tmp/script.docx', 'heading': 'Slide 1:'})
+    assert errors(s, 1, original, reference={'path': '/tmp/script.docx', 'heading': 'Slide 2:'})
+    assert errors(s, 0, original, reference={'path': '/tmp/unknown.docx', 'heading': 'Slide 1:'})
+    assert errors(s, 0, original, reference={'path': '/tmp/script.docx', 'heading': 'Invented'})
+
+
+def test_ambiguous_or_missing_source_page_labels_do_not_guess_correspondence():
+    s = state(inspection(1, ['']))
+    s.events[0] = source_read(text='Slide 1:\nOne\nSlide 1:\nAnother')
+    assert errors(s, 0, 'One')
+    s.events[0] = source_read(text='Unnumbered script\nOne')
+    assert errors(s, 0, 'One')
+    s.events[0] = source_read(text='Page 1:\nOne')
+    assert not errors(s, 0, 'One', reference={'path': '/tmp/script.docx', 'heading': 'Page 1:'})
+
+
+def test_completion_detects_wrong_page_text_and_missing_source_reference_after_save():
+    s = state(inspection(1, ['', '']), write(2, 0, 'Source text'),
+              write(3, 1, 'Source text'), event(4, 'presentation.save'),
+              inspection(5, ['Source text', 'Source text']))
+    assert 'notes.source_mismatch' in str(gate(s))
+    s.events += [write(6, 1, 'Second note'), event(7, 'presentation.save'),
+                 inspection(8, ['Source text', 'Second note'])]
+    assert gate(s)['passed']
+    # The write event is index 2 (source read, initial inspection, first write).
+    s.events[2].proposed['arguments']['payload']['params'].pop('source_reference')
+    assert 'notes.source_mismatch' in str(gate(s))
+
+
+def test_public_source_reference_schema_native_validation_and_worker_preserve_text(monkeypatch):
+    from jsonschema import validate
+    from impress_adapter import uno_worker
+    from impress_adapter.schema import validate_action_params
+    from impress_adapter.tool_manifest import STRICT_ACTION_PARAM_SCHEMAS
+    from impress_adapter.errors import AdapterError
+    from integrations.lite_agent.search_recovery_tools import constrain_adapter_call_routes
+    params = {'slide': 1, 'text': 'Exact  text.\nAnother line',
+              'source_reference': {'path': '/tmp/script.docx', 'heading': 'Slide 2:'}}
+    validate(params, STRICT_ACTION_PARAM_SCHEMAS['slide.set_notes'])
+    validate_action_params('slide.set_notes', params)
+    tools = constrain_adapter_call_routes(build_tools('multi_apps', ['adapter.call'], include_gui=False),
+                                         [('libreoffice_impress', 'slide.set_notes')])
+    assert 'source_reference' in str(tools)
+    with pytest.raises(AdapterError):
+        validate_action_params('slide.set_notes', {**params, 'source_reference': {'heading': 'Slide 2:'}})
+    received = []
+    monkeypatch.setattr(uno_worker, 'set_speaker_notes',
+                        lambda page, text, **kw: received.append(text) or text)
+    session = SimpleNamespace(page=lambda index: SimpleNamespace(getNotesPage=lambda: object()),
+                              doc=SimpleNamespace(createInstance=lambda name: object()))
+    result = uno_worker._set_notes(session, params)
+    assert received == [params['text']]
+    assert result['text'] == params['text']
+    assert result['source_reference'] == params['source_reference']
+    plain = {'slide': 0, 'text': 'Newly authored notes'}
+    validate_action_params('slide.set_notes', plain)
+    assert 'source_reference' not in uno_worker._set_notes(session, plain)

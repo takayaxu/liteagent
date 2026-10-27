@@ -737,6 +737,11 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "instruction does not ask to change. When transferring existing notes "
             "or a script, read the instruction's specified source and use its original "
             "text; do not generate a summary of the slide content."
+            " For filling missing notes from a numbered script, supply source_reference "
+            "with its observed path and exact Slide/Page heading (human numbering). "
+            "The text selects the entire passage below that heading, excluding only "
+            "outer whitespace; preserve all internal newlines, spaces and punctuation. "
+            "Source heading page N must match target slide=N-1."
         ),
         "properties": {
             "slide": {
@@ -751,6 +756,22 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "existing slide content such as its title, call presentation.inspect "
                     "first and pass the observed text."
                 ),
+            },
+            "source_reference": {
+                "type": "object",
+                "description": (
+                    "Required by the Agent when filling missing notes from an existing "
+                    "numbered script. The model selects the source and exact observed "
+                    "heading; the Agent validates source/target correspondence and text "
+                    "before execution. Optional for ordinary note authoring."
+                ),
+                "properties": {
+                    "path": {"type": "string", "minLength": 1},
+                    "heading": {"type": "string", "minLength": 1,
+                                "description": "Exact observed numbered heading, e.g. Slide 2:; human page numbering."},
+                },
+                "required": ["path", "heading"],
+                "additionalProperties": False,
             },
         },
         "required": ["slide", "text"],

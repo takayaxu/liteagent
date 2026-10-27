@@ -1806,7 +1806,8 @@ def _set_notes(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any
         params["text"],
         create_instance=session.doc.createInstance,
     )
-    return {"slide": params["slide"], "text": observed}
+    return {"slide": params["slide"], "text": observed,
+            **({"source_reference": params["source_reference"]} if "source_reference" in params else {})}
 
 
 def _create_text(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:

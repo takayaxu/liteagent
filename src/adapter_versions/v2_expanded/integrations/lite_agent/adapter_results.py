@@ -696,6 +696,8 @@ def compact_presentation_hint_for_model(
         # A page omitted below is not thereby known to have blank notes.
         "notes_status": [
             {"slide_index": slide.get("slide", slide.get("slide_index")),
+             "display_slide_number": slide.get("slide", slide.get("slide_index")) + 1
+             if isinstance(slide.get("slide", slide.get("slide_index")), int) else None,
              "has_speaker_notes": bool(slide["notes"].strip())
              if isinstance(slide.get("notes"), str) else None,
              "notes_length": len(slide["notes"])
@@ -709,6 +711,9 @@ def compact_presentation_hint_for_model(
             "an unlisted page is unknown. For a request to fill remaining notes, "
             "write only initially blank pages and preserve existing notes exactly. "
             "Use focused presentation.inspect to read unknown or existing text."
+            " display_slide_number is human/source numbering; slide_index is zero-based. "
+            "For a numbered source script, select source_reference.path and its observed "
+            "heading; copy the entire selected passage verbatim, including internal newlines."
         ),
         **(
             {"inspected_slides": value["inspected_slides"]}

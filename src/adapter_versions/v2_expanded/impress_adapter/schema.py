@@ -423,6 +423,12 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     if action == "slide.set_notes":
         if "text" not in params or not isinstance(params["text"], str):
             raise AdapterError("INVALID_REQUEST", "params.text must be a string")
+        if "source_reference" in params:
+            reference = params["source_reference"]
+            if (not isinstance(reference, dict) or set(reference) != {"path", "heading"}
+                    or any(not isinstance(reference[key], str) or not reference[key].strip()
+                           for key in ("path", "heading"))):
+                raise AdapterError("INVALID_REQUEST", "params.source_reference must contain nonempty path and heading strings")
     if action in {"shape.write_text", "shape.write_text_native"}:
         if "text" not in params or not isinstance(params["text"], str):
             raise AdapterError("INVALID_REQUEST", "params.text must be a string")

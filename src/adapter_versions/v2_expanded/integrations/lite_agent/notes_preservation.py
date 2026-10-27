@@ -12,8 +12,8 @@ from .result_envelopes import iter_result_mappings
 from .adapter_results import _billing_text_batch_files
 
 
-def source_read_evidence(state: Any) -> list[str]:
-    """Identify completely read text sources, without mapping or authoring notes."""
+def source_texts(state: Any) -> dict[str, str]:
+    """Reconstruct completely observed source text, without selecting slide content."""
     named = set(re.findall(r"[\w.-]+\.(?:docx?|odt|txt|md|pdf)\b", state.instruction, re.I))
     sources: dict[str, dict] = {}
     readers = {"document.read_file", "document.inspect", "file.read_text",
@@ -48,23 +48,70 @@ def source_read_evidence(state: Any) -> list[str]:
                 if not (0 <= start <= end <= total and len(text) == end - start):
                     continue
                 source = sources.setdefault(path, {"total": total, "windows": []})
-                if source["total"] != total:
+                if source["total"] != total or (start == 0 and end == total):
                     source = sources[path] = {"total": total, "windows": []}
-                source["windows"].append((start, end))
+                source["windows"].append((start, end, text))
             elif (item.get("source_truncated") is False
                   and not item.get("has_more") and not item.get("next_start_char")
                   and not item.get("context_truncated")):
-                sources[path] = {"total": len(text), "windows": [(0, len(text))]}
-    complete = []
+                sources[path] = {"total": len(text), "windows": [(0, len(text), text)]}
+    complete = {}
     for path, source in sources.items():
-        covered = 0
-        for start, end in sorted(source["windows"]):
-            if start > covered:
+        observed = ""
+        for start, end, text in sorted(source["windows"]):
+            if start > len(observed):
                 break
-            covered = max(covered, end)
-        if covered >= source["total"] > 0:
-            complete.append(path)
+            overlap = min(len(observed), end) - start
+            if overlap > 0 and observed[start:start + overlap] != text[:overlap]:
+                observed = ""
+                break  # Conflicting observations cannot establish a source.
+            observed += text[max(0, overlap):]
+        if len(observed) == source["total"] > 0:
+            complete[path] = observed
     return complete
+
+
+def source_read_evidence(state: Any) -> list[str]:
+    return list(source_texts(state))
+
+
+# Only validate a model-selected, explicitly numbered heading. Never choose a
+# heading, target or excerpt on the model's behalf; unknown labels fail closed.
+_PAGE_HEADING = re.compile(r"(?im)^[ \t]*((?:slide|page)[ \t]+(\d+)[ \t]*[:：]?[ \t]*)$")
+
+
+def reference_errors(state: Any, index: int, text: str, reference: Any) -> list[str]:
+    if not isinstance(reference, dict):
+        return ["Provide source_reference.path and source_reference.heading from the read "
+                "script for this page. text selects the entire original passage below that "
+                "heading; preserve its internal newlines, spaces and punctuation. "
+                f"Human page {index + 1} = API index {index}. No mutation executed."]
+    path = reference.get("path")
+    source = source_texts(state).get(path) if isinstance(path, str) else None
+    heading = reference.get("heading")
+    if source is None or not isinstance(heading, str):
+        return ["source_reference must identify a completely read source path and its "
+                "observed page heading. Read the source again if it has changed. No mutation executed."]
+    headings = list(_PAGE_HEADING.finditer(source))
+    matches = [(i, h) for i, h in enumerate(headings) if h.group(1).strip() == heading]
+    if len(matches) != 1:
+        return ["The selected source heading is absent, ambiguous or not an explicitly "
+                "numbered Slide/Page heading. Select the exact observed heading. No mutation executed."]
+    position, selected = matches[0]
+    page = int(selected.group(2))
+    if page != index + 1:
+        return [f"Source heading {heading!r} identifies human page {page}, but target "
+                f"API index {index} identifies human page {index + 1}. Select the matching "
+                "source heading and original passage. No mutation executed."]
+    end = headings[position + 1].start() if position + 1 < len(headings) else len(source)
+    passage = source[selected.end():end].strip()
+    if text != passage:
+        return [f"Human page {index + 1} (API index {index}): text differs from the entire "
+                f"observed passage under {heading!r}. Copy that passage verbatim; only "
+                "surrounding heading indentation/blank space is excluded. Do not collapse "
+                "internal newlines or spaces, omit sentences, or use another page's text. "
+                "No mutation executed."]
+    return []
 
 
 def source_read_errors(state: Any) -> list[str]:
@@ -130,7 +177,7 @@ def _snapshot(state: Any) -> dict:
             if not isinstance(url, str) or not url:
                 continue
             current = documents.setdefault(url, {
-                "initial": {}, "live": {}, "changed_pages": set(), "count": None,
+                "initial": {}, "live": {}, "writes": {}, "changed_pages": set(), "count": None,
                 "last_change": 0, "last_save": 0, "uncertain_structure": False,
             })
             count = payload.get("slide_count")
@@ -158,6 +205,8 @@ def _snapshot(state: Any) -> dict:
                 index = args.get("slide")
                 current["changed_pages"].add(index)
                 current["live"].pop(index, None)
+                if success:
+                    current["writes"][index] = args
             else:
                 current["live"].clear()
                 if action in {"slide.create", "slide.delete", "slide.move", "slide.duplicate"}:
@@ -186,7 +235,10 @@ def argument_errors(state: Any, action: str, args: dict) -> list[str]:
                 "Skip this page; if restoring a changed page, use the observed original text "
                 f"exactly: {original!r}. No mutation executed."]
     # Exact restoration of a previously completed page does not need a script.
-    return [] if original.strip() else source_read_errors(state)
+    if original.strip():
+        return []
+    return source_read_errors(state) or reference_errors(
+        state, index, args.get("text"), args.get("source_reference"))
 
 
 def outcome_issues(state: Any, issue: Any) -> list[dict]:
@@ -224,6 +276,11 @@ def outcome_issues(state: Any, issue: Any) -> list[dict]:
             issues.append(defect("existing_changed", target, original, text, True))
         elif not original.strip() and not text.strip():
             issues.append(defect("missing", target, "fill this blank page from the source notes", text, True))
+        elif not original.strip():
+            write = snapshot["writes"].get(index, {})
+            errors = reference_errors(state, index, text, write.get("source_reference"))
+            if errors:
+                issues.append(defect("source_mismatch", target, errors[0], text, True))
         if step <= max(snapshot["last_change"], snapshot["last_save"]):
             issues.append(defect("final_readback_required", target,
                                  "read notes after the final change and save", step))
