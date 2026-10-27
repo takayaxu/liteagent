@@ -80,6 +80,8 @@ description: 按失败轨迹诊断 LiteAgent 的单题 OSWorld 故障，经人�
 
 通过以原始 OSWorld evaluator 的正式结果为准，同时核验结果对应当前题及源码、配置完整性。HTTP 200、进程退出码 0、模型声明完成、单元测试通过或手工查看输出，都不能替代题目 PASS。
 
+核对任务中的 evaluator options 时，必须阅读原函数实际读取和使用的选项，不能仅凭配置中的键名推断其生效。逐段 strip、空白归一化等只读诊断必须与原始逐字符差异并列记录，不得将归一化相等当作原 evaluator 相等；不修改 evaluator 或任务选项迁就产物。
+
 ## 2. 找到根因，提出通用最小方案
 
 从最早偏离正确契约的环节向后追踪因果链，区分模型决策、工具 schema/生成约束、传输协议、Adapter 实现、执行环境、观察反馈和完成判定。基础设施错误也要保留原始响应；例如 HTTP 200 中的 grammar 错误不能归为正常模型回复或直接当成断流。
@@ -324,6 +326,8 @@ flowchart TD
 - 2026-10-27用户回复“方案1”，明确批准77 Plan-v1方案1；human_review=true持续。基点63dea9f与77失败基线386ec1c的src/bin/config逐字相同，原失败证据仍适用。批准范围为通用paragraph.split说明、原生分段索引/空右段/段末边界回执及模型投影补强；保留已有合法拆分和模型决策，不实施方案3完成检查，不改模型/预算/evaluator，不按题目固定句数或答案分支。独立repair树实施后定向检查、冻结候选、原条件新目录正式复跑；当前无77正式PASS。
 
 - 2026-10-27 Order77获批Plan77-v1方案1已冻结候选 `d7f68db`，45focused及独立原生拆分、普通/恢复实际消息投影检查通过；10项相邻旧失败在无补丁基线复现，Ruff/diff/check通过。run002从干净detached候选正式启动，沿用run001同一外部配置、原模型100步1800秒/原evaluator，统一绝对任务锁全生命周期，owner liuxv-repair77-run002-20261027，输出 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-002/output`。尚无正式PASS，候选未集成，human_review=true。
+
+- 2026-10-27 Order77候选d7f68db run002正式failed/reward0/agent_done，5步227.142秒，source/config true，seal fb9df96e6f6394b49f471b6f9bdb0fa4a4cd8856b9226da28805012662c646bb；候选保留独立分支、不集成。实际request0003已包含新段末/空段指导；step3模型一次选六个句间标点[.,.,.,!,.,.]，没有末句末尾拆分，28→40段，全文字符不变；4回读、5完成。保存产物与Gold1/3逐段strip后完全相同，但严格原文7段不同：六个原有句间空格留在新段开头，参考留在左段末尾。原compare_docx_files并未读取配置strip_whitespace选项；同原始文件分别传false/true均0。只在内存将六个已观察分隔空格归到前句后，全部原始段落与Gold1逐字符一致；无文件/evaluator/任务改动，非正式PASS。run001也有同空白差异；上一轮只列规范化相等不足以代表原验收，已补充工作流要求核对选项实际实现及原始空白。证据 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-002/output`、外部run-002/whitespace-diagnosis.json。human_review=true，Plan77-v2直接对话待人工：方案1通用句间空白边界顶层说明及原生parts前后空白计数/投影，保留显式位置选择和全部字符，不自动改参；方案2仅说明；方案3新增before_text边界能力（范围更大）。推荐1；未实施v2，不不变重跑，后续79/87/93/97/98/100仍等待。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
