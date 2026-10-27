@@ -798,7 +798,9 @@ def collect_initial_completion_evidence(
         "table.sort",
         "workbook.create_new",
     }
-    impress_mutation = last_domain == "libreoffice_impress"
+    impress_mutation = (
+        last_domain == "libreoffice_impress" and not last_action.startswith("settings.")
+    )
     office_settings_only = state.domain.startswith("libreoffice_") and all(
         effective_canonical_action(event, state.domain)[1].startswith("settings.")
         for event in mutations

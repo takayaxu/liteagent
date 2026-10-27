@@ -181,3 +181,12 @@ def test_protected_write_is_rejected_before_the_executor_receives_it():
         '_model_visible_tools': build_tools(s.domain, ['slide.set_notes'], include_gui=False)})
     assert result.executed is False
     assert 'already had notes' in str(result.error)
+
+
+def test_multi_apps_application_settings_do_not_require_presentation_save():
+    e = event(1, 'settings.set', {'name': 'test', 'value': True})
+    s = state(e)
+    s.instruction = 'Change the Impress application preference.'
+    missing = str(gate(s).get('missing', []))
+    assert 'save the LibreOffice document' not in missing
+    assert 'perform structural read-back' not in missing
