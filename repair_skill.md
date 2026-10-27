@@ -309,6 +309,8 @@ flowchart TD
 
 - 2026-10-27 Order35用户明确批准“选择方案1的同时加强图片页完成检查”：Plan35-v1方案1人工通过，human_review=true持续；从当前0048ece独立分支codex/repair-35-20261027、独立repair树实施通用插入位置契约修复，并加强明确图片页的总页数、每页图片数量/顺序、残留对象与保存后完整观察检查。运行代码不含题目固定页数/文件名/参考数据，不安排固定清理操作，差异交模型选择修复。基线f6f8d1c至0048ece的src/bin/config逐字相同，基线证据仍适用，无需重复。尚无正式候选PASS。
 
+- 2026-10-27 Order35人工批准Plan35-v1方案1已冻结候选 `e85c82a`（独立repair树）；通用零基插入位置/原页身份核验、图片页数量/残留对象/原生内容指纹顺序及最终写入保存后完整回读。126focused通过；3项相邻旧失败在干净基线复现；原生前插中插追加、指纹保存重开稳定及run001只读失败回放通过，Ruff/diff/check通过。run002从干净detached候选正式启动，原run001外部config、原模型100步1800秒与evaluator不变；统一绝对lock全生命周期，owner liuxv-repair35-run002-20261027，输出 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-002/output`。尚无正式PASS，不集成候选；human_review=true持续。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
