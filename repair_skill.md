@@ -295,6 +295,8 @@ flowchart TD
 
 - 2026-10-27 10:15（北京时间）继续Order28：宿主load约30、Docker29.1.3及exec恢复（只读true0.166秒），旧自有guest85cfac43已自然Exited，仅精确owner容器及匿名卷定向移除成功；公共端口锁root0666、原FileLock同路径inode取得释放成功，未改权限/网络/服务。独立审核 `/root/review27` 通过ENV28-retry-v2一次原条件恢复重试。run-005新干净 `c9607ca` detached源码、沿用原config-input/model/100步1800秒/evaluator，统一绝对任务锁覆盖全生命周期；owner `liuxv-repair28-run005-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-005/output`。旧interrupted原证据不变，候选未集成，human_review=false。
 
+- 2026-10-27 Order28 run-005正式failed/reward0/agent_done，26步924.845秒，source/config true，seal `746ed23f5c06b2fff3f40f54ac29241d458959ac58d6ae919ee5f1340a488d55`；环境初始化/模型/evaluator正常。最终仅C20green、General，仍24个计算值100倍。step4原始response/tool arguments/provider_arguments/执行参数一致含*100，无中间改写；其文字推断曾提直接相除但实际调用不一致；新系统尺度指导真实可见。候选c9607ca未集成；新证据交同一审核者/root/review27诊断，不原样重跑。human_review=false。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
