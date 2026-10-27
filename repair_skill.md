@@ -321,6 +321,8 @@ flowchart TD
 
 - 2026-10-27 Order77最新活动 `386ec1c` 无补丁run001正式failed/reward0/agent_done，31步1117.632秒，source/config true；source seal仍acebf01a867efcda668bf21a969b54189a924b273a0f5bca9febdf6ccd66c0cf。6/10/18/19/21/23正确拆6个句间边界，26又在末句末尾以blank_paragraphs_between=1拆分，生成空右段及分隔空段、叠加原有空段，末句后共3空段；29保存，30仅读前10段，31完成门接受。最终42段；原四验收变体39–41段，最接近变体只多一个空段，内存仅移除所观察尾部一个空段即全部规范化段落文本一致（只读诊断、非正式PASS，原分数/产物不改）。API回执及实际request0011已有正确right_paragraph_index=4，模型却选3；原生读取段数28→30→32，未见旧快照。证据 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-001/output`、外部text-structure-diagnosis.json。human_review=true，Plan77-v1对话待人工：方案1通用paragraph.split工具说明及原生分段索引/空右段/边界回执与投影补强，保留合法末尾拆分、模型自选；方案2仅说明；方案3显式拆句范围的结果完成检查。推荐1，但效果须原条件新候选复跑验证；77候选未实施，不原样重跑。后续79/87/93/97/98/100等待。
 
+- 2026-10-27用户回复“方案1”，明确批准77 Plan-v1方案1；human_review=true持续。基点63dea9f与77失败基线386ec1c的src/bin/config逐字相同，原失败证据仍适用。批准范围为通用paragraph.split说明、原生分段索引/空右段/段末边界回执及模型投影补强；保留已有合法拆分和模型决策，不实施方案3完成检查，不改模型/预算/evaluator，不按题目固定句数或答案分支。独立repair树实施后定向检查、冻结候选、原条件新目录正式复跑；当前无77正式PASS。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
