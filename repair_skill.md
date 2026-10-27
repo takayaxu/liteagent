@@ -385,6 +385,8 @@ flowchart TD
 
 - 2026-10-27 Order97 Plan-v4方案1候选 `728ceff` 已冻结；run004从干净detached树按原run001配置启动，原模型/100步1800秒/原始evaluator不变、无字体配置变化。统一绝对任务锁覆盖准备/执行/评分/清理，owner `liuxv-repair97-run004-20261027`；输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-004/output`，结果待定。候选未集成，10通过/5待修，human_review=true持续。
 
+- 2026-10-27 Order97 Plan-v4候选728ceff run004模型前 `environment_failure/reward=null`，63.318秒，source/config integrity均true。失败发生在Docker create_container_from_config，SDK等待60秒无返回，未进入guest准备或模型，无备注写入、无evaluator。独立自有不启动/无网络OSWorld镜像create探测15秒同样ReadTimeout；另本地registry:2小镜像CLI create20秒仍超时，排除只针对候选、原镜像或SDK调用的故障。SDK与CLI同Docker daemon，ping/info/list可返回（300容器、info报告27running），磁盘6.6TB可用，创建路径阻塞但底层锁/存储原因尚无法确认；无system journal读取权限、sudo -n需密码，不重启共享Docker或清理其他人的容器/镜像。两probe及任务按owner/name查询均无遗留容器，runner已退出、统一任务锁释放。证据run004/output/results/results.json、final-integrity.json、exception.txt及run004/environment-diagnosis.json。已批准Plan-v4实现/109checks/真实step11/17和完成检查回放有效，正式效果尚未验证；候选保持独立不集成，10通过/5待修，human_review=true。恢复Docker创建能力后从同一728ceff新run005按原配置继续，无新方案/运行条件变更请求，不用重复碰运气整题复跑代替环境修复。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
