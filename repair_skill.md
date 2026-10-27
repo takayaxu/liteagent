@@ -323,6 +323,8 @@ flowchart TD
 
 - 2026-10-27用户回复“方案1”，明确批准77 Plan-v1方案1；human_review=true持续。基点63dea9f与77失败基线386ec1c的src/bin/config逐字相同，原失败证据仍适用。批准范围为通用paragraph.split说明、原生分段索引/空右段/段末边界回执及模型投影补强；保留已有合法拆分和模型决策，不实施方案3完成检查，不改模型/预算/evaluator，不按题目固定句数或答案分支。独立repair树实施后定向检查、冻结候选、原条件新目录正式复跑；当前无77正式PASS。
 
+- 2026-10-27 Order77获批Plan77-v1方案1已冻结候选 `d7f68db`，45focused及独立原生拆分、普通/恢复实际消息投影检查通过；10项相邻旧失败在无补丁基线复现，Ruff/diff/check通过。run002从干净detached候选正式启动，沿用run001同一外部配置、原模型100步1800秒/原evaluator，统一绝对任务锁全生命周期，owner liuxv-repair77-run002-20261027，输出 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-002/output`。尚无正式PASS，候选未集成，human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
