@@ -331,6 +331,8 @@ flowchart TD
 
 - 2026-10-27 Order77 Plan-v2：用户明确选择“方案1”，批准保留v1观察改进，加强paragraph.split顶层句间空白归属说明，并为原生parts增加前后空白计数、保留模型投影；显式边界及原始字符不变，不自动改参数，不新增before_text。human_review=true；独立修复树实施后定向检查、原生烟测、冻结候选，再以原配置正式run-003；仅正式PASS后集成。
 
+- 2026-10-27 Order77 Plan-v2方案1候选 `96e4ee4e9ff27f96ed9c5d44f661e9b62a19df77` 已冻结，49定向检查/原生LO/实际消息投影/Ruff/diff/check通过；保留10项基线旧失败说明。run003从干净候选正式启动，source seal `286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9`；与run002实际配置除源码身份/experiment ID外逐项相同，原模型100步1800秒/evaluator不变。统一绝对任务锁覆盖全生命周期，owner liuxv-repair77-run003-20261027；输出 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-003/output`。正式结果待定，候选未集成；human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
