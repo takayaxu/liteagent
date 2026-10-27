@@ -423,6 +423,8 @@ flowchart TD
 
 - 2026-10-27 Order97 Plan-v6冻结运行候选3694724，附加指令独立运行提交66dbcb3（仅本轮任务副本instruction差异），run008干净工作树启动。runtime/src/bin/configs与3694724一致，原setup/参考/evaluator及9B thinking100步1800秒不变；owner liuxv-repair97-run008-v6-20261027，统一绝对锁全生命周期，输出 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-008/output`，待正式终态，不使用手工成品；原始97失败与用户附加条件结果分开报告，未PASS不集成，human_review=true。
 
+- 2026-10-27 Plan-v6 run008模型前environment_failure/reward=null，68.903秒，Docker create60秒ReadTimeout，source/config true，无模型/写入/评分。原生probe guest停止API亦超时，核对owner后定向删除自有6a5eef1ce37c；创建探测cc57e2002baa在2.035秒成功并清理，run008超时后迟生成bb5605381fea/created亦逐个核对owner移除。证据run008/docker-recovery.json，未重启Docker/更改超时或碰其他owner。恢复后新run009从同66dbcb3干净detached、原run008字节相同配置正式重试，owner liuxv-repair97-run009-v6-20261027，统一锁全生命周期，输出repair-97-20261027/run-009/output；同一已批准v6方案，无新范围，待终态、未集成。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
