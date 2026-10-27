@@ -286,7 +286,8 @@ def _compact_presentation_hint_for_model(
     result: dict[str, Any] = {
         key: value.get(key)
         for key in ("identity", "url", "title", "slide_count", "inspected_slides", "source_images",
-                    "notes_status", "notes_status_omitted", "notes_status_guidance")
+                    "notes_status", "notes_status_omitted", "notes_status_guidance",
+                    "paragraph_inventory", "paragraph_inventory_count")
         if key in value
     }
     slides: list[dict[str, Any]] = []
@@ -487,6 +488,23 @@ def _shape_tool_target(shape: dict[str, Any], slide: dict[str, Any]) -> dict[str
     return {}
 
 
+def _paragraph_inventory(shape: dict[str, Any]) -> dict[str, Any]:
+    """Keep native paragraph addresses and empty state ahead of rich styling."""
+    paragraphs = shape.get("paragraphs")
+    if not isinstance(paragraphs, list):
+        return {}
+    observed = [p for p in paragraphs if isinstance(p, dict)
+                and isinstance(p.get("index"), int) and not isinstance(p["index"], bool)
+                and isinstance(p.get("text"), str)]
+    limit = MODEL_CONTEXT_MAX_LIST_ITEMS
+    selected = observed if len(observed) <= limit else [*observed[:limit // 2], *observed[-(limit - limit // 2):]]
+    return {
+        "paragraph_count": len(paragraphs),
+        "index_text_lengths": [[p["index"], len(p["text"])] for p in selected],
+        "paragraph_inventory_omitted": len(paragraphs) - len(selected),
+    }
+
+
 def compact_presentation_hint_for_model(
     value: dict[str, Any],
 ) -> dict[str, Any]:
@@ -643,6 +661,7 @@ def compact_presentation_hint_for_model(
                                 "text_style",
                             )
                         },
+                        **_paragraph_inventory(shape),
                         **_shape_tool_target(shape, slide),
                     }
                     for shape in contextual_text_shapes
@@ -692,6 +711,16 @@ def compact_presentation_hint_for_model(
         "url": value.get("url") or identity.get("url"),
         "title": value.get("title") or identity.get("title"),
         "slide_count": value.get("slide_count"),
+        "paragraph_inventory": [
+            [shape["tool_target"]["slide"], shape["path"], shape["paragraph_count"],
+             shape["paragraph_inventory_omitted"], shape["index_text_lengths"]]
+            for page in slide_summaries for shape in page["text_shapes"]
+            if "paragraph_count" in shape and "tool_target" in shape and "path" in shape
+        ],
+        "paragraph_inventory_count": sum(
+            "paragraph_count" in shape and "tool_target" in shape and "path" in shape
+            for page in slide_summaries for shape in page["text_shapes"]
+        ),
         # Reserve the small per-page notes inventory before rich shape details.
         # A page omitted below is not thereby known to have blank notes.
         "notes_status": [

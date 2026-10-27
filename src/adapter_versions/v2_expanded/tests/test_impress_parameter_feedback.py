@@ -8,6 +8,7 @@ from impress_adapter.errors import AdapterError
 from impress_adapter.schema import parse_action_request
 from impress_adapter.service import create_app
 from impress_adapter.tool_manifest import STRICT_ACTION_PARAM_SCHEMAS
+from integrations.lite_agent.context_projection import sanitize
 
 
 @pytest.mark.parametrize("params", [{"slide": 5}, {"slides": 5}, {"slides": [True]}])
@@ -63,3 +64,21 @@ def test_envelope_errors_do_not_mislabel_a_parameter_failure():
     with pytest.raises(AdapterError) as raised:
         parse_action_request({"action": "presentation.inspect", "timeout_ms": -1})
     assert raised.value.details is None
+
+
+def test_format_rejection_explains_selection_without_triggering_metadata_filter():
+    params = {"slide": 2, "selector": {"path": [1]}, "lines": [0, 1]}
+    original = deepcopy(params)
+    with pytest.raises(AdapterError) as raised:
+        parse_action_request({"action": "shape.format_text", "params": params})
+    error = raised.value
+    hint = error.details["detail"]
+    assert "lines only selects text to format" in hint
+    assert "does not delete other lines or paragraphs" in hint
+    assert "shape.delete_paragraph" in hint
+    assert "16777215" not in hint
+    assert error.details["parameter_contract"]["properties"]["color"]["oneOf"][1]["maximum"] == 16777215
+    assert sanitize({"error": {"detail": hint}})["error"]["detail"] == hint
+    assert sanitize({"error": {"detail": "16777215"}})["error"]["detail"] == "<internal-benchmark-metadata>"
+    assert params == original
+    assert parse_action_request({"action": "shape.format_text", "params": {**params, "bold": True}}).params["bold"]

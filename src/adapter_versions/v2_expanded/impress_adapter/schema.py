@@ -728,7 +728,9 @@ def _parameter_type(spec: Mapping[str, Any]) -> str:
     if label == "array" and isinstance(spec.get("items"), Mapping):
         label += "<" + _parameter_type(spec["items"]) + ">"
     for keyword, symbol in (("minimum", ">="), ("maximum", "<="), ("enum", " in ")):
-        if keyword in spec:
+        # Large numeric strings resemble internal identifiers to the existing
+        # metadata filter. Their exact constraints remain typed in the schema.
+        if keyword in spec and len(json.dumps(spec[keyword])) < 8:
             label += symbol + json.dumps(spec[keyword])
     if spec.get("type") == "integer" and isinstance(spec.get("description"), str):
         label += " (" + spec["description"].split(":", 1)[0].split(". ", 1)[0].rstrip(".") + ")"
@@ -763,6 +765,14 @@ def _parameter_error(error: AdapterError, action: str, params: Any) -> AdapterEr
     # Keep an actionable shallow summary even if the full nested schema is
     # shortened in a model-facing execution/repeated-request error context.
     fields = "; ".join(f"{name}={_parameter_type(spec)}" for name, spec in contract["properties"].items())
+    if (action == "shape.format_text" and isinstance(params, Mapping)
+            and not TEXT_FORMAT_FIELDS.intersection(params)):
+        fields = (
+            "Supply a formatting property. lines only selects text to format; "
+            "it does not delete other lines or paragraphs. "
+            "shape.delete_paragraph removes one observed native paragraph. "
+            + fields
+        )
     details["detail"] = (
         f"params required={json.dumps(contract['required'])}; {fields}; "
         f"unexpected={','.join(details.get('unexpected_fields', []))}"
