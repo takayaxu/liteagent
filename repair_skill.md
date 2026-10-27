@@ -252,7 +252,7 @@ flowchart TD
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。既有人工批准继续有效；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
 
-- 待修复 10 题：28、35、63、77、79、87、93、97、98、100；正式验证通过 5 题：11、13、15、24、27。按指定顺序一次处理一题。
+- 待修复 9 题：35、63、77、79、87、93、97、98、100；正式验证通过 6 题：11、13、15、24、27、28。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
 - Order 11 run-001：模型调用前 Hugging Face 原域名连接超时，`environment_failure`；源码/配置完整性均 true。证据 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/output/run-001`。改用 README 已有镜像设置，不修改任务、evaluator 或模型预算。
 - Order 11 run-002：北京时间 2026-10-26 19:56 起，候选干净独立工作树正式复跑；持绝对共享锁 `/home/liuxv/liteagent-reproduction-jobs/v3-repair-vm.lock` 覆盖全生命周期。配置 `/home/liuxv/liteagent-local-runs/repair-11-20261026/run-001/config.json`（SHA256 `ba76727b85351885558a76ab2341efefdbf0493d82a9a3e7806f5b9809c539d3`），原模型与100步/1800秒条件。模型完成11步，原 evaluator `failed / reward=0.0 / agent_done`，source/config integrity 均 true。格式化遗漏 B6、B7（44个周末日期中42个标红）；这两项在完整 A1:F33 返回及模型请求中可见，非截断。首次非连续区域回读参数被拒后恢复；保存并二次回读仍未发现两处遗漏，完成门通过属于模型自报，不能替代 evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-11-rerun002-20261026/output`。批准的 Plan-v2 方案1未通过，运行源码不可集成；下一步按新证据提出修订方案并重新人工审核。
@@ -297,7 +297,9 @@ flowchart TD
 
 - 2026-10-27 Order28 run-005正式failed/reward0/agent_done，26步924.845秒，source/config true，seal `746ed23f5c06b2fff3f40f54ac29241d458959ac58d6ae919ee5f1340a488d55`；环境初始化/模型/evaluator正常。最终仅C20green、General，仍24个计算值100倍。step4原始response/tool arguments/provider_arguments/执行参数一致含*100，无中间改写；其文字推断曾提直接相除但实际调用不一致；新系统尺度指导真实可见。候选c9607ca未集成；新证据交同一审核者/root/review27诊断，不原样重跑。human_review=false。
 
-- 2026-10-27 Order28 Plan28-v3经/root/review27计划及实际diff复核通过：仅range.write顶层工具说明增加通用单位/百分比尺度自查，11行；原properties/required/schema逐字不变，普通/schema恢复/completion恢复tool投影可见，无金融公式/固定坐标/新门禁。66 focused通过，含protocol131pass及2个已证基线multi_apps旧fail；Ruff/diff/check通过。新候选从独立repair树冻结；run-006新干净detached候选、原config/model/100步1800秒/evaluator，统一lock全生命周期，owner `liuxv-repair28-run006-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-006/output`，待正式结果、未集成。human_review=false。
+- 2026-10-27 Order28 Plan28-v3经/root/review27计划及实际diff复核通过：仅range.write顶层工具说明增加通用单位/百分比尺度自查，11行；原properties/required/schema逐字不变，普通/schema恢复/completion恢复tool投影可见，无金融公式/固定坐标/新门禁。66 focused通过，含protocol131pass及2个已证基线multi_apps旧fail；Ruff/diff/check通过。新候选 `a614561` 从独立repair树冻结；run-006新干净detached候选、原config/model/100步1800秒/evaluator，统一lock全生命周期，owner `liuxv-repair28-run006-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-28-20261027/run-006/output`，待正式结果、未集成。human_review=false。
+
+- 2026-10-27 Order28 run-006正式passed/reward1.0/agent_done，23步646.84秒，source/config true；候选 `a614561`，seal `f439690cc91e7e52c94ffa7f4320cb6fea40313c9faa2fc76f729b16d496e9de`。模型step4/5自主写直接相除公式，最终所有表格值与参考一致、仅最高值C20绿色、普通数字0.00；原任务/evaluator/预算不变。独立终态复核/root/review27进行中；活动组合 `5b97df5` 仅合台账变化，src/bin/config与PASS候选逐字一致，seal重算匹配，持集成锁快进；已移出活动待修队列。此前失败及环境中断原证据保留，human_review=false。交付台账正常推送后再核验远端。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
