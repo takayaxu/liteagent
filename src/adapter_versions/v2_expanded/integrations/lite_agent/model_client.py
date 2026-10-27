@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from collections import deque
 from copy import deepcopy
 from collections.abc import Callable
@@ -258,7 +259,9 @@ class _ReasoningCycleDetector:
         return None
 
 
-def _aggregate_stream_response(response: Any) -> Any:
+def _aggregate_stream_response(
+    response: Any, *, progress_timeout_seconds: float | None = None,
+) -> Any:
     """Aggregate streamed Chat Completions deltas into the normal response shape."""
     choices = _stream_value(response, "choices")
     if isinstance(choices, list):
@@ -277,6 +280,7 @@ def _aggregate_stream_response(response: Any) -> Any:
     calls: dict[int, dict[str, Any]] = {}
     detectors = {key: _ReasoningCycleDetector() for key in ("reasoning", "reasoning_content")}
     output_started = False
+    last_progress = time.monotonic()
     for chunk in response:
         model = _stream_value(chunk, "model", model)
         chunk_usage = _stream_value(chunk, "usage")
@@ -284,7 +288,8 @@ def _aggregate_stream_response(response: Any) -> Any:
             usage = chunk_usage
         chunk_choices = _stream_value(chunk, "choices", []) or []
         # A valid call/content in this very chunk wins over reasoning deltas.
-        # Once output starts, never interrupt partially generated arguments.
+        # Once output starts, reasoning repetition detection is disabled;
+        # semantic inactivity still discards the entire unterminated call.
         output_started |= any(
             _stream_value(_stream_value(choice, "delta"), "content")
             or _stream_value(_stream_value(choice, "delta"), "tool_calls")
@@ -293,6 +298,45 @@ def _aggregate_stream_response(response: Any) -> Any:
         terminal_chunk = any(
             _stream_value(choice, "finish_reason") is not None for choice in chunk_choices
         )
+        progress = terminal_chunk or any(
+            any(isinstance(value := _stream_value(delta, key), str) and bool(value)
+                for key in ("content", "reasoning", "reasoning_content"))
+            or any(
+                any(isinstance(value := _stream_value(_stream_value(call, "function"), key), str)
+                    and bool(value) for key in ("name", "arguments"))
+                or (bool(_stream_value(call, "id"))
+                    and _stream_value(call, "id") != calls.get(
+                        _stream_value(call, "index", 0), {}).get("id"))
+                for call in _stream_value(delta, "tool_calls", []) or []
+            )
+            for delta in (_stream_value(choice, "delta") for choice in chunk_choices)
+        )
+        now = time.monotonic()
+        if progress:
+            last_progress = now
+        elif (progress_timeout_seconds is not None
+              and now - last_progress >= progress_timeout_seconds):
+            # Bytes/empty deltas keep HTTP's socket timeout alive, but cannot
+            # extend semantic inactivity. Never accept an unterminated call.
+            snapshot = {
+                "model": model, "finish_reason": None, "client_interrupted": True,
+                "no_progress_seconds": now - last_progress,
+                "message": {"content": "".join(content) or None,
+                            "reasoning": "".join(reasoning) or None,
+                            "reasoning_content": "".join(reasoning_content) or None,
+                            "tool_calls": []},
+                "partial_tool_calls": _jsonable(calls),
+            }
+            closer = getattr(response, "close", None)
+            if callable(closer):
+                try:
+                    closer()
+                except Exception:
+                    pass
+            raise StructuredToolProtocolError(
+                "model stream made no semantic progress within the request timeout",
+                response_snapshot=snapshot,
+            )
         repetition = None
         for choice in chunk_choices:
             finish = _stream_value(choice, "finish_reason")
@@ -740,6 +784,7 @@ class StructuredToolModelClient:
         request_observer: Callable[[dict[str, Any]], None] | None = None,
         transport_trace_dir: str | None = None,
     ):
+        self.request_timeout_seconds = request_timeout_seconds
         hooks = {}
         if transport_trace_dir is not None and client is None:
             from .model_transport_trace import ModelTransportTrace
@@ -857,8 +902,15 @@ class StructuredToolModelClient:
             with_options = getattr(self.client, "with_options", None)
             if callable(with_options):
                 request_client = with_options(timeout=timeout)
+        def aggregate(stream):
+            return _aggregate_stream_response(
+                stream, progress_timeout_seconds=max(float(
+                    request_timeout_seconds if request_timeout_seconds is not None
+                    else self.request_timeout_seconds), 0.1),
+            )
+
         if deadline_monotonic is None:
-            response = _aggregate_stream_response(
+            response = aggregate(
                 request_client.chat.completions.create(**request)
             )
         else:
@@ -866,7 +918,7 @@ class StructuredToolModelClient:
 
             response = run_before_deadline(
                 lambda: request_client.chat.completions.create(**request),
-                _aggregate_stream_response, deadline_monotonic,
+                aggregate, deadline_monotonic,
             )
         if (
             expected_model is not None

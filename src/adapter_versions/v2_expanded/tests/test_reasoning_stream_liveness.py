@@ -120,3 +120,63 @@ def test_ambiguous_quote_and_fence_state_stays_excluded_across_chunks(size, text
         chunk({"reasoning": text[i:i + size]}) for i in range(0, len(text), size)
     ]))
     assert response.choices[0].message.reasoning == text
+
+
+@pytest.mark.parametrize('complete_arguments', [False, True])
+def test_empty_tool_chunks_timeout_without_accepting_partial_or_complete_unterminated_call(
+    monkeypatch, complete_arguments,
+):
+    from integrations.lite_agent import model_client
+    clock = [0.0]
+    monkeypatch.setattr(model_client.time, 'monotonic', lambda: clock[0])
+    def chunks():
+        yield chunk({'tool_calls': [{'index': 0, 'id': 'call', 'function': {
+            'name': 'example', 'arguments': '{}' if complete_arguments else '{'}}]})
+        for second in [100, 200, 240, 300]:
+            clock[0] = second
+            yield chunk({'tool_calls': []})
+    stream = Stream(chunks())
+    with pytest.raises(StructuredToolProtocolError) as caught:
+        _aggregate_stream_response(stream, progress_timeout_seconds=240)
+    assert stream.closed
+    assert caught.value.response_snapshot['message']['tool_calls'] == []
+    assert caught.value.response_snapshot['partial_tool_calls'][0]['name'] == 'example'
+    assert caught.value.response_snapshot['no_progress_seconds'] == 240
+
+
+def test_real_reasoning_and_argument_progress_reset_inactivity_but_empty_chunks_do_not(monkeypatch):
+    from integrations.lite_agent import model_client
+    clock = [0.0]
+    monkeypatch.setattr(model_client.time, 'monotonic', lambda: clock[0])
+    def chunks():
+        for second, delta, finish in [
+            (100, {'reasoning': 'Inspect the source'}, None),
+            (300, {'tool_calls': [{'index': 0, 'function': {'name': 'read', 'arguments': '{'}}]}, None),
+            (500, {'tool_calls': []}, None),
+            (530, {'tool_calls': [{'index': 0, 'function': {'arguments': '}'}}]}, None),
+            (760, {}, 'tool_calls'),
+        ]:
+            clock[0] = second
+            yield chunk(delta, finish)
+    response = _aggregate_stream_response(Stream(chunks()), progress_timeout_seconds=240)
+    assert response.choices[0].message.tool_calls[0].function.arguments == '{}'
+    assert response.choices[0].finish_reason == 'tool_calls'
+
+
+def test_public_client_uses_existing_request_timeout_for_empty_stream_progress(monkeypatch):
+    from types import SimpleNamespace
+    from integrations.lite_agent import model_client
+    clock = [0.0]
+    monkeypatch.setattr(model_client.time, 'monotonic', lambda: clock[0])
+    def chunks():
+        yield chunk({'role': 'assistant'})
+        clock[0] = 240
+        yield chunk({'tool_calls': []})
+    stream = Stream(chunks())
+    sdk = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kw: stream)))
+    client = model_client.StructuredToolModelClient(
+        base_url='http://unused/v1', api_key='EMPTY', request_timeout_seconds=240, client=sdk)
+    with pytest.raises(StructuredToolProtocolError, match='no semantic progress'):
+        client.propose(model='synthetic', messages=[], tools=[], temperature=0,
+                       output_token_budget=32, enable_thinking=False)
+    assert stream.closed

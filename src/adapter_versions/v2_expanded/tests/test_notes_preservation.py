@@ -43,7 +43,13 @@ def inspection(step, notes, indices=None, url='file:///tmp/Talk.pptx', count=Non
 
 def state(*events):
     return RuntimeState(task_id='synthetic-notes', domain='multi_apps',
-                        instruction=INSTRUCTION, events=list(events))
+                        instruction=INSTRUCTION, events=[source_read(), *events])
+
+
+def source_read(step=0, text='Observed source script', path='/tmp/script.docx', **metadata):
+    return event(step, 'document.read_file', {'path': path}, {
+        'path': path, 'text': text, 'source_truncated': False, **metadata},
+        domain='libreoffice_writer')
 
 
 def write(step, index, text):
@@ -73,7 +79,7 @@ def test_existing_spaces_and_punctuation_are_protected_without_rewriting(forward
     assert not errors(s, 0, 'Source text', forwarded)
     assert errors(s, 1, 'Keep my notes.', forwarded)
     assert not errors(s, 1, original, forwarded)
-    assert s.events[0].result == state(inspection(1, ['', original])).events[0].result
+    assert s.events[1].result == state(inspection(1, ['', original])).events[1].result
 
 
 def test_unknown_or_stale_target_is_not_treated_as_blank():
@@ -190,3 +196,48 @@ def test_multi_apps_application_settings_do_not_require_presentation_save():
     missing = str(gate(s).get('missing', []))
     assert 'save the LibreOffice document' not in missing
     assert 'perform structural read-back' not in missing
+
+
+def test_transfer_needs_actual_source_text_not_destination_or_listing():
+    s = state(inspection(1, ['', 'Keep existing']))
+    s.events = s.events[1:]
+    assert 'No complete source-text read' in str(errors(s, 0, 'Invented script'))
+    assert not errors(s, 1, 'Keep existing')  # Restoration needs no source file.
+    assert 'notes.source_unread' in str(gate(s))
+    s.events.append(event(2, 'filesystem.find', payload={
+        'matches': [{'path': '/tmp/script.docx'}]}, domain='os'))
+    assert errors(s, 0, 'Invented script')
+    s.events.append(source_read(3))
+    assert not errors(s, 0, 'Model-selected source excerpt')
+
+
+def test_named_source_and_complete_window_coverage_are_required():
+    s = state(inspection(1, ['']))
+    s.events = s.events[1:]
+    s.instruction = INSTRUCTION + ' Use remarks.docx.'
+    s.events.append(source_read(2, path='/tmp/unrelated.docx'))
+    assert errors(s, 0, 'Unread script')
+    s.events.append(source_read(3, 'abc', path='/tmp/remarks.docx',
+                   source_start_char=0, source_end_char=3, source_total_chars=6,
+                   source_truncated=True, next_start_char=3))
+    assert errors(s, 0, 'Partial script')
+    s.events.append(source_read(4, 'ef', path='/tmp/remarks.docx',
+                   source_start_char=4, source_end_char=6, source_total_chars=6))
+    assert errors(s, 0, 'Gap in read coverage')
+    s.events.append(source_read(5, 'd', path='/tmp/remarks.docx',
+                   source_start_char=3, source_end_char=4, source_total_chars=6))
+    assert not errors(s, 0, 'abc')
+    s.events.append(event(6, 'file.write_text', {'path': '/tmp/remarks.docx'}, domain='vs_code'))
+    assert errors(s, 0, 'Stale source')
+
+
+def test_failed_or_projected_truncated_source_read_is_not_proof():
+    s = state(inspection(1, ['']))
+    s.events = s.events[1:]
+    failed = source_read(2)
+    failed.error = {'status': 'failed'}
+    s.events += [failed, source_read(3, '...<truncated>...'),
+                 source_read(4, 'Only a preview', context_truncated=True)]
+    assert errors(s, 0, 'Unproven source')
+    s.instruction = 'Write new speaker notes for all PowerPoint slides.'
+    assert not errors(s, 0, 'Newly authored text is explicitly requested')
