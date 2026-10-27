@@ -323,6 +323,8 @@ flowchart TD
 
 - 2026-10-27用户回复“方案1”，明确批准77 Plan-v1方案1；human_review=true持续。基点63dea9f与77失败基线386ec1c的src/bin/config逐字相同，原失败证据仍适用。批准范围为通用paragraph.split说明、原生分段索引/空右段/段末边界回执及模型投影补强；保留已有合法拆分和模型决策，不实施方案3完成检查，不改模型/预算/evaluator，不按题目固定句数或答案分支。独立repair树实施后定向检查、冻结候选、原条件新目录正式复跑；当前无77正式PASS。
 
+- 2026-10-27 Order77已按人工批准Plan77-v1方案1完成独立候选：paragraph.split仅增加原生indexed parts、空/空白标记、段末/空右段、前后段数及following_paragraph观察，模型投影保留；说明明确空段按原始索引计数、段末额外空右段及原有后续段落叠加。原生拆分逻辑/参数校验/模型与完成门均未改变，无自动拆句或固定操作。45focused通过；10项相邻旧失败在干净386ec1c基线同样复现（2项旧转发schema断言、8项fixture缺config），不修改无关测试。独立LO原生句中/段末实验验证索引、原文、邻段及三空段回执，普通/执行恢复实际messages投影验证通过；Ruff/diff/check.sh通过。当前待冻结候选及原配置run002正式复跑，未PASS/集成；human_review=true。外部原生证据native-split-observation.json位于本题目录。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。

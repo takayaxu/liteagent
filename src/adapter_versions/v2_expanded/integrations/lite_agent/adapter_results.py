@@ -4391,8 +4391,22 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "blank_paragraphs_between",
                 "text_unchanged",
                 "paragraphs",
+                "parts",
+                "split_at_paragraph_end",
+                "right_part_empty",
+                "paragraph_count_before",
+                "paragraph_count_after",
+                "following_paragraph",
             )
             if key in result
+        } | {
+            "guidance": (
+                "parts contains the observed raw paragraph indices, including blanks. "
+                "Use right_paragraph_index for the right part; the old index now covers "
+                "only the left part. Inspect the full parts span and following_paragraph "
+                "to verify spacing. An end split creates an empty right part in addition "
+                "to the requested separator blanks and existing following paragraphs."
+            ),
         }
     if domain == "libreoffice_writer" and action == "paragraph.clear_text":
         verification = body.get("verification") or {}

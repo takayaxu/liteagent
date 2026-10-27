@@ -527,7 +527,15 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "Returns the observed parts and each new right_paragraph_index. "
             "After splitting, the old index refers only to the left part. "
             "The original paragraph's text now spans the returned parts; when a right "
-            "part still contains text, inspecting only the old index omits that text."
+            "part still contains text, inspecting only the old index omits that text. "
+            "parts pairs each observed text or blank with its current raw index; empty "
+            "paragraphs count in these indices. Copy right_paragraph_index to locate "
+            "the right part. A split at the original paragraph end creates an empty "
+            "right part in addition to blank_paragraphs_between and any existing "
+            "following paragraphs. For sentence separation, select boundaries between "
+            "sentences; the existing paragraph end already ends its final sentence. "
+            "Choose an end split only when an additional paragraph is intended there. "
+            "Verify the full returned parts and following_paragraph when checking spacing."
         ),
         "properties": {
             "index": {
@@ -559,6 +567,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                     "starts at the paragraph beginning, then resumes immediately after "
                     "each match. Include existing spaces in an anchor to leave those "
                     "spaces on the left. All anchors must match before any edit is made."
+                    " Copy literal punctuation from the observation, including curly quotes."
                 ),
             },
             "blank_paragraphs_between": {
@@ -567,7 +576,10 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
                 "maximum": 10,
                 "description": (
                     "Empty paragraphs at each selected boundary: 0 for adjacent paragraphs "
-                    "(default), 1 for one empty paragraph. Existing characters are preserved."
+                    "(default), 1 for one empty paragraph BETWEEN the left and right parts. "
+                    "At a paragraph-end boundary the right part is also empty, so 1 adds "
+                    "two empty paragraphs before the existing following paragraphs. "
+                    "Existing characters and following paragraphs are preserved."
                 ),
             },
         },

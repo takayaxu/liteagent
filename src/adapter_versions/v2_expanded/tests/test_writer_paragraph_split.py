@@ -8,6 +8,8 @@ from integrations.lite_agent.adapter_results import (
     adapter_context_hint,
     compact_context_hint_for_model,
 )
+from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
+from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.search_recovery_tools import constrain_adapter_call_routes
 from integrations.lite_agent.tool_catalog import (
     build_tools,
@@ -259,3 +261,95 @@ def test_native_split_queries_recall_the_public_primitive():
     )
     assert "paragraph.split" in {item["action"] for item in hits}
     assert "paragraph.separate_sentences" not in {item["action"] for item in hits}
+
+
+@pytest.mark.parametrize("gap", [0, 1, 2])
+def test_end_split_reports_empty_right_part_and_preserves_existing_blank(session, gap):
+    body = session.doc.Text
+    original = [p.String for p in body.paragraphs]
+    body.paragraphs.insert(2, Paragraph("", body))
+    result = uno_worker._split_paragraph(session, {
+        "index": 1, "after_text": "\u201d.", "blank_paragraphs_between": gap,
+    })
+
+    assert result["split_at_paragraph_end"] is True
+    assert result["right_part_empty"] is True
+    assert result["paragraph_count_before"] == 4
+    assert result["paragraph_count_after"] == 5 + gap
+    assert [(p["index"], p["text"], p["is_empty"]) for p in result["parts"]] == [
+        (1, original[1], False), *[(i + 2, "", True) for i in range(gap + 1)],
+    ]
+    assert result["following_paragraph"] == {
+        "index": gap + 3, "text": "", "is_empty": True, "is_blank": True,
+    }
+    assert [p.String for p in body.paragraphs] == [
+        original[0], original[1], *([""] * (gap + 2)), original[2],
+    ]
+
+
+def test_interior_split_parts_can_be_used_without_calculating_a_new_index(session):
+    result = uno_worker._split_paragraph(session, {
+        "index": 1, "after_text": "notes.", "blank_paragraphs_between": 1,
+    })
+    assert result["split_at_paragraph_end"] is False
+    assert result["right_part_empty"] is False
+    right = result["parts"][-1]
+    assert right["index"] == result["right_paragraph_index"] == 3
+    assert right["text"] == "  Middle?  Tail \u201cZ\u201d."
+    assert result["parts"][1] == {"index": 2, "text": "", "is_empty": True, "is_blank": True}
+    next_result = uno_worker._split_paragraph(session, {
+        "index": right["index"], "after_text": "Middle?", "blank_paragraphs_between": 1,
+    })
+    assert next_result["parts"][-1]["index"] == 5
+    assert next_result["following_paragraph"]["text"] == "Unchanged tail"
+
+
+def test_end_of_document_and_whitespace_right_part_have_distinct_observations(session):
+    body = session.doc.Text
+    body.paragraphs = [Paragraph("Left.  ", body)]
+    result = uno_worker._split_paragraph(session, {"index": 0, "after_text": "."})
+    assert result["split_at_paragraph_end"] is False
+    assert result["right_part_empty"] is False
+    assert result["parts"][-1] == {"index": 1, "text": "  ", "is_empty": False, "is_blank": True}
+    assert result["following_paragraph"] is None
+
+
+@pytest.mark.parametrize("recovery", [False, True])
+def test_split_observation_reaches_actual_model_messages(session, recovery):
+    result = uno_worker._split_paragraph(session, {
+        "index": 1, "after_text": "\u201d.", "blank_paragraphs_between": 1,
+    })
+    hint = adapter_context_hint("libreoffice_writer", "paragraph.split", {"result": result})
+    compact = compact_context_hint_for_model(hint, remaining_chars=2000)
+    assert compact["split_at_paragraph_end"] is True
+    assert compact["right_part_empty"] is True
+    assert compact["parts"][-1]["index"] == 3
+    assert compact["following_paragraph"]["text"] == "Unchanged tail"
+    state = RuntimeState(
+        task_id="synthetic-split-observation", domain="libreoffice_writer",
+        instruction="Split the observed paragraph at the selected boundary.",
+        events=[ExecutionEvent(
+            step=1, timestamp_utc="2030-01-01T00:00:00Z", executed=True,
+            proposed={"kind": "adapter", "action": "paragraph.split", "arguments": {"index": 1}},
+            result={"context_hint": hint},
+        )],
+    )
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused/v1", include_gui=False),
+                      SimpleNamespace(), model_client=SimpleNamespace(client=object()))
+    messages = agent._messages(state, b"png", execution_recovery=recovery)
+
+    def strings(value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for item in value.values():
+                yield from strings(item)
+        elif isinstance(value, list):
+            for item in value:
+                yield from strings(item)
+
+    text = "\n".join(strings(messages))
+    assert '"split_at_paragraph_end": true' in text
+    assert '"right_part_empty": true' in text
+    assert '"following_paragraph"' in text
+    assert '"parts"' in text

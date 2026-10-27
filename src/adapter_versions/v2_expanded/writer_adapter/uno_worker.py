@@ -2360,6 +2360,21 @@ def _split_paragraph(session: WriterSession, params: dict[str, Any]) -> dict[str
         "blank_paragraphs_between": blank_between,
         "right_paragraph_index": right_index,
         "paragraphs": observed,
+        "parts": [
+            {"index": index + offset, "text": text,
+             "is_empty": text == "", "is_blank": not text.strip()}
+            for offset, text in enumerate(observed)
+        ],
+        "split_at_paragraph_end": search_start == len(original_text),
+        "right_part_empty": observed[-1] == "",
+        "paragraph_count_before": len(paragraphs),
+        "paragraph_count_after": len(after),
+        "following_paragraph": (
+            {"index": right_index + 1, "text": str(after[right_index + 1].String),
+             "is_empty": str(after[right_index + 1].String) == "",
+             "is_blank": not str(after[right_index + 1].String).strip()}
+            if right_index + 1 < len(after) else None
+        ),
         "text_unchanged": True,
     }
     if len(boundaries) == 1:
