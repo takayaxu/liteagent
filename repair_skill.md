@@ -90,6 +90,8 @@ description: 按失败轨迹诊断 LiteAgent 的单题 OSWorld 故障，经人�
 
 涉及保留已有内容的任务，分别比较原始输入、模型修改后产物和参考。将模型新引入的错误与输入中已存在的参考差异分开记录；尤其只改备注时，原正文的空段/段数差异不能归为备注写入副作用，也不能未经授权删除来适配参考。完成提示、原生保存及只读诊断均不能覆盖原始评分中的其他失败。
 
+追查输入/参考一致性时，优先用上游内容哈希（如LFS SHA-256）核对本地文件，再核对题目配置和固定版本评分代码是否与上游一致；定位到原始XML/段落以及实际失败的比较条件。文件修改时间、修订号和保存应用只作为来源线索，不能据此断言作者执行了哪个编辑动作；没有作者轨迹时明确保留不确定性。逐页只读诊断与整题正式评分分开记录，不把局部通过或参考差异诊断用于销项。
+
 ## 2. 找到根因，提出通用最小方案
 
 从最早偏离正确契约的环节向后追踪因果链，区分模型决策、工具 schema/生成约束、传输协议、Adapter 实现、执行环境、观察反馈和完成判定。基础设施错误也要保留原始响应；例如 HTTP 200 中的 grammar 错误不能归为正常模型回复或直接当成断流。
@@ -400,6 +402,10 @@ flowchart TD
 - 2026-10-27 Order97 Plan-v5候选 `19f2af7` run006正式 `failed/reward0.0/agent_done`，36步、1638.443秒，source/config integrity均true。7页中原缺1/2/3/6，实际仅15/19/20/22步成功补这4页；第2页首次把换行变空格在16步被拒，19步原样复制后成功。21/25步尝试覆盖已有4/5页均被执行前保护拒绝，原4/5/7备注逐字符保留；第7页无改写。34步原生presentation.save成功117315bytes，35步保存后全7页inspect，36步完成门通过。21步新安全跳过理由在实际request22完整可见、未被metadata过滤，随后22步补第6页；notes_progress也实际可见，证实v5反馈分支生效，但不声称消除模型所有重复尝试。全7页备注按原evaluator.notes.strip规则与参考相等，正文文本对输入无变化。
 
 - 本次97原评分首个真实失败点已核对runner.log947–952行：人类第4页第4个正文对象，输出11段、参考10段；原输入同为11段，末尾空段既存，非备注工具或保存新增。原evaluator首次与随后归档均下载117315bytes，本轮不存在run005首次旧文件/稍后正确文件的大小分歧；正式0分不可改写为PASS。剩余诊断事实：前10步GUI开文件对话框/错误点击，17/23步虚构slide.inspect、27步presentation.inspect传slide而非slides被拒，30/33步正确恢复读取；接口选择低效但最终保存/全页回读已完成，不据此另造补丁或不变重跑。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-006/output`、run006/notes-diagnosis.json、root-cause.json、trace-diagnosis.json、v5-feedback-evidence.json。runner退出、自有guest查询无残留、统一公共锁已释放；失败候选保持独立不集成，10通过/5待修、human_review=true。下一步对话审核：方案1保留97原失败与备注已正确事实，先推进98当前源码基线；方案2先只读追查上游输入/参考一致性，不修改正式任务/参考/evaluator或按gold删除正文空段。未批准前不启动98或新增实现。
+
+- 2026-10-27用户选择“2”，批准97继续只读追查原始/参考来源。已核对上游HuggingFace LFS：原输入118598bytes/SHA256 ab4b65d92b40ad172f01f2ca5d7decd72fb1e970dc6ff2f7e8d25b09c7b57b44、参考119034bytes/dbefcaa98ecf1511016ac3063cba1c2ca70ac7e51d5e590d773afa95cb7591e0均与本地逐字一致；上游最近上传分别98dcf66/bc44e06，排除本地损坏/错下载。题目配置与pinned091f5ef及查询时上游main逐字相同，评分slides.py与pinned逐字相同。历史2024-03-04题目已分别引用原始/参考两个GoogleDrive ID，2025-05迁移到HF；未取旧Drive二进制，不声称证实迁移前字节。原文件元数据revision500/modified2024-03-03T15:03:18Z，参考502/16:02:21Z，均LibreOffice7.3.7.2；仅证明文件自述编辑线索，不能判定手动删除还是参考制作保存行为。
+
+- 97来源追查结论：第4页正文前10段内容及结构一致，原文件/本轮输出均另有无文字、无run的第11段，参考没有。输入/输出该正文XML仅尺寸精度差360EMU，所有段落原样保留；输出/参考7页slide XML差异仅页码字段UUID及第4页末空段。原compare_pptx_files先用text.strip比较，再无条件比较段数（slides.py516），examine_shape=false及examine_bullets=false均不关闭此检查，构成题意只补备注与参考正文结构/严格评分的上游一致性冲突。未改函数代码的逐页内存视图只读诊断：1/2/3/5/6/7为1，第4页为0；完整原函数仍0，正式失败保留，不等同重新正式PASS。无作者编辑录像，空段在参考制作时具体如何消失仍未知。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/reference-investigation/summary.json`及同目录上游响应、历史题目、XML和contract-diagnosis.json；无新运行补丁、无正式复跑、未改任务/参考/正文/评分器，19f2af7保持独立不集成，10通过/5待修，98未启动、human_review=true。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
