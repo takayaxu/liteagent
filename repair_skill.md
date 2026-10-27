@@ -333,6 +333,8 @@ flowchart TD
 
 - 2026-10-27 Order77 Plan-v2方案1已实施：顶层明确句间已有空白随after_text保留在左段，同时尊重显式空白/位置要求；parts增加leading_whitespace_count/trailing_whitespace_count，投影原样保留及解释，不改拆分算法/参数。49项定向检查通过；排除10项已在干净基线确认的旧失败。Ruff/diff/check.sh通过；独立原生LO对比不含空白/含空白锚点及段末拆分，观察计数、全文字符及邻段均正确，证据native-split-whitespace-v2.json。待冻结候选、原配置run003正式复跑，未PASS/集成。
 
+- 2026-10-27 Order77 Plan-v2方案1候选 `96e4ee4e9ff27f96ed9c5d44f661e9b62a19df77` 已冻结，49定向检查/原生LO/实际消息投影/Ruff/diff/check通过；保留10项基线旧失败说明。run003从干净候选正式启动，source seal `286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9`；与run002实际配置除源码身份/experiment ID外逐项相同，原模型100步1800秒/evaluator不变。统一绝对任务锁覆盖全生命周期，owner liuxv-repair77-run003-20261027；输出 `/home/liuxv/liteagent-local-runs/repair-77-20261027/run-003/output`。正式结果待定，候选未集成；human_review=true。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
