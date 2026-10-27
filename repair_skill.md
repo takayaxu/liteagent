@@ -397,6 +397,10 @@ flowchart TD
 
 - 2026-10-27 Order97 Plan-v5方案1候选 `19f2af7` 已冻结，新run006从其干净detached树、原run001外部配置正式启动。模型/100步1800秒/原evaluator不变，统一绝对锁持全生命周期，owner liuxv-repair97-run006-20261027；输出repair-97-20261027/run-006/output。其他账号独立guest/模型18035不触碰，本次实际任务guest环境和模型调用结果待定；候选未集成，10通过/5待修，human_review=true。
 
+- 2026-10-27 Order97 Plan-v5候选 `19f2af7` run006正式 `failed/reward0.0/agent_done`，36步、1638.443秒，source/config integrity均true。7页中原缺1/2/3/6，实际仅15/19/20/22步成功补这4页；第2页首次把换行变空格在16步被拒，19步原样复制后成功。21/25步尝试覆盖已有4/5页均被执行前保护拒绝，原4/5/7备注逐字符保留；第7页无改写。34步原生presentation.save成功117315bytes，35步保存后全7页inspect，36步完成门通过。21步新安全跳过理由在实际request22完整可见、未被metadata过滤，随后22步补第6页；notes_progress也实际可见，证实v5反馈分支生效，但不声称消除模型所有重复尝试。全7页备注按原evaluator.notes.strip规则与参考相等，正文文本对输入无变化。
+
+- 本次97原评分首个真实失败点已核对runner.log947–952行：人类第4页第4个正文对象，输出11段、参考10段；原输入同为11段，末尾空段既存，非备注工具或保存新增。原evaluator首次与随后归档均下载117315bytes，本轮不存在run005首次旧文件/稍后正确文件的大小分歧；正式0分不可改写为PASS。剩余诊断事实：前10步GUI开文件对话框/错误点击，17/23步虚构slide.inspect、27步presentation.inspect传slide而非slides被拒，30/33步正确恢复读取；接口选择低效但最终保存/全页回读已完成，不据此另造补丁或不变重跑。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/run-006/output`、run006/notes-diagnosis.json、root-cause.json、trace-diagnosis.json、v5-feedback-evidence.json。runner退出、自有guest查询无残留、统一公共锁已释放；失败候选保持独立不集成，10通过/5待修、human_review=true。下一步对话审核：方案1保留97原失败与备注已正确事实，先推进98当前源码基线；方案2先只读追查上游输入/参考一致性，不修改正式任务/参考/evaluator或按gold删除正文空段。未批准前不启动98或新增实现。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
