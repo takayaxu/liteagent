@@ -682,6 +682,25 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             {"not": {"required": ["height", "height_measurement"]}},
         ],
     },
+    "shape.delete_paragraph": {
+        "description": (
+            "Delete exactly one observed paragraph from an Impress text shape, including "
+            "an empty final paragraph, while preserving every other paragraph and its "
+            "character and paragraph formatting. Use presentation.inspect for the slide, "
+            "selector and zero-based paragraphs[].index; this is not the lines array. "
+            "Supply expected_text exactly as observed (empty string for an empty paragraph). "
+            "Rejects a changed target, the only paragraph, and unsupported complex fields. "
+            "Do not replace the entire text box to delete one paragraph. Save separately "
+            "with presentation.save, then inspect the final document."
+        ),
+        "properties": {
+            "slide": SLIDE_INDEX,
+            "selector": SELECTOR,
+            "paragraph_index": {"type": "integer", "minimum": 0},
+            "expected_text": {"type": "string"},
+        },
+        "required": ["slide", "selector", "paragraph_index", "expected_text"],
+    },
     "shape.write_text": {
         "properties": {
             "slide": SLIDE_INDEX,

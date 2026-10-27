@@ -125,15 +125,46 @@ def source_read_errors(state: Any) -> list[str]:
             "chooses the source and target page. No mutation executed."]
 
 
+def _may_change_existing_notes(instruction: str) -> bool:
+    """Keep unrelated body edits separate; ambiguous edit objects opt out."""
+    verbs = r"replace|rewrite|overwrite|revise|correct|delete|remove"
+    # Split independent instructions, including a coordinated verb. Retaining
+    # the whole object list lets 'replace titles and notes' remain an opt-out.
+    clauses = re.split(
+        rf"[;.!?\n]+|\b(?:and|then|also|but|while)\s+"
+        rf"(?=(?:{verbs}|keep|preserve|add|fill|complete|insert|copy|transfer)\b)",
+        instruction, flags=re.I,
+    )
+    for clause in clauses:
+        for match in re.finditer(rf"\b(?:{verbs})\b", clause, re.I):
+            if re.search(r"\b(?:do not|don't|never)\s*$", clause[:match.start()], re.I):
+                continue
+            target = clause[match.end():]
+            # Only clearly named presentation-body objects are independent.
+            # Pronouns, unspecified objects and unfamiliar wording stay outside
+            # this protection rather than blocking a possibly requested edit.
+            direct_object = re.split(r"\b(?:from|with|using|in|on|of|to)\b", target,
+                                     maxsplit=1, flags=re.I)[0]
+            if re.search(r"\b(?:notes?|remarks?)\b", direct_object, re.I):
+                return True
+            if re.search(r"\b(?:paragraphs?|text|words?)\b", direct_object, re.I) and re.search(
+                r"\b(?:from|in|of)\s+(?:(?:the|existing|speaker|speaking|presenter|slide)\s+)*"
+                r"(?:notes?|remarks?)\b", target, re.I,
+            ):
+                return True
+            if not re.search(r"\b(?:paragraphs?|text\s+box(?:es)?|body|titles?|"
+                             r"subtitles?|shapes?|pictures?|images?|slides?|"
+                             r"backgrounds?|tables?)\b", direct_object, re.I):
+                return True
+    return False
+
+
 def requested(state: Any) -> bool:
     text = state.instruction
-    scope = re.sub(r"\b(?:do not|don't|never)\s+(?:replace|rewrite|overwrite|revise|correct|delete|remove)\b",
-                   "", text, flags=re.I)
     return (
         state.domain in {"multi_apps", "libreoffice_impress"}
         and requests_missing_notes_transfer(text)
-        # Explicit replacement is a different scope, even when "existing" appears.
-        and not re.search(r"\b(?:replace|rewrite|overwrite|revise|correct|delete|remove)\b", scope, re.I)
+        and not _may_change_existing_notes(text)
     )
 
 

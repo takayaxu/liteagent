@@ -24,6 +24,7 @@ from .geometry_contract import (
 )
 from .image_contract import validate_image_path_suffixes
 from .speaker_notes import set_speaker_notes, speaker_notes_text
+from .paragraph_edit import delete_paragraph
 from .slide_reference import require_slide_index
 from .table_contract import is_empty_content_placeholder, may_use_content_placeholder
 from .table_row_contract import replace_live_table_row, select_unique_live_table
@@ -1835,6 +1836,12 @@ def _write_text(session: ImpressSession, params: dict[str, Any]) -> dict[str, An
     return {"text": _shape_text(shape), "selector": params["selector"]}
 
 
+def _delete_paragraph(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
+    shape = session.shape(session.page(params["slide"]), params["selector"])
+    result = delete_paragraph(shape, params["paragraph_index"], params["expected_text"])
+    return {"slide": params["slide"], "selector": params["selector"], **result}
+
+
 def _set_role_text(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
     page = session.page(params["slide"])
     matches = list(iter_shapes_for_roles(page, [params["role"]]))
@@ -2911,6 +2918,7 @@ ACTIONS = {
     "shape.create_text": _create_text,
     "shape.write_text": _write_text,
     "shape.write_text_native": _write_text_native,
+    "shape.delete_paragraph": _delete_paragraph,
     "shape.format_text": _format_text,
     "slide.set_role_text": _set_role_text,
     "slide.format_text_roles": _format_text_roles,

@@ -39,6 +39,7 @@ ACTIONS = frozenset(
         "shape.create_text",
         "shape.write_text",
         "shape.write_text_native",
+        "shape.delete_paragraph",
         "shape.format_text",
         "shape.set_geometry",
         "shape.fit_to_slide",
@@ -326,6 +327,7 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     if action in {
         "shape.write_text",
         "shape.write_text_native",
+        "shape.delete_paragraph",
         "shape.format_text",
         "shape.set_fill",
         "shape.export_image",
@@ -432,6 +434,14 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
     if action in {"shape.write_text", "shape.write_text_native"}:
         if "text" not in params or not isinstance(params["text"], str):
             raise AdapterError("INVALID_REQUEST", "params.text must be a string")
+    if action == "shape.delete_paragraph":
+        if set(params) != {"slide", "selector", "paragraph_index", "expected_text"}:
+            raise AdapterError("INVALID_REQUEST", "shape.delete_paragraph requires slide, selector, paragraph_index and expected_text only")
+        index = params["paragraph_index"]
+        if isinstance(index, bool) or not isinstance(index, int) or index < 0:
+            raise AdapterError("INVALID_REQUEST", "params.paragraph_index must be a non-negative integer")
+        if not isinstance(params["expected_text"], str):
+            raise AdapterError("INVALID_REQUEST", "params.expected_text must be a string, including empty string")
     if action == "slide.set_role_text":
         formatting = sorted(set(params).intersection(TEXT_FORMAT_FIELDS))
         if formatting:

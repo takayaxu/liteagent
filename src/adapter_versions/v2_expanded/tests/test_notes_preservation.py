@@ -350,3 +350,38 @@ def test_progress_distinguishes_original_preservation_from_remaining_save_and_re
     assert 'original retained; no write needed' in messages
     s.instruction = 'Write new notes for the presentation.'
     assert model_progress(s) is None
+
+
+@pytest.mark.parametrize('body_edit', [
+    'Also remove the trailing empty paragraph from the body text box on slide 2. Keep all slides and preserve existing notes.',
+    'Delete the picture on slide 3; keep all speaker notes.',
+    'Replace the title with the new title.',
+    'Replace the title with text from the speaker notes document.',
+    'Remove the empty paragraph, then fill the missing speaker notes.',
+    'Correct the body text and preserve existing notes.',
+    "Do not overwrite completed notes. Remove the empty body paragraph.",
+])
+def test_independent_body_edit_does_not_disable_notes_contract(body_edit):
+    s = state(inspection(1, ['', 'Keep  this. .']))
+    s.instruction += ' ' + body_edit
+    assert requested(s)
+    assert errors(s, 1, 'Keep this.')
+    assert errors(s, 0, 'Source text plus unrelated passage')
+    assert model_progress(s)['pages'][1]['status'] == 'original retained; no write needed'
+    s.events = [e for e in s.events if e.proposed['arguments'].get('action') != 'document.read_file']
+    assert 'No complete source-text read' in str(errors(s, 0, 'Guessed'))
+
+
+@pytest.mark.parametrize('note_edit', [
+    'Also remove existing speaker notes from slide 2.',
+    'Delete the empty paragraphs from speaker notes.',
+    'Replace the title and speaker notes with revised content.',
+    'Rewrite the body text and replace existing notes.',
+    'Correct typos in the notes.',
+    'Revise them.',  # Ambiguous objects must not block a possibly requested edit.
+])
+def test_explicit_or_ambiguous_notes_edit_remains_legal(note_edit):
+    s = state(inspection(1, ['Original']))
+    s.instruction += ' ' + note_edit
+    assert not requested(s)
+    assert not errors(s, 0, 'Revised')
