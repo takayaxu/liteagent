@@ -82,6 +82,8 @@ description: 按失败轨迹诊断 LiteAgent 的单题 OSWorld 故障，经人�
 
 核对任务中的 evaluator options 时，必须阅读原函数实际读取和使用的选项，不能仅凭配置中的键名推断其生效。逐段 strip、空白归一化等只读诊断必须与原始逐字符差异并列记录，不得将归一化相等当作原 evaluator 相等；不修改 evaluator 或任务选项迁就产物。
 
+若多媒体参考产物与题意存在时间、时长、尺寸等冲突，先保留原正式评分，并以只读元数据及源内容对齐诊断分别说明；抽样相似度只支持诊断，不作为逐帧真值。区分产物内容、用户指定应用实际执行、原evaluator覆盖范围；Adapter名称不能证明底层实际使用该应用。不得将参考首帧时间、尺寸或帧数硬编码到运行源码来换分；无通用修复依据时保留待修，直接对话审核下一步处理。
+
 ## 2. 找到根因，提出通用最小方案
 
 从最早偏离正确契约的环节向后追踪因果链，区分模型决策、工具 schema/生成约束、传输协议、Adapter 实现、执行环境、观察反馈和完成判定。基础设施错误也要保留原始响应；例如 HTTP 200 中的 grammar 错误不能归为正常模型回复或直接当成断流。
@@ -340,6 +342,8 @@ flowchart TD
 - 2026-10-27 Order77交付核验：持集成锁快进至 `34568fb1ad7ea62bc9fe69a20b3e78d916c58d9c`，src/bin/configs与正式PASS候选96e4ee4逐字相同、活动seal重算匹配；正常推送GitHub codex/v4，ls-remote同SHA。原失败及产物保留，9通过/6待修。按原队列认领Order79 / adf5e2c3-64c7-4644-b7b6-d2f0167927e7（增加指定参考文献及第四段标记处插入编号交叉引用）；旧full189在文末追加编号14并完成，但旧源码已变化，先最新活动源码无补丁run001。独立目录 `/home/liuxv/liteagent-local-runs/repair-79-20261027`；外部config仅补原任务身份source_order170，其余默认模型/预算/evaluator不变。统一任务lock，human_review=true，新方案直接对话审核、不提前实施。
 
 - 2026-10-27 Order79当前干净 `c70bb18` 无新增补丁run001正式passed/reward1.0/agent_done，41步1314.221秒，source/config integrity均true，seal与77PASS相同。4–12遗漏paragraph_start反复读0段，触发现有停滞恢复；27追加用户给定文献原文，无多余句号；回执无原生索引，模型猜37反复读空，33回读尾部后34正确在36创建书签；35源无编号被原子拒绝，36续接编号、37在标记处插入原生GetReference字段，presentation=[14]，38保存、39缺最终回读拒绝、40原生回读、41完成。产物与参考全文按原evaluator实际ignore_blanks=true归一化后相同（原始37/39段，空段差异被该选项忽略），文献文本逐字符相同。只记录观察缺口，不为已PASS题追加未验证补丁；移出队列，10通过/5待修。输出 `/home/liuxv/liteagent-local-runs/repair-79-20261027/run-001/output`。按队列认领87 / 2fe4b718-3bd7-46ec-bdce-b184f5653624（桌面src.mp4从第3秒开始取5秒，制作src_clip.gif）；先最新干净源码无补丁基线，外部config仅补原任务source_order179，原模型/预算/evaluator不变，新方案须人工对话批准。独立目录 `/home/liuxv/liteagent-local-runs/repair-87-20261027`，统一绝对任务锁。
+
+- 2026-10-27 Order87当前干净487f71e无补丁run001正式failed/reward0.8438601849044155/agent_done，4步244.101秒，source/config integrity均true，seal仍286c3b52f1b91126006d019fdfe26e698a982a4dea2ebffa8193cb7f5c4f8cb9。1GUI点击、2搜索、3调用vlc.media.transcode_clip(start3,duration5,fps15)、4完成；Adapter底层实际使用ffmpeg palette，未使用GIMP，不将Adapter名称等同真实应用执行。输出与旧full189文件SHA完全相同，640×360/75帧/4990ms；原gold640×386/3帧/300ms。原compare_images只读首帧灰度SSIM、不验时长及后续帧；原算法只读回放同分。源视频30fps/640×360，输出首帧与源第3秒SSIM0.997246；参考三帧按0.1秒采样、640×360诊断对齐最接近6.0/7.7/9.4秒（0.974/0.990/0.978），属诊断不是逐帧真值。当前证明验收参考与题面时间/时长存在冲突，不据此改start或答案尺寸。证据 `/home/liuxv/liteagent-local-runs/repair-87-20261027/run-001/output`，外部run-001/diagnosis.json；无候选补丁、未PASS，10通过/5待修。human_review=true；Plan87-v1待对话审核：方案1保留验收冲突/待修状态、不改运行代码，先推进93；方案2继续只读调查真实VLC/GIMP路径及通用可修缺口，不能保证原分数；方案3另立评测数据修复议题，原结果保留、不纳入当前PASS。当前未启动93或改评测。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
