@@ -407,6 +407,8 @@ flowchart TD
 
 - 97来源追查结论：第4页正文前10段内容及结构一致，原文件/本轮输出均另有无文字、无run的第11段，参考没有。输入/输出该正文XML仅尺寸精度差360EMU，所有段落原样保留；输出/参考7页slide XML差异仅页码字段UUID及第4页末空段。原compare_pptx_files先用text.strip比较，再无条件比较段数（slides.py516），examine_shape=false及examine_bullets=false均不关闭此检查，构成题意只补备注与参考正文结构/严格评分的上游一致性冲突。未改函数代码的逐页内存视图只读诊断：1/2/3/5/6/7为1，第4页为0；完整原函数仍0，正式失败保留，不等同重新正式PASS。无作者编辑录像，空段在参考制作时具体如何消失仍未知。证据 `/home/liuxv/liteagent-local-runs/repair-97-20261027/reference-investigation/summary.json`及同目录上游响应、历史题目、XML和contract-diagnosis.json；无新运行补丁、无正式复跑、未改任务/参考/正文/评分器，19f2af7保持独立不集成，10通过/5待修，98未启动、human_review=true。
 
+- 2026-10-27用户新增要求并明确澄清：删除第4页正文末尾空段，保留全部7页；不是删除第7页。已在仓库外 `repair-97-20261027/user-requested-edit/` 从run006归档结果制作独立PPT副本，只删除第4页Piazza正文框最后一个无文字/无run的a:p，段数11→10。ZIP仅ppt/slides/slide4.xml内容变化，7页及全部备注逐字符保留；原始正式产物、参考文件、任务及评分器未改。修改后文件 `lecture1-2021-with-ink-completed.pptx` SHA256 c61ffff67cef18513ec8cabea2345ec7e3459749008a82b7dc6b7d50d6f0cf28，原compare_pptx_files和原题options本地完整比较为1，原正式产物仍为0。附加要求另存task-with-user-extra-requirement.json，核验verification.json；本次是用户授权文件修改及本地评分函数验证，不是agent自主正式复跑PASS，不改写run006失败、不销项或集成19f2af7。human_review=true，原队列仍10通过/5待修。
+
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
 核对时间（北京时间）：`2026-10-23T22:58:52+08:00`；核对时活动分支 HEAD：`8d5461b5555128c876d548a5e92fce1985e1740d`。
