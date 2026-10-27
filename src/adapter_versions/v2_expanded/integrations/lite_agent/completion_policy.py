@@ -798,6 +798,7 @@ def collect_initial_completion_evidence(
         "table.sort",
         "workbook.create_new",
     }
+    impress_mutation = last_domain == "libreoffice_impress"
     office_settings_only = state.domain.startswith("libreoffice_") and all(
         effective_canonical_action(event, state.domain)[1].startswith("settings.")
         for event in mutations
@@ -805,7 +806,7 @@ def collect_initial_completion_evidence(
     requires_document_save = (
         state.domain.startswith("libreoffice_") and not office_settings_only
     ) or (
-        state.domain == "multi_apps" and spreadsheet_mutation
+        state.domain == "multi_apps" and (spreadsheet_mutation or impress_mutation)
     )
     if requires_document_save and not is_save_action(last_action):
         explicit_save = any(
@@ -850,7 +851,7 @@ def collect_initial_completion_evidence(
         for body in iter_result_mappings(mutations[-1].result)
     )
     verifier_readback = (
-        (not state.domain.startswith("libreoffice_") or settings_readback)
+        ((not state.domain.startswith("libreoffice_") and not impress_mutation) or settings_readback)
         and not _is_destination_changing_save(mutations[-1], state.events, state.domain)
         and state.event_has_verifier_evidence(mutations[-1])
     )

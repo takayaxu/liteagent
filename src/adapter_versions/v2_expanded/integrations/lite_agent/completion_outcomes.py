@@ -298,6 +298,12 @@ def _output_issue(events: list, sheet: str, pivot: dict, totals: dict, after: in
 
 def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
     """Return live defects, distinguishing wrong state from absent evidence."""
+    if getattr(state, "domain", None) in {"multi_apps", "libreoffice_impress"}:
+        from .notes_preservation import outcome_issues as notes_issues
+
+        notes = notes_issues(state, _issue)
+        if notes:
+            return notes
     if getattr(state, "domain", None) == "libreoffice_impress":
         from .impress_image_outcomes import outcome_issues
 

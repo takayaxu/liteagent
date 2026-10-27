@@ -285,7 +285,8 @@ def _compact_presentation_hint_for_model(
         return {}
     result: dict[str, Any] = {
         key: value.get(key)
-        for key in ("identity", "url", "title", "slide_count", "inspected_slides", "source_images")
+        for key in ("identity", "url", "title", "slide_count", "inspected_slides", "source_images",
+                    "notes_status", "notes_status_omitted", "notes_status_guidance")
         if key in value
     }
     slides: list[dict[str, Any]] = []
@@ -691,6 +692,24 @@ def compact_presentation_hint_for_model(
         "url": value.get("url") or identity.get("url"),
         "title": value.get("title") or identity.get("title"),
         "slide_count": value.get("slide_count"),
+        # Reserve the small per-page notes inventory before rich shape details.
+        # A page omitted below is not thereby known to have blank notes.
+        "notes_status": [
+            {"slide_index": slide.get("slide", slide.get("slide_index")),
+             "has_speaker_notes": bool(slide["notes"].strip())
+             if isinstance(slide.get("notes"), str) else None,
+             "notes_length": len(slide["notes"])
+             if isinstance(slide.get("notes"), str) else None}
+            for slide in raw_slides[:64] if isinstance(slide, dict)
+        ],
+        "notes_status_omitted": max(0, len(raw_slides) - 64),
+        "notes_status_guidance": (
+            "notes_status covers observed pages even when shape details are omitted. "
+            "has_speaker_notes=false means observed blank/whitespace notes; null or "
+            "an unlisted page is unknown. For a request to fill remaining notes, "
+            "write only initially blank pages and preserve existing notes exactly. "
+            "Use focused presentation.inspect to read unknown or existing text."
+        ),
         **(
             {"inspected_slides": value["inspected_slides"]}
             if "inspected_slides" in value

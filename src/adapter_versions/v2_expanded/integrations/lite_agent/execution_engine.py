@@ -972,9 +972,13 @@ class ExecutionEngineMixin:
                     impress_table_row.argument_contract_errors(state, action, arguments)
                 )
                 from . import calc_formula_contract
+                from . import notes_preservation
 
                 semantic_argument_errors.extend(
                     calc_formula_contract.argument_errors(state, action, arguments)
+                )
+                semantic_argument_errors.extend(
+                    notes_preservation.argument_errors(state, action, arguments)
                 )
                 if action == "table.sort":
                     calc_semantics.validate_sort_arguments(state, action, arguments)
