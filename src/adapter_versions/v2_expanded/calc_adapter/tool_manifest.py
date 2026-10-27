@@ -246,6 +246,17 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["url"],
     },
     "range.write": {
+        "description": (
+            "Write model-authored literal values or typed formulas to the selected cells. "
+            "Check each authored formula's scale against the observed native source "
+            "values, headers and number formats before submitting. A percent unit in "
+            "a header differs from a percent number format. When input and output use "
+            "the same unit, multiplying or dividing by a dimensionless count preserves "
+            "that unit; the percent label alone does not require another multiplication "
+            "by 100. Convert between stored fractions and percentage points only when "
+            "the input and output representations actually differ. Number formatting "
+            "changes display, not the stored calculation."
+        ),
         "properties": {
             "sheet": {
                 **NONEMPTY_STRING,
