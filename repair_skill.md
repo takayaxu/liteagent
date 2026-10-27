@@ -250,7 +250,7 @@ flowchart TD
 
 ### v4 指定队列（2026-10-26）
 
-原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。既有人工批准继续有效；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
+原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。北京时间2026-10-27用户再次明确“开启人工review”，从该消息起持续切回 `human_review=true`；Order35当前无补丁基线继续收集证据，后续新方案/重试修订必须直接对话结构化审核并等待人工明确批准，不能沿用自动审核作为实施授权。既有已交付PASS保留；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
 
 - 待修复 9 题：35、63、77、79、87、93、97、98、100；正式验证通过 6 题：11、13、15、24、27、28。按指定顺序一次处理一题。
 - Order 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14`：用户明确批准“11 Plan-v2 通过方案 1”；批准范围为通用 Calc 完整枚举与回读指导，不含完成门改动。基点 `e9a603941d9ceed1d68b04333625a14599500204`，候选 `a5180db3220a639134c590014bf9ef8ac5600e01`；5 focused checks、Ruff、diff check、bin/check.sh 通过。原 full189 与基点运行源码一致，仅文档不同，不重复基线。
@@ -302,6 +302,8 @@ flowchart TD
 - 2026-10-27 Order28 run-006正式passed/reward1.0/agent_done，23步646.84秒，source/config true；候选 `a614561`，seal `f439690cc91e7e52c94ffa7f4320cb6fea40313c9faa2fc76f729b16d496e9de`。模型step4/5自主写直接相除公式，最终所有表格值与参考一致、仅最高值C20绿色、普通数字0.00；原任务/evaluator/预算不变。独立终态复核/root/review27明确通过，run006自有guest已由runner清理；活动组合 `5b97df5` 仅合台账变化，src/bin/config与PASS候选逐字一致，seal重算匹配，持集成锁快进；已移出活动待修队列。此前失败及环境中断原证据保留，human_review=false。交付台账正常推送后再核验远端。
 
 - 2026-10-27 Order28交付：活动与GitHub正常推送 `f6f8d1c`，待远端SHA最终核验；Order35 / `bf4e9888-f10f-47af-8dba-76413038b73c` 按队列认领，human_review=false，最新干净f6f8d1c无补丁基线run001。外部config仅加35身份，其余原模型/预算/VM/evaluator不变；统一lock、owner `liuxv-repair35-run001-20261027`，输出 `/home/liuxv/liteagent-local-runs/repair-35-20261027/run-001/output`，待正式结果。未实施35候选。
+
+- 2026-10-27用户最新指令“开启人工review”：持续切回human_review=true。35 run001为已启动的当前源码无补丁基线，可继续读取/诊断；尚无35实现方案获批，未实施候选。基线终态后按题目简述、正确轨迹、失败轨迹、卡点、版本化方案1/2/3及验证条件直接在对话交人工，等待明确批准。后续题目同此方式，不另建审核文档。
 
 ### 历史 thinking100 台账（不代表本轮 v4 状态）
 
