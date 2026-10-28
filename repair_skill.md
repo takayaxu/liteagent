@@ -307,7 +307,7 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
-- Order38最新组合05d5435的run-003正式passed/reward1.0/agent_done，7步481.714秒；source/config/OSWorld完整性全true，原模型100步1800秒及原evaluator不变。保存产物10页、全部原生段落逐字符文字保留，目标显式buNone且视觉起点457200与两参考行一致。原始根因为minProperties把目标/范围误算成格式要求；PLAN38-format-required-v1及两次冻结diff均由/root/review_order30_seq独立审核通过，human_review=false。证据 `/home/liuxv/liteagent-local-runs/repair-38-20261028-seq/run-003/verified-result.json`、output/results/results.json、final-integrity.json；旧基线失败和run-002旧基点PASS均保留。已验证，正在集成05d5435到codex/v4，GitHub推送待核验；38从待修集合移出后本批为1已修复/18待修，30仍未解决，下一题65。
+- Order38最新组合05d5435的run-003正式passed/reward1.0/agent_done，7步481.714秒；source/config/OSWorld完整性全true，原模型100步1800秒及原evaluator不变。保存产物10页、全部原生段落逐字符文字保留，目标显式buNone且视觉起点457200与两参考行一致。原始根因为minProperties把目标/范围误算成格式要求；PLAN38-format-required-v1及两次冻结diff均由/root/review_order30_seq独立审核通过，human_review=false。证据 `/home/liuxv/liteagent-local-runs/repair-38-20261028-seq/run-003/verified-result.json`、output/results/results.json、final-integrity.json；旧基线失败和run-002旧基点PASS均保留。已将05d5435集成到codex/v4并正常推送GitHub6183c9b55cb44d0280a43c43c17a4f29f15175b0，远端同SHA已核验；38已从待修集合移出，本批为1已交付/18待修，30仍未解决，下一题65。
 
 - 2026-10-28 15:16 UTC，Order38最新组合候选05d5435最终SHA/diff经同一独立审核者通过，43focused含实际XGrammar、Ruff/diff/check全部通过后启动run-003，原模型/预算/evaluator及字节一致配置不变。owner lite-repair-61561d2ed27642d79f9afde10f270935、pool slot1、兼容共享锁；源码sealaf183bf9eb9e326db4d0aa084816dff26ee102af0cb211d03545391d67163fd6，身份/资源/run状态位于run-003/identity.json和output。最新组合正式结果待定；旧run-002 PASS保留，尚未集成/推送，human_review=false持续。
 
