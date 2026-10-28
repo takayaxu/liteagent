@@ -2738,11 +2738,25 @@ def spreadsheet_file_context(result: dict[str, Any]) -> dict[str, Any]:
             "truncated",
         )
     }
+    context["read_only_preview"] = True
+    context["guidance"] = (
+        "workbook.read_file closes its temporary read-only document before returning. "
+        "It does not open a live Calc workbook for editing; use the observed path "
+        "with os.desktop.open_path or select the observed URL in the "
+        "document field, then inspect the live workbook. In each sheet, "
+        "cell_addresses[i][j] is the exact A1 address of display_text[i][j]."
+    )
     context["sheets"] = []
     context["sheets_omitted"] = len(sheets)
     for source in sheets:
         display = source.get("display_text")
         rows = display if isinstance(display, list) else []
+        addresses = range_cell_addresses(source.get("returned_range"))
+        if addresses is None or len(addresses) != len(rows) or any(
+            not isinstance(row, list) or len(address_row) != len(row)
+            for address_row, row in zip(addresses, rows)
+        ):
+            addresses = None
         preview = {
             key: source.get(key)
             for key in (
@@ -2758,6 +2772,8 @@ def spreadsheet_file_context(result: dict[str, Any]) -> dict[str, Any]:
             )
         }
         preview["display_text"] = []
+        if addresses is not None:
+            preview["cell_addresses"] = []
         preview["rows_omitted_from_context"] = len(rows)
         context["sheets"].append(preview)
         context["sheets_omitted"] = len(sheets) - len(context["sheets"])
@@ -2765,13 +2781,17 @@ def spreadsheet_file_context(result: dict[str, Any]) -> dict[str, Any]:
             context["sheets"].pop()
             context["sheets_omitted"] = len(sheets) - len(context["sheets"])
             break
-        for row in rows:
+        for index, row in enumerate(rows):
             preview["display_text"].append(row)
+            if addresses is not None:
+                preview["cell_addresses"].append(addresses[index])
             preview["rows_omitted_from_context"] = len(rows) - len(
                 preview["display_text"]
             )
             if len(json.dumps(context, ensure_ascii=False, default=str)) > 4200:
                 preview["display_text"].pop()
+                if addresses is not None:
+                    preview["cell_addresses"].pop()
                 preview["rows_omitted_from_context"] = len(rows) - len(
                     preview["display_text"]
                 )

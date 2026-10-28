@@ -248,6 +248,9 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     "range.write": {
         "description": (
             "Write model-authored literal values or typed formulas to the selected cells. "
+            "Map each destination to the observed A1 cell addresses and verify named "
+            "row and column headers before writing. Write only requested cells: an "
+            "empty string is a write that replaces existing content, not a no-op. "
             "Check each authored formula's scale against the observed native source "
             "values, headers and number formats before submitting. A percent unit in "
             "a header differs from a percent number format. When input and output use "
@@ -439,6 +442,13 @@ _ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["sheet", "range", "separator"],
     },
     "workbook.read_file": {
+        "description": (
+            "Read a bounded, temporary read-only preview of an existing CSV, ODS, or "
+            "XLSX file. The preview is closed before this action returns and does not "
+            "leave a live Calc workbook open for editing. To edit the observed file, "
+            "open its exact path with os.desktop.open_path or select its exact URL "
+            "in the Adapter request's document selector, then inspect the live workbook."
+        ),
         "properties": {
             "path": {
                 **NONEMPTY_STRING,

@@ -9,10 +9,13 @@ import pytest
 from calc_adapter import uno_worker
 from calc_adapter.errors import AdapterError
 from calc_adapter.service import create_app
+from calc_adapter.tool_manifest import STRICT_ACTION_PARAM_SCHEMAS as CALC_SCHEMAS
 from integrations.lite_agent.adapter_executor import AdapterExecutor
+from integrations.lite_agent.adapter_results import spreadsheet_file_context
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 from integrations.lite_agent.search_recovery_tools import constrain_adapter_call_routes
 from integrations.lite_agent.tool_catalog import build_tools, search_actions
+from os_adapter.tool_manifest import STRICT_ACTION_PARAM_SCHEMAS as OS_SCHEMAS
 
 
 def routes(query):
@@ -38,6 +41,74 @@ def test_active_workbook_inspection_is_retrievable_without_knowing_its_route(que
 ])
 def test_active_workbook_keywords_preserve_explicit_file_and_editor_discovery(query, expected):
     assert expected in routes(query)[:3]
+
+
+@pytest.mark.parametrize("query", [
+    "open LibreOffice Calc file",
+    "libreoffice calc open file",
+    "open spreadsheet xlsx file",
+])
+def test_opening_a_spreadsheet_file_exposes_desktop_open_path(query):
+    assert ("os", "desktop.open_path") in routes(query)[:5]
+    assert ("libreoffice_calc", "workbook.inspect") in routes(
+        "inspect current open Calc workbook"
+    )[:3]
+
+
+def test_spreadsheet_open_and_file_preview_contracts_distinguish_live_document():
+    opening = OS_SCHEMAS["desktop.open_path"]["description"]
+    preview = CALC_SCHEMAS["workbook.read_file"]["description"]
+    assert "registered desktop application" in opening
+    assert "Launch success alone does not prove" in opening
+    assert "temporary read-only preview" in preview
+    assert "does not leave a live Calc workbook" in preview
+
+
+def test_file_preview_addresses_align_with_display_and_bound_truncation():
+    result = {
+        "path": "/tmp/table.xlsx",
+        "url": "file:///tmp/table.xlsx",
+        "format": "xlsx",
+        "sheet_count": 1,
+        "returned_sheet_count": 1,
+        "sheets_truncated": False,
+        "truncated": False,
+        "sheets": [{
+            "name": "Week",
+            "used_range": "A1:D200",
+            "source_range": "A1:D200",
+            "returned_range": "A1:D200",
+            "source_rows": 200,
+            "source_columns": 4,
+            "returned_rows": 200,
+            "returned_columns": 4,
+            "truncated": False,
+            "display_text": [["", "Alpha", "Beta", "Gamma"]] + [
+                [str(i), "", "", ""] for i in range(2, 201)
+            ],
+        }],
+    }
+    context = spreadsheet_file_context(result)
+    sheet = context["sheets"][0]
+    assert context["read_only_preview"] is True
+    assert "desktop.open_path" in context["guidance"]
+    assert sheet["cell_addresses"][0] == ["A1", "B1", "C1", "D1"]
+    assert sheet["display_text"][0][3] == "Gamma"
+    assert sheet["rows_omitted_from_context"] > 0
+    assert len(sheet["cell_addresses"]) == len(sheet["display_text"])
+    assert all(len(a) == len(v) for a, v in zip(
+        sheet["cell_addresses"], sheet["display_text"]
+    ))
+
+
+def test_missing_live_calc_document_explains_how_to_open_observed_file():
+    session = object.__new__(uno_worker.CalcSession)
+    session._documents = lambda: []
+    with pytest.raises(AdapterError) as failure:
+        session._select_document({})
+    assert failure.value.code == "NO_CALC_DOCUMENT"
+    assert "workbook.read_file preview" in failure.value.message
+    assert "os.desktop.open_path" in failure.value.message
 
 
 def test_discovered_active_workbook_contract_needs_no_guessed_path():

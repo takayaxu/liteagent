@@ -373,6 +373,13 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "additionalProperties": False,
     },
     "desktop.open_path": {
+        "description": (
+            "Launch an existing local file or folder in its registered desktop application. "
+            "For a spreadsheet, this can launch the application before editing "
+            "the live Calc document; workbook.read_file only returns a temporary read-only "
+            "preview. Launch success alone does not prove the intended document is open, "
+            "so inspect the application before mutating it."
+        ),
         "properties": {
             "path": {
                 **NONEMPTY_STRING,

@@ -397,7 +397,12 @@ class CalcSession:
             return None
         if not documents:
             raise AdapterError(
-                "NO_CALC_DOCUMENT", "no open Calc document was found", http_status=404
+                "NO_CALC_DOCUMENT",
+                "no open Calc document was found. A workbook.read_file preview does not "
+                "leave a live document open; open the exact observed file with "
+                "os.desktop.open_path, or supply its URL in the document "
+                "selector, then inspect the live workbook before editing",
+                http_status=404,
             )
         if requested_url or requested_title:
             if not matches:
