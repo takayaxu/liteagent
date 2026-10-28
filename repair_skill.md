@@ -287,7 +287,7 @@ flowchart TD
 | 已通过题目 | 正式结果与源码 | 证据与交付 |
 | --- | --- | --- |
 | 103 / 3a93cae4-ad3e-403e-8c12-65303b271818 | run-005 passed / reward=1.0 / agent_done，17步908.625秒；103-human-v2方案1，人工用户批准；候选7725cd02c1dfee6526d15b2784c9cc58acf85a03（与ca9320f运行源码相同），昇腾Qwen3.5-9B thinking、100步1800秒、原evaluator，seal 0463d198840ac41e8cea7256bfdf14bb5c6b0c622d235755b4d36ccc73aefd97 | [结果](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/artifact-validation.json)；仅D5新增Lec 2，原7条保留；已集成，GitHub codex/v4远端7c5e5b5包含103提交8bd9e28，已核验交付 |
-| 117 / 8df7e444-8e06-4f93-8a1a-c5c974269d82 | run-005 passed / reward=1.0 / agent_done，16步583.62秒；117-agent-v6，human_review=false，独立审核/root/review117方案和实际diff通过；候选05c100d1e0d24683f8e772552b5962cbdef97dfa，seal 13c5014b6186aed0e66f32dcc29b1396348299336ef0a51f8ba9c994eb3814b2，原模型100步1800秒及原evaluator | [结果](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/artifact-validation.json)；ZIP恰含原DOCX及正确20页论文PDF，原DOCX字节保持；本地已集成，待推送 |
+| 117 / 8df7e444-8e06-4f93-8a1a-c5c974269d82 | run-005 passed / reward=1.0 / agent_done，16步583.62秒；117-agent-v6，human_review=false，独立审核/root/review117方案和实际diff通过；候选05c100d1e0d24683f8e772552b5962cbdef97dfa，seal 13c5014b6186aed0e66f32dcc29b1396348299336ef0a51f8ba9c994eb3814b2，原模型100步1800秒及原evaluator | [结果](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/artifact-validation.json)；ZIP恰含原DOCX及正确20页论文PDF，原DOCX字节保持；已集成，GitHub codex/v4远端4e21ffd包含正式候选05c100d，已核验交付 |
 
 - 2026-10-28 14:55 UTC，Order103 run-005正式PASS/reward1.0，source/config/OSWorld完整性均true。第13步模型自行在D5写Lec 2 (12:00-14:00)，14完成被保存证据检查拒绝，16保存、17完成通过；产物相对原输入只有D5一格值变化，原7条课程全保留，与第一原始参考全表相同。候选7725cd0已验证待集成，自有guest/名额清理释放；此前失败保留、不改历史批次分数。本轮103移出待修，1通过/13待修；其余题不由本对话自动认领。
 
@@ -322,6 +322,8 @@ flowchart TD
 - Order117 run-005正式PASS/reward1.0/agent_done，16步583.62秒，source/config/OSWorld完整性全true，资源名额及guest已释放。step14以同basename导出正确原论文，373目标全补齐；step15模型自主选择create_zip并提供两个正确文件，16完成。原ZIP两成员、原DOCX字节与输入/参考一致，20页PDF文本相似度约0.99693、CRC通过；错误提醒PDF未打包。候选05c100d已验证待集成，human_review=false、独立审核/root/review117。117从待修移出，2通过/12待修，先前失败证据全部保留；本对话未自动认领118。
 
 - Order117交付：持v4-integration.lock合入已验证候选；活动源码/脚本/配置与run-005候选05c100d逐字相同，集成只组合文档，无新增运行条件。集成提交aa6eebabd95c5012c51bb6b0913e77f79f90f452；本地已集成，待正常推送及远端核验。
+
+- Order117交付完成：常规Git HTTPS多次连接超时后，按独立审核/root/review117批准的117-delivery-v1，经Git Data API上传本地完全相同的blob/tree/commit，逐项SHA全部一致；持短v4-integration.lock重新核对本地HEAD、远端及祖先关系，以force=false快进同名codex/v4分支。远端已读回4e21ffd6e4fda2396908de648939cf48f5034931，包含正式PASS候选05c100d及集成aa6eebab；运行源码/脚本/配置与PASS逐字相同。原模型/预算/evaluator、全部历史失败不变，human_review=false；仅子agent独立审核，无并行修题。证据run-005/api-delivery.json、integration.json、delivery.json；本对话尚未认领118。
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
