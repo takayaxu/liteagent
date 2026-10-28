@@ -308,6 +308,12 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
+- Order82 PLAN82-offset-contract-v1及最终三文件diff已由同一独立审核者/root/review_order30_seq明确通过；干净候选d82398bc8001ebcd1744163eb18bf6331c9ef895（父f3322e2，运行源码等价批准基线），77focused/Ruff/diff/check与真实错误公开面回放通过。唯一原request2 model-only探针26.7509秒正确literal内部0..8，独立原resolver定位到观察p6/60..68，仅字号14、0动作；不证明后续occurrence/漏数已解决。现从新干净run-002/source正式复跑，配置字节同baseline SHA43818a3e6e7ff4d6f0b02b5a6de453863705f3666a71c9dc1a645809b3cd0344，原模型/100步1800秒/evaluator不变。owner lite-repair-d1f569e310b148e7b6e2cd8786826dca、slot[1]、兼容共享锁、开始2026-10-28T17:15:03.614163+00:00；run-002/output/resource-lease.json及run-status.json索引身份。阶段正式复跑、结果待定、未集成/销项，human_review=false持续。
+
+
+- Order82 run-001正式agent_deadline_exhausted/reward=null，22事件1926.414秒、source/config/OSWorld完整性全true；19个不同合法范围正确保存，2/4步in_match误用段内偏移被正确拒绝，原参数与执行一致。末次归档saved-receipt22触发的磁盘snapshot（非evaluator final）保留40段逐字正文，83个斜体字符81个为14pt，两处n仍12；2598非斜体字符所查size/italic/bold/script保留。原evaluator未运行，无propose_done；本题guest与名额已释放。response3偏移混淆205.982秒，另response19在实际全21匹配可见时漏数246.205秒，独立成因不混为同一缺口。PLAN82-offset-contract-v1仅拟补literal内部偏移字段说明与已有拒绝错误的合法区间/对照API反馈，不自动改参/强制顺序/批量宏；待同一独立审核者审核，未实施。证据 /home/liuxv/liteagent-local-runs/repair-82-20261028-seq/{baseline-diagnosis.json,response-metrics-readonly.json,run-001/last-saved-artifact.json}。本批仍1已交付/18待修。
+
+
 - Order82 run-001已启动模型，owner lite-repair-c82e970481f248fbae170a5123bb227e、pool slot2、兼容共享锁、PID3988972；开始2026-10-28T16:31:47Z，source seal af183bf9eb9e326db4d0aa084816dff26ee102af0cb211d03545391d67163fd6。输入40段/21处显式斜体全12pt，input-readonly.json记录逐字/逐run；原evaluator先默认空白归一化比正文再逐run检查显式斜体14pt，另需独立保护非斜体与全部正文。正式结果待定、未实施补丁。
 
 
