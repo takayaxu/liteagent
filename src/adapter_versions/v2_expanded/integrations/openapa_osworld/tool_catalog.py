@@ -464,6 +464,15 @@ DOMAIN_SIGNATURES = {
             'output file, "overwrite"?: bool}; converts one selected document; the destination '
             "extension selects the LibreOffice output format"
         ),
+        "archive.create_zip": (
+            'params={"archive_path": absolute|~/ output ZIP, "input_paths": [exact existing '
+            'files or directories], "base_directory"?: absolute|~/ path, "overwrite"?: bool}; '
+            "creates one ZIP from only the model-selected inputs"
+        ),
+        "archive.extract_zip": (
+            'params={"archive_path": absolute|~/ existing ZIP, "destination_directory": '
+            'absolute|~/ output directory, "overwrite"?: bool}; extracts one safe ZIP'
+        ),
         "pdf.form.inspect": (
             'params={"input_path": absolute|~/|local-file-URI PDF path, '
             '"field_offset"?: nonnegative int, "max_fields"?: int[1,256]}; '

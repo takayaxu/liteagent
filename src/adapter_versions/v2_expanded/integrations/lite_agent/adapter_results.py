@@ -3083,7 +3083,7 @@ def archive_context(result: dict[str, Any]) -> dict[str, Any]:
         "The ZIP was created from the selected inputs and its persisted members passed "
         "integrity checks. Compare members with the user's requested files; integrity "
         "does not confirm correct input selection. To replace an incorrectly assembled "
-        "ZIP, call archive.create_extract with mode=create, corrected input_paths and "
+        "ZIP, call archive.create_zip with corrected input_paths and "
         "overwrite=true."
         if result.get("mode") == "create"
         else "The ZIP passed integrity and path-safety checks and its files were extracted; do not repeat extraction."
@@ -3853,7 +3853,9 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "unchanged for the next requested operation."
             ),
         }
-    if domain == "os" and action == "archive.create_extract":
+    if domain == "os" and action in {
+        "archive.create_extract", "archive.create_zip", "archive.extract_zip",
+    }:
         context = archive_context(result)
         verification = body.get("verification")
         context["verification_passed"] = (

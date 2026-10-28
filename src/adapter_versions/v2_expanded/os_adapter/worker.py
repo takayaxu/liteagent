@@ -191,7 +191,7 @@ def _default_specs(
         return [{"type": "path", "path": result["output_path"], "kind": "file"}]
     if action == "document.convert":
         return [{"type": "path", "path": result["destination"], "kind": "file"}]
-    if action == "archive.create_extract":
+    if action in {"archive.create_extract", "archive.create_zip", "archive.extract_zip"}:
         archive_check = {
             "type": "zip_archive",
             "path": result["archive_path"],

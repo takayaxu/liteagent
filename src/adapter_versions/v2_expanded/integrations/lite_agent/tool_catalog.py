@@ -3003,6 +3003,28 @@ def _vscode_debug_search_bonus(action: str, query_tokens: set[str]) -> int:
     return 8 if query_tokens.intersection(launch_terms) else 0
 
 
+def _zip_search_action(query: str) -> str | None:
+    words = set(re.findall(r"[a-z]+", query.casefold()))
+    if not words.intersection({"zip", "archive", "unzip"}) or words.intersection({"gzip", "gz", "tar"}):
+        return None
+    if words.intersection({"copy", "move", "rename"}):
+        return None
+    if re.search(
+        r"\b(?:create|make)\s+(?:(?:a|an|the|new|empty|destination)\s+)*(?:folder|directory)\b",
+        query.casefold(),
+    ):
+        return None
+    create = bool(words.intersection({"create", "make", "pack", "package", "bundle", "compress"}))
+    extract = bool(words.intersection({"extract", "unzip", "unpack"}))
+    if create == extract:
+        return None
+    return "archive.create_zip" if create else "archive.extract_zip"
+
+
+def _zip_search_bonus(action: str, query: str) -> int:
+    return 600 if action == _zip_search_action(query) else 0
+
+
 def _catalog_signature(
     domain: str, action: str, *, strict_generic: bool = False
 ) -> str:
@@ -3449,6 +3471,7 @@ def search_actions(
             + len(error_tokens.intersection(contract_tokens))
             + (20 if action in stage else 0)
             + _vscode_debug_search_bonus(action, query_tokens)
+            + (_zip_search_bonus(action, query) if domain == "os" else 0)
         )
         if explicit_file_read_search and action == "file.read_text":
             score += 50
@@ -3674,6 +3697,7 @@ def _search_multi_app_actions(
         and (text_read or table_read or re.search(r"\.[a-z0-9]+\b", query.casefold())
              or exact_query_tokens.intersection({"local", "file", "files", "path"}))
         and not exact_query_tokens.intersection({"copy", "move", "write", "rename"})
+        and _zip_search_action(query) is None
     )
     local_text_read_search = local_file_read_search and (
         text_read or not (table_read or other_read)
@@ -3706,6 +3730,7 @@ def _search_multi_app_actions(
         exact_query_tokens.intersection(
             {"copy", "move", "organize", "place", "put", "create", "make"}
         )
+        and _zip_search_action(query) is None
         and exact_query_tokens.intersection(
             {"file", "files", "folder", "directory", "invoice", "invoices"}
         )
@@ -3753,6 +3778,8 @@ def _search_multi_app_actions(
                 + len(error_tokens.intersection(contract_tokens))
                 + (20 if action in semantic else 0)
             )
+            if route_domain == "os":
+                score += _zip_search_bonus(action, query)
             if query_requests_command and action == "command.run":
                 score += 400
             if (

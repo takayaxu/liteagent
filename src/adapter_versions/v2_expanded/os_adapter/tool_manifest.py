@@ -891,6 +891,30 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["source", "destination"],
         "additionalProperties": False,
     },
+    "archive.create_zip": {
+        "description": (
+            "Create one ZIP archive from the existing files or directories in input_paths. "
+            "archive_path is the output ZIP file. The model chooses every input and output "
+            "path. This action only creates a ZIP; it does not extract or convert files."
+        ),
+        "properties": {name: _ARCHIVE_PROPERTIES[name] for name in (
+            "archive_path", "input_paths", "base_directory", "overwrite",
+        )},
+        "required": ["archive_path", "input_paths"],
+        "additionalProperties": False,
+    },
+    "archive.extract_zip": {
+        "description": (
+            "Extract one existing ZIP archive into the model-selected destination_directory. "
+            "archive_path is the input ZIP file. Rejects unsafe member paths and symbolic "
+            "links. This action only extracts a ZIP; it does not create an archive."
+        ),
+        "properties": {name: _ARCHIVE_PROPERTIES[name] for name in (
+            "archive_path", "destination_directory", "overwrite",
+        )},
+        "required": ["archive_path", "destination_directory"],
+        "additionalProperties": False,
+    },
     "archive.create_extract": {
         "description": (
             "Create a new ZIP archive or extract an existing ZIP archive. "

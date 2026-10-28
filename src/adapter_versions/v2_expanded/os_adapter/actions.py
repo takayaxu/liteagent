@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .active_directory import resolve_active_desktop_directory
-from .archive import create_or_extract_archive
+from .archive import create_or_extract_archive, create_zip_archive, extract_zip_archive
 from .command import (
     CommandRunner,
     gsettings_failure_guidance,
@@ -2352,6 +2352,8 @@ class OSActions:
             "window.capture": self.capture_window,
             "document.convert": self.convert_document,
             "archive.create_extract": create_or_extract_archive,
+            "archive.create_zip": create_zip_archive,
+            "archive.extract_zip": extract_zip_archive,
             "archive.compress_file": self.compress_file,
             "pdf.outline.inspect": inspect_pdf_outline,
             "pdf.form.inspect": inspect_pdf_form,

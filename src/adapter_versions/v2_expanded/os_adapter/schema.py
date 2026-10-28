@@ -55,6 +55,8 @@ ACTIONS = frozenset(
         "window.capture",
         "document.convert",
         "archive.create_extract",
+        "archive.create_zip",
+        "archive.extract_zip",
         "archive.compress_file",
         "pdf.outline.inspect",
         "pdf.form.inspect",
@@ -731,6 +733,19 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 "INVALID_REQUEST", "params.destination has an unsupported extension"
             )
         _bool(params, "overwrite")
+    elif action in {"archive.create_zip", "archive.extract_zip"}:
+        creating = action == "archive.create_zip"
+        allowed = ({"archive_path", "input_paths", "base_directory", "overwrite"}
+                   if creating else {"archive_path", "destination_directory", "overwrite"})
+        unexpected = sorted(set(params) - allowed)
+        if unexpected:
+            raise AdapterError(
+                "INVALID_REQUEST", f"{action} received unsupported parameters",
+                {"unexpected": unexpected, "allowed": sorted(allowed)},
+            )
+        validate_action_params(
+            "archive.create_extract", {**params, "mode": "create" if creating else "extract"},
+        )
     elif action == "archive.create_extract":
         allowed = {
             "mode",
