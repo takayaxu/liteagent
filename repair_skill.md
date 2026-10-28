@@ -195,6 +195,7 @@ required_changes：重新提交审核前必须解决的事项
 - 同一 guest 一次只跑一题。复跑前确认占用及所有者，使用参与进程共同约定的**同一绝对路径锁**，持锁覆盖 guest 准备、整题执行、evaluator 和清理；等待期间可继续只读诊断。
 - 当前 `run-osworld.py` 的内置锁位于 `ROOT.parent/liteagent-reproduction-jobs/v3-repair-vm.lock`，不同工作树可能得到不同锁文件，不能据此认定跨工作树互斥。可协调统一外层锁；未遵守该锁的既有进程仍需先确认占用，不能直接启动或抢占。
 - 真正并行跑题需分配独立 guest、可写磁盘、端口及结果目录；可复用只读基盘。未获分配时排队，不停止或重置其他人的 guest、隧道或模型服务。
+- 模型服务支持并发时，非零请求数本身不等于资源不可用；先核对guest/端口/写盘隔离、题目是否重复、模型排队及服务健康，不自行新增“所有其他runner必须退出”的全局限制。确需独占模型以保证条件时明确说明依据；不能把其他账号独立guest或不同题目误判为同guest占用。
 - 不改共享 `model.env`、全局服务参数，不清理其他工作树，不使用 `pkill`、`reset --hard`、强推或全局缓存清理来解决并行冲突。
 
 #### 空闲资源轮询与排队
@@ -278,6 +279,8 @@ flowchart TD
 - 98 Plan-v2方案1候选8b12bf2原生验证通过：独立标记guest内创建XLSX，保存旧值后修改live；workbook.read_file返回旧值且matching_open_workbooks.modified=true，range.read返回新值，磁盘哈希/当前表内容保持；显式保存后文件reader返回新值且modified=false。原生reader未自动保存/覆盖，私有guest已清理、公共锁释放。证据 `/home/liuxv/liteagent-local-runs/repair-98-20261028/plan-v2-native/native-result.json`。run005已从该干净detached候选准备，config与run001–004字节相同；当前其他任务/模型繁忙，正式尚未启动，不新计attempt或PASS；等待空闲原条件执行。
 
 - 98 Plan-v2方案1补充验证：原23/24及52/53事件重建的实际LiteAgent消息保留saved_file/includes_unsaved_changes/同路径modified及“磁盘空值不证明live写失败”提示，证据plan-v2-reader-replay.json；候选及配置摘要见plan-v2-freeze.json。run005外部单次queue进程PID3405245已启动，30秒只读检查其他runner和18000模型负载，空闲后调用持公共锁的launch.py，仍由启动前预检覆盖竞争；不会重置他人guest/服务或复用结果目录，非Codex持续唤醒任务。当前正式未启动且无新结果，待run005完成后按原结果诊断/审核；失败候选不合入。
+
+- 北京时间2026-10-28 16:34，用户再次要求复跑并追问并发，核对唯一外部runner为另一批27/124、独立guest、18035入口，并非98；模型支持并发。前期外部queue把任意runner/非零模型负载一律当启动阻塞，是本代理额外添加的保守限制，并非互斥必需，已撤销；仅停止自己的queue PID3405245，不触碰外部任务。run005现已由干净8b12bf2、原字节config正式启动，owner liuxv-repair98-run005-v2-20261028，独立guest/原生端口锁及公共生命周期锁保留，原模型/100步1800秒/evaluator不变；启动采样模型0running/0waiting，后续并发负载只记录，不冒充模型仅支持串行。输出repair-98-20261028/run-005/output；当前模型已开始操作，结果待定、候选未集成。
 
 - **98候选历史回退：用户曾要求退回 Plan-v1。** 用户“退回plan v1的版本”取代继续Plan-v5的待审核建议；Plan-v3/v4运行改动已在独立repair分支撤回，Plan-v5未实施。回退提交 `5ad7d5f1d2960c278d08be9c08c62326867680b6` 的src/bin/configs与Plan-v1候选 `aea503875a0392785e64e47242e0039268ac3b24` 逐字相同；保留跨来源读取修复，移除后续财务来源契约/完成检查及嵌套发现改动。主活动codex/v4从未集成这些失败候选，其他题修复不变；保留历史失败与run001–004冻结源码。备份分支 `codex/repair-98-before-plan-v1-rollback-20261028` 留存507ac3f。此操作只回退候选，不将未PASS的Plan-v1集成，也不启动新整题。human_review=true持续。
 
