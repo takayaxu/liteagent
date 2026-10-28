@@ -76,7 +76,7 @@ def test_distinct_processes_overlap_same_task_waits_and_capacity_is_enforced(tmp
     time.sleep(.15)
     assert not third_ready.exists() and not duplicate_ready.exists()
     with pytest.raises(RuntimeError, match="while a run holds"):
-        pool.configure(3)
+        pool.configure(1)
     stop2.touch()
     second.wait(timeout=5)
     wait_until(third_ready.exists, [third])
@@ -95,13 +95,15 @@ def test_killed_lease_owner_releases_slots_and_stale_receipts_are_not_active(tmp
     process.wait()
     assert pool.status()["occupied_slots"] == 0
     with pool.acquire(task_ids=["one"], metadata={}) as (receipt, _):
-        assert receipt["pool_capacity"] == 3
+        assert receipt["pool_capacity"] == 5
 
 
 def test_exclusive_lease_uses_all_slots_and_task_conflict_does_not_reserve_slot(tmp_path):
     pool = RepairResources(tmp_path / "pool")
     with pool.acquire(task_ids=["one"], metadata={}, exclusive=True):
-        assert pool.status()["occupied_slots"] == 3
+        assert pool.status()["occupied_slots"] == 5
+        with pytest.raises(RuntimeError, match="exclusive"):
+            pool.configure(6)
         with pytest.raises(TimeoutError):
             with pool.acquire(task_ids=["two"], metadata={}, timeout=0):
                 pytest.fail("exclusive lease was bypassed")
@@ -112,6 +114,38 @@ def test_exclusive_lease_uses_all_slots_and_task_conflict_does_not_reserve_slot(
         assert pool.status()["occupied_slots"] == 1
         with pool.acquire(task_ids=["other"], metadata={}, timeout=0):
             pass
+
+
+def test_online_expansion_preserves_active_leases_and_admits_waiting_run(tmp_path, children):
+    pool = RepairResources(tmp_path / "pool")
+    pool.configure(1)
+    ready1, ready2 = tmp_path / "ready1", tmp_path / "ready2"
+    first = worker(pool.root, "first", tmp_path / "stop1", ready1, children)
+    wait_until(ready1.exists, [first])
+    receipt = ready1.read_bytes()
+    second = worker(pool.root, "second", tmp_path / "stop2", ready2, children)
+    time.sleep(.15)
+    assert not ready2.exists()
+    status = pool.configure(5)
+    assert status["capacity"] == 5
+    wait_until(ready2.exists, [first, second])
+    assert first.poll() is None
+    assert ready1.read_bytes() == receipt
+    assert pool.status()["occupied_slots"] == 2
+    assert json.loads(ready2.read_text())["pool_capacity"] == 5
+    with pytest.raises(RuntimeError, match="while a run holds"):
+        pool.configure(1)
+    assert pool.status()["capacity"] == 5
+
+
+def test_online_expansion_refuses_unverifiable_active_lease(tmp_path):
+    pool = RepairResources(tmp_path / "pool")
+    pool.configure(1)
+    with pool.acquire(task_ids=["one"], metadata={}):
+        (pool.root / "slot-0.json").write_text("invalid metadata")
+        with pytest.raises(RuntimeError, match="unknown active lease"):
+            pool.configure(5)
+        assert pool.status()["capacity"] == 1
 
 
 def test_inherited_lease_stays_held_if_wrapper_is_killed(tmp_path, children):

@@ -151,7 +151,7 @@ curl --fail --silent --show-error "$QWEN_BASE_URL/models"
 ### 多对话并行修复
 
 不同对话各自从最新活动提交建立独立工作树，调用该工作树的
-`bin/run-osworld.py`，默认最多同时运行 **3 个修复任务**。每轮独立源码快照、
+`bin/run-osworld.py`，默认最多同时运行 **5 个修复任务**。每轮独立源码快照、
 OSWorld/cache、结果目录和 guest；guest 使用独立可写盘及动态端口，仅共享只读基盘。
 同一 task_id 跨工作树互斥；一次传入多个 `--orders` 时，在一个名额内依次执行，
 这些题目的认领锁覆盖整批。诊断和修改源码不占运行名额。
@@ -159,8 +159,8 @@ OSWorld/cache、结果目录和 guest；guest 使用独立可写盘及动态端�
 ```bash
 # 查看本账号所有新入口任务的资源名额、题目、owner 和结果目录
 python bin/repair-resources.py status
-# 仅在没有任务占用名额时调整（支持 1–12；初始值为 3）
-python bin/repair-resources.py configure --slots 3
+# 支持 1–12；默认 5，可在线扩容，缩容需空闲且独占运行期间不能调整
+python bin/repair-resources.py configure --slots 5
 ```
 
 新入口统一使用 `~/.local/state/liteagent/repair-resources/`，不会因工作树路径不同

@@ -9,7 +9,7 @@ from pathlib import Path
 import time
 
 
-DEFAULT_SLOTS = 3
+DEFAULT_SLOTS = 5
 MAX_SLOTS = 12
 
 
@@ -67,10 +67,22 @@ class RepairResources:
         with self._guard():
             held = []
             try:
-                for index in range(self._capacity()):
-                    handle = _try_lock(self.root / f"slot-{index}.lock")
+                capacity = self._capacity()
+                for index in range(capacity):
+                    path = self.root / f"slot-{index}.lock"
+                    handle = _try_lock(path)
                     if handle is None:
-                        raise RuntimeError("cannot resize repair pool while a run holds a slot")
+                        if slots <= capacity:
+                            raise RuntimeError("cannot shrink/reconfigure repair pool while a run holds a slot")
+                        # Increasing capacity preserves existing leases, but must not
+                        # create usable slots outside an active exclusive reservation.
+                        try:
+                            lease = json.loads(path.with_suffix(".json").read_text())
+                        except (OSError, ValueError) as error:
+                            raise RuntimeError("cannot expand repair pool with unknown active lease") from error
+                        if not isinstance(lease, dict) or lease.get("exclusive") is not False:
+                            raise RuntimeError("cannot expand repair pool with exclusive or unknown active lease")
+                        continue
                     held.append(handle)
                 _dump(self.root / "pool.json", {"slots": slots})
             finally:
