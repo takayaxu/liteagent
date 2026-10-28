@@ -276,6 +276,35 @@ flowchart TD
 
 ## 本轮修复台账
 
+### v4 指定队列（2026-10-28，14题，人工审核）
+
+用户指定顺序：103、117、118、120、125、126、128、131、136、151、155、161、163、164。本队列 human_review=true；北京时间19:08用户曾要求按新版并行修复；北京时间19:23澄清“对话串行修，不开子智能体，我自己开多对话”，本对话从此只继续103；其余题由用户另开对话安排，本对话不自动认领。每题先核对当前活动源码和正式失败，提出对话内结构化方案，人工明确批准相应方案版本后才实施。原始身份与失败证据以 reports/20261026-v4-full189/wrong-tasks.json 为准；旧批次结果不用于销项。当前通过 1/14、待处理 13/14。
+
+
+当前待修复：117、118、120、125、126、128、131、136、151、155、161、163、164。
+
+| 已通过题目 | 正式结果与源码 | 证据与交付 |
+| --- | --- | --- |
+| 103 / 3a93cae4-ad3e-403e-8c12-65303b271818 | run-005 passed / reward=1.0 / agent_done，17步908.625秒；103-human-v2方案1，人工用户批准；候选7725cd02c1dfee6526d15b2784c9cc58acf85a03（与ca9320f运行源码相同），昇腾Qwen3.5-9B thinking、100步1800秒、原evaluator，seal 0463d198840ac41e8cea7256bfdf14bb5c6b0c622d235755b4d36ccc73aefd97 | [结果](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/artifact-validation.json)；仅D5新增Lec 2，原7条保留；本地已集成7725cd0，待推送 |
+
+- 2026-10-28 14:55 UTC，Order103 run-005正式PASS/reward1.0，source/config/OSWorld完整性均true。第13步模型自行在D5写Lec 2 (12:00-14:00)，14完成被保存证据检查拒绝，16保存、17完成通过；产物相对原输入只有D5一格值变化，原7条课程全保留，与第一原始参考全表相同。候选7725cd0已验证待集成，自有guest/名额清理释放；此前失败保留、不改历史批次分数。本轮103移出待修，1通过/13待修；其余题不由本对话自动认领。
+
+- 2026-10-28 北京时间18:30，Order103 / 3a93cae4-ad3e-403e-8c12-65303b271818 / multi_apps 由本聊天 /root 认领，独立目录 /home/liuxv/liteagent-local-runs/repair-103-20261028-human，基点 e25f9186528a23849f1bb766e6fa8c0f9d42dd8e，human_review=true。无补丁 run-001 最初在公共锁排队；排队进程退出143且未启动正式运行，原因尚未确定，原状态留存 prior-queue-status.json。核验运行器会创建独立 guest、可写盘、唯一端口和结果目录后，北京时间18:47改用本题独立生命周期锁启动当前源码基线；其他任务不受干扰。配置只补原题身份 source_order212；其余沿用默认模型、100步/1800秒及原始 evaluator。旧候选失败且未集成。旧入口 run-001 现已终态 agent_deadline_exhausted/reward=null，55事件、无 evaluator 评分；source/config integrity true。因活动源码的运行入口已更新，从干净提交 40ae5f8529cd270bbd07892077dc34d69ab0da94 启动 run-002 当前源码无补丁基线；正式终态 agent_deadline_exhausted/reward=null，31事件、无 evaluator 评分，source/config/OSWorld integrity 全 true，资源名额及本题 guest 已释放。原课表未成功写入；8步错误选 C5:C6（含已有周二教程），NO_CALC_DOCUMENT 拦截；5步 open excel file 搜索曾提供 os.desktop.open_path，但模型选临时 read_file，27步 Calc-open 搜索未返回 open_path。此后活动 HEAD 1154d46 相对 run-002 基点仅 repair_skill.md 文档变动，运行源码、脚本及任务配置等价；本题 owner 容器已清空、资源名额释放。用户已在本对话明确回复“方案1修复”，批准 103-human-v1 方案1；候选在独立 codex/repair-103-20261028-human-v1 分支提交 0f23f8a36966f6bb4185e951af70871c4953f6f1，仅通用打开文件检索/契约、临时只读预览反馈与A1地址对齐、无Calc文档恢复提示，未硬编码题目/文件/答案。39项定向检查、Ruff、diff check、bin/check.sh通过，邻近测试12项既有失败在无补丁基线同样复现。run-003 从该候选干净detached源码、同字节原配置及原evaluator条件正式启动，结果待定；候选未集成、未推送。
+
+- 2026-10-28 北京时间20:50，Order103 候选0f23f8a的run-003正式failed/reward0/agent_done，19步680.073秒；source/config/OSWorld完整性均true，本题资源名额已释放。模型先因NO_CALC_DOCUMENT失败，随后按提示打开文件，在D5写入并保存“Lec 1 (12:00-14:00)”；原有7条课程保留。原始sheet_data评估的三个参考仅D5不同，分别为“Lec 2 (12:00-14:00)”、“Lecture 2 (12:00-14:00)”和“Lecture”，均不接受模型自行复用已有的Lec 1编号。错误文字已见于模型原始range.write参数，非Adapter转换或保存失真。103-human-v1候选保留独立分支，不集成、不推送；新103-human-v2方案待本对话人工审核，103继续待修。证据 /home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-003/output。
+
+- Order103：用户明确回复“方案1”，批准103-human-v2方案1；human_review=true、审核者为本对话用户。最新活动88a5c8e相对既有基点仅文档变化，运行源码/脚本/配置等价。在本题repair-v2独立树组合已批准v1与新命名契约：未指定编号/标题的新条目不默认复制已有编号，可用用户通称或明确观察到的续号；保留用户明确要求同条目重复出现。候选ca9320f3965720e1b2af78a2446d0e08d57e17d9；21 focused、Ruff、diff check、bin/check.sh及实际tools_search描述透传核验通过。run-004从干净detached候选启动原条件103正式复跑，输入配置SHA256 4262961ec78a1d2540b01e17b88cb394bec9a96cf485d10b0ec3a7cd5d18206a，与run-003字节一致；结果 /home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-004/output（resource-lease.json、run-status.json索引owner/名额）。阶段复跑，未集成、未推送。
+
+- 2026-10-28 14:12 UTC，Order103 run-004终态environment_failure/reward=null，810.155秒、无模型事件/无evaluator；原生VM readiness两次300秒均超时。第二次guest的QEMU只读屏幕可见Ubuntu桌面，但host localhost:5014/screenshot连接被重置、容器内guest 20.20.20.21:5000明确Connection refused；只读诊断不修改guest/源码/配置。启动截图boot.png、boot-monitor.txt、原始exception.txt及final-integrity.json保留；source/config/OSWorld完整性均true，自有owner容器清空、名额释放。ca9320f命名契约尚未得到正式模型运行验证，不能算PASS，未集成/未推送；103继续待修，当前阻塞环境就绪。无新增环境恢复证据，不盲目重复正式运行。
+
+- 2026-10-28 14:36 UTC，用户要求继续103；最新活动58dccc5相对v2基点仅文档变化，运行源码/脚本/配置未变。先在environment-005自有诊断guest核对截图API就绪与启动进程，owner repair103-env005-20261028、同题锁/资源池名额/兼容共享锁，lease.json索引资源；此为环境局部诊断，不作为正式题目PASS。原v2方案继续有效，候选ca9320f不变，不开子agent、不扩展题目。
+
+- 2026-10-28 14:39 UTC，environment-005同基盘/生产provider诊断约65秒后截图接口HTTP200，未改guest服务，诊断guest/名额已清理；获得新的环境恢复证据。自己的repair-v2合并当前58dccc5仅文档更新，冻结候选7725cd02c1dfee6526d15b2784c9cc58acf85a03，src/bin/configs相对ca9320f逐字相同。run-005从干净detached源码、同字节输入配置启动103原模型/预算/evaluator正式复跑；输出 /home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output，resource-lease.json及run-status.json索引owner/名额/开始时间。阶段复跑、human_review=true、103-human-v2方案1，未集成未推送。
+
+- 2026-10-28 北京时间19:23用户澄清后，本对话已中止 /root/repair117、/root/repair118、/root/repair120 子 agent；118 自有 run-002 控制器已精确 SIGTERM，进程和该 owner 容器清空，120 run-002 先前已中断，117 run-002 已退出。各自 run-001/run-002 证据保留，不作为本轮销项；没有候选补丁。后续13题本对话不自动认领，其他用户自建对话互不干扰。
+
+- Order103交付：持v4-integration.lock快进活动codex/v4至7725cd0；活动源码seal重算与正式PASS相同，src/bin/configs无组合差异。本地已集成，GitHub HTTPS连接暂超时，待正常推送及远端SHA核验。
+
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
 用户指定顺序：30、38、65、82、99、101、104、105、106、109、113、114、115、122、127、132、145、172、189。`human_review=false` 持续适用，方案及失败重试由独立子 agent 只读审核；一次处理一题，不用历史批次 PASS 销项。原始失败身份及证据以 `reports/20261026-v4-full189/wrong-tasks.json` 为准。本队列原题正式通过 0/19、待处理 19/19。
