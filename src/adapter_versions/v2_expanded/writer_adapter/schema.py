@@ -14,6 +14,25 @@ ADAPTER_NAME = "libreoffice_writer"
 MIN_TIMEOUT_MS = 100
 MAX_TIMEOUT_MS = 180_000
 DEFAULT_TIMEOUT_MS = 30_000
+DOCUMENT_SELECTOR_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "url": {
+            "type": "string", "minLength": 1,
+            "description": "Exact URL or absolute path of an already open Writer document.",
+        },
+        "title": {
+            "type": "string", "minLength": 1,
+            "description": "Exact title of an already open Writer document.",
+        },
+    },
+    "additionalProperties": False,
+    "description": (
+        "Writer document selector: use url and/or title; both must identify the same "
+        "unique open document. Omit or use {} for the current document. path is not "
+        "a selector field. Selecting a document does not open a saved file."
+    ),
+}
 TAB_STOP_UNITS = {"mm": 100, "cm": 1000, "in": 2540}
 TAB_STOP_ALIGNMENTS = ("left", "right", "center", "decimal")
 TEXT_FIND_MAX_LITERAL_LENGTH = 4_096
@@ -353,6 +372,14 @@ def _table_rows(data: Mapping[str, Any], field: str = "rows") -> None:
 
 
 def _validate_document(document: Mapping[str, Any]) -> None:
+    unexpected = sorted(set(document) - {"url", "title"})
+    if unexpected:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "Writer document selector accepts only document.url and document.title; "
+            "use url for an already open document's URL or absolute path",
+            {"unexpected": unexpected, "allowed": ["url", "title"]},
+        )
     for field in ("url", "title"):
         if field in document:
             _string(document, field, "document")

@@ -32,11 +32,23 @@ WORD_SPACING_NODES = frozenset(
     }
 )
 
+PDF_NUMBER = rb"[-+]?(?:\d+(?:\.\d*)?|\.\d+)"
 PDF_TEXT_BLOCK_RE = re.compile(
-    rb"BT\s+([-+0-9.]+)\s+([-+0-9.]+)\s+Td\s+/([A-Za-z0-9_.-]+)\s+"
-    rb"([-+0-9.]+)\s+Tf(?P<body>.*?)\s+ET",
+    rb"BT\s+(?P<position>(?:" + PDF_NUMBER + rb"\s+){1,5}" + PDF_NUMBER
+    + rb")\s+(?P<operator>Td|Tm)\s+/(?P<font>[A-Za-z0-9_.-]+)\s+"
+    + PDF_NUMBER + rb"\s+Tf(?P<body>.*?)\s+ET",
     re.DOTALL,
 )
+PDF_HEX_RE = re.compile(rb"<([0-9A-Fa-f]*)>")
+
+
+@dataclass(frozen=True)
+class PdfLineEnd:
+    x: float
+    y: float
+    font: str
+    trace_text: str
+    text_offset: int
 
 
 @dataclass(frozen=True)
@@ -235,35 +247,47 @@ def _pdf_space_code(document: Any, font_xref: int) -> bytes:
 def _pending_pdf_lines(
     document: Any,
     targets: Counter[tuple[int, str]],
-) -> dict[int, list[tuple[float, float, str, str]]]:
+) -> dict[int, list[PdfLineEnd]]:
     remaining = targets.copy()
-    pending: dict[int, list[tuple[float, float, str, str]]] = defaultdict(list)
+    pending: dict[int, list[PdfLineEnd]] = defaultdict(list)
     for page_index, page in enumerate(document):
-        resource_by_font = {
-            font[3].split("+", 1)[-1]: font[4] for font in page.get_fonts(full=True)
-        }
-        for block in page.get_text("dict")["blocks"]:
+        traces = page.get_texttrace()
+        for block in page.get_text("rawdict")["blocks"]:
             for line in block.get("lines", []):
-                text = "".join(span["text"] for span in line["spans"])
+                text = "".join(
+                    char["c"] for span in line["spans"] for char in span["chars"]
+                )
                 key = (page_index, text)
                 if remaining[key] <= 0:
                     continue
-                if not line["spans"]:
-                    continue
                 span = line["spans"][-1]
-                resource = resource_by_font.get(span["font"])
-                if not resource:
+                char = span["chars"][-1]
+                # Layout spans can merge several text objects, and synthetic
+                # spaces can have an origin belonging to the preceding object.
+                # Locate the actual final character rather than the span start.
+                candidates = [
+                    (trace, offset)
+                    for trace in traces if trace["font"] == span["font"]
+                    for offset, traced in enumerate(trace["chars"], 1)
+                    if chr(traced[0]) == char["c"]
+                    and all(abs(a - b) < 0.25 for a, b in zip(
+                        traced[2], char["origin"]
+                    ))
+                ]
+                if len(candidates) != 1:
                     raise AdapterError(
                         "PDF_NORMALIZATION_FAILED",
-                        "could not resolve a PDF font resource for a soft-wrap line",
-                        {"page": page_index},
+                        "could not uniquely locate a soft-wrap character in PDF text traces",
+                        {"page": page_index, "candidate_count": len(candidates)},
                     )
+                trace, offset = candidates[0]
                 pending[page_index].append(
-                    (
-                        float(span["origin"][0]),
-                        float(page.rect.height - span["origin"][1]),
-                        resource,
-                        text,
+                    PdfLineEnd(
+                        float(trace["chars"][0][2][0]),
+                        float(page.rect.height - trace["chars"][0][2][1]),
+                        trace["font"],
+                        "".join(chr(item[0]) for item in trace["chars"]),
+                        offset,
                     )
                 )
                 remaining[key] -= 1
@@ -276,53 +300,157 @@ def _pending_pdf_lines(
     return dict(pending)
 
 
+def _pdf_text_boundaries(
+    document: Any, font_xref: int, body: bytes,
+) -> tuple[str, dict[int, int]]:
+    """Decode a supported single show and retain complete glyph boundaries."""
+    font_object = document.xref_object(font_xref)
+    reference = re.search(r"/ToUnicode\s+(\d+)\s+0\s+R", font_object)
+    cmap = document.xref_stream(int(reference[1])) if reference else b""
+    mapping = {
+        code.upper(): bytes.fromhex(value.decode("ascii")).decode("utf-16-be")
+        for section in re.findall(rb"beginbfchar(.*?)endbfchar", cmap, re.DOTALL)
+        for code, value in re.findall(rb"<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>", section)
+    }
+    widths = {len(code) for code in mapping}
+    show = re.fullmatch(
+        rb"\s*(?:\[(?:\s*(?:<[0-9A-Fa-f]*>|" + PDF_NUMBER
+        + rb"))*\s*\]\s*TJ|<[0-9A-Fa-f]*>\s*Tj)\s*", body,
+    )
+    if not mapping or len(widths) != 1 or b"beginbfrange" in cmap or show is None:
+        raise AdapterError(
+            "PDF_NORMALIZATION_FAILED",
+            "unsupported PDF font encoding or text-show block for a soft-wrap line",
+        )
+    width = next(iter(widths))
+    text = ""
+    boundaries = {}
+    for string in PDF_HEX_RE.finditer(body):
+        encoded = string[1].upper()
+        if len(encoded) % width:
+            raise AdapterError("PDF_NORMALIZATION_FAILED", "incomplete PDF character code")
+        for start in range(0, len(encoded), width):
+            code = encoded[start:start + width]
+            if code not in mapping:
+                raise AdapterError("PDF_NORMALIZATION_FAILED", "unknown PDF character code")
+            text += mapping[code]
+            boundaries[len(text)] = string.start(1) + start + width
+    return text, boundaries
+
+
+def _pdf_space_advance(document: Any, font_xref: int, code: bytes) -> float:
+    """Return the native simple-font width in TJ's thousandth-em units."""
+    subtype = document.xref_get_key(font_xref, "Subtype")[1]
+    first_type, first = document.xref_get_key(font_xref, "FirstChar")
+    width_type, widths = document.xref_get_key(font_xref, "Widths")
+    if width_type == "xref":
+        widths = document.xref_object(int(widths.split()[0]))
+        width_type = "array"
+    if (subtype not in {"/TrueType", "/Type1"} or first_type != "int"
+            or width_type != "array" or len(code) != 2):
+        raise AdapterError("PDF_NORMALIZATION_FAILED", "unsupported PDF space advance")
+    if re.fullmatch(rb"\[\s*(?:" + PDF_NUMBER + rb"\s*)*\]", widths.encode()) is None:
+        raise AdapterError("PDF_NORMALIZATION_FAILED", "unsupported PDF font widths")
+    values = re.findall(PDF_NUMBER, widths.encode())
+    index = int(code, 16) - int(first)
+    if not 0 <= index < len(values) or float(values[index]) <= 0:
+        raise AdapterError("PDF_NORMALIZATION_FAILED", "missing PDF space width")
+    return float(values[index])
+
+
+def _insert_pdf_space(
+    document: Any, font_xref: int, body: bytes, target: PdfLineEnd,
+    *, default_text_state: bool,
+) -> bytes:
+    text, boundaries = _pdf_text_boundaries(document, font_xref, body)
+    if text != target.trace_text or target.text_offset not in boundaries:
+        raise AdapterError(
+            "PDF_NORMALIZATION_FAILED",
+            "PDF text operation differs from its trace or ends inside a ligature",
+        )
+    code = _pdf_space_code(document, font_xref)
+    if target.text_offset == len(text):
+        return _append_pdf_space_code(body, code)
+    if not default_text_state:
+        raise AdapterError(
+            "PDF_NORMALIZATION_FAILED",
+            "cannot preserve subsequent PDF glyph positions with non-default text state",
+        )
+    advance = _pdf_space_advance(document, font_xref, code)
+    offset = boundaries[target.text_offset]
+    # Back up before writing the space, so it does not extend the line's right
+    # edge and merge separate layout lines. Its advance restores the original
+    # position before the original suffix and TJ adjustments resume.
+    patched = body[:offset] + b">" + f"{advance:g}".encode() + b"<" + code + body[offset:]
+    if re.search(rb"\]\s*TJ\s*$", body):
+        return patched
+    return b"[" + re.sub(rb"Tj\s*$", b"]TJ", patched.strip())
+
+
 def _patch_pdf_lines(
     document: Any,
-    pending: dict[int, list[tuple[float, float, str, str]]],
+    pending: dict[int, list[PdfLineEnd]],
 ) -> int:
     patched = 0
     for page_index, wanted in pending.items():
         page = document[page_index]
-        font_xrefs = {font[4]: int(font[0]) for font in page.get_fonts(full=True)}
-        matched: set[int] = set()
-        for content_xref in page.get_contents():
-            stream = document.xref_stream(content_xref)
-            replacements = []
+        fonts: dict[str, dict[int, Any]] = defaultdict(dict)
+        for font in page.get_fonts(full=True):
+            fonts[font[4]][int(font[0])] = font
+        streams = {xref: document.xref_stream(xref) for xref in page.get_contents()}
+        # Without interpreting inherited text/graphics states, middle-of-show
+        # insertion is safe only when the page never changes those defaults.
+        default_state = not any(
+            re.search(rb"\b(?:Tc|Tw|Tz|Ts|cm|gs)\b", stream)
+            for stream in streams.values()
+        )
+        candidates: dict[int, list[tuple[int, Any, int]]] = defaultdict(list)
+        for content_xref, stream in streams.items():
             for match in PDF_TEXT_BLOCK_RE.finditer(stream):
-                x = float(match.group(1))
-                y = float(match.group(2))
-                resource = match.group(3).decode("ascii")
-                candidates = [
-                    index
-                    for index, item in enumerate(wanted)
-                    if index not in matched
-                    and item[2] == resource
-                    and abs(item[0] - x) < 0.25
-                    and abs(item[1] - y) < 0.25
-                ]
-                if len(candidates) != 1:
+                position = [float(value) for value in match["position"].split()]
+                if len(position) != (2 if match["operator"] == b"Td" else 6):
                     continue
-                index = candidates[0]
-                code = _pdf_space_code(document, font_xrefs[resource])
-                replacements.append(
-                    (
-                        match.start("body"),
-                        match.end("body"),
-                        _append_pdf_space_code(match.group("body"), code),
-                    )
-                )
-                matched.add(index)
-            for start, end, replacement in reversed(replacements):
-                stream = stream[:start] + replacement + stream[end:]
-                patched += 1
-            if replacements:
-                document.update_stream(content_xref, stream)
-        if len(matched) != len(wanted):
+                x, y = position[-2:]
+                resources = fonts.get(match["font"].decode("ascii"), {})
+                if not resources:
+                    continue
+                for index, item in enumerate(wanted):
+                    if abs(item.x - x) >= 0.25 or abs(item.y - y) >= 0.25:
+                        continue
+                    if len(resources) != 1:
+                        raise AdapterError(
+                            "PDF_NORMALIZATION_FAILED",
+                            "ambiguous PDF font resource across content scopes",
+                        )
+                    font = next(iter(resources.values()))
+                    if item.font == font[3].split("+", 1)[-1]:
+                        candidates[index].append((content_xref, match, int(font[0])))
+        if any(len(candidates[index]) != 1 for index in range(len(wanted))):
             raise AdapterError(
                 "PDF_NORMALIZATION_FAILED",
-                "could not match every derived soft-wrap line to a PDF text operation",
-                {"page": page_index, "missing_count": len(wanted) - len(matched)},
+                "could not uniquely match every derived soft-wrap line to a PDF text operation",
+                {"page": page_index},
             )
+        replacements_by_stream: dict[int, list[tuple[int, int, bytes]]] = defaultdict(list)
+        used = set()
+        for index, item in enumerate(wanted):
+            content_xref, match, font_xref = candidates[index][0]
+            identity = (content_xref, match.start())
+            if identity in used:
+                raise AdapterError("PDF_NORMALIZATION_FAILED", "multiple lines share one PDF text operation")
+            used.add(identity)
+            replacement = _insert_pdf_space(
+                document, font_xref, match["body"], item, default_text_state=default_state,
+            )
+            replacements_by_stream[content_xref].append(
+                (match.start("body"), match.end("body"), replacement)
+            )
+        for content_xref, replacements in replacements_by_stream.items():
+            stream = streams[content_xref]
+            for start, end, replacement in sorted(replacements, reverse=True):
+                stream = stream[:start] + replacement + stream[end:]
+                patched += 1
+            document.update_stream(content_xref, stream)
     return patched
 
 

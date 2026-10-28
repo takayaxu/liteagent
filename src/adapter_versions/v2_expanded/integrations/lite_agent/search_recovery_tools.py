@@ -7,6 +7,7 @@ import logging
 from typing import Any, Iterable
 
 from integrations.openapa_osworld.tool_catalog import action_signature, public_actions
+from writer_adapter.schema import DOCUMENT_SELECTOR_SCHEMA as WRITER_DOCUMENT_SELECTOR_SCHEMA
 
 from .tool_catalog import DIRECT_ACTION_SCHEMAS, build_tools, tool_name
 
@@ -54,6 +55,8 @@ def _route_payload_schema(
     payload = copy.deepcopy(base_payload_schema)
     properties = payload.setdefault("properties", {})
     properties["params"] = _downstream_params_schema(adapter, action)
+    if adapter == "libreoffice_writer":
+        properties["document"] = copy.deepcopy(WRITER_DOCUMENT_SELECTOR_SCHEMA)
     payload["required"] = ["params"]
     return payload
 
@@ -223,6 +226,15 @@ def constrain_adapter_call_routes(
             }
             parameters["properties"]["payload"] = copy.deepcopy(payload_schema)
             parameters["properties"]["payload"]["required"] = ["params"]
+            if all(adapter == "libreoffice_writer" for adapter, _ in route_pairs):
+                parameters["properties"]["payload"]["properties"]["document"] = copy.deepcopy(
+                    WRITER_DOCUMENT_SELECTOR_SCHEMA
+                )
+            elif any(adapter == "libreoffice_writer" for adapter, _ in route_pairs):
+                parameters["properties"]["payload"]["properties"]["document"]["description"] = (
+                    "Adapter-specific document selector. For adapter=libreoffice_writer: "
+                    + WRITER_DOCUMENT_SELECTOR_SCHEMA["description"]
+                )
             route_help = "; ".join(
                 _flat_route_description(adapter, action)
                 for adapter, action in route_pairs

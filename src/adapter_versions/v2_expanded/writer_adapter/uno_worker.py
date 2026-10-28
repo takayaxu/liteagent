@@ -23,7 +23,7 @@ from .native_references import (
     paragraph_numbering_state,
 )
 from .pdf_export import preserve_docx_soft_wrap_spaces
-from .schema import TAB_STOP_UNITS, parse_rgb_color
+from .schema import TAB_STOP_UNITS, _validate_document, parse_rgb_color
 from .paragraph_dedup import plan_paragraph_deduplication
 from .text_format import set_text_format, set_text_format_in_match
 from .text_search import find_text
@@ -643,6 +643,7 @@ class WriterSession:
         return self.identity_for(self.doc)
 
     def _select_document(self, selector: dict[str, Any]) -> Any:
+        _validate_document(selector)
         documents = self._documents()
         if not documents:
             raise AdapterError(

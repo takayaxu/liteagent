@@ -892,6 +892,13 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "additionalProperties": False,
     },
     "archive.create_extract": {
+        "description": (
+            "Create a new ZIP archive or extract an existing ZIP archive. "
+            "For mode='create', input_paths lists the existing files/directories selected "
+            "by the model and archive_path is the output ZIP file. For mode='extract', "
+            "archive_path is the existing input ZIP and destination_directory is the "
+            "output folder. The model chooses the inputs, output path and mode."
+        ),
         "properties": _ARCHIVE_PROPERTIES,
         "required": ["mode", "archive_path"],
         # Keep branches self-contained for native tool grammar compilation.

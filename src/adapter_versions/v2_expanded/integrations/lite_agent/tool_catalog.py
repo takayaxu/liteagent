@@ -31,6 +31,7 @@ from vlc_adapter.tool_manifest import (
 from writer_adapter.tool_manifest import (
     STRICT_ACTION_PARAM_SCHEMAS as WRITER_STRICT_ACTION_PARAM_SCHEMAS,
 )
+from writer_adapter.schema import DOCUMENT_SELECTOR_SCHEMA as WRITER_DOCUMENT_SELECTOR_SCHEMA
 from multi_apps_adapter.tool_manifest import (
     DOWNSTREAM_ADAPTER_DOMAINS,
     STRICT_ACTION_PARAM_SCHEMAS as MULTI_APPS_STRICT_ACTION_PARAM_SCHEMAS,
@@ -4137,6 +4138,8 @@ def _adapter_tool(
         }
         if domain == "chrome" and action in CHROME_TARGET_REQUIRED_ACTIONS:
             parameters["required"].append("target")
+        if domain == "libreoffice_writer":
+            parameters["properties"]["document"] = copy.deepcopy(WRITER_DOCUMENT_SELECTOR_SCHEMA)
         argument_note = "Pass action params inside the params object."
     contract = (
         direct_schema.get("description", "")
