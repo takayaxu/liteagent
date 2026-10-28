@@ -277,16 +277,17 @@ flowchart TD
 
 ## 本轮修复台账
 
-### v4 指定队列（2026-10-28，14题，人工审核）
+### v4 指定队列（2026-10-28，14题，串行修复）
 
-用户指定顺序：103、117、118、120、125、126、128、131、136、151、155、161、163、164。本队列 human_review=true；北京时间19:08用户曾要求按新版并行修复；北京时间19:23澄清“对话串行修，不开子智能体，我自己开多对话”，本对话从此只继续103；其余题由用户另开对话安排，本对话不自动认领。每题先核对当前活动源码和正式失败，提出对话内结构化方案，人工明确批准相应方案版本后才实施。原始身份与失败证据以 reports/20261026-v4-full189/wrong-tasks.json 为准；旧批次结果不用于销项。当前通过 1/14、待处理 13/14。
+用户指定顺序：103、117、118、120、125、126、128、131、136、151、155、161、163、164。本队列最初 human_review=true；用户曾要求并行，后澄清“对话串行修，不开子智能体，我自己开多对话”。103完成后用户要求继续下一题，当前仅认领117；其余题不由本对话自动认领。用户最新关闭人工审核并明确允许子agent独立审核，只禁止子agent并行修题，因此从117起 human_review=false：主agent串行诊断/实施，独立审核通过后继续，不再等待人工批准方案。原始身份与失败证据以 reports/20261026-v4-full189/wrong-tasks.json 为准；旧批次结果不用于销项。当前通过 2/14、待处理 12/14。
 
 
-当前待修复：117、118、120、125、126、128、131、136、151、155、161、163、164。
+当前待修复：118、120、125、126、128、131、136、151、155、161、163、164。
 
 | 已通过题目 | 正式结果与源码 | 证据与交付 |
 | --- | --- | --- |
-| 103 / 3a93cae4-ad3e-403e-8c12-65303b271818 | run-005 passed / reward=1.0 / agent_done，17步908.625秒；103-human-v2方案1，人工用户批准；候选7725cd02c1dfee6526d15b2784c9cc58acf85a03（与ca9320f运行源码相同），昇腾Qwen3.5-9B thinking、100步1800秒、原evaluator，seal 0463d198840ac41e8cea7256bfdf14bb5c6b0c622d235755b4d36ccc73aefd97 | [结果](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/artifact-validation.json)；仅D5新增Lec 2，原7条保留；本地已集成7725cd0，待推送 |
+| 103 / 3a93cae4-ad3e-403e-8c12-65303b271818 | run-005 passed / reward=1.0 / agent_done，17步908.625秒；103-human-v2方案1，人工用户批准；候选7725cd02c1dfee6526d15b2784c9cc58acf85a03（与ca9320f运行源码相同），昇腾Qwen3.5-9B thinking、100步1800秒、原evaluator，seal 0463d198840ac41e8cea7256bfdf14bb5c6b0c622d235755b4d36ccc73aefd97 | [结果](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/artifact-validation.json)；仅D5新增Lec 2，原7条保留；已集成，GitHub codex/v4远端7c5e5b5包含103提交8bd9e28，已核验交付 |
+| 117 / 8df7e444-8e06-4f93-8a1a-c5c974269d82 | run-005 passed / reward=1.0 / agent_done，16步583.62秒；117-agent-v6，human_review=false，独立审核/root/review117方案和实际diff通过；候选05c100d1e0d24683f8e772552b5962cbdef97dfa，seal 13c5014b6186aed0e66f32dcc29b1396348299336ef0a51f8ba9c994eb3814b2，原模型100步1800秒及原evaluator | [结果](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-117-20261028-human/run-005/artifact-validation.json)；ZIP恰含原DOCX及正确20页论文PDF，原DOCX字节保持；已验证，待集成 |
 
 - 2026-10-28 14:55 UTC，Order103 run-005正式PASS/reward1.0，source/config/OSWorld完整性均true。第13步模型自行在D5写Lec 2 (12:00-14:00)，14完成被保存证据检查拒绝，16保存、17完成通过；产物相对原输入只有D5一格值变化，原7条课程全保留，与第一原始参考全表相同。候选7725cd0已验证待集成，自有guest/名额清理释放；此前失败保留、不改历史批次分数。本轮103移出待修，1通过/13待修；其余题不由本对话自动认领。
 
@@ -302,9 +303,23 @@ flowchart TD
 
 - 2026-10-28 14:39 UTC，environment-005同基盘/生产provider诊断约65秒后截图接口HTTP200，未改guest服务，诊断guest/名额已清理；获得新的环境恢复证据。自己的repair-v2合并当前58dccc5仅文档更新，冻结候选7725cd02c1dfee6526d15b2784c9cc58acf85a03，src/bin/configs相对ca9320f逐字相同。run-005从干净detached源码、同字节输入配置启动103原模型/预算/evaluator正式复跑；输出 /home/liuxv/liteagent-local-runs/repair-103-20261028-human/run-005/output，resource-lease.json及run-status.json索引owner/名额/开始时间。阶段复跑、human_review=true、103-human-v2方案1，未集成未推送。
 
+- 2026-10-28 15:57 UTC，用户明确要求“继续下一题”，本聊天/root按原顺序重新认领Order117 / 8df7e444-8e06-4f93-8a1a-c5c974269d82 / multi_apps；human_review=true、不开子agent、串行处理。题目要求按桌面reminder.docx整理/home/user中的论文以供提交。独立目录 /home/liuxv/liteagent-local-runs/repair-117-20261028-human；旧run-001/002证据保留，当前活动运行源码已变，故run-003从最新7c5e5b5干净detached工作树无补丁复跑。配置仅补原题身份source_order234，其余原模型100步1800秒及原evaluator不变；owner lite-repair-4729224e46904accbbb11033042bf609、资源池slot2及兼容共享锁，output/resource-lease.json、run-status.json索引运行。阶段当前源码基线，尚无117修复方案获批或候选实施。
+
+- Order117 run-003正式failed/reward0/stalled_no_progress，28步760.824秒，source/config/OSWorld完整性全true；第9步正确export_file_pdf原论文但PDF_NORMALIZATION_FAILED（page5缺1），12步模型传document.path，Writer只识别url/title却忽略未知字段，实际导出reminder.docx到论文PDF路径（20507bytes/1页）；20次ZIP检索且从未调用归档，结果ZIP取回404。搜索结果已有mode=create/extract枚举，但archive.create_extract缺动作说明；模型推理反复误认仅解压，真实通用包装仅公开允许路由、payload无下游约束。diagnosis-004在自有guest按原输入只做原生CLI转PDF（LibreOffice7.3.7.2，20页），第一处同类缺口为人类第6页Appendix3：提取器补出的空格坐标446.947、实际BT起点451.2，单一布局span≠单一PDF文字操作；另有斜体Tm而当前匹配仅支持Td。局部诊断不替代PASS，未改源码；自有guest/名额均清理。证据run-003/diagnosis/root-cause.json、request-contracts.json、diagnosis-004/normalization-match.json、layout-detail.json、native.pdf。117-human-v1在本对话待人工：方案1修PDF真实文字操作匹配及保留严格读回、Writer未知选择器拒绝与公开url/title、ZIP通用创建/解压动作说明；方案2先仅PDF匹配，余项保持待修。均未实施，人工审核true、不启子agent、不原样重跑。
+
+- Order117审核方式更新：用户明确“不开子agent是让你不开子agent并行修题，可以让子agent审核”，human_review=false持续有效。独立只读审核者/root/review117核对原始事件、真实请求、原生PDF和源码后通过117-agent-v2；主agent随后发现373目标中levels.行的末尾原生空格被布局归入下一行Appendix3，新117-agent-v3将按真实trace内字符编码位置插入，保留其后字形/位移及全部严格验证；同一审核者复核中，未实施。当前基点6dd217f相对run-003的7c5e5b5运行源码/脚本/配置无差异；串行仅处理117。
+
+- 2026-10-28T16:51 UTC，Order117方案及实际diff经同一审核者/root/review117通过117-agent-v5；v3因缺位移补偿证据不足，v4局部严格读回拒绝两行合并，v5改用原生字体宽度前置补偿，未删目标或放松验证。候选e6f913d28651d0d18256f5b359f63bcae2dfaed9在本题repair独立树提交：真实trace字符/编码边界匹配Td/Tm、字体/流歧义拒绝、保留373目标及严格读回；Writer只接受url/title并在wrapper/atomic公开；ZIP补通用创建/解压说明。36focused、Ruff、diff/check通过；旧archive_mode_schema的5项oneOf假定失败在无补丁基线同样复现，未改旧测试。focused-v4/native-validation-final.json核验20页、58551原字形及位置不变，仅373个目标空格。run-004从干净detached候选、与run-003逐字相同配置（SHA256 0b45bac8f231983fe7d43f17eae7a6a916d8f15b31c602ed252554ae48bc04f6）启动原条件117正式复跑；output/resource-lease.json、run-status.json索引owner/名额/guest/时间。human_review=false，仍串行仅117，结果待定，未集成未推送。
+
+- Order117 run-004正式failed/reward0/stalled_no_progress，43步1025.028秒，source/config/OSWorld完整性全true，owner已退出并释放名额。step9正确原论文导出PDF且373目标均补齐；step10及真实request12/13的工具定义中完整新ZIP说明可见，不能归因为说明没到模型，但模型仍将create_extract误作仅解压。step22误用gzip的compress_file输出.zip被原格式校验拒绝，35重试被RepeatedActionBlocked；没有成功归档，ZIP取回404。证据run-004/diagnosis/root-cause.json及原始事件/请求；e6f913d失败候选不集成。117-agent-v6经同一审核者/root/review117批准：新增通用archive.create_zip/extract_zip单操作，旧动作兼容，输入/输出由模型指定，保留原创建/解压安全与自动验证，并同步发现/反馈。实施在本题repair树；初版搜索泛排除archive误伤普通复制/建目录，按审核意见收窄为明确归档操作意图并覆盖unzip及extract files from archive。46focused通过，实际diff最终复核中，未冻结下一候选、未集成。
+
+- Order117-agent-v6实际diff同一审核者/root/review117最终通过，独立运行57项ZIP/Writer/PDF定向测试通过；Ruff、diff/check通过。新修复提交a1d2dd4，在自有树组合活动f1d8b21（仅文档更新），冻结候选05c100d1e0d24683f8e772552b5962cbdef97dfa，组合前后运行源码/脚本/配置相同。run-005从新干净detached候选、同字节原配置启动117正式复跑，预算/模型/原evaluator不变；run-005/prep.json、output/resource-lease.json、run-status.json保留身份/owner/名额/命令，human_review=false。阶段复跑，结果待定，未集成未推送；只处理117。
+
 - 2026-10-28 北京时间19:23用户澄清后，本对话已中止 /root/repair117、/root/repair118、/root/repair120 子 agent；118 自有 run-002 控制器已精确 SIGTERM，进程和该 owner 容器清空，120 run-002 先前已中断，117 run-002 已退出。各自 run-001/run-002 证据保留，不作为本轮销项；没有候选补丁。后续13题本对话不自动认领，其他用户自建对话互不干扰。
 
-- Order103交付：持v4-integration.lock快进活动codex/v4至7725cd0；活动源码seal重算与正式PASS相同，src/bin/configs无组合差异。本地已集成，GitHub HTTPS连接暂超时，待正常推送及远端SHA核验。
+- Order103交付：持v4-integration.lock快进活动codex/v4至7725cd0；活动源码seal重算与正式PASS相同，src/bin/configs无组合差异。本地已集成，GitHub HTTPS连接暂超时，待正常推送及远端SHA核验。 2026-10-28 16:00 UTC复核：GitHub REST远端为7c5e5b5，祖先链包含103台账/集成提交8bd9e28；后续共享分支正常推送已交付103，delivery.json已同步。原PASS仍对应7725cd0条件，不将后续38组合源码冒称103重新验证。
+
+- Order117 run-005正式PASS/reward1.0/agent_done，16步583.62秒，source/config/OSWorld完整性全true，资源名额及guest已释放。step14以同basename导出正确原论文，373目标全补齐；step15模型自主选择create_zip并提供两个正确文件，16完成。原ZIP两成员、原DOCX字节与输入/参考一致，20页PDF文本相似度约0.99693、CRC通过；错误提醒PDF未打包。候选05c100d已验证待集成，human_review=false、独立审核/root/review117。117从待修移出，2通过/12待修，先前失败证据全部保留；本对话未自动认领118。
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
