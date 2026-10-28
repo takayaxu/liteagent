@@ -277,6 +277,8 @@ flowchart TD
 
 - 98 Plan-v2方案1候选8b12bf2原生验证通过：独立标记guest内创建XLSX，保存旧值后修改live；workbook.read_file返回旧值且matching_open_workbooks.modified=true，range.read返回新值，磁盘哈希/当前表内容保持；显式保存后文件reader返回新值且modified=false。原生reader未自动保存/覆盖，私有guest已清理、公共锁释放。证据 `/home/liuxv/liteagent-local-runs/repair-98-20261028/plan-v2-native/native-result.json`。run005已从该干净detached候选准备，config与run001–004字节相同；当前其他任务/模型繁忙，正式尚未启动，不新计attempt或PASS；等待空闲原条件执行。
 
+- 98 Plan-v2方案1补充验证：原23/24及52/53事件重建的实际LiteAgent消息保留saved_file/includes_unsaved_changes/同路径modified及“磁盘空值不证明live写失败”提示，证据plan-v2-reader-replay.json；候选及配置摘要见plan-v2-freeze.json。run005外部单次queue进程PID3405245已启动，30秒只读检查其他runner和18000模型负载，空闲后调用持公共锁的launch.py，仍由启动前预检覆盖竞争；不会重置他人guest/服务或复用结果目录，非Codex持续唤醒任务。当前正式未启动且无新结果，待run005完成后按原结果诊断/审核；失败候选不合入。
+
 - **98候选历史回退：用户曾要求退回 Plan-v1。** 用户“退回plan v1的版本”取代继续Plan-v5的待审核建议；Plan-v3/v4运行改动已在独立repair分支撤回，Plan-v5未实施。回退提交 `5ad7d5f1d2960c278d08be9c08c62326867680b6` 的src/bin/configs与Plan-v1候选 `aea503875a0392785e64e47242e0039268ac3b24` 逐字相同；保留跨来源读取修复，移除后续财务来源契约/完成检查及嵌套发现改动。主活动codex/v4从未集成这些失败候选，其他题修复不变；保留历史失败与run001–004冻结源码。备份分支 `codex/repair-98-before-plan-v1-rollback-20261028` 留存507ac3f。此操作只回退候选，不将未PASS的Plan-v1集成，也不启动新整题。human_review=true持续。
 
 - 原题正式验证通过 10 题：11、13、15、24、27、28、35、63、77、79；另有用户附加要求任务验证通过 1 题：97（严格删除第4页正文尾空段）。活动待处理 4 题：87、93、98、100。97原题历史失败仍保留，不计入原题PASS，也不改写full189历史分数。按指定顺序一次处理一题。
