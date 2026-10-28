@@ -37,7 +37,7 @@ v4 集成范围和原始评分条件见上方回执。
 
 ## 已部署的共享资源
 
-本机只部署一份 OSWorld guest 容器，并由两个源码目录共同使用：
+本机保留一份常驻共享 guest，单题修复运行器另外为每题创建独立 guest：
 
 ```text
 容器：liteagent-shared-osworld
@@ -109,7 +109,7 @@ python3 -m venv .venv
 python -m pip install -r requirements-liteagent.txt
 ```
 
-完整 OSWorld 任务还需要 Docker、`/dev/kvm`、共享 guest 和一个 OpenAI
+完整 OSWorld 任务还需要 Docker、`/dev/kvm`、只读 guest 基盘和一个 OpenAI
 兼容模型 endpoint。模型地址和密钥通过环境变量提供，不能写进 README 或源码：
 
 ```bash
@@ -147,6 +147,32 @@ curl --fail --silent --show-error "$QWEN_BASE_URL/models"
 100 步和 1800 秒，并配置完整的工具调用
 结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
 在调用结束处停止生成，客户端仍检查恰好一个完整工具调用并执行参数 schema 校验。
+
+### 多对话并行修复
+
+不同对话各自从最新活动提交建立独立工作树，调用该工作树的
+`bin/run-osworld.py`，默认最多同时运行 **3 个修复任务**。每轮独立源码快照、
+OSWorld/cache、结果目录和 guest；guest 使用独立可写盘及动态端口，仅共享只读基盘。
+同一 task_id 跨工作树互斥；一次传入多个 `--orders` 时，在一个名额内依次执行，
+这些题目的认领锁覆盖整批。诊断和修改源码不占运行名额。
+
+```bash
+# 查看本账号所有新入口任务的资源名额、题目、owner 和结果目录
+python bin/repair-resources.py status
+# 仅在没有任务占用名额时调整（支持 1–12；初始值为 3）
+python bin/repair-resources.py configure --slots 3
+```
+
+新入口统一使用 `~/.local/state/liteagent/repair-resources/`，不会因工作树路径不同
+而分裂资源池。它在旧公共锁 `~/liteagent-reproduction-jobs/v3-repair-vm.lock`
+上持共享锁，允许独立 guest 重叠；确需整机修复资源独占时加 `--exclusive`。
+不要在新入口外再套整题公共排他锁，也不要以“其他 runner 未退出”或“模型请求数非零”
+为由阻止不同 guest 的运行。原生 Docker 端口分配锁仍只在启动阶段短时持有。
+
+已启动的历史任务、旧排队控制器和旧工作树不会自动迁移；旧公共排他锁持有者退出前，
+新任务仍会等待。下一轮从包含此功能的最新提交新建工作树并直接使用新入口。
+资源池仅统计本账号经过新入口的任务，其他账号或直接调用底层运行器的任务仍需核对。
+具体隔离、取消和验证范围见 [并行修复说明](docs/parallel-repair-20261028.md)。
 
 复跑前，从开发分支最新提交创建独立 Git worktree，并在该目录依次运行指定题目：
 
