@@ -307,6 +307,18 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
+- Order82 run-001已启动模型，owner lite-repair-c82e970481f248fbae170a5123bb227e、pool slot2、兼容共享锁、PID3988972；开始2026-10-28T16:31:47Z，source seal af183bf9eb9e326db4d0aa084816dff26ee102af0cb211d03545391d67163fd6。输入40段/21处显式斜体全12pt，input-readonly.json记录逐字/逐run；原evaluator先默认空白归一化比正文再逐run检查显式斜体14pt，另需独立保护非斜体与全部正文。正式结果待定、未实施补丁。
+
+
+- Order65：PLAN65-tab-boundaries-v1三处公开说明候选已由同一独立审核者通过并在独立repair树实施，未提交/未集成。唯一原request9只读真实服务probe54.679秒避开split但仍输出字面反斜杠t且推理仍计划额外LEFT，未达到正式复跑门槛。部署vllm0.18.0+empty/qwen3_coder实际源码SHA256 2b1d8cff6e697cf71fbd0d9c3c34a88953b22cfb33c0d15b5f49b80c8215f056，六例固定XML原方法stream/nonstream对照保留真Tab/尾Tab/字面转义，仅去外层一个LF；当前stdout日志未找到关联XML/token，不声称重构当次生成或整个链路无问题。独立审核/root/review_order30_seq归档边界通过：正式deadline/rewardnull、最终保存artifact缺失保留；65仍待修，不自动二次解码、不猜测补丁、不重复探针或无变化整题重跑。证据 /home/liuxv/liteagent-local-runs/repair-65-20261028-seq/{service-probe-001,parser-readonly}。本批1/19已交付、18待修。
+
+- Order82 / e246f6d8-78d7-44ac-b668-fcf47946cb50 / libreoffice_writer由本聊天/root接续认领，human_review=false持续、独立审核者/root/review_order30_seq。任务仅把斜体文字字号12改为14；旧full189基线20事件deadline/rewardnull，源码已变，故从认领最新活动2262e71473d6826d03c3c7d48bdb63e31507b6e5新建干净detached run-001/source无补丁复跑。配置仅补原题身份，原模型thinking/100步1800秒/任务/evaluator不变；独立入口自动管理guest/端口/资源池，直接启动无整题公共排他锁。证据 /home/liuxv/liteagent-local-runs/repair-82-20261028-seq/{baseline-identity.json,run-001/output}，阶段当前源码基线，未实施82补丁。
+
+
+- Order65当前基线run-001终态agent_deadline_exhausted/reward=null，52事件1934.151秒、source/config/OSWorld完整性全true；无propose_done/无evaluator，自有guest和名额已释放。9/17/20原始模型split参数使原生段数12→13→14→15，42回读15段/12非空；多次LEFT80+RIGHT165.1为独立错误。11/43插入真Tab，45/47/50参数为字面反斜杠t，34/40/52为no-op，36/41重复保护正确拒绝；原始参数与执行一致。deadline跳过评分器取回，最终保存DOCX未归档，host缓存仍原输入，不能冒充结果；逐时原生回读与限制保留baseline-diagnosis.json。输入/参考去Tab后逐段文字相同，参考第3非空段仅2词在Tab前，单列既有差异且不改原评分。PLAN65-tab-boundaries-v1（三处通用公开说明澄清同段Tab/硬拆段、stop消费顺序、真Tab/字面转义）已交同一独立审核者，尚未批准/实施；本批1已交付/18待修。
+
+- 2026-10-28 15:29 UTC，按顺序接续Order65 / 0a0faba3-5580-44df-965d-f562a99b291c / libreoffice_writer，本聊天/root认领，human_review=false、同一独立审核者/root/review_order30_seq。独立目录 `/home/liuxv/liteagent-local-runs/repair-65-20261028-seq`，最新活动7c5e5b5干净detached run-001无补丁基线启动；仅补task身份，默认模型100步1800秒及原evaluator不变，配置SHAae828148a31322e6e1df157c7ff9cac52e3339c483c82ee63861cd79c3d4f6ef。owner lite-repair-316a40d05ecb49668cfea1074db00d46、pool slot1、兼容共享锁及独立guest，源码sealaf183bf9eb9e326db4d0aa084816dff26ee102af0cb211d03545391d67163fd6。输入12段/10非空段，全无Tab和自定义制表位，SHAefe354c69b84d33e87696922afb7b397a18167d19dbe8fabc64ff6931693f101；input-readonly.json保留逐字正文。旧full189先错误拆段再混淆真实Tab与字面反斜杠t，当前源码不同，仅作历史证据；本次终态前不批准猜测补丁。38已交付，30仍待修，本批1已交付/18待修。
+
 - Order38最新组合05d5435的run-003正式passed/reward1.0/agent_done，7步481.714秒；source/config/OSWorld完整性全true，原模型100步1800秒及原evaluator不变。保存产物10页、全部原生段落逐字符文字保留，目标显式buNone且视觉起点457200与两参考行一致。原始根因为minProperties把目标/范围误算成格式要求；PLAN38-format-required-v1及两次冻结diff均由/root/review_order30_seq独立审核通过，human_review=false。证据 `/home/liuxv/liteagent-local-runs/repair-38-20261028-seq/run-003/verified-result.json`、output/results/results.json、final-integrity.json；旧基线失败和run-002旧基点PASS均保留。已将05d5435集成到codex/v4并正常推送GitHub6183c9b55cb44d0280a43c43c17a4f29f15175b0，远端同SHA已核验；38已从待修集合移出，本批为1已交付/18待修，30仍未解决，下一题65。
 
 - 2026-10-28 15:16 UTC，Order38最新组合候选05d5435最终SHA/diff经同一独立审核者通过，43focused含实际XGrammar、Ruff/diff/check全部通过后启动run-003，原模型/预算/evaluator及字节一致配置不变。owner lite-repair-61561d2ed27642d79f9afde10f270935、pool slot1、兼容共享锁；源码sealaf183bf9eb9e326db4d0aa084816dff26ee102af0cb211d03545391d67163fd6，身份/资源/run状态位于run-003/identity.json和output。最新组合正式结果待定；旧run-002 PASS保留，尚未集成/推送，human_review=false持续。
