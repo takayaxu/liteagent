@@ -327,6 +327,15 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
+- 2026-10-28 18:09 UTC，Order82最终候选d8fb1a4db7ec760c927b80663e2c70dfa75ddfe8经同一独立审核/root/review_order30_seq明确通过，83focused及公开面/原resolver只读核验通过；唯一v2服务探针正确定位原斜体u、0动作。run-003从新干净候选正式启动，原模型100步1800秒、原evaluator及字节相同配置保持；owner lite-repair-fd0a6b9657e6467fa5ade5fa1bdc3127、pool slot1，seal 0ad54f8da4295805f5dae16eff02c48958c1bba5a2b84de7cb46647f61f6aecf；证据/home/liuxv/liteagent-local-runs/repair-82-20261028-seq/run-003/output/{resource-lease.json,run-status.json}。只读保存旁路归档已启动，快照不能替代原evaluator final artifact。正式结果待定，未集成/销项；human_review=false持续。
+
+
+- Order82收窄PLAN82-observed-literal-id-v2经同一独立审核者通过：只在每条find match派生matched_text_occurrence快照序号，不加顶层result说明/不改投影；仅literal=matched_text、case_sensitive=true时对应原API，正文改动须重查，重叠无法对应为null。基于最新7a958c5保留117并组合已审v1，干净冻结d8fb1a4db7ec760c927b80663e2c70dfa75ddfe8；五文件，83focused/Ruff/diff/check通过。曾因说明词导致行距工具召回test回归，基线通过；仅改准确等价措辞后全83通过，未改排序。精确input/native接口离线回放21条旧字段全同原观察，全部新非null序号由原resolver核到同一范围，无正文/格式/保存变化，actual消息透传完整。唯一v2原run002/request5只读probe21.3984秒正确定位已观察p11的u，仅字号14、0动作；删除新字段可逐消息恢复原request。证据 public-contract-validation-v2.json、probe-target-validation-v2.json、candidate-freeze-v2.json；待最终diff及probe独立审核，未启动正式run003，不能当PASS。仍1已交付/18待修。
+
+
+- Order82候选d82398b的run-002正式agent_deadline_exhausted/reward=null，26事件1866.53秒、source/config/OSWorld完整性全true，无propose_done/evaluator，自有guest/名额已清理。17/21目标正确、4处漏改；末归档saved25磁盘snapshot SHA b4e69cb7af9649e59f74833c492aab5e18c9f7b9dfd89a1ab4b84b634eb2eee5（非evaluator final）保留40段全文，77/83目标字符14，但step5/6按原始u occurrence1/2误改p0两个普通u为14，至终态未恢复。原生执行忠实、非传输改参；description已公开occurrence非格式结果序号，且现有set_format确可直接改对17处，不能称缺编辑API。26重复25被正确拒。d82398b保留独立失败候选，不集成/销项。新PLAN82-observed-literal-id-v2仅拟在text.find增加与既有literal API兼容的派生occurrence观察坐标，原段内坐标/执行不变，不硬编码17/18或代选目标；尚待同一独立审核者、未实施/探针/正式重跑。证据 /home/liuxv/liteagent-local-runs/repair-82-20261028-seq/{run-002-diagnosis.json,run-002/last-saved-artifact.json}。本批仍1已交付/18待修。
+
+
 - Order82 PLAN82-offset-contract-v1及最终三文件diff已由同一独立审核者/root/review_order30_seq明确通过；干净候选d82398bc8001ebcd1744163eb18bf6331c9ef895（父f3322e2，运行源码等价批准基线），77focused/Ruff/diff/check与真实错误公开面回放通过。唯一原request2 model-only探针26.7509秒正确literal内部0..8，独立原resolver定位到观察p6/60..68，仅字号14、0动作；不证明后续occurrence/漏数已解决。现从新干净run-002/source正式复跑，配置字节同baseline SHA43818a3e6e7ff4d6f0b02b5a6de453863705f3666a71c9dc1a645809b3cd0344，原模型/100步1800秒/evaluator不变。owner lite-repair-d1f569e310b148e7b6e2cd8786826dca、slot[1]、兼容共享锁、开始2026-10-28T17:15:03.614163+00:00；run-002/output/resource-lease.json及run-status.json索引身份。阶段正式复跑、结果待定、未集成/销项，human_review=false持续。
 
 
