@@ -327,6 +327,11 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题，关闭人工审核）
 
+- 2026-10-28 18:44 UTC，Order82候选d8fb1a4的run-003正式agent_deadline_exhausted/reward=null，25事件1868.864秒，source/config/OSWorld完整性均true；无propose_done及evaluator。末归档receipt25保存字节SHA1644cb796bec7478292f74f2584fb5005a163cae31793ba6bb12ac3148cc7fd1（非evaluator final artifact），40段全文保留，21目标仅9处完整正确、58/83字符14，12处/25字符漏改，普通p0的r/u两处误改未恢复。原参数均忠实执行，21新坐标持续可见；response18已读对r序号61/63/84却自行替换为过滤列表0/1/2，长推理后重复调用被拒。后续原段内API及真实ordinal能正确定位，无新契约/传输/resolver缺陷证据。同一独立审核者/root/review_order30_seq完整复核后同意保留82待修、继续99，不批准新增猜测补丁/不变重试/重复探针；三次失败与两有限probe均保留，d8fb1a4不集成，自有guest/名额已清理。证据 /home/liuxv/liteagent-local-runs/repair-82-20261028-seq/{run-003-diagnosis.json,run-003/last-saved-artifact.json}。本批仍1已交付/18待修。
+
+- Order99 / 337d318b-aa07-4f4f-b763-89d9a2dd013f / multi_apps由本聊天/root按顺序认领，human_review=false，独立审核仍/root/review_order30_seq。个人目录/home/liuxv/liteagent-local-runs/repair-99-20261028-seq；最新活动基点945f2ff381d2c0e2e555d9363fbf2a25ddc83d7b，旧full189基点a65c4ab相差56个运行文件、旧6事件deadline且未读任何PDF，不能直接据其实施。新干净detached run-001无补丁正式基线已启动，配置只补原题身份，原模型100步1800秒及原evaluator不变；owner lite-repair-b6263cb820c641dfa02b1a9ab8b7f851、pool slot1、seal 13c5014b6186aed0e66f32dcc29b1396348299336ef0a51f8ba9c994eb3814b2，开始2026-10-28T18:45:29.177524+00:00；运行资源见output/resource-lease.json。旧历史99 PASS不用于本批销项，未带入82失败候选。
+
+
 - 2026-10-28 18:09 UTC，Order82最终候选d8fb1a4db7ec760c927b80663e2c70dfa75ddfe8经同一独立审核/root/review_order30_seq明确通过，83focused及公开面/原resolver只读核验通过；唯一v2服务探针正确定位原斜体u、0动作。run-003从新干净候选正式启动，原模型100步1800秒、原evaluator及字节相同配置保持；owner lite-repair-fd0a6b9657e6467fa5ade5fa1bdc3127、pool slot1，seal 0ad54f8da4295805f5dae16eff02c48958c1bba5a2b84de7cb46647f61f6aecf；证据/home/liuxv/liteagent-local-runs/repair-82-20261028-seq/run-003/output/{resource-lease.json,run-status.json}。只读保存旁路归档已启动，快照不能替代原evaluator final artifact。正式结果待定，未集成/销项；human_review=false持续。
 
 
