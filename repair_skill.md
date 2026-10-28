@@ -272,6 +272,12 @@ flowchart TD
 
 ## 本轮修复台账
 
+### v4 指定队列（2026-10-28，19题，关闭人工审核）
+
+用户指定顺序：30、38、65、82、99、101、104、105、106、109、113、114、115、122、127、132、145、172、189。`human_review=false` 持续适用，方案及失败重试由独立子 agent 只读审核；一次处理一题，不用历史批次 PASS 销项。原始失败身份及证据以 `reports/20261026-v4-full189/wrong-tasks.json` 为准。本队列原题正式通过 0/19、待处理 19/19。
+
+- 2026-10-28，Order30 / `af23762e-2bfd-4a1d-aada-20fa8de9ce07` / libreoffice_impress，由本聊天 `/root` 认领，个人目录 `/home/liuxv/liteagent-local-runs/repair-30-20261028-seq`；启动基点 `dfc1336`，human_review=false，阶段：当前源码无补丁基线排队。旧 full189 超时、59events、reward=null，不能当作评分0；与当前37个运行/脚本/配置文件不同，先新干净 detached run-001 复跑。配置仅补原题身份 source_order111，模型/100步1800秒/原任务/evaluator不变。另一聊天Order100持公共生命周期锁，本题同绝对锁排队，不停止或干扰该任务。其余18题等待，未实施候选、未宣称PASS。
+
 ### v4 指定队列（2026-10-26）
 
 原始失败快照：`/home/liuxv/liteagent/reports/20261026-v4-full189/wrong-tasks.md`。用户指定 15 题：11、13、15、24、27、28、35、63、77、79、87、93、97、98、100。本轮启动时 `human_review=true`；北京时间2026-10-27用户明确批准“27 Plan-v1 方案 1”，并要求“现在开始关闭人工review”，此后持续 `human_review=false`，新方案及失败重试由独立子agent审核后自动推进，不再等待人工方案批准。北京时间2026-10-27用户再次明确“开启人工review”，从该消息起持续切回 `human_review=true`；Order35当前无补丁基线继续收集证据，后续新方案/重试修订必须直接对话结构化审核并等待人工明确批准，不能沿用自动审核作为实施授权。既有已交付PASS保留；审核材料直接在对话，不另建审核文档。旧批次 PASS 不用于本轮销项。
@@ -301,6 +307,8 @@ flowchart TD
 - 原题正式验证通过 10 题：11、13、15、24、27、28、35、63、77、79；另有用户附加要求任务验证通过 1 题：97（严格删除第4页正文尾空段）。活动待处理 3 题：87、93、100（当前100）；用户放弃且未通过 1 题：98。97原题历史失败仍保留，不计入原题PASS，也不改写full189历史分数。按指定顺序一次处理一题。
 
 - 2026-10-28北京时间18:22后，用户放弃98并要求继续下一题，/root接续Order100 / `82e3c869-49f6-4305-a7ce-f3e64a0618e7`，human_review=true，基点活动22cbf23，独立目录`/home/liuxv/liteagent-local-runs/repair-100-20261028`。原题6张照片，筛选讲者照片复制并将presenter目录打包；原full189 36步failed0，实际复制6张且ZIP成员位于根目录，原evaluator解压后期望presenter/内4个指定图像，获取结果失败。该旧源码a65c4ab与当前37个运行/脚本/配置文件不同，旧失败补丁不移植；先从当前干净提交建立无补丁run001，补原题身份source_order208，保留原任务/evaluator/model/100步1800秒。未向运行源码写入参考文件名或筛选答案，后续新方案须对话人工批准。
+
+- 北京时间2026-10-28 18:25，Order100无补丁run001从干净活动`dfc13363afe150354f76ba8d40c550739cf91809`启动（相较22cbf23仅认领台账变化），100步1800秒、原模型thinking/原题/原评分不变。配置只补默认缺少的100身份，未带98任何失败补丁。owner liuxv-repair100-run001-base-20261028，独立新guest、端口原生锁及绝对公共生命周期锁覆盖准备/执行/评分/清理，模型负载采样0running/0waiting；无全局其他runner退出条件。当前环境准备/模型执行待结果，输出本题run-001/output。只读核对原evaluator：先删除presenter再解压ZIP，取指定4路径逐像素比较；不检查多余成员，因此业务筛选正确性与该覆盖范围须分别说明，不把ZIP完整性当作选图正确。旧原始请求有图片输入，不能笼统归因“模型未看到图”。
 - 北京时间2026-10-28，Order97已验证运行修复以同字节源码合入活动提交 `bc06e31991f1f9ef6106c5d9b5981c3264ad4560`，正常推送GitHub `codex/v4`，ls-remote核验同SHA；附加任务instruction未合入官方题目。Order98 / `8e116af7-7db7-4e35-a68b-b0939c066c78` 由/root接续认领，human_review=true，独立目录 `/home/liuxv/liteagent-local-runs/repair-98-20261028`。任务是读取5份收据并追加账本，旧full189在OCR超时后重复搜索至stalled，无写入；活动运行源码已更新，先从当前干净提交做无补丁单题基线，原任务/evaluator/模型/100步1800秒不变。共享guest空闲状态接口500仅作记录，以独立任务guest实际部署判断；新修复方案仍须对话人工审核，未提前实施候选。
 - 北京时间2026-10-28 10:00–10:16，Order98从干净活动44a5b80的run001无补丁正式复跑 `failed/reward0.0/stalled_no_progress`，32步916.445秒，source/config integrity均true，runtime seal与已集成97相同。配置仅增加原题身份source_order206，原task/setup/evaluator/reference/model/100步1800秒不变。原表6笔记录、应新增5笔；实际仅receipt_0成功OCR，新入账0笔，保存产物A1:E8原有值逐格保留、A9:E13全空，无Calc写入/保存或propose_done。step6同图OCR119秒超时，13同参数1.685秒成功，底层偶发原因未证实；不能当作持续OCR不可用。已证实源码根因：单份完整读取触发source_read_handoff_pending收口，step14搜索虽返回workbook.read_file/range.read，却因夹带convert/inspect/create非读取候选，被source_read_target_search_complete判为读取阶段已结束；tool_surface随后隐藏整个_WORKFLOW_READ_ACTIONS，连目标表读取及其余收据OCR/PDF均移除。原始事件6个检查点回放与真实下一请求的路由集合完全相符。模型step15/17/18把PDF/JPG当ZIP解压，被owner和重复调用保护拒绝；step19精确搜索恢复OCR时，20仍错选Writer读XLSX，另记模型决策错误，不能宣称阶段修复必定消除所有问题。一次同VM重启后仍重复错误请求，正式评分0，不销项；自有guest清理、公共锁释放。证据 `/home/liuxv/liteagent-local-runs/repair-98-20261028/baseline-diagnosis.json`、baseline-surface-replay.json及run-001/output/results/results.json、final-integrity.json。98 Plan-v1待直接对话人工审核：方案1收窄泛化读取阶段锁定，普通跨文件/跨应用任务不因单份读取和混合搜索结果全禁读取，仅保留已有明确目标/来源契约所需的阶段约束，保留模型选文件/选操作及owner校验/完成门；真实事件回放、单源邮件相邻边界、focused/Ruff/check及原条件正式复跑验证。方案2仅保障最新搜索返回的合法读取路由不被过滤，不完整解决单份读取后强制搜索；方案3保留待修、不改源码。推荐1；human_review=true，未实施新候选，等待用户明确选择。
 
