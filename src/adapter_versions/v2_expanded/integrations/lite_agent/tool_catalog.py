@@ -4039,13 +4039,10 @@ def _strict_generic_schema_overlay(
         parameters.pop("oneOf", None)
         parameters["minProperties"] = 3
     elif domain == "libreoffice_impress" and action == "shape.format_text":
-        # Qwen's OpenAI-compatible tool parser can emit an empty object when the
-        # model-facing schema combines the required shape target with a top-level
-        # anyOf of optional formatting fields. Keep the callable flat and require
-        # the target plus one formatting field; the Adapter's runtime validator
-        # remains authoritative for field values and selector consistency.
-        parameters.pop("anyOf", None)
-        parameters["minProperties"] = len(parameters["required"]) + 1
+        # Scope fields also count as properties, so minProperties cannot express
+        # a nonempty formatting request. Keep the exact owner contract for local
+        # validation; the Qwen generation layer lowers it to complete objects.
+        pass
     elif domain == "libreoffice_impress" and action in {
         "slide.format_text_roles",
         "slides.format_text_roles",

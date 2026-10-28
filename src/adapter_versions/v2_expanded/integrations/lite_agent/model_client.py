@@ -16,6 +16,7 @@ from .atomic_tool_surface import atomic_provider_surface, restore_adapter_argume
 from openai import OpenAI
 
 from .qwen_pivot_schema import lower_pivot_schemas
+from .qwen_shape_format_schema import lower_shape_format_schemas
 from .reasoning import (
     SUPPORTED_REASONING_EFFORTS,
     SUPPORTED_REASONING_MODES,
@@ -93,7 +94,7 @@ def _qwen_schema_compatible_tools(
         function = tool.get("function", {})
         if "parameters" in function:
             function["parameters"] = _provider_array_uniqueness(function["parameters"])
-    return lower_pivot_schemas(compatible)
+    return lower_shape_format_schemas(lower_pivot_schemas(compatible))
 
 
 def _bounded_qwen_empty_tool_constraint(
