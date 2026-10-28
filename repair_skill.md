@@ -290,6 +290,8 @@ flowchart TD
 
 - 2026-10-28，用户“方案1”批准98 Plan-v6方案1。独立repair树合并活动b702b29仅台账差异，基于8b12bf2实施：PDF原生结果标识empty_text/content_observation，模型反馈区分0字与上下文无截断；OCR顶层/发现说明公开扫描PDF恢复；事件账本持续重建已选空来源，普通转换/整理不触发，发现而未选读文件不自动纳入。完成门拒绝未解决来源；已有evidence数组可选结构记录source_path/observation_step/disposition/reason，需同来源已审核原生打开截图支持空白/无关/视觉已读判断，不新增填表参数，视觉恢复确实向模型附图。原run005第10/22/29/35步实际消息与完成拒绝回放通过，补非空OCR观察后仅解除该来源阻塞；主机原生pdftotext/pdftoppm/tesseract对普通文本/扫描/真实空白PDF及输入哈希检查通过，非正式PASS。12新增定向检查通过；相邻5项保存恢复和1项发票搜索旧失败均在干净8b12bf2复现，无新增同组失败。证据plan-v6-replay.json、plan-v6-native/native-result.json、v6-baseline-comparison.json，均位于本题外部目录；待最终冻结与新run006原条件复跑。
 
+- 北京时间2026-10-28 17:34，98 Plan-v6方案1冻结候选`eb904942a47967c20e2c1dfdc22f1e3bf320ac38`，44项发布定向检查、Ruff/diff/check及原始事件/原生PDF烟测通过；6项相邻失败均与干净8b12bf2相同。run006从新干净detached源码正式启动，config-input与run001–005字节相同（SHA256 41d1195f804865dbc764d5ca514476e4729f07bbd0e9ee0809faf191d5f6fe87），原题/原evaluator/原模型100步1800秒。独立guest、端口原生锁与绝对公共生命周期锁保留，owner liuxv-repair98-run006-v6-20261028；启动采样0running/0waiting，无全局其他runner退出门槛。输出本题run-006/output，正式结果待定、候选未集成。
+
 - **98候选历史回退：用户曾要求退回 Plan-v1。** 用户“退回plan v1的版本”取代继续Plan-v5的待审核建议；Plan-v3/v4运行改动已在独立repair分支撤回，Plan-v5未实施。回退提交 `5ad7d5f1d2960c278d08be9c08c62326867680b6` 的src/bin/configs与Plan-v1候选 `aea503875a0392785e64e47242e0039268ac3b24` 逐字相同；保留跨来源读取修复，移除后续财务来源契约/完成检查及嵌套发现改动。主活动codex/v4从未集成这些失败候选，其他题修复不变；保留历史失败与run001–004冻结源码。备份分支 `codex/repair-98-before-plan-v1-rollback-20261028` 留存507ac3f。此操作只回退候选，不将未PASS的Plan-v1集成，也不启动新整题。human_review=true持续。
 
 - 原题正式验证通过 10 题：11、13、15、24、27、28、35、63、77、79；另有用户附加要求任务验证通过 1 题：97（严格删除第4页正文尾空段）。活动待处理 4 题：87、93、98、100。97原题历史失败仍保留，不计入原题PASS，也不改写full189历史分数。按指定顺序一次处理一题。
