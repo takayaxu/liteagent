@@ -346,12 +346,14 @@ flowchart TD
 
 ### v4 指定队列（2026-10-28，19题；2026-10-29恢复人工审核）
 
-当前审核：`human_review=true`（用户2026-10-29开启，后续保持人工审核）。正式通过 **2/19：30、38**；待修复 **17/19：65、82、99、101、104、105、106、109、113、114、115、122、127、132、145、172、189**。38已交付；30已本地集成、待推送。以下历次记录保留当时状态，不覆盖本段当前计数。
+当前审核：`human_review=true`（用户2026-10-29开启，后续保持人工审核）。正式通过 **2/19：30、38**；待修复 **17/19：65、82、99、101、104、105、106、109、113、114、115、122、127、132、145、172、189**。30、38均已集成并推送GitHub，2/19交付完成。以下历次记录保留当时状态，不覆盖本段当前计数。
 
 | 本轮已通过 | 正式结果与方案 | 交付及证据 |
 | --- | --- | --- |
-| 30 / af23762e-2bfd-4a1d-aada-20fa8de9ce07 | run-003 passed / reward1.0 / agent_done，6步502.823秒；人工批准PLAN30-human-native-v2，候选12db804，原模型/100步1800秒/evaluator，三完整性true | [产物核验](/home/liuxv/liteagent-local-runs/repair-30-20261029-human/run-003/artifact-validation.json)；13页、摘要11标题、原12页读回保留；集成27a2b56，待GitHub推送 |
+| 30 / af23762e-2bfd-4a1d-aada-20fa8de9ce07 | run-003 passed / reward1.0 / agent_done，6步502.823秒；人工批准PLAN30-human-native-v2，候选12db804，原模型/100步1800秒/evaluator，三完整性true | [产物核验](/home/liuxv/liteagent-local-runs/repair-30-20261029-human/run-003/artifact-validation.json)；13页、摘要11标题、原12页读回保留；集成27a2b56，远端bb4de91已核验包含此补丁 |
 | 38 / a669ef01-ded5-4099-9ea9-25e99b569840 | 已有正式PASS与交付保持；详见本节Order38历史记录 | 已交付，不在待修集合 |
+
+- Order30交付完成：普通非强制git push成功，独立git ls-remote读回codex/v4为bb4de914b79beabcfe5e7bfc7c2b44c131cecd2d，包含集成27a2b56及PASS台账；src/bin/configs/依赖与正式候选12db804逐字相同。已交付2/19（30、38），17待修，human_review=true持续，65未启动。回执本题run-003/delivery.json；早期诊断脚本失败、旧崩溃和所有正式失败原样保留，单次本题PASS不改全量历史分数。
 
 - Order30 run-003正式PASS：候选12db804，seal93b309d47793027f3c58b2cb904d397819a458b91071192a99983e29e62d2c90，6步502.823秒；step1读12页、2模型自选全部12页原生摘要、3保存、4/5读回第13页、6完成门通过，全部动作无error。原evaluator默认compare_pptx_files返回1，正式artifact13页/SHA d71d459fe4835796d440700ce0cd41d4e31ee342d975e4aa47b0baf5f3d88341，11标题逐字一致，原页order/page_summary保留，ZIP完整。source/config/OSWorld完整性全true，自有guest/slot释放；评分后录屏停止失败不改原PASS。此前选择None及所有失败证据保持；本轮未复现崩溃，不据单次PASS宣称旧Signal6根因已定位。持v4-integration.lock组合活动2468295，集成27a2b56；src/bin/configs/依赖与PASS候选逐字相同，仅文档组合，无需冒称新源码重评。human_review=true，已本地集成待推送；未启动65。证据本题run-003/{artifact-validation.json,integration.json,output/results/results.json,output/final-integrity.json}。
 
