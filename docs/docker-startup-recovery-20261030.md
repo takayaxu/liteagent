@@ -38,3 +38,5 @@
 北京时间2026-10-30 00:33至00:47，9/9题由原始evaluator正式判定passed、reward=1.0（Order5、6、7、8、9、10、11、17、18），环境失败为0。每题记录实际Docker API timeout=180秒，正式复跑最大create耗时12.858秒。最终source/config/repository integrity为ok，运行源码摘要`796cc6ccaf7c2f8989649d7016033b904a466ed4389345e21a23892b81c4eb9d`。所有本次owner对应容器已清理，修复池仍为默认5并发且已释放。
 
 这确认了本次12-guest环境测试与9题复跑可行，不等于已经完成新的189题全量，也不证明宿主机的原始瞬时阻塞原因已消除。历史失败记录保留。最终数据摘要及原始results文件SHA256见[docker启动复跑回执](docker-startup-recovery-20261030-result.json)。
+
+选择口径说明：九题按上一轮环境失败筛选，因此selection_uses_prior_outcome应为true；复制的冻结配置继承了旧全量的false字段，该字段在本次诊断中不准确。原始冻结文件和结果保持不变，本回执明确更正选择口径；9/9只报告这组定向复跑，不能外推为全量成绩。

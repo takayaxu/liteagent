@@ -43,5 +43,7 @@
   "raw_results_sha256": "15eb833d2fbf3b0c8ff2ce1a235cec04ed37fd4ead8269b4852bbdd20b041b44",
   "remaining_owned_containers": [],
   "original_failures_preserved": true,
-  "full189_restarted": false
+  "full189_restarted": false,
+  "selection_uses_prior_outcome": true,
+  "selection_note": "These nine tasks were selected from prior environment failures. The frozen copied config inherited selection_uses_prior_outcome=false; that metadata flag is inaccurate for this diagnostic selection. Original frozen config and results remain unchanged; this receipt corrects the selection description. This is not an unbiased full189 score."
 }
