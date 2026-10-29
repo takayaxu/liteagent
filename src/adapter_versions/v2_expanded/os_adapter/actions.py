@@ -1352,6 +1352,8 @@ class OSActions:
                 f"{TERMINAL_TITLE} Command {os.getpid()}-{time.monotonic_ns()}"
             )
             script = (
+                "display_command=$1; shift; "
+                "printf '$ %s\\n' \"$display_command\"; "
                 '"$@"; status=$?; printf "\\n[command exited with status %s]\\n" "$status"; '
                 "exec bash --noprofile --norc"
             )
@@ -1367,6 +1369,7 @@ class OSActions:
                     "-c",
                     script,
                     "osworld-adapter-command",
+                    shlex.join(argv),
                     *argv,
                 ],
                 timeout=min(15.0, timeout),
