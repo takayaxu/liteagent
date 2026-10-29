@@ -3395,7 +3395,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             "export_mode", "activates_document", "created", "blank", "exists", "valid",
             "source_chars", "inserted_chars", "source_sha256", "content_verified", "document_chars",
             "removed_indices", "paragraph_count_before", "paragraph_count_after", "order_preserved",
-            "paragraph_index", "start_offset", "end_offset", "text", "format", "text_unchanged",
+            "identity", "paragraph_index", "start_offset", "end_offset", "text", "format", "text_unchanged",
         )
         return {key: result[key] for key in fields if key in result} | {
             "verification_passed": (body.get("verification") or {}).get("passed")
@@ -4242,6 +4242,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
     if domain == "libreoffice_writer" and action == "text.find":
         matches = result.get("matches")
         return {
+            **({"identity": result["identity"]} if "identity" in result else {}),
             "scope": result.get("scope"),
             "literal": result.get("literal"),
             "case_sensitive": result.get("case_sensitive"),
@@ -4391,6 +4392,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
         return {
             key: result[key]
             for key in (
+                "identity",
                 "paragraph_index",
                 "start_offset",
                 "end_offset",

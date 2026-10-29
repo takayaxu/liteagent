@@ -12,6 +12,8 @@ import json
 import re
 from typing import Any, Callable
 
+from .writer_format_progress import writer_format_progress
+
 from multi_apps_adapter.route_utils import (
     contains_route_in_prose,
     decode_text,
@@ -1459,7 +1461,11 @@ def compact_execution_summary_for_model(
     """
     if max_chars <= 0 or not isinstance(value, list):
         return []
-    if any(_contains_batch_context(item) for item in value):
+    has_writer_progress = any(
+        isinstance(item, dict) and isinstance(item.get("writer_format_progress"), dict)
+        for item in value
+    )
+    if not has_writer_progress and any(_contains_batch_context(item) for item in value):
         return _compact_recovery_summary(value, max_chars)
     safe = sanitize(value)
     if _json_size(safe) <= max_chars:
@@ -1476,6 +1482,7 @@ def compact_execution_summary_for_model(
         and (
             isinstance(item.get("recovery_mutation_ledger"), list)
             or isinstance(item.get("workflow_progress"), dict)
+            or isinstance(item.get("writer_format_progress"), dict)
         )
     ]
     protected_size = sum(_json_size(item) for item in protected)
@@ -1488,6 +1495,8 @@ def compact_execution_summary_for_model(
         projected = [*protected, *compact_remainder]
         if _json_size(projected) <= max_chars:
             return projected
+    if has_writer_progress and any(_contains_batch_context(item) for item in value):
+        return _compact_recovery_summary(value, max_chars)
     # Equal shares can discard most of the latest observation while leaving
     # unused space. Charge actual sizes newest-first, then restore chronology.
     remaining = max(0, max_chars - 2)
@@ -1801,6 +1810,8 @@ def summarize_events(
     strict_generic: bool = False,
     context_hint_for_model: Callable[..., dict[str, Any]],
 ) -> list[dict[str, Any]]:
+    progress = writer_format_progress(events, domain)
+    progress = _fit(sanitize(progress), 4_000) if progress else None
     live = events[-limit:] if limit > 0 else []
     history = history_summary(
         events,
@@ -1809,7 +1820,9 @@ def summarize_events(
         strict_generic=strict_generic,
         context_hint_for_model=context_hint_for_model,
     )
-    history_budget = _json_size(history) if history is not None else 0
+    history_budget = (_json_size(history) if history is not None else 0) + (
+        _json_size(progress) if progress is not None else 0
+    )
     # Reserve space for the durable summary before distributing the live
     # event budget.  The final structural fit below is a second hard guard.
     live_budget = max(
@@ -1862,5 +1875,7 @@ def summarize_events(
         summary.append(sanitize(entry))
     if history is not None:
         summary.insert(0, history)
+    if progress is not None:
+        summary.insert(0, {"writer_format_progress": progress})
     projected = _fit(summary, MODEL_CONTEXT_HINT_TOTAL_MAX_CHARS)
     return projected if isinstance(projected, list) else []

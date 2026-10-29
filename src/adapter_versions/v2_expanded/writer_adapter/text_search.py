@@ -90,6 +90,8 @@ def summarize_formats(matches: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def find_text(session: Any, params: dict[str, Any]) -> dict[str, Any]:
+    from .uno_worker import WriterSession
+
     literal = params.get("literal")
     case_sensitive = params.get("case_sensitive") if literal is not None else None
     format_filter = params.get("format")
@@ -134,6 +136,7 @@ def find_text(session: Any, params: dict[str, Any]) -> dict[str, Any]:
             break
 
     return {
+        "identity": WriterSession.identity_for(session.doc),
         "scope": "body_paragraphs",
         "literal": literal,
         "case_sensitive": case_sensitive,

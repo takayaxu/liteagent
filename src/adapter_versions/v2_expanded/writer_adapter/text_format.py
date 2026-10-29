@@ -39,6 +39,8 @@ def range_format(cursor: Any) -> dict[str, Any]:
 
 
 def set_text_format(session: Any, params: dict[str, Any]) -> dict[str, Any]:
+    from .uno_worker import WriterSession
+
     paragraph_index = int(params["paragraph_index"])
     paragraph = _paragraph_at(session.doc, paragraph_index)
     original_text = str(paragraph.String)
@@ -84,6 +86,7 @@ def set_text_format(session: Any, params: dict[str, Any]) -> dict[str, Any]:
             {"requested": requested, "observed": observed},
         )
     return {
+        "identity": WriterSession.identity_for(session.doc),
         "paragraph_index": paragraph_index,
         "start_offset": int(params["start_offset"]),
         "end_offset": int(params["end_offset"]),
