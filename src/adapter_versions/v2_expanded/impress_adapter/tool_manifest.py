@@ -225,6 +225,33 @@ TEXT_ROLE_LIST = {
 # Structured action contracts used to expose strict native tool schemas. The
 # corresponding runtime validation remains in impress_adapter.schema.
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
+    "slides.create_summary": {
+        "description": (
+            "Run Impress's native Summary Slide feature once, using slide titles. "
+            "Select the source range explicitly with selection_mode and slides. "
+            "selected_slides summarizes exactly the selected slides in document order; "
+            "a single selected slide is supported only when it is the last slide. "
+            "from_slide_to_end requires one slide index and summarizes that slide "
+            "through the end, matching Impress's native single-selection behavior. "
+            "Empty titles are skipped by Impress; all-empty titles can produce an empty summary. "
+            "Ambiguous multiple native title placeholders are rejected before mutation. "
+            "Returns the effective source indices and actual new slide structure. "
+            "Existing slides are retained. Leaves the native result in slide sorter view; "
+            "does not restore the previous view or current page. This does not save the presentation."
+        ),
+        "properties": {
+            "selection_mode": {
+                "type": "string",
+                "enum": ["selected_slides", "from_slide_to_end"],
+                "description": "Exact selected slides, or the native range from one slide to the end.",
+            },
+            "slides": {
+                **SLIDE_INDICES,
+                "description": "Explicit zero-based source indices; from_slide_to_end requires exactly one.",
+            },
+        },
+        "required": ["selection_mode", "slides"],
+    },
     "presentation.inspect": {
         "description": (
             "Read current slide shapes, text lines, native paragraph formatting "

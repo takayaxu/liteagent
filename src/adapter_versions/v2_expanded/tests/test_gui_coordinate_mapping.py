@@ -4,14 +4,19 @@ import base64
 import copy
 import io
 import json
+import re
 from types import SimpleNamespace
 
+import jsonschema
 import pytest
 from PIL import Image
 
 from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.agent_protocol import AgentProtocolMixin
-from integrations.lite_agent.gui_actions import map_gui_coordinates
+from integrations.lite_agent.gui_actions import (
+    gui_action_schema_for_image,
+    map_gui_coordinates,
+)
 from integrations.lite_agent.state_model import RuntimeState
 from integrations.lite_agent.tool_catalog import build_tools
 
@@ -64,6 +69,16 @@ def test_proposal_uses_the_encoded_image_frame_and_execution_scales_once():
     assert "x/to_x from 0 to 1279" in content[0]["text"]
     frame = {"model_size": [1280, 720], "desktop_size": [1920, 1080]}
     assert proposal["_gui_coordinate_frame"] == frame
+    request_schema = next(
+        tool["function"]["parameters"]
+        for tool in requests[0]["tools"]
+        if tool["function"]["name"] == "gui_action"
+    )
+    for action in request_schema["oneOf"]:
+        for field, maximum in (("x", 1279), ("y", 719), ("to_x", 1279), ("to_y", 719)):
+            coordinate = action["properties"].get(field)
+            if coordinate is not None:
+                assert coordinate["anyOf"][0]["maximum"] == maximum
 
     # The proposal owns its exact frame even if the next request changes it.
     agent._messages(state, _screenshot((800, 600)), tools=agent.tools(state))
@@ -155,3 +170,77 @@ def test_non_pointer_actions_keep_their_values():
                    {"action": "hotkey", "keys": ["alt", "f4"]}):
         arguments = {"fallback_reason": "Operate the visible control", **fields}
         assert map_gui_coordinates(arguments, frame) == arguments
+
+
+@pytest.mark.parametrize(
+    ("action", "fields"),
+    [
+        ("click", {"x": 1279, "y": 719}),
+        ("double_click", {"x": "1279", "y": "0719"}),
+        ("drag", {"x": 1279, "y": "719", "to_x": "1279", "to_y": 719}),
+    ],
+)
+def test_frame_schema_accepts_in_range_integer_and_string_coordinates(action, fields):
+    schema = gui_action_schema_for_image(1280, 720)
+    arguments = {"action": action, "fallback_reason": "Click a visible control", **fields}
+    jsonschema.validate(arguments, schema)
+
+
+@pytest.mark.parametrize(
+    ("action", "fields"),
+    [
+        ("click", {"x": 1280, "y": 0}),
+        ("click", {"x": 0, "y": "720"}),
+        ("double_click", {"x": "1280", "y": 0}),
+        ("drag", {"x": 0, "y": 0, "to_x": 1280, "to_y": 0}),
+        ("drag", {"x": 0, "y": 0, "to_x": 0, "to_y": "720"}),
+    ],
+)
+def test_frame_schema_rejects_out_of_range_integer_and_string_coordinates(action, fields):
+    schema = gui_action_schema_for_image(1280, 720)
+    arguments = {"action": action, "fallback_reason": "Click a visible control", **fields}
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(arguments, schema)
+
+
+def test_frame_schema_rejects_invalid_dimensions():
+    for size in (0, -1, True, 1.5):
+        with pytest.raises(ValueError, match="positive integers"):
+            gui_action_schema_for_image(size, 720)
+
+
+@pytest.mark.parametrize("size", [1, 2, 9, 10, 11, 100, 101, 720, 1280])
+def test_decimal_string_bounds_match_numeric_bounds(size):
+    coordinate = gui_action_schema_for_image(size, 1)["oneOf"][0]["properties"]["x"]
+    pattern = coordinate["anyOf"][1]["pattern"]
+    for value in range(size + 20):
+        assert bool(re.fullmatch(pattern, str(value))) == (value < size)
+        assert bool(re.fullmatch(pattern, "000" + str(value))) == (value < size)
+
+
+def test_request_bounds_follow_latest_image_without_mutating_catalog():
+    catalog = build_tools("os", [], include_gui=True)
+    original = copy.deepcopy(catalog)
+    requests = []
+
+    def propose(**request):
+        requests.append(request)
+        return {"tool": "gui_action", "arguments_raw": json.dumps(_click(x=0, y=0))}
+
+    agent = _agent(None, SimpleNamespace(client=None, propose=propose))
+    agent.tools = lambda _state: catalog
+    for size in ((1920, 1080), (800, 600), (777, 1601)):
+        proposal = agent.propose(_state(), _screenshot(size))
+        schema = next(
+            tool["function"]["parameters"]
+            for tool in requests[-1]["tools"]
+            if tool["function"]["name"] == "gui_action"
+        )
+        width, height = proposal["_gui_coordinate_frame"]["model_size"]
+        for field, maximum in (("x", width - 1), ("y", height - 1)):
+            assert schema["oneOf"][0]["properties"][field]["anyOf"][0]["maximum"] == maximum
+    # A turn with no decodable image must not reuse a previous frame or bounds.
+    proposal = agent.propose(_state(), b"synthetic non-image")
+    assert "_gui_coordinate_frame" not in proposal
+    assert requests[-1]["tools"] == original
+    assert catalog == original

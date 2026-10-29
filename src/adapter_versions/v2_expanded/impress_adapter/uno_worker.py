@@ -1720,6 +1720,124 @@ def _dispatch(session: ImpressSession, command: str) -> None:
     dispatcher.executeDispatch(frame, command, "", 0, ())
 
 
+def _create_summary_slide(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
+    # Validate the entire request and live bounds before changing the view or selection.
+    from .schema import validate_action_params
+
+    validate_action_params("slides.create_summary", params)
+    originals = [session.pages.getByIndex(i) for i in range(session.pages.getCount())]
+    selected = sorted(params["slides"])
+    if any(index >= len(originals) for index in selected):
+        raise AdapterError("SLIDE_NOT_FOUND", "params.slides contains an index outside the presentation",
+                           {"slides": selected, "slide_count": len(originals)})
+    mode = params["selection_mode"]
+    if mode == "selected_slides" and len(selected) == 1 and selected[0] != len(originals) - 1:
+        raise AdapterError(
+            "UNSUPPORTED_OPERATION",
+            "params.selection_mode=selected_slides cannot summarize one non-final slide: "
+            "Impress summarizes from a single selected slide to the end. Select multiple "
+            "slides, or explicitly choose from_slide_to_end with one start index.",
+            {"slides": selected, "slide_count": len(originals)},
+        )
+    effective = list(range(selected[0], len(originals))) if mode == "from_slide_to_end" else selected
+    before = [_page_summary(session, i) for i in range(len(originals))]
+    source_titles = []
+    for index in effective:
+        titles = [shape["text"] for shape in before[index]["shapes"]
+                  if shape.get("kind", "").endswith(".TitleTextShape")]
+        if len(titles) > 1:
+            raise AdapterError("UNSUPPORTED_OPERATION", "source slide has multiple native title placeholders; "
+                               "its Summary Slide source cannot be verified without guessing",
+                               {"slide": index, "native_title_count": len(titles)})
+        if titles and titles[0] != "":
+            source_titles.append(titles[0])
+    expected_body = "\n".join(source_titles)
+    uno, _ = _uno_modules()
+    controller = session.doc.getCurrentController()
+    config = controller.getConfigurationController()
+    resources = config.getCurrentConfiguration().getResources(
+        None, "", uno.Enum("com.sun.star.drawing.framework.AnchorBindingMode", "INDIRECT")
+    )
+    center_views = [rid.getResourceURL() for rid in resources
+                    if rid.getResourceURL().startswith("private:resource/view/")
+                    and rid.getAnchor() is not None
+                    and rid.getAnchor().getResourceURL() == "private:resource/pane/CenterPane"]
+    was_sorter = "private:resource/view/SlideSorter" in center_views
+    dispatched = False
+    observed_selection = []
+    failures = []
+    try:
+        if not was_sorter:
+            _dispatch(session, ".uno:DiaMode")
+        controller = session.doc.getCurrentController()
+        # On the installed Impress, ascending native selection can include
+        # intervening titles. Reverse only the call order, preserving the set.
+        pages = tuple(originals[i] for i in reversed(selected))
+        uno.invoke(controller, "select", (uno.Any("[]com.sun.star.drawing.XDrawPage", pages),))
+        actual = list(controller.getSelection())
+        observed_selection = [i for page in actual for i, old in enumerate(originals) if page == old]
+        if observed_selection != selected:
+            raise AdapterError("SELECTION_FAILED", "native selected pages differ from params.slides")
+        dispatched = True
+        _dispatch(session, ".uno:SummaryPage")
+    except Exception as exc:
+        failures.append(str(exc))
+    # Preserve the native result view through readback, including partial effects.
+    # Returning to another view or page is a separate user/model decision.
+    details = {
+        "native_command": ".uno:SummaryPage", "selection_mode": mode,
+        "selected_slides": selected, "effective_source_slides": effective,
+        "native_selection_order": list(reversed(selected)),
+        "observed_selected_slides": observed_selection,
+        "dispatch_attempted": dispatched, "original_slide_count": len(originals),
+        "created_slides": [], "partial_effects_possible": dispatched,
+        "view_restored": False,
+        "saved": False,
+    }
+    try:
+        current = [session.pages.getByIndex(i) for i in range(session.pages.getCount())]
+        created = [i for i, page in enumerate(current) if not any(page == old for old in originals)]
+        details["created_slide_indices"] = created
+        details["created_slides"] = [_page_summary(session, i) for i in created]
+        retained = [page for page in current if any(page == old for old in originals)]
+        order_preserved = len(retained) == len(originals) and all(
+            a == b for a, b in zip(retained, originals)
+        )
+        content_preserved = order_preserved
+        for old, observed_before in zip(originals, before):
+            index = next(i for i, page in enumerate(current) if page == old)
+            observed_after = _page_summary(session, index)
+            content_preserved = content_preserved and (
+                {k: v for k, v in observed_before.items() if k != "index"}
+                == {k: v for k, v in observed_after.items() if k != "index"}
+            )
+        details["source_preservation"] = {
+            "original_order_preserved": order_preserved,
+            "page_summary_unchanged": content_preserved,
+            "checked_properties": list(before[0]) if before else [],
+        }
+        # Read the native body, including the legitimate all-empty-title result.
+        bodies = [shape.get("text", "") for page in details["created_slides"]
+                  for shape in page["shapes"] if "OutlinerShape" in shape.get("kind", "")]
+        details["native_summary_bodies"] = bodies
+        details["summary_empty"] = not any(body != "" for body in bodies)
+        details["expected_native_title_body"] = expected_body
+        details["source_titles_match"] = "\n".join(bodies) == expected_body
+        if (not created or not bodies or not order_preserved or not content_preserved
+                or not details["source_titles_match"]):
+            failures.append("native summary readback or original-page preservation did not verify")
+    except Exception as exc:
+        failures.append(f"result readback failed: {exc}")
+    if failures:
+        details["failures"] = failures
+        raise AdapterError(
+            "SUMMARY_CREATION_FAILED",
+            "Native Summary Slide did not fully verify. Inspect the presentation before retrying; "
+            "the command may already have changed it.", details,
+        )
+    return details
+
+
 def _duplicate_slide(session: ImpressSession, params: dict[str, Any]) -> dict[str, Any]:
     source = params["slide"]
     session.page(source)
@@ -2909,6 +3027,7 @@ ACTIONS = {
     "presentation.save": _save,
     "presentation.export": _export,
     "slide.create": _create_slide,
+    "slides.create_summary": _create_summary_slide,
     "slide.delete": _delete_slide,
     "slide.duplicate": _duplicate_slide,
     "slide.move": _move_slide,

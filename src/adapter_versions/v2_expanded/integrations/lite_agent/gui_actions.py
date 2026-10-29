@@ -150,6 +150,42 @@ GUI_ACTION_SCHEMA: dict[str, Any] = {
     ]
 }
 
+
+def gui_action_schema_for_image(width: int, height: int) -> dict[str, Any]:
+    """Constrain pointer coordinates to the pixels actually sent to the model."""
+    def coordinate_schema(size: int) -> dict[str, Any]:
+        if type(size) is not int or size <= 0:
+            raise ValueError("GUI image dimensions must be positive integers")
+        maximum = size - 1
+        digits = str(maximum)
+        alternatives = []
+        if len(digits) > 1:
+            alternatives.append(f"[0-9]{{1,{len(digits) - 1}}}")
+        for index, digit in enumerate(digits):
+            if digit == "0":
+                continue
+            lower_digits = "0" if digit == "1" else f"[0-{int(digit) - 1}]"
+            suffix_length = len(digits) - index - 1
+            suffix = f"[0-9]{{{suffix_length}}}" if suffix_length else ""
+            alternatives.append(digits[:index] + lower_digits + suffix)
+        alternatives.append(digits)
+        pattern = "0*(?:" + "|".join(alternatives) + ")"
+        return _numeric_or_string(
+            {"type": "integer", "minimum": 0, "maximum": maximum},
+            pattern,
+            f"Decimal integer from 0 to {maximum} serialized as a JSON string",
+        )
+
+    axes = {"x": coordinate_schema(width), "y": coordinate_schema(height)}
+    schema = copy.deepcopy(GUI_ACTION_SCHEMA)
+    for action in schema["oneOf"]:
+        properties = action["properties"]
+        for field, axis in (("x", "x"), ("y", "y"), ("to_x", "x"), ("to_y", "y")):
+            if field in properties:
+                properties[field] = copy.deepcopy(axes[axis])
+    return schema
+
+
 _NUMERIC_FIELDS: dict[str, dict[str, str]] = {
     "click": {"x": "coordinate", "y": "coordinate", "seconds": "seconds"},
     "double_click": {

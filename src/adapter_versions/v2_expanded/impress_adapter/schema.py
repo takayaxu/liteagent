@@ -30,6 +30,7 @@ ACTIONS = frozenset(
         "presentation.save",
         "presentation.export",
         "slide.create",
+        "slides.create_summary",
         "slide.delete",
         "slide.duplicate",
         "slide.move",
@@ -292,6 +293,19 @@ def _slide_index(data: Mapping[str, Any], prefix: str = "params") -> None:
 
 
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    if action == "slides.create_summary":
+        if set(params) != {"selection_mode", "slides"}:
+            raise AdapterError("INVALID_REQUEST", "params requires only selection_mode and slides")
+        if (not isinstance(params["selection_mode"], str)
+                or params["selection_mode"] not in {"selected_slides", "from_slide_to_end"}):
+            raise AdapterError("INVALID_REQUEST", "params.selection_mode must be selected_slides or from_slide_to_end")
+        slides = params["slides"]
+        if (not isinstance(slides, list) or not 1 <= len(slides) <= 100
+                or any(type(index) is not int or index < 0 for index in slides)
+                or len(set(slides)) != len(slides)):
+            raise AdapterError("INVALID_REQUEST", "params.slides requires 1 to 100 distinct zero-based slide indices")
+        if params["selection_mode"] == "from_slide_to_end" and len(slides) != 1:
+            raise AdapterError("INVALID_REQUEST", "params.slides must contain exactly one index for from_slide_to_end")
     if action == "presentation.inspect":
         if set(params).difference({"slides", "image_paths"}):
             raise AdapterError(

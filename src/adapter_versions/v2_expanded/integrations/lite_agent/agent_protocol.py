@@ -29,6 +29,7 @@ from .recovery_surface import last_failure_summary
 from . import batch_table_semantics, table_ratio_compute
 from . import completion_review
 from .search_recovery_tools import constrain_adapter_call_routes
+from .gui_actions import gui_action_schema_for_image
 
 
 # Ordinary protocol retries stay deliberately small.  A failed call after a
@@ -608,6 +609,7 @@ class AgentProtocolMixin:
     ) -> list[dict[str, Any]]:
         from . import read_audit_gate
 
+        self._latest_gui_coordinate_frame = None
         read_messages = read_audit_gate.messages(self, state, protocol_error)
         if read_messages is not None and state.pending_terminal is None:
             return read_messages
@@ -703,12 +705,18 @@ class AgentProtocolMixin:
         evidence = state.filesystem_organization_evidence() if organization_context else None
         if evidence and evidence.get("action") == "desktop.open_path":
             include_screenshot = True
-        self._latest_gui_coordinate_frame = None
         if include_screenshot:
             image_url, coordinate_frame = self._prepare_model_image(screenshot)
             if coordinate_frame is not None and (not tools or "gui_action" in tool_names):
                 self._latest_gui_coordinate_frame = coordinate_frame
                 width, height = coordinate_frame["model_size"]
+                if tools is not None:
+                    for tool in tools:
+                        function = tool.get("function", {})
+                        if function.get("name") == "gui_action":
+                            function["parameters"] = gui_action_schema_for_image(
+                                width, height
+                            )
                 message_content[0]["text"] += (
                     f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
                     f"For gui_action use pixel coordinates in this image: x/to_x from 0 to {width - 1}, "
@@ -759,7 +767,7 @@ class AgentProtocolMixin:
         # grounded against the same observation without changing the Runner
         # or putting screenshot data into RuntimeState.
         self._latest_screenshot = bytes(screenshot)
-        tools = self.tools(state)
+        tools = copy.deepcopy(self.tools(state))
         if (
             protocol_recovery
             and isinstance(protocol_error, dict)
