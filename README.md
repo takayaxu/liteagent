@@ -173,6 +173,9 @@ python bin/repair-resources.py configure --slots 5
 新任务仍会等待。下一轮从包含此功能的最新提交新建工作树并直接使用新入口。
 资源池仅统计本账号经过新入口的任务，其他账号或直接调用底层运行器的任务仍需核对。
 具体隔离、取消和验证范围见 [并行修复说明](docs/parallel-repair-20261028.md)。
+Docker 客户端使用 protocol 声明的 API 超时，启动回执记录实际值；创建响应丢失时
+按唯一身份查回原容器。无法恢复的 Docker 启动失败会停止后续派发，保留本题失败。
+12 guest 环境验证与 9 题正式复跑结果见 [Docker 启动修复](docs/docker-startup-recovery-20261030.md)。
 
 复跑前，从开发分支最新提交创建独立 Git worktree，并在该目录依次运行指定题目：
 

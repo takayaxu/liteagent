@@ -1,0 +1,47 @@
+{
+  "source_commit": "dd013936b7b61a0c4473ce9c75fef32ef8d3fba9",
+  "status": "completed",
+  "native_guest_passed": 12,
+  "native_guest_total": 12,
+  "formal_passed": 9,
+  "formal_total": 9,
+  "orders": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    17,
+    18
+  ],
+  "environment_failure": 0,
+  "final_integrity": {
+    "status": "ok",
+    "config_sha256": "c38309cd4d86a009e4dbce55744fff0910ea84ae53eca16cd24c50274b42a775",
+    "worker_config_sha256": "c38309cd4d86a009e4dbce55744fff0910ea84ae53eca16cd24c50274b42a775",
+    "source_tree_sha256": "796cc6ccaf7c2f8989649d7016033b904a466ed4389345e21a23892b81c4eb9d",
+    "repository_state": {
+      "source_git_commit": "dd013936b7b61a0c4473ce9c75fef32ef8d3fba9",
+      "source_dirty": false,
+      "osworld_commit": "091f5ef1d5544bc74953c77875d5feb5bed30108",
+      "source_repository": {
+        "toplevel": "/home/liuxv/liteagent-local-runs/docker-startup-rerun-20261029T162338Z/source",
+        "git_directory": "/home/liuxv/liteagent-local-runs/docker-startup-rerun-20261029T162338Z/source/.git"
+      },
+      "osworld_repository": {
+        "toplevel": "/home/liuxv/liteagent-local-runs/docker-startup-rerun-20261029T162338Z/source/src/third_party/OSWorld",
+        "git_directory": "/home/liuxv/liteagent-local-runs/docker-startup-rerun-20261029T162338Z/source/src/third_party/OSWorld/.git"
+      },
+      "osworld_allowed_untracked_prefixes": [
+        ".conda/"
+      ]
+    }
+  },
+  "raw_results_path": "/home/liuxv/liteagent-local-runs/docker-startup-rerun-20261029T162338Z/source/runs/docker-startup-rerun-20261029T162338Z/results.json",
+  "raw_results_sha256": "15eb833d2fbf3b0c8ff2ce1a235cec04ed37fd4ead8269b4852bbdd20b041b44",
+  "remaining_owned_containers": [],
+  "original_failures_preserved": true,
+  "full189_restarted": false
+}
