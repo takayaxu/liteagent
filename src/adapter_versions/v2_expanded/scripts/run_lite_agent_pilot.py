@@ -60,7 +60,7 @@ from integrations.holo_agent import (  # noqa: E402
     HoloGroundingConfig,
     HoloGuiGateway,
 )
-from integrations.openapa_osworld.provider import install_provider_patch  # noqa: E402
+from integrations.openapa_osworld.provider import DockerStartupError, install_provider_patch  # noqa: E402
 from scripts.evaluation_boundary import (  # noqa: E402
     attach_evaluator_after_episode,
     evaluator_cache_resources,
@@ -1261,6 +1261,7 @@ def run_task(
             client_password="password",
             cache_dir=str(DEFAULT_CACHE_DIR),
         )
+        record["docker_startup"] = dict(env.provider.startup_evidence)
         font_profile = GuestFontProfile(
             env.controller, config.get("vm", {}).get("fontconfig")
         )
@@ -2099,6 +2100,9 @@ def run_task(
             }
         )
         record["error"] = {"type": type(exc).__name__, "detail": str(exc)}
+        if isinstance(exc, DockerStartupError):
+            record["infrastructure_failure"] = "docker_startup"
+            record["docker_startup"] = getattr(exc, "startup_evidence", {})
         if isinstance(exc, ModelRequestFailure):
             record["model_request_errors"] = exc.errors
             if exc.configuration_failure:
@@ -2505,9 +2509,10 @@ def main() -> None:
         )
         return
 
-    install_provider_patch()
+    docker_startup_settings = install_provider_patch(config.get("protocol", {}))
     args.result_dir.mkdir(parents=True, exist_ok=True)
     metadata = {
+        "docker_startup_settings": docker_startup_settings,
         "experiment_id": args.result_dir.name,
         "status": "running",
         "agent_framework": "LiteAgent",
@@ -2581,6 +2586,11 @@ def main() -> None:
         )
         if args.api_key != "EMPTY":
             assert_secret_absent(task_dir, args.api_key)
+        if result.get("infrastructure_failure"):
+            metadata["infrastructure_failure"] = result["infrastructure_failure"]
+            metadata["reason"] = "Docker startup failed; dispatch stopped before the next task"
+            write_json(args.result_dir / "results.json", {"metadata": metadata, "tasks": results})
+            break
         if result["status"] in {"interrupted", "invalid_configuration"}:
             break
 

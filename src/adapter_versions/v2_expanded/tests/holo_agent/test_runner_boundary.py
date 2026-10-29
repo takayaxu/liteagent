@@ -92,7 +92,7 @@ def _patch_worker_boundaries(
     monkeypatch.setattr(
         lite_runner,
         "install_provider_patch",
-        lambda: events.append("provider_patch"),
+        lambda _protocol=None: events.append("provider_patch"),
     )
     monkeypatch.setattr(
         lite_runner,

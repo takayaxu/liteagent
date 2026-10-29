@@ -450,6 +450,22 @@ def stop_workers(
         cleanup_run_owner(owner)
 
 
+def abort_on_docker_startup_failure(result_dir: Path) -> None:
+    """Stop the batch when a worker reports a host startup failure; never resubmit it."""
+    for path in sorted((result_dir / "workers").glob("worker-*/results.json")):
+        try:
+            payload = read_json(path)
+        except (OSError, ValueError, RuntimeError):
+            continue  # A worker may still be replacing its progress snapshot.
+        failures = [row for row in payload.get("tasks", [])
+                    if row.get("infrastructure_failure") == "docker_startup"]
+        if failures:
+            raise RuntimeError(
+                f"Docker startup infrastructure failure in {path.parent.name}, "
+                f"order {failures[0].get('order')}; stopped remaining batch dispatch"
+            )
+
+
 def worker_payload_integrity_errors(
     payload: dict[str, Any],
     shard: list[dict[str, Any]],
@@ -1017,6 +1033,7 @@ def main() -> int:
                 continue
             if index > 1 and args.worker_start_delay_seconds:
                 time.sleep(args.worker_start_delay_seconds)
+            abort_on_docker_startup_failure(args.result_dir)
             worker_dir = args.result_dir / "workers" / f"worker-{index:02d}"
             worker_dir.mkdir(parents=True, exist_ok=True)
             log_file = (worker_dir / "runner.log").open("a", encoding="utf-8")
@@ -1054,6 +1071,7 @@ def main() -> int:
         previous_counts: dict[str, int] | None = None
         next_heartbeat = 0.0
         while any(process and process.poll() is None for process in processes):
+            abort_on_docker_startup_failure(args.result_dir)
             free_gib = (
                 os.statvfs(args.result_dir).f_bavail
                 * os.statvfs(args.result_dir).f_frsize

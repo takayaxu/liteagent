@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 import os
+import logging
+import math
+import time
+import uuid
 from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
+import docker
 import psutil
+from docker.errors import NotFound
 from filelock import FileLock
+from requests.exceptions import ConnectionError, Timeout
 
 from .network_policy import (
     install_agent_egress_policy,
@@ -29,6 +38,58 @@ ADAPTER_PORTS = {
 RUN_OWNER_LABEL = "openapa.run_owner"
 DEFAULT_PORT_LOCK_TIMEOUT = 180.0
 VM_READINESS_ATTEMPTS = 2
+LOGGER = logging.getLogger(__name__)
+
+
+class DockerStartupError(RuntimeError):
+    """An infrastructure failure that must stop task dispatch, not burn a shard."""
+
+
+@dataclass(frozen=True)
+class DockerStartupSettings:
+    api_timeout_seconds: float = 180.0
+    create_recovery_seconds: float = 180.0
+    port_lock_timeout_seconds: float = 540.0
+
+    @classmethod
+    def from_protocol(cls, protocol: dict[str, Any]):
+        api = protocol.get("docker_api_timeout_seconds", 180.0)
+        concurrency = protocol.get("concurrency", 1)
+        if isinstance(api, bool) or not isinstance(api, (int, float)) or not math.isfinite(api) or api <= 0:
+            raise ValueError("docker_api_timeout_seconds must be finite and positive")
+        if type(concurrency) is not int or concurrency < 1:
+            raise ValueError("concurrency must be a positive integer")
+        # The lock covers create, bounded reconciliation, and start for each queued worker.
+        lock_budget = max(DEFAULT_PORT_LOCK_TIMEOUT, concurrency * 3 * api)
+        return cls(float(api), float(api), float(lock_budget))
+
+
+_startup_settings = DockerStartupSettings()
+
+
+def create_owned_container(client: Any, *, name: str, labels: dict[str, str],
+                           recovery_seconds: float, **kwargs):
+    """Submit create once; reconcile its uncertain result by exact attempt identity."""
+    try:
+        return client.containers.create(name=name, labels=labels, **kwargs)
+    except (Timeout, ConnectionError) as error:
+        deadline = time.monotonic() + recovery_seconds
+        LOGGER.warning("Docker create response lost; reconciling name=%s without resubmitting", name)
+        while True:
+            try:
+                container = client.containers.get(name)
+            except (NotFound, Timeout, ConnectionError):
+                if time.monotonic() >= deadline:
+                    raise DockerStartupError(
+                        f"Docker create outcome unresolved for {name}; do not resubmit; "
+                        "check this exact attempt label for late containers"
+                    ) from error
+                time.sleep(min(1.0, max(0.0, deadline - time.monotonic())))
+                continue
+            if any(container.labels.get(key) != value for key, value in labels.items()):
+                raise DockerStartupError(f"Docker create identity mismatch for {name}") from error
+            LOGGER.warning("Recovered original Docker create name=%s id=%s", name, container.id)
+            return container
 
 
 def run_vm_readiness_attempts(
@@ -74,11 +135,22 @@ class AdapterDockerProvider:
     """Factory wrapper installed after OSWorld is importable."""
 
     @staticmethod
-    def create(region: str | None = None):
+    def create(region: str | None = None, *, settings: DockerStartupSettings | None = None):
         from desktop_env.providers.docker.provider import DockerProvider
+        effective = settings or _startup_settings
 
         class _Provider(DockerProvider):
             adapter_host_ports: dict[str, int]
+
+            def __init__(self, region):
+                # Keep pinned OSWorld untouched; configure the client before any API call.
+                self.client = docker.from_env(timeout=effective.api_timeout_seconds)
+                self.server_port = self.vnc_port = self.chromium_port = self.vlc_port = None
+                self.container = None
+                self.environment = {"DISK_SIZE": "32G", "RAM_SIZE": "4G", "CPU_CORES": "4"}
+                self.lock_file = Path(os.getenv("TEMP", "/tmp") if os.name == "nt" else "/tmp") / "docker_port_allocation.lck"
+                self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+                self.startup_evidence = {**asdict(effective), "effective_api_timeout_seconds": self.client.api.timeout}
 
             def _get_used_ports(self) -> set[int]:
                 return collect_used_host_ports(self.client)
@@ -87,15 +159,21 @@ class AdapterDockerProvider:
                 lock_timeout = float(
                     os.environ.get(
                         "OPENAPA_DOCKER_PORT_LOCK_TIMEOUT",
-                        str(DEFAULT_PORT_LOCK_TIMEOUT),
+                        str(effective.port_lock_timeout_seconds),
                     )
                 )
                 self.adapter_host_ports = {}
                 self.agent_egress_policy = {}
+                self.startup_evidence["port_lock_timeout_seconds"] = lock_timeout
 
                 def start() -> None:
+                    attempt = uuid.uuid4().hex
+                    name = "lite-osworld-" + attempt
+                    self.startup_evidence.update(container_name=name, attempt=attempt)
                     lock = FileLock(str(self.lock_file), timeout=lock_timeout)
+                    queued = time.monotonic()
                     with lock:
+                        self.startup_evidence["port_lock_wait_seconds"] = time.monotonic() - queued
                         reserved_ports = self._get_used_ports()
 
                         def reserve(start: int) -> int:
@@ -134,9 +212,14 @@ class AdapterDockerProvider:
                             }
                         )
                         run_owner = os.environ.get("OPENAPA_RUN_OWNER")
-                        labels = {RUN_OWNER_LABEL: run_owner} if run_owner else None
-                        self.container = self.client.containers.run(
-                            "happysixd/osworld-docker",
+                        labels = {"openapa.start_attempt": attempt}
+                        if run_owner:
+                            labels[RUN_OWNER_LABEL] = run_owner
+                        created = time.monotonic()
+                        self.container = create_owned_container(
+                            self.client, name=name, labels=labels,
+                            recovery_seconds=effective.create_recovery_seconds,
+                            image="happysixd/osworld-docker",
                             environment=self.environment,
                             cap_add=["NET_ADMIN"],
                             devices=devices,
@@ -147,9 +230,16 @@ class AdapterDockerProvider:
                                 }
                             },
                             ports=port_bindings,
-                            labels=labels,
-                            detach=True,
                         )
+                        self.startup_evidence["create_seconds"] = time.monotonic() - created
+                        # Retain the handle before start, even when its response times out.
+                        try:
+                            self.container.start()
+                        except (Timeout, ConnectionError):
+                            self.container.reload()
+                            if self.container.status != "running":
+                                raise
+                        self.startup_evidence["container_id"] = self.container.id
 
                 def cleanup() -> None:
                     if self.container:
@@ -178,9 +268,14 @@ class AdapterDockerProvider:
                     self.agent_egress_policy = install_agent_egress_policy(
                         self.container
                     )
-                except Exception:
+                except Exception as error:
                     cleanup()
-                    raise
+                    if isinstance(error, DockerStartupError):
+                        error.startup_evidence = dict(self.startup_evidence)
+                        raise
+                    failure = DockerStartupError(f"Docker guest startup failed: {type(error).__name__}: {error}")
+                    failure.startup_evidence = dict(self.startup_evidence)
+                    raise failure from error
 
             def adapter_urls(self) -> dict[str, str]:
                 return {
@@ -202,12 +297,14 @@ class AdapterDockerProvider:
         return _Provider(region)
 
 
-def install_provider_patch() -> None:
+def install_provider_patch(protocol: dict[str, Any] | None = None) -> dict[str, Any]:
+    global _startup_settings
+    _startup_settings = DockerStartupSettings.from_protocol(protocol or {})
     from desktop_env import desktop_env as desktop_env_module
     from desktop_env.providers.docker.manager import DockerVMManager
 
     if hasattr(desktop_env_module, "_v2_original_provider_factory"):
-        return
+        return asdict(_startup_settings)
     original = desktop_env_module.create_vm_manager_and_provider
     desktop_env_module._v2_original_provider_factory = original
 
@@ -217,3 +314,4 @@ def install_provider_patch() -> None:
         return original(provider_name, region, use_proxy=use_proxy)
 
     desktop_env_module.create_vm_manager_and_provider = factory
+    return asdict(_startup_settings)
