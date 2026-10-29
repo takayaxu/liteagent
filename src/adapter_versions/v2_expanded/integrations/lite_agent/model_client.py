@@ -190,6 +190,36 @@ def _jsonable(value: Any, *, exclude_none: bool = False) -> Any:
     return value
 
 
+class _JsonArgumentProgress:
+    """Distinguish JSON syntax whitespace from unchanged string-value bytes.
+
+    This is lexical state only, never parsing, validation or rewriting. Keep
+    quote/escape state across chunks so whitespace inside a model-authored
+    string (including code indentation) remains meaningful progress.
+    """
+
+    def __init__(self) -> None:
+        self.in_string = False
+        self.escaped = False
+
+    def feed(self, value: str) -> bool:
+        progress = False
+        for character in value:
+            if self.in_string:
+                progress = True
+                if self.escaped:
+                    self.escaped = False
+                elif character == "\\":
+                    self.escaped = True
+                elif character == '"':
+                    self.in_string = False
+            elif character not in " \t\r\n":
+                progress = True
+                if character == '"':
+                    self.in_string = True
+        return progress
+
+
 class _ReasoningCycleDetector:
     """Conservative liveness guard for exact multi-paragraph reasoning cycles.
 
@@ -279,6 +309,7 @@ def _aggregate_stream_response(
     reasoning: list[str] = []
     reasoning_content: list[str] = []
     calls: dict[int, dict[str, Any]] = {}
+    argument_progress: dict[int, _JsonArgumentProgress] = {}
     detectors = {key: _ReasoningCycleDetector() for key in ("reasoning", "reasoning_content")}
     output_started = False
     last_progress = time.monotonic()
@@ -299,19 +330,28 @@ def _aggregate_stream_response(
         terminal_chunk = any(
             _stream_value(choice, "finish_reason") is not None for choice in chunk_choices
         )
-        progress = terminal_chunk or any(
-            any(isinstance(value := _stream_value(delta, key), str) and bool(value)
-                for key in ("content", "reasoning", "reasoning_content"))
-            or any(
-                any(isinstance(value := _stream_value(_stream_value(call, "function"), key), str)
-                    and bool(value) for key in ("name", "arguments"))
-                or (bool(_stream_value(call, "id"))
-                    and _stream_value(call, "id") != calls.get(
-                        _stream_value(call, "index", 0), {}).get("id"))
-                for call in _stream_value(delta, "tool_calls", []) or []
+        progress = terminal_chunk
+        for choice in chunk_choices:
+            delta = _stream_value(choice, "delta")
+            progress |= any(
+                isinstance(value := _stream_value(delta, key), str) and bool(value)
+                for key in ("content", "reasoning", "reasoning_content")
             )
-            for delta in (_stream_value(choice, "delta") for choice in chunk_choices)
-        )
+            for call in _stream_value(delta, "tool_calls", []) or []:
+                index = _stream_value(call, "index", 0)
+                if not isinstance(index, int) or index < 0:
+                    index = 0
+                function = _stream_value(call, "function")
+                name = _stream_value(function, "name")
+                arguments = _stream_value(function, "arguments")
+                if isinstance(arguments, str):
+                    # Always feed every call, even if another delta already
+                    # established progress; chunk boundaries may split escapes.
+                    detector = argument_progress.setdefault(index, _JsonArgumentProgress())
+                    progress |= detector.feed(arguments)
+                progress |= isinstance(name, str) and bool(name)
+                call_id = _stream_value(call, "id")
+                progress |= bool(call_id) and call_id != calls.get(index, {}).get("id")
         now = time.monotonic()
         if progress:
             last_progress = now
