@@ -287,7 +287,7 @@ flowchart TD
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；12f1baa run002正式failed0/19步1859.136秒、三完整性true；检索修复真实生效，保存附件/首图/背景链正确但原首图印章、Gold山景（不在三图）；上游tar/Gold LFS哈希同本地。独立审核无新工具方案，候选隔离、仍待修 |
-| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-132-20261030-agent`；b8c7434无补丁run001正式deadline/null、46事件1918.113秒、三完整性true；9人成绩仍空、参考被模型去重少6答案；132-agent-v1独立审核/diff通过，终态独立复核通过，候选10a3fd5新干净run002正式deadline/null、35事件1926.525秒、三完整性true；读取工具真实恢复但模型未找到ReferenceAnswers、未写成绩，candidate隔离，human_review=false |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`repair-132-20261030-agent`；原基线run001 deadline/null；v1run002 deadline/null35事件1926.525秒；v2a26fb3c run003 deadline/null17事件1961.313秒，三完整性true。读取工具/大小写说明真实可见，但模型未读参考未写评分，候选隔离，终态独立复核无新通用最小方案，不盲跑，human_review=false |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
@@ -343,6 +343,10 @@ flowchart TD
 - 132 run002终态独立复核批准132-agent-v2：filesystem.find实际fnmatchcase而真实公开描述未说大小写，小写*answer*漏ReferenceAnswers；只补os_adapter/tool_manifest动作/name_patterns说明前部case-sensitive与未知名可选*，不改搜索语义/参数/顺序，保留v1。另确认31底层完整而33压缩丢路径，重复搜索部分是恢复观察，不能全归模型忽略；不扩大压缩修复。repair-v2从最新ac2dea18组合v1，79focused过/1旧fail干净基线复现，Ruff/diff/bincheck过，5真实前缀包装/搜索摘要关键说明可见且events不变；实际diff独立审核中，候选未正式冻结。证据plan-v2.json、review-v2.json、candidate-v2-checks.json、candidate-v2-surface-replay.json。
 
 - 132-agent-v2实际diff独立审核通过，候选a26fb3c21523bb3690e7faf4efad272bb5f11234冻结；新run-003/source干净detached正式原条件启动。owner lite-repair-c4336fe0593c439998fe40ce98b1dd47、slot[1]/5、shared锁、独立guest/写盘/端口，seal8e866e6ac4a976d1e7e49b960318913b3be4b0191387eb48441bc65a3da03360；原config字节SHA1add28f2f756913893b147b9c507c5a82ea8c5c5f8a35ce248cfe84dc381d264/9B thinking/100步1800秒/任务/evaluator不变，新原始输入。证据review-v2-diff.json、run003/{prep.json,output/resource-lease.json,output/run-status.json}；未集成，结果待定。
+
+- 132-agent-v2/a26fb3c run003正式deadline/rewardnull，17事件1961.313秒，三完整性true，无evaluator/完成申请/写入保存。真实request5后case-sensitive/use*说明可见，7-16读10学生，仍未读参考；response17推理27168字length无call、重试17inspect、nextstream26070字后deadline。10:19:41只读快照reference/grades均与输入原字节同，无后续mutation；不把快照当最终evaluator产物。owner c4336fe0593c439998fe40ce98b1dd47容器为空/租约释放，其他题资源未碰。候选不集成，终态独立复核中；3/8正式通过5待修。证据 [最新诊断](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/diagnosis.json)、[完整结果](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/output/results/results.json)、[批次回执](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/batch-result.json)。
+
+- 本队列本轮终态：独立/root/review96复核132run003无新通用最小方案，不run004、不集成失败候选。模型误称仅9题/Q6缺失，但真实上下文10学生全文及10处酒店题完整，无reader截断或参数改写；无done不能说completion放行。最终 **3/8正式PASS：96、115、130；5/8待修：104、113、117、127、132**。全部末次source/config/OSWorld完整性true；104/127/132失败候选保留隔离，无预算/模型/evaluator/题目/答案改动，历史189分数不变。人工审核关闭持续，全部方案由/root/review96独立审核；[132终态复核](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/terminal-review.json)、[8题汇总](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/batch-result.json)。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
