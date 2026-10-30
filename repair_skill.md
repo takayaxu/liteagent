@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9候选cd2f5b0 run010正式failed0/agent_done，24events/1285.1秒，三完整性true/资源清理。10非空均Tab且全分段有词，2段first4，5段短find+整句replacement重复原文，全部RIGHT173；native165.1布局被模型投影丢失。V10显式文字保留策略+已有布局保留待同一独立审核，尚未实施；run-010-diagnosis.json、layout-visibility-evidence.json留证；全部65候选未集成，human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9候选cd2f5b0 run010正式failed0/agent_done，24events/1285.1秒，三完整性true/资源清理。10非空均Tab且全分段有词，2段first4，5段短find+整句replacement重复原文，全部RIGHT173；native165.1布局被模型投影丢失。V10限定方案同一独立审核通过，已实施显式文字保留策略+已有布局保留，稳定15文件实际diff复审中；run-010-diagnosis.json、layout-visibility-evidence.json留证；全部65候选未集成，human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -476,6 +476,9 @@ flowchart TD
 
 
 - 2026-10-30 13:06 UTC：Order65 run010正式failed0/agent_done，24events1285.1秒，evaluator仅agent结束后加载，三完整性true，自有owner4e6eade0容器空/lease释放/controller及observer退出。12段10非空，firstTab词数3/3/4/3/3/3/3/3/3/4；raw0/1/4/5/6短find+整句replacement复制后半句（工具逐字执行），全部RIGHT173而native布局165.1；原生page_layouts在context_hint有值，实际首次format前请求已省略，whole段替换工具实际可用。final12行counts及tabbed10/all_nonzero10汇总到模型，模型把全非空分段当验收，不能称V9已修好。V10拟模型显式preserve_non_whitespace/allow_text_change通用策略及已有紧凑原生布局预算保留，待同一审核者批准，未实施/未run011；不固定词数/位置、不改完成门/原题/evaluator。7/12交付不变、77未启动。证据run-010-diagnosis.json、run010/formal-result-summary.json、final-readback-actually-visible.json、layout-visibility-evidence.json、cleanup-verification.json。
+
+
+- 2026-10-30 13:21 UTC：Order65-v10限定A显式文字保留+B原生布局投影同一独立审核通过后实施15文件（含3新及2必要strict旧fixture显式policy）。owner缺省allow、strict由模型选policy，preserve剔除str.isspace后按实际所有matches逐字符比较并在任何赋值前整次拒绝；不验证词数/词界、不自动纠正。布局只复制native完整style/尺寸，≤500字符整条前缀及遗漏，未扣indents/columns，多style不猜active；2k范围索引预览明确truncated，保留scope数值/正文/计数/summary/续读，5000完整。114policy+96layout过、285综合过/9基点旧失败，117相邻过/27旧失败集合不变；Ruff/diff/check过。native-v10真实UNO6探针通过且自有guest/lease清理；真实9B atomic/多route各生成合法显式preserve+typedTab（均未执行）。真实run01036组只读布局overlay回放通过，5000保留165.1；显式policyoverlay拒绝原5次复制，但2次first4仍合法，不能称整题修好。稳定diff待同一复审，未冻结run011/未集成。证据v10-checks.json、v10-run010-readonly-replay.json、v10-run010-policy-readonly-replay.json、native-v10/native-result.json及cleanup。7/12交付不变，77未启动。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
