@@ -350,7 +350,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v5候选be6ea7f run006原evaluator正式failed/reward0/agent_done，40events/1659.255秒，三完整性true，自有资源清理。13真Tab/0字面转义，12段10非空及原字符保留；后5段首Tab前token为6/4/4/6/5，重复插入，10段RIGHT100mm。新v6显式document/paragraph scope＋Tab分段空白token counts＋加强右位解释已获同一独立审核通过并实施；原生探针/真实9B两路径只读生成通过，实际diff复审中；v1–v5旧证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-006-diagnosis.json；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v6方案及11文件实际diff独立审核/root/review_order65通过；候选6c3dce2新干净run007原条件正式复测中，owner f3b662ed69274530a6595eb27c2315de、slot2，10:21:45UTC启动。scope/Tab分段counts及条件化右位解释，保留v1–v5；旧run001–006证据保留。未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-007/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -435,6 +435,8 @@ flowchart TD
 
 
 - 2026-10-30 10:19 UTC：Order65-v6限定方案独立审核/root/review_order65通过，已在个人repair树实施通用显式scope及counts/坐标说明；owner默认document、strict必选、原生筛选/跨界拒绝在写前、全局路径兼容、编辑前raw索引及unknown诚实报告。native-v6-002原生合成探针通过（首次LF夹具失败已归档），实际9B atomic/混合包装各一次生成合法paragraph scope+segments且无工具执行；新34scope/context测试通过，112focused过/1旧oneOf、94邻近过/5旧失败均基点复现。Ruff/diff/bin-check过，当前稳定diff待同一审核者复审，尚未冻结/正式复跑/集成。7/12通过不变、77未启动。证据个人目录v6-checks.json。
+
+- 2026-10-30 10:21 UTC：Order65-v6稳定实际diff独立审核/root/review_order65通过（审阅SHA9c2ab624，独立138过/1基点旧失败，scope/context34过）；合并纯文档2486f68后冻结6c3dce211212cf9c0c06ab2276f5f675d5a101be。run007新detached干净源码、原run001逐字config，source seal448be229、OSWorld85c94bc3；原9Bthinking/100步1800秒/原题及evaluator，独立guest/写盘/端口，owner lite-repair-f3b662ed69274530a6595eb27c2315de slot2/5、兼容shared锁。只读/file归档不执行guest动作；132他题独立运行不干扰。结果待定、7/12通过不变，77未启动。审核/检查证据个人目录v6-agent-review.json、v6-checks.json及run007/prep.json。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
