@@ -1045,6 +1045,27 @@ def _write(session: CalcSession, params: dict[str, Any]) -> dict[str, Any]:
     )
     raw_values = params["values"]
     raw_rows = raw_values if isinstance(raw_values[0], list) else [raw_values]
+    # Check every raw scalar before any write. Canonicalization deliberately
+    # keeps strings literal, but replacing an existing formula with an
+    # expression-shaped string requires an explicit choice of cell kind.
+    for index, raw_cell in enumerate(cell for row in raw_rows for cell in row):
+        if not isinstance(raw_cell, str) or not raw_cell.startswith("="):
+            continue
+        row, column = divmod(index, columns)
+        target = cell_range.getCellByPosition(column, row)
+        if _cell_kind(target) != "formula":
+            continue
+        cell_address = f"{_column_label(address.StartColumn + column)}{address.StartRow + row + 1}"
+        raise AdapterError(
+            "INVALID_REQUEST",
+            f"{cell_address} already contains a formula. A plain string beginning "
+            "with '=' would replace it with literal text. No cells were written. "
+            'For a calculation, use {"kind":"formula","value":"=<your expression>"} '
+            "or cells.set_formulas. To intentionally replace the formula with text, "
+            'use {"kind":"string","value":"<your exact text>"}.',
+            {"sheet": params["sheet"], "cell": cell_address,
+             "current_formula": str(target.getFormula()), "proposed_text": raw_cell},
+        )
     literal_cells = sum(
         not isinstance(cell, Mapping) for row in raw_rows for cell in row
     )
