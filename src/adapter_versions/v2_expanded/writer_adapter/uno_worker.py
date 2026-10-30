@@ -2745,9 +2745,27 @@ def _insert_image_at_cursor(
         raise AdapterError(
             "FILE_NOT_FOUND", f"image file does not exist: {path}", http_status=404
         )
+    try:
+        provider = session.service_manager.createInstanceWithContext(
+            "com.sun.star.graphic.GraphicProvider", session.context
+        )
+        graphic = provider.queryGraphic((_property("URL", _file_url(str(path))),))
+        graphic_type = int(graphic.getType()) if graphic is not None else 0
+        if graphic_type not in (1, 2):
+            raise ValueError("no decoded bitmap or vector graphic")
+    except Exception as exc:
+        raise AdapterError(
+            "IMAGE_DECODE_FAILED",
+            "Writer could not decode this file as an image; no image was inserted. "
+            "Choose a supported image exported from the source application, or use "
+            "a supported clipboard/GUI operation. Exporting is a separate action; "
+            "this tool does not convert project files.",
+            {"path": str(path), "inserted": False},
+            422,
+        ) from exc
     before = _graphic_object_count(session.doc)
     image = session.doc.createInstance("com.sun.star.text.TextGraphicObject")
-    image.GraphicURL = _file_url(str(path))
+    image.Graphic = graphic
     image.AnchorType = 0
     cursor = session.view_cursor()
     cursor.getText().insertTextContent(cursor, image, False)
@@ -2772,6 +2790,8 @@ def _insert_image_at_cursor(
         "graphic_object_count_after": after,
         "graphic_objects_added": added,
         "count_verified": added == 1,
+        "graphic_loaded": True,
+        "graphic_type": "bitmap" if graphic_type == 1 else "vector",
     }
 
 

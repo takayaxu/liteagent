@@ -998,6 +998,12 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["name", "cells", "color"],
     },
     "image.insert_at_cursor": {
+        "description": (
+            "Insert one image decoded by Writer at its current view cursor. "
+            "Undecodable or corrupt files are rejected before insertion. "
+            "Project files may require a separate export in their source application; "
+            "this action does not convert them."
+        ),
         "properties": {
             "path": {
                 "type": "string",

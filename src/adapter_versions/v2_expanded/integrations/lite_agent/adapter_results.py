@@ -4223,6 +4223,8 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
                 "graphic_object_count_after",
                 "graphic_objects_added",
                 "count_verified",
+                "graphic_loaded",
+                "graphic_type",
                 "saved",
             )
         } | {
@@ -4230,13 +4232,13 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             if isinstance(verification, dict)
             else None,
             "guidance": (
-                "A successful call inserts one additional graphic object at the current "
-                "Writer cursor and persists the document. The before/after counts and "
-                "graphic_objects_added are structural mutation evidence. Repeating this "
+                "graphic_loaded=true confirms native image decoding; graphic_type reports "
+                "bitmap or vector. The before/after counts and graphic_objects_added are "
+                "structural mutation evidence, not image-content verification. Repeating this "
                 "action inserts another copy, so repeat it only when the instruction "
-                "explicitly requests another copy. When the requested insertion count is "
-                "satisfied and the saved file is valid, call propose_done; document.inspect "
-                "can be used once for structural read-back."
+                "explicitly requests another copy. Check the loaded image, saved document "
+                "and all user requirements before completion; document.inspect can provide "
+                "structural read-back."
             ),
         }
     if domain == "libreoffice_writer" and action == "text.find":
