@@ -279,13 +279,12 @@ flowchart TD
 
 ### Docker 修复后指定队列（2026-10-30，8题，human_review=false）
 
-本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 1/8 正式通过，7/8 待修；历史批次分数不变。
+本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 2/8 正式通过，6/8 待修；历史批次分数不变。
 
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
-| 115 | 227d2f97-562b-4ccb-ae47-a5ec9e142fbb | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-115-20261030-agent`；最新0d3b9bd干净无补丁run001运行，原条件、human_review=false |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 排队，未认领运行资源 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 排队，未认领运行资源 |
 | 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 排队，未认领运行资源 |
@@ -305,6 +304,16 @@ flowchart TD
 - 2026-10-30 05:33 UTC：113正式deadline/null、无成功数据写入。后期源矩阵前8行截断已有明确补读说明，模型仍误称全8行；空anchor/不齐矩阵/整数rows传矩阵由模型原参引入并正确拒绝，无propose_done。独立终态复核无新通用最小方案，保留待修，不盲跑；证据 `/home/liuxv/liteagent-local-runs/repair-113-20261030-agent/run-001/{diagnosis.json,terminal-review.json,output/results/results.json}`。按序115从最新0d3b9bd新detached源码无补丁复跑，不带104失败候选。
 
 - 115 run001 owner `lite-repair-63c57d17957d493099985eef04200342`、slot2/5、shared兼容锁、独立guest/写盘/端口，source seal594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0；原模型预算任务/evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-001/output/{resource-lease.json,run-status.json}`。
+
+- 115-agent-v1：原image.insert_at_cursor仅GraphicURL赋值+计数，DOCX4740bytes无image媒体关系、a:blip空；原评分0。通用GraphicProvider预解码、拒绝空/失败图后不改文档、赋已加载Graphic，回执loaded/type并移除计数足够完成承诺；独立审核/root/review96通过。10新测试过、67相邻过/2旧失败基线复现、Ruff/diff/bincheck过；自有guest原生probe PNG与SVG成功嵌入媒体/关系，XCF及损坏PNG拒绝counts0→0。SVG当前nativegetType1/嵌入PNG，不声称矢量结构保留。证据本题plan-v1.json、review-v1.json、candidate-checks.json、native-probe/result.json；probe owner d621ae901f2849b1a6d9c09664e46c4f已清理。待实际diff审核后冻结正式候选。
+
+- 2026-10-30 05:54 UTC：115候选6c39c8a4e62a53c990f2ac5b19c9d5ab273c303a从新run002/source干净detached正式复跑；同字节原config，原9B thinking/100步1800秒/原evaluator。真实XCF探针身份与SHA已补native-probe/input-identity.json，actualdiff独立审核通过；owner/slot/guest以run002/output/{resource-lease.json,run-status.json}为准，未集成。
+
+- 115 run002正式passed/reward1.0/agent_done；model13自行GIMP导出、30create、31插入decodedPNG、32完成。两DOCX均1图1152×648RGBA、原生像素SHA9e822df044ccc516f85e15e3fb4a4c69326094004fd4670d1d934867582c20d1；完整性全true。原生探针验证非法图拒绝，但本轮模型未触发它，不宣称单因素因果。活动f1fff78比base新增Impress命名色description，因此独立integration组合694dcb6须正式复跑后才集成，不拿旧PASS代替；结果/产物证据本题run002/output/results/results.json及artifact-validation.json。
+
+- 115组合694dcb6同一子agent审核通过，无需新方案；10focused/Ruff/diff/check过。新run003/source干净detached同字节原config正式复跑，预算模型/evaluator不变；当前owner/名额以run003/output/resource-lease.json为准，尚未集成。
+
+已修复：115 / 227d2f97-562b-4ccb-ae47-a5ec9e142fbb；115-agent-v1、human_review=false、独立审核/root/review96方案/实际diff/组合通过。原错误是GraphicURL空图也计数成功；通用预解码拒绝非法图、不自动转换、插入已加载Graphic并反馈解码证据。原候选6c39c8a run002正式PASS1.0/32步1350.933秒；最新组合694dcb69fa1254fa5e231eb581e4f9b5800b8e2c run003正式PASS1.0/agent_done/20步1146.076秒，三完整性true、原9B thinking/100步1800秒/evaluator；seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711。原/参考均恰1图1152×648RGBA，像素SHA9e822df044ccc516f85e15e3fb4a4c69326094004fd4670d1d934867582c20d1一致。已快进本地活动、待GitHub推送核验；[结果](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/final-integrity.json)、[产物](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/artifact-validation.json)。原run001失败保留，不改历史全量分数；117按序下一题。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
