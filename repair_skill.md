@@ -350,7 +350,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v5候选be6ea7f run006原evaluator正式failed/reward0/agent_done，40events/1659.255秒，三完整性true，自有资源清理。13真Tab/0字面转义，12段10非空及原字符保留；后5段首Tab前token为6/4/4/6/5，重复插入，10段RIGHT100mm。新v6显式document/paragraph scope＋Tab分段空白token counts＋加强右位解释待独立审核，未实施；v1–v5旧证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-006-diagnosis.json；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v5候选be6ea7f run006原evaluator正式failed/reward0/agent_done，40events/1659.255秒，三完整性true，自有资源清理。13真Tab/0字面转义，12段10非空及原字符保留；后5段首Tab前token为6/4/4/6/5，重复插入，10段RIGHT100mm。新v6显式document/paragraph scope＋Tab分段空白token counts＋加强右位解释已获同一独立审核通过并实施；原生探针/真实9B两路径只读生成通过，实际diff复审中；v1–v5旧证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-006-diagnosis.json；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -433,6 +433,8 @@ flowchart TD
 
 - 2026-10-30 09:55 UTC：Order65-v5 run006原evaluator正式failed/reward0/agent_done，40events/1659.255秒，evaluator后加载、三完整性true；自有owner392398ac36b54e76885d4407d5005e74容器空/lease释放/observer退出。正式产物12段10非空、13真Tab/0字面转义，去新增Tab后原字符逐段保留；前5段首Tab前3个空白分隔token，后5为6/4/4/6/5，第4段3个Tab、第6段2个；全部RIGHT约100mm，而原生body_width165.1。step38完成因无最终读回拒绝，39全读回后40仍错误声明first3并被接受；原评测在第6段词数失败，不称表示修复等于整题PASS。独立只读诊断确认原参直接决定错词界/全局首匹配/100mm，matcher未违规；拟v6仅加显式document/paragraph scope（strict明确选择，owner默认document兼容）、通用Tab分段空白token counts（不冒称原生语言学词数/不选固定第三词）、条件化加强右边缘说明，不加任务短语/宏/完成门，待同一独立审核。7/12正式通过不变，77未启动。
 
+
+- 2026-10-30 10:19 UTC：Order65-v6限定方案独立审核/root/review_order65通过，已在个人repair树实施通用显式scope及counts/坐标说明；owner默认document、strict必选、原生筛选/跨界拒绝在写前、全局路径兼容、编辑前raw索引及unknown诚实报告。native-v6-002原生合成探针通过（首次LF夹具失败已归档），实际9B atomic/混合包装各一次生成合法paragraph scope+segments且无工具执行；新34scope/context测试通过，112focused过/1旧oneOf、94邻近过/5旧失败均基点复现。Ruff/diff/bin-check过，当前稳定diff待同一审核者复审，尚未冻结/正式复跑/集成。7/12通过不变、77未启动。证据个人目录v6-checks.json。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
