@@ -321,7 +321,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；最新活动b3ce994干净无补丁run001已启动，原条件；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-001/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；最新活动b3ce994无补丁run001终态deadline/rewardnull，34事件1863.412秒，三完整性true、evaluator未加载，资源已释放。长段落重复推理8192输出无调用；saved快照仍12段10非空，错误/缺失Tab及额外字词，非正式评分产物。Order65-v1方案已获独立审核 /root/review_order65 通过，独立repair基于fcff0bc扩展既有流式循环检测，实际diff双反引号/混合缩进误报修正后经同一审核通过；114focused/Ruff/diff/check通过，候选cc62b73冻结，run002新detached/原配置已启动，未集成；原冻结流回放1494/8192 chunks中断、7154字符原文前缀保留、1200字符宏周期×3，原异常/重试预算不变。后续词语/Tab语义错误未宣称解决；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-001/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -378,6 +378,8 @@ flowchart TD
 - 2026-10-30 06:05 UTC：Order63-v1 run002正式PASS，真实请求描述透传、命名参数和保存后原生颜色均已验证，三完整性true，自有owner容器空/lease释放。候选89d9b09已快进集成，待GitHub推送；7/12通过5待修，65尚未启动。
 
 - 2026-10-30 06:06 UTC：Order63已交付GitHub并独立读回b3ce994，7/12交付。按序启动Order65当前源码干净无补丁run001，新config仅补source_order156身份，原模型/预算/任务/evaluator不变；owner/slot/guest见本题run001/output资源/状态文件。77未启动。
+
+- 2026-10-30 06:55 UTC：Order65当前基线run001 deadline/null（34事件1863.412秒），evaluator未加载，3完整性true。独立审核/root/review_order65批准Order65-v1及修正后实际diff：仅扩展流式单段多句完全重复保护，沿用原异常/重试，不宣称修复后续文字语义。原流回放1494/8192chunks中断并保留精确前缀，114focused通过。候选cc62b73从fcff0bc冻结，新run002/source独立detached，原config逐字副本/9Bthinking/100步1800秒/任务/evaluator不变；owner/slot/guest见本题run002/output资源/状态。只读磁盘观察器不改guest；7/12正式通过、65待结果、77未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
