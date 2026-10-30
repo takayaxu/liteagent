@@ -283,8 +283,8 @@ flowchart TD
 
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
-| 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 排队，未认领运行资源 |
-| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 排队，未认领运行资源 |
+| 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-113-20261030-agent`；最新活动acb2e15干净无补丁run001准备，human_review=false；原任务原模型预算/evaluator |
 | 115 | 227d2f97-562b-4ccb-ae47-a5ec9e142fbb | 排队，未认领运行资源 |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 排队，未认领运行资源 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 排队，未认领运行资源 |
@@ -293,9 +293,14 @@ flowchart TD
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
-已修复：96 / 00fa164e-2612-4439-992e-157d019a8436，96-agent-v1，human_review=false，独立审核 `/root/review96` 方案/实际diff通过；候选 `5d551ab5e5d333b4db43861935ace458ae1d981b`，seal `605736d636ac6fe673721eeef27b7919bd30a6f63e597e66993b31beba9b7148`；run-001 passed/reward1.0/agent_done，9步715.411秒，source/config/OSWorld完整性均true，原9B thinking/100步1800秒/原evaluator，当前默认串行条件。原31段正文保留，表格紧接5.2 Main Results、2×12内容与参考逐格一致；[结果](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/artifact-validation.json)。本地已集成 `5d551ab`，待推送。共同故障证据：[原始只读回放](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/original-replay.json)、[96方案](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/plan-v1.json)。新基点与全量 `c8349c4` 仅 README/reports 文档差异，运行源码/bin/configs/依赖未变；正式验证按当前默认串行条件保留原模型/预算/evaluator。
+已修复：96 / 00fa164e-2612-4439-992e-157d019a8436，96-agent-v1，human_review=false，独立审核 `/root/review96` 方案/实际diff通过；候选 `5d551ab5e5d333b4db43861935ace458ae1d981b`，seal `605736d636ac6fe673721eeef27b7919bd30a6f63e597e66993b31beba9b7148`；run-001 passed/reward1.0/agent_done，9步715.411秒，source/config/OSWorld完整性均true，原9B thinking/100步1800秒/原evaluator，当前默认串行条件。原31段正文保留，表格紧接5.2 Main Results、2×12内容与参考逐格一致；[结果](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/artifact-validation.json)。已集成 `5d551ab` 并交付GitHub，远端 `1d577de31059507d4a0d11b22febb5665222dd73` 已读回核验；常规Git连接超时后，Git Data API上传对象SHA逐项一致、force=false快进。共同故障证据：[原始只读回放](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/original-replay.json)、[96方案](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/plan-v1.json)。新基点与全量 `c8349c4` 仅 README/reports 文档差异，运行源码/bin/configs/依赖未变；正式验证按当前默认串行条件保留原模型/预算/evaluator。
 
 
+- 104 run-001新失败：[产物/原参/真实保存核对](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-001/artifact-validation.json)、[方案](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/plan-v1.json)。模型另有答案内容和格式错误，选择器与回执修复不承诺解决这些差异；保留原正式0分。
+
+- 2026-10-30 04:57 UTC：104 run005原evaluator未加载、正式deadline/null；最后保存及完整读回101字表明目标正确但答案/模板错误，无完成申请。终态独立复核无新获批通用方案，保留全部失败、候选不集成，按用户顺序继续113，不将104销项。证据 [run005诊断](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-005/artifact-validation.json)、[子agent复核](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-005/terminal-review.json)。
+
+- 2026-10-30 04:59 UTC：113 run001从acb2e15干净detached无补丁启动；owner `lite-repair-14aaeb60a40047b1bfef091d2e44cc54`，slot2/5、shared兼容锁、独立guest/写盘/端口，source seal594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0；原9B thinking/100步1800秒/原evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-113-20261030-agent/run-001/output/{resource-lease.json,run-status.json}`，其他账号及Order27资源不触碰。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
