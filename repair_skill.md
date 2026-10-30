@@ -284,8 +284,8 @@ flowchart TD
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
-| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-113-20261030-agent`；最新活动acb2e15干净无补丁run001准备，human_review=false；原任务原模型预算/evaluator |
-| 115 | 227d2f97-562b-4ccb-ae47-a5ec9e142fbb | 排队，未认领运行资源 |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
+| 115 | 227d2f97-562b-4ccb-ae47-a5ec9e142fbb | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-115-20261030-agent`；最新0d3b9bd干净无补丁run001运行，原条件、human_review=false |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 排队，未认领运行资源 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 排队，未认领运行资源 |
 | 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 排队，未认领运行资源 |
@@ -301,6 +301,10 @@ flowchart TD
 - 2026-10-30 04:57 UTC：104 run005原evaluator未加载、正式deadline/null；最后保存及完整读回101字表明目标正确但答案/模板错误，无完成申请。终态独立复核无新获批通用方案，保留全部失败、候选不集成，按用户顺序继续113，不将104销项。证据 [run005诊断](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-005/artifact-validation.json)、[子agent复核](/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-005/terminal-review.json)。
 
 - 2026-10-30 04:59 UTC：113 run001从acb2e15干净detached无补丁启动；owner `lite-repair-14aaeb60a40047b1bfef091d2e44cc54`，slot2/5、shared兼容锁、独立guest/写盘/端口，source seal594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0；原9B thinking/100步1800秒/原evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-113-20261030-agent/run-001/output/{resource-lease.json,run-status.json}`，其他账号及Order27资源不触碰。
+
+- 2026-10-30 05:33 UTC：113正式deadline/null、无成功数据写入。后期源矩阵前8行截断已有明确补读说明，模型仍误称全8行；空anchor/不齐矩阵/整数rows传矩阵由模型原参引入并正确拒绝，无propose_done。独立终态复核无新通用最小方案，保留待修，不盲跑；证据 `/home/liuxv/liteagent-local-runs/repair-113-20261030-agent/run-001/{diagnosis.json,terminal-review.json,output/results/results.json}`。按序115从最新0d3b9bd新detached源码无补丁复跑，不带104失败候选。
+
+- 115 run001 owner `lite-repair-63c57d17957d493099985eef04200342`、slot2/5、shared兼容锁、独立guest/写盘/端口，source seal594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0；原模型预算任务/evaluator。证据 `/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-001/output/{resource-lease.json,run-status.json}`。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
