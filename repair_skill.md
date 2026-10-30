@@ -327,7 +327,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；最新活动b3ce994无补丁run001终态deadline/rewardnull，34事件1863.412秒，三完整性true、evaluator未加载，资源已释放。长段落重复推理8192输出无调用；saved快照仍12段10非空，错误/缺失Tab及额外字词，非正式评分产物。Order65-v1方案已获独立审核 /root/review_order65 通过，独立repair基于fcff0bc扩展既有流式循环检测，实际diff双反引号/混合缩进误报修正后经同一审核通过；114focused/Ruff/diff/check通过，候选cc62b73冻结，run002新detached/原配置已启动，未集成；原冻结流回放1494/8192 chunks中断、7154字符原文前缀保留、1200字符宏周期×3，原异常/重试预算不变。后续词语/Tab语义错误未宣称解决；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-001/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v2方案/实际diff独立审核/root/review_order65通过，候选6104e78已冻结，新run003原配置/原模型预算正式复跑中、未集成；无变化替换写入前拒绝、加强tab语义说明，含v1循环保护。run001/002均deadline/null、三完整性true/evaluator未加载，失败保留；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/{baseline-diagnosis.json,run-002-diagnosis.json,run-003/output}；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -386,6 +386,10 @@ flowchart TD
 - 2026-10-30 06:06 UTC：Order63已交付GitHub并独立读回b3ce994，7/12交付。按序启动Order65当前源码干净无补丁run001，新config仅补source_order156身份，原模型/预算/任务/evaluator不变；owner/slot/guest见本题run001/output资源/状态文件。77未启动。
 
 - 2026-10-30 06:55 UTC：Order65当前基线run001 deadline/null（34事件1863.412秒），evaluator未加载，3完整性true。独立审核/root/review_order65批准Order65-v1及修正后实际diff：仅扩展流式单段多句完全重复保护，沿用原异常/重试，不宣称修复后续文字语义。原流回放1494/8192chunks中断并保留精确前缀，114focused通过。候选cc62b73从fcff0bc冻结，新run002/source独立detached，原config逐字副本/9Bthinking/100步1800秒/任务/evaluator不变；owner/slot/guest见本题run002/output资源/状态。只读磁盘观察器不改guest；7/12正式通过、65待结果、77未启动。
+
+- 2026-10-30 07:28 UTC：Order65-v1候选cc62b73 run002正式deadline/null，63事件1859.451秒，原evaluator未加载、三完整性true、自有资源及只读observer退出。lastsaved after63保留12段10非空/全部词序，仅2段真Tab/无字面\t，8段缺Tab；第1RIGHT100mm、其余9段RIGHT80mm而body165.1，10段均已设RIGHT。原参NOOP首次报success，重复同字替换持续耗预算；v1本轮未触发，不据此宣称改善。完整原始证据run002-diagnosis.json、output/results/results.json。候选不集成；Order65-v2（真实匹配无变化拒绝＋加强已有tab坐标解释）交同一独立审核，尚未实施，7/12通过不变。
+
+- 2026-10-30 07:43 UTC：Order65-v2及实际diff经同一独立审核/root/review_order65通过；真实匹配全部与replacement相同则写入前NO_TEXT_CHANGE，无赋值/保存，保留无匹配、首个/全部、大小写实际变化/混合、删除/CR等。制表位说明只加强已有语义，不选位置/参数。两相邻夹具同步只读预检，逆序写入及原生bulk断言保留；79focused通过，3旧oneOf结构失败在clean cc62同样复现（65pass/同3fail），Ruff/diff/check通过，直连/转发说明透传有效。候选6104e78（含v1，合并07bbef4仅台账）冻结，新run003/source干净detached/原run001配置逐字副本启动，原模型/100步1800秒/任务/evaluator不变；owner/slot/guest见本题run003/output资源/状态，独立只读/file观察不执行/保存guest。未集成，7/12通过，77未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
