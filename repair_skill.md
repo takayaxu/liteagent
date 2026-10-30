@@ -370,7 +370,7 @@ flowchart TD
 | --- | --- | --- |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 保留待修；V10候选69d647e原条件run011为deadline/null，21events/1863.887秒，evaluator未调用；三完整性true、资源已清理。同一独立审核/root/review_order65终审无新获批通用最小方案，禁止猜测性改动/同源码盲跑；全部65候选隔离未集成。六段正文重复、四段无Tab、多余LEFT25.4；策略/布局/完整词数已到模型。证据run-011-diagnosis.json及run-011/terminal-agent-review.json；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 保留待修；最新7575aa5无补丁run001正式failed/reward0.8438601849044155/agent_done，6步361.342秒，三完整性true/资源清理。源3秒起75帧4990ms，参考3帧300ms/640×386且上游LFS一致；原评分仅首帧SSIM。导出实际FFmpeg、无GIMP处理，业务缺口与参考冲突分列。同一独立/root/review_order87终审无新合规通用最小方案、不盲跑不改数据，允许串行88；无候选补丁。证据run-001/{diagnosis.json,terminal-agent-review.json}；human_review=false |
-| 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 本对话 /root；1ff16fc无补丁run001正式failed/reward0/agent_done，30步1236.794秒，三完整性true/自有资源已清理。CSV5001行与gold2原字节相同；28命令生成、29desktop.open_path、30完成放行，原TTY getter use no terminal。独立/root/review_order88对v1完成门方案判证据不足，未实施；v2仅澄清desktop.open_path桌面启动语义/回执，待同一审核者。证据 /home/liuxv/liteagent-local-runs/repair-88-20261030-nohuman/run-001/{diagnosis.json,formal-result-summary.json,cleanup-verification.json}；human_review=false |
+| 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 本对话 /root；无补丁run001正式failed/reward0、三完整性true，CSV5001行与gold2原字节同，step29桌面打开后TTY getter use no terminal。Order88-agent-v1完成门方案独立审核证据不足未实施；v2仅澄清desktop.open_path桌面路线及非TTY实测，方案/实际diff由同一/root/review_order88通过，候选2117ec3、source seal79f98e、22focused/Ruff/diff/check通过。run002从干净候选按原Qwen3.5-9B thinking/100步1800秒/任务evaluator、原config SHA312d78d8启动；owner lite-repair-9db87f1343004824827ef618207379e8，slot2/5、独立guest、shared兼容锁，结果待定未集成。证据 /home/liuxv/liteagent-local-runs/repair-88-20261030-nohuman/run-002/output/{resource-lease.json,run-status.json}；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
 
 历史诊断（截至run001；后续run002已正式PASS并交付，见下方已修复表）：第5题原始第3步将公式表达式以普通字符串写入已有公式单元格，第5/11步回读为 string、无公式，第12步完成门仍通过。失败运行 `c8349c4` 与基点间仅文档/报告变化，运行源码等价；正式失败有效，无需重复基线。v1经独立审核通过，在Calc写入前原子拒绝该歧义并保留显式公式/字符串路径。候选`8cebae8` run001运行完整性通过；第3步拒绝、第4步显式公式成功，显示及保存后读回正确，但原始evaluator因评分CSV缺失返回0；相同缺文件现象见原full189，未知转换失败原因。独立终态审核确认没有直接证据支持转换器通用修复；不重复盲测，候选不集成，Order5待修。
@@ -518,6 +518,8 @@ flowchart TD
 
 
 - 2026-10-30 14:50 UTC：88无补丁正式0分，CSV正确而终端启动未满足；原reasoning明确误认desktop.open_path为from-terminal。v1目标/GUI启动完成证据关联不充分，经同一独立审核未批，未实施；新v2仅补工具真实桌面启动语义待审，不改完成门/模型/任务/评分。前序台账已交付远端5d862fd并独立读回；仍8/12正式PASS。
+
+- 2026-10-30 14:59 UTC：88-v2经同一独立审核方案及实际diff通过，冻结候选2117ec3后从新detached source正式run002，原输入缓存、配置SHA312d78d8、模型预算/evaluator不变；owner lite-repair-9db87f1343004824827ef618207379e8、slot2/5/shared兼容、seal79f98e。v1未实施；v2只修公开路线语义和回执，不改完成门；正式结果待定。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
