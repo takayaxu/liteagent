@@ -369,7 +369,7 @@ flowchart TD
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 保留待修；V10候选69d647e原条件run011为deadline/null，21events/1863.887秒，evaluator未调用；三完整性true、资源已清理。同一独立审核/root/review_order65终审无新获批通用最小方案，禁止猜测性改动/同源码盲跑；全部65候选隔离未集成。六段正文重复、四段无Tab、多余LEFT25.4；策略/布局/完整词数已到模型。证据run-011-diagnosis.json及run-011/terminal-agent-review.json；human_review=false |
-| 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 本对话 /root；最新活动7575aa5干净无补丁run001正式基线运行，source seal75fcc013、原模型/100步1800秒/evaluator；独立guest/盘/端口、slot[2]/5/shared兼容，owner lite-repair-4cab27803cce4bd4bb91473c2279a457。旧参考冲突仅作线索，以本轮轨迹/元数据/独立审核为准；目录 /home/liuxv/liteagent-local-runs/repair-87-20261030-nohuman/run-001/output；human_review=false |
+| 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 本对话 /root；最新7575aa5无补丁run001正式failed/reward0.8438601849044155/agent_done，6步361.342秒，三完整性true/资源清理。实际3秒起/75帧4990ms/640×360，参考3帧300ms/640×386且上游LFS哈希一致；原评分只比首帧灰度SSIM。导出实际FFmpeg，未见GIMP处理，业务应用缺口与参考冲突分列；同一独立审核/root/review_order87终审中，无候选补丁。证据本题run-001/diagnosis.json；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
 
@@ -506,6 +506,9 @@ flowchart TD
 
 
 - 2026-10-30 14:13 UTC：Order87从最新7575aa5干净detached源码无补丁基线启动，原默认config仅替换tasks身份，SHA8a56d89d47bcad6707a5e2da4870f3b5d65971cd7c2518dd6ec98df2e44c161a。source seal75fcc013、OSWorld5fb8d864、原模型/100步1800秒及任务/evaluator不变；owner lite-repair-4cab27803cce4bd4bb91473c2279a457、controller2655096、slot[2]/5，独立guest/写盘/端口、shared兼容。此前87参考冲突和未使用GIMP保留历史，不据此跳过本轮取证或改起始时刻/尺寸换分。证据本题run-001/{prep.json,output/resource-lease.json,output/run-status.json}；8/12交付，65待修、88未启动。
+
+
+- 2026-10-30 14:20 UTC：Order87本轮基线正式failed/reward0.8438601849044155/agent_done，6步361.342秒，原evaluator后置调用、三完整性true；自有owner4cab27803cce4bd4bb91473c2279a457容器空、controller退出/lease释放。step5原参start3/duration5/fps15，实际输出640×360/75帧4990ms，首帧与源3秒SSIM0.997246；原评分首帧灰度SSIM只读复算同分。参考640×386/3帧300ms，源及gold均匹配上游LFS SHA，0.1秒灰度抽样参考三帧最接近6.0/7.7/9.4秒，仅诊断不当逐帧真值。实际底层FFmpeg，setup启动GIMP不代表用GIMP处理；未完成题意应用要求，不把参考冲突当全题正确。未改题意/评分/参考/时长/尺寸，无新增补丁，独立/root/review_order87复核是否存在合规通用最小修复；8/12交付不变，88尚未启动。证据本题run-001/{diagnosis.json,upstream-content-verification.json,reference-frame-alignment-diagnostic.json,cleanup-verification.json}。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
