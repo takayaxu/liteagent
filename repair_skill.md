@@ -283,8 +283,8 @@ flowchart TD
 
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
-| 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；用户批准v5提示修改，human_review=false；run006因隐藏reader取消/unscored，v6恢复持续读取后run007仍deadline/null、44事件1944.017秒、三完整性true；Answer原6段/字节未变，试题2被追加2段错误内容。/root/review96终态独立复核未修好；候选3d64fd9隔离不集成，当前无新获批复跑方案，保持待修 |
-| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
+| 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；v8候选72305fc原条件run009正式deadline/null、46事件1968.265秒、三完整性true；typed真实29调用，40正确答案却选append_text_file，42/44/46写入检索缺接口后重复读取；四文件字节未改、Answer两处仍空，0done/evaluator未加载。/root/review96终态复核，保持待修、不集成、不盲跑第10轮 |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；原run001 deadline/null保留；最新活动fb668a2无补丁run002复跑中，human_review=false，原9B thinking/100步1800秒/原evaluator，独立guest，尚未评分 |
 | 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`repair-132-20261030-agent`；原基线run001 deadline/null；v1run002 deadline/null35事件1926.525秒；v2a26fb3c run003 deadline/null17事件1961.313秒，三完整性true。读取工具/大小写说明真实可见，但模型未读参考未写评分，候选隔离，终态独立复核无新通用最小方案，不盲跑，human_review=false |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
@@ -361,6 +361,16 @@ flowchart TD
 - 2026-10-30T13:09:44.429328+00:00：104-v6从当前活动a49bbd0组合v5与通用持续读取修复，未复制v1/v4；独立审核/root/review96方案及实际diff通过，39focused/Ruff/diff/bincheck、真实prefix15/17/23/26 reader false→true且state不变。run006经独立审核取消/unscored，exit143、29events，目标29快照同原SHA、三完整性true、自有容器/lease释放，非正式0分/PASS。新候选3d64fd990ff0e9c4f4fb82151a4e3cf8edd0c08f从run007/source干净detached同原config正式复跑；owner `lite-repair-e4096cab4dfa4832afd971319d4c3582`、slot[1]/5、shared兼容锁、独立guest；证据本题run007/output/{resource-lease.json,run-status.json}及review-v6.json，尚未集成。
 
 - 2026-10-30 13:43 UTC：104-v5通用提示已按用户批准实施，v6补读取能力经独立审核后正式run007自然deadline/rewardnull、44events1944.017秒，三完整性true、0propose_done、原evaluator未加载。真实request31含新提示和追加说明，但模型逐项b,a,a,a,d仍汇总baadd；31/43省略目标selector，原生回执均写入当前Grammer test2。32/36完整55字Answer空模板已见仍未纠正；43扩写填空/句子纠错并改错其他答案。最终只读after44文件：Answer原6段字节SHA未变，试题2原55段保留+2错误新增段变57，试题1/3字节未变；v6读取/续读成功只算局部能力恢复。/root/review96终态独立复核未修好104、不集成、不盲跑；候选3d64fd990ff0e9c4f4fb82151a4e3cf8edd0c08f保持隔离。自有controller/两观察器退出、精确owner容器清空、lease释放；其他65run011未触碰。证据 `/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-007/{artifact-validation.json,terminal-review.json,cleanup-verification.json,output/results/results.json}`。本队列计数不变，104仍待修。
+
+- 用户再次指定104、113、117、127、132修复并关闭人工审核，按序串行继续；117此前user-clarified PASS、127此前user-reference-assisted PASS按原已授权条件保留，后续核验交付及输入身份，不将其计作原题PASS。当前先104-v7；语义checker未获批、未实施，先补真实保存反馈，旧失败全部保留。
+
+- 2026-10-30T13:57:33.899259+00:00：104-v7原条件run008已启动，候选e2ea9cc5c6763080483fe7d23028f2c3e234b809；owner `lite-repair-d663d0875f11432ab4ffdd9b25473eca`、slot[1]/5、独立guest/写盘/端口、shared兼容锁、seal2b9cc87ff0f599044abc635589d9271802000d1fc71c1052d5d1cc246e7bbf9d。human_review=false，原模型预算任务/evaluator和config字节保持；无语义checker，仅真实保存反馈+已批v5/v6。运行证据 `/home/liuxv/liteagent-local-runs/repair-104-20261030-agent/run-008/output/{resource-lease.json,run-status.json}`，未集成。
+
+- 2026-10-30T14:33:00.542417+00:00：104-v8正式run009启动，候选72305fc7489d8db0026ffbec40d11ee5980c225d；多route使用公开owner typed参数约束、保留限制/fallback/controls，provider工具成员/schema/精确pair先校验后无损还原并原wrapper再次校验，无任务内容注入。独立审核/root/review96修正版方案/最终diff及run008终态通过，31atomic独立过、91相邻协议过（2旧GRF测试基线同失败），Ruff/diff/check过；neutral2/actual17同服务合法probe及候选surface逐字等，均不当PASS。run008保留deadline/null/24events1943.883秒、3integritytrue，Answer仅末尾错加babaa，三源原SHA不变，saved反馈在真实request24可见，其他候选不集成。新owner `lite-repair-8a8477f06c454c20a58513f62873c2b3`、slot[1]/5、sealb243f1a4a3ada920589c4b3831868df8145d5c061630b95506ee4b4aae0209bb、独立guest/shared兼容锁；原config/模型预算题目/evaluator不变，证据本题review-v8.json、run009/output/{resource-lease.json,run-status.json}。
+
+- 2026-10-30 15:06 UTC：104-v8 run009正式deadline/null，46events1968.265秒，source/config/OSWorld完整性true，0done、evaluator未加载；四文件初末SHA相同，原6段及两处空白未变。模型40组装baaad/aaaaa但错误使用append_text_file的DOCX来源，42/44/46检索写入返回缺文本修改接口，43/45重复读源；v8 typed29实际调用有效，response43长推理24879字无调用。/root/review96独立终态复核通过，不集成失败候选，无已验证新方案不盲跑第10轮；证据本题run009/{artifact-validation.json,terminal-review.json,cleanup-verification.json}，自有容器空/controller退出。
+
+- 2026-10-30T15:08:14.674830+00:00：按最新请求human_review=false继续113；活动fb668a24404fa5ad79dea0246aa415f1532b9449新detached run002无补丁复跑，原config/模型预算/任务评分不变，不带104失败候选。owner lite-repair-7866d480516d4d5683ad9acad76c1504、slot[1]/5、shared兼容锁、独立guest；seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711，证据本题run002/output/{resource-lease.json,run-status.json}。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
