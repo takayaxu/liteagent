@@ -338,7 +338,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v3方案及最终实际diff独立审核/root/review_order65通过，候选c8f9cc2已冻结，run004原条件正式复测中；明确硬拆段工具展示名、区分字符/段落边界回执并保留短预算信号，含v1流式循环保护及v2无变化替换拒绝。run001/002均deadline/null；run003主动取消/无评分，旧证据保留；均三完整性true。未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-004/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v3候选c8f9cc2 run004正式deadline/null，64events/1862.544秒，evaluator未加载、三完整性true，自有资源清理。after064保留12段10非空、0真Tab/11字面\t；新v4显式text/tab替换片段方案独立审核/root/review_order65通过，已实施待实际diff复审与正式复测。138focused通过/3基线旧oneOf失败；v1–v3及全部旧失败保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-004-diagnosis.json；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -405,6 +405,9 @@ flowchart TD
 - 2026-10-30 07:53 UTC：Order65-v2候选run003观察到step4原始模型选择paragraph.split拆首句，原生12→13段/10→11非空；step6只给左部尾插真实Tab、step9错误索引再split失败，未恢复同段布局。为诊断新错误，主代理SIGINT精确自有controller2317005主动取消，exit130，10events，无正式reward/evaluator产物，明确不称评分0/PASS；三完整性true、精确owner容器空/lease释放，自己的只读observer精确停止。证据run-003-cancellation-diagnosis.json。候选不集成；Order65-v3拟模型侧硬拆段工具名明确化＋回执区分字符保留/段落边界变化，交同一独立审核，尚未实施；7/12正式通过不变。
 
 - 2026-10-30 08:13 UTC：Order65-v3最终实际diff独立审核/root/review_order65通过；首次复审发现atomic名字截断、转发2000字符预算漏新信号，已按批准边界修正并重新审核。61focused通过，2旧oneOf失败在clean6104e78同样复现；Ruff/diff/check通过。候选c8f9cc2从含最新活动50e69bd的7f6bbdd冻结，run004/source干净detached、原run001配置逐字副本、原9Bthinking/100步1800秒/原任务及evaluator正式启动。owner/slot/guest/开始时间见run004/output/resource-lease.json和run-status.json；只读/file观察器不执行guest动作。7/12正式通过不变，65待结果，77未启动。
+
+
+- 2026-10-30 08:53 UTC：Order65-v3候选run004正式deadline/null，64events/1862.544秒，原evaluator前后未加载，三完整性true，自有owner000f2a2b36ac4579abd6f06584aba1b0容器空/lease释放/observer退出。保存after064正文12段10非空，0真Tab/11字面\t；逐段移除新增字面转义后等于输入；9段RIGHT165.1mm、漏原第6非空段格式，重复前缀原参首匹配再次改第4段、末段将字面转义加整句末尾。step4真实reasoning18句/1503字符周期×3触发v1保护并重试；不能声称整题修好。独立审核/root/review_order65批准限定Order65-v4：现有text.find_replace增加互斥typed text/tab替换数组，保留字符串路径和模型所有目标/字面选择，不隐式解码；不解决重复锚点/漏段/末尾插入。已在本题独立树实施，138focused通过、3旧oneOf在基点已证，Ruff/diff/check通过，待实际diff复审/有限只读生成探针后冻结新run005。活动ddf2fdd相对审核b8仅文档，运行源码等价。7/12正式通过不变，77未启动。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
