@@ -357,7 +357,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v7方案/7文件实际diff独立审核/root/review_order65通过，候选cbfb159新干净run008原条件正式复测中；owner917ea2e1d1144a9c99e5e42326ba0f1f、slot1，10:59:30UTC启动。scope反馈/替换说明，保留v1–v6；旧001–007证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-008/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v7候选cbfb159 run008正式failed0/agent_done，28events/847.836秒，三完整性true、资源清理。10非空段9有Tab、末段未改，Tab前token3/3/4/6/10/6/12/4/6/5；原词序保留。scope反馈实际可见，整篇分段counts被压缩丢失但错误replacement counts仍可见。V8仅紧凑保留已有indexed token counts表待同一审核，未实施；证据个人目录run-008-diagnosis.json；未集成，human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -450,6 +450,8 @@ flowchart TD
 - 2026-10-30 10:55 UTC：Order65-v7限定方案同一独立审核/root/review_order65通过，个人repair树实施7文件（含新测试）；仅明确find替换边界、所选与全正文Tab事实统计、原生返回索引scope及压缩保留，不能当全文/格式完整可见或完成判定。34新测试覆盖12/80段与局部/空页/空段/direct/forward/normal/recovery，164focused过/1基点旧oneOf；run007真实整篇/单段context_hint显式scope-overlay只读回放18过，不冒称历史字段/正式PASS。Ruff/diff/check过，稳定diff待同一复审、尚未冻结/复跑/集成；7/12通过不变，77未启动。证据个人目录v7-checks.json、v7-run007-readonly-replay.json。
 
 - 2026-10-30 10:59 UTC：Order65-v7稳定实际diff独立审核/root/review_order65通过（审阅SHAa7cbb084，独立172过/1基点旧oneOf，80索引2000/5000预算独立检查过）；合并最新活动后冻结cbfb159998856cf7da9a08c5c43f49913a38dd4f。新活动除文档外含他聊fd41cfd按用户要求追加Order117 PDF同basename题意，不回退该提交；已逐字核对Order65原题与全部evaluator无变化，整体OSWorld seal因此2556e56a（旧85c94bc3），不声称仅文档。run008新detached干净、原config逐字不变、原9Bthinking100步1800秒及65原评测；source seal339f7156，owner lite-repair-917ea2e1d1144a9c99e5e42326ba0f1f slot1/5，独立guest/写盘/端口与兼容shared。只读/file观察器，阶段正式复跑、结果待定，7/12通过不变、77未启动。证据v7-agent-review.json及run008/prep.json、output/resource-lease.json。
+
+- 2026-10-30 11:16 UTC：Order65-v7 run008正式failed/reward0/agent_done，28events/847.836秒，原evaluator后加载，三完整性true、自有owner917ea2e1d1144a9c99e5e42326ba0f1f容器空/lease释放。前两段3词正确，余已改7段4/6/10/6/12/4/6词，末段无Tab；10段RIGHT165.1，原12段/词序保留。step12重复改p1被原guard拒、后续多次默认只读p0；28错称10段indices0-8全部完成并接受。独立审核确认V7 scope保留，12段inspect及9段format的counts原有但实际压缩丢失；错误replacement-only counts持续可见，故不能把全错归因反馈缺失。V8仅新增通用紧凑indexed counts投影以保留该原生观察，待同一独立审核、未实施；不选固定词界/坐标/目标、不改完成门。65及28个evaluator与旧run逐字相同，117他聊题意变化单列。7/12通过不变、77未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
