@@ -327,7 +327,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v2方案/实际diff独立审核/root/review_order65通过，候选6104e78已冻结，新run003原配置/原模型预算正式复跑中、未集成；无变化替换写入前拒绝、加强tab语义说明，含v1循环保护。run001/002均deadline/null、三完整性true/evaluator未加载，失败保留；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/{baseline-diagnosis.json,run-002-diagnosis.json,run-003/output}；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v3方案及最终实际diff独立审核/root/review_order65通过，候选c8f9cc2已冻结，run004原条件正式复测中；明确硬拆段工具展示名、区分字符/段落边界回执并保留短预算信号，含v1流式循环保护及v2无变化替换拒绝。run001/002均deadline/null；run003主动取消/无评分，旧证据保留；均三完整性true。未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-004/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -390,6 +390,11 @@ flowchart TD
 - 2026-10-30 07:28 UTC：Order65-v1候选cc62b73 run002正式deadline/null，63事件1859.451秒，原evaluator未加载、三完整性true、自有资源及只读observer退出。lastsaved after63保留12段10非空/全部词序，仅2段真Tab/无字面\t，8段缺Tab；第1RIGHT100mm、其余9段RIGHT80mm而body165.1，10段均已设RIGHT。原参NOOP首次报success，重复同字替换持续耗预算；v1本轮未触发，不据此宣称改善。完整原始证据run002-diagnosis.json、output/results/results.json。候选不集成；Order65-v2（真实匹配无变化拒绝＋加强已有tab坐标解释）交同一独立审核，尚未实施，7/12通过不变。
 
 - 2026-10-30 07:43 UTC：Order65-v2及实际diff经同一独立审核/root/review_order65通过；真实匹配全部与replacement相同则写入前NO_TEXT_CHANGE，无赋值/保存，保留无匹配、首个/全部、大小写实际变化/混合、删除/CR等。制表位说明只加强已有语义，不选位置/参数。两相邻夹具同步只读预检，逆序写入及原生bulk断言保留；79focused通过，3旧oneOf结构失败在clean cc62同样复现（65pass/同3fail），Ruff/diff/check通过，直连/转发说明透传有效。候选6104e78（含v1，合并07bbef4仅台账）冻结，新run003/source干净detached/原run001配置逐字副本启动，原模型/100步1800秒/任务/evaluator不变；owner/slot/guest见本题run003/output资源/状态，独立只读/file观察不执行/保存guest。未集成，7/12通过，77未启动。
+
+- 2026-10-30 07:53 UTC：Order65-v2候选run003观察到step4原始模型选择paragraph.split拆首句，原生12→13段/10→11非空；step6只给左部尾插真实Tab、step9错误索引再split失败，未恢复同段布局。为诊断新错误，主代理SIGINT精确自有controller2317005主动取消，exit130，10events，无正式reward/evaluator产物，明确不称评分0/PASS；三完整性true、精确owner容器空/lease释放，自己的只读observer精确停止。证据run-003-cancellation-diagnosis.json。候选不集成；Order65-v3拟模型侧硬拆段工具名明确化＋回执区分字符保留/段落边界变化，交同一独立审核，尚未实施；7/12正式通过不变。
+
+- 2026-10-30 08:13 UTC：Order65-v3最终实际diff独立审核/root/review_order65通过；首次复审发现atomic名字截断、转发2000字符预算漏新信号，已按批准边界修正并重新审核。61focused通过，2旧oneOf失败在clean6104e78同样复现；Ruff/diff/check通过。候选c8f9cc2从含最新活动50e69bd的7f6bbdd冻结，run004/source干净detached、原run001配置逐字副本、原9Bthinking/100步1800秒/原任务及evaluator正式启动。owner/slot/guest/开始时间见run004/output/resource-lease.json和run-status.json；只读/file观察器不执行guest动作。7/12正式通过不变，65待结果，77未启动。
+
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
