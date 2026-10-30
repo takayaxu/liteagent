@@ -370,7 +370,7 @@ flowchart TD
 | --- | --- | --- |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 保留待修；V10候选69d647e原条件run011为deadline/null，21events/1863.887秒，evaluator未调用；三完整性true、资源已清理。同一独立审核/root/review_order65终审无新获批通用最小方案，禁止猜测性改动/同源码盲跑；全部65候选隔离未集成。六段正文重复、四段无Tab、多余LEFT25.4；策略/布局/完整词数已到模型。证据run-011-diagnosis.json及run-011/terminal-agent-review.json；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 保留待修；最新7575aa5无补丁run001正式failed/reward0.8438601849044155/agent_done，6步361.342秒，三完整性true/资源清理。源3秒起75帧4990ms，参考3帧300ms/640×386且上游LFS一致；原评分仅首帧SSIM。导出实际FFmpeg、无GIMP处理，业务缺口与参考冲突分列。同一独立/root/review_order87终审无新合规通用最小方案、不盲跑不改数据，允许串行88；无候选补丁。证据run-001/{diagnosis.json,terminal-agent-review.json}；human_review=false |
-| 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 本对话 /root认领；最新活动已提交源码独立干净无补丁基线准备，目录 /home/liuxv/liteagent-local-runs/repair-88-20261030-nohuman；保留65/87待修，不携带失败候选；human_review=false |
+| 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 本对话 /root；最新1ff16fc干净无补丁run001正式基线运行，source seal75fcc013，原9Bthinking/100步1800秒/任务evaluator；owner lite-repair-62fe83ac4da743fc8d72e9f4061468bf、slot[2]/5/shared兼容，独立guest/盘/端口。旧轨迹CSV内容与终端启动分别核验；目录 /home/liuxv/liteagent-local-runs/repair-88-20261030-nohuman/run-001/output；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
 
 历史诊断（截至run001；后续run002已正式PASS并交付，见下方已修复表）：第5题原始第3步将公式表达式以普通字符串写入已有公式单元格，第5/11步回读为 string、无公式，第12步完成门仍通过。失败运行 `c8349c4` 与基点间仅文档/报告变化，运行源码等价；正式失败有效，无需重复基线。v1经独立审核通过，在Calc写入前原子拒绝该歧义并保留显式公式/字符串路径。候选`8cebae8` run001运行完整性通过；第3步拒绝、第4步显式公式成功，显示及保存后读回正确，但原始evaluator因评分CSV缺失返回0；相同缺文件现象见原full189，未知转换失败原因。独立终态审核确认没有直接证据支持转换器通用修复；不重复盲测，候选不集成，Order5待修。
@@ -512,6 +512,9 @@ flowchart TD
 
 
 - 2026-10-30 14:21 UTC：Order87同一独立终审/root/review_order87核对正式产物、原评分逐字复算、上游SHA及实际FFmpeg回执，确认无新获批、可作用于原评分失败的通用最小方案；保留87待修，不集成/不改任务评分参考/不改起点尺寸/不盲跑。应用处理缺口与原评分首帧差异分别保留，不能称题意全部满足。按skill无新证据分支继续88，最新活动干净无补丁基线准备；当前8/12交付、65/87/88/93待修。终审证据87 run-001/terminal-agent-review.json。
+
+
+- 2026-10-30 14:23 UTC：Order88从最新1ff16fc干净detached源码无补丁run001基线启动；原默认config仅tasks换88身份，SHA312d78d8987d090bd33ca404f07f54a0f4aa86264db4fc7d9ba8e0391e4af037，原模型100步1800秒/任务/evaluator不变。owner lite-repair-62fe83ac4da743fc8d72e9f4061468bf、controller2662933、slot[2]/5/shared兼容，独立guest/写盘/端口；source seal75fcc013、OSWorld5fb8d864。原full189模型多次错误脚本/安装依赖后经CSV转换完成合并，step31启动Calc未选terminal=true而超时，回执已明确提示terminal开关；之后GUI导入及完成，需区分CSV与实际终端启动两项，不预设新方案。8/12交付、65/87保留待修，93未启动。证据本题run-001/{prep.json,output/resource-lease.json,output/run-status.json}。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
