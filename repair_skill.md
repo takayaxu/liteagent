@@ -308,11 +308,10 @@ flowchart TD
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
-用户指定顺序：5、8、11、12、27、28、63、65、77、87、88、93。按题号串行处理；独立子 agent 只读审核方案，替代人工审核。原始失败身份及证据以 `reports/20261030-dockerfix-full189/wrong-tasks.md` 为准，不以旧批次 PASS 销项。当前正式通过 5/12，待处理 7/12。
+用户指定顺序：5、8、11、12、27、28、63、65、77、87、88、93。按题号串行处理；独立子 agent 只读审核方案，替代人工审核。原始失败身份及证据以 `reports/20261030-dockerfix-full189/wrong-tasks.md` 为准，不以旧批次 PASS 销项。当前正式通过 6/12，待处理 6/12。
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 28 | `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 本对话 `/root`；当前34a51ba新detached无补丁基线run001已启动，原9B thinking/100步1800秒/evaluator；仅补source_order107身份，配置SHA4569cb255de5b693c4f23df9c59913701ace01b923d6e434c2881a328ebe4b72；目录 `/home/liuxv/liteagent-local-runs/repair-28-20261030-nohuman`，human_review=false，无28候选 |
 | 63 | `04578141-1d42-4146-b9cf-6fab4ce5fd74` | 待处理；human_review=false |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 待处理；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
@@ -334,6 +333,7 @@ flowchart TD
 | 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，8步360.231秒；base `33c935eeb561939ab3c5ea317eae249049568aef`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增11补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/final-artifact-validation.json)。44个周末全部红色，C33已补齐，0多涂、日期内容不变；源码及台账已在活动/远端，独立读回 `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127` |
 | 12 / `a01fbce3-2793-461f-ab86-43680ccbae25` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，6步227.349秒；base `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增12补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/final-artifact-validation.json)。38个数值/公式保持，原一位小数精度保留，逗号显示CSV与参考字节相同；源码及台账已在活动/远端，独立读回 `acb2e15076f03c67771dc417761be6e0b0a8c176` |
 | 27 / `3a7c8185-25c1-4941-bd7b-96e823c9f21f` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，23步1403.045秒；base `acb2e15076f03c67771dc417761be6e0b0a8c176`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增27补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/final-artifact-validation.json)。35记录排序后整表与参考相同，Retail Price保留，单折线单Quantity系列，X=A2:A36、Y=E2:E36；源码及台账已在活动/远端，独立读回 `34a51ba660fa3752b223c279f4386477d009a721` |
+| 28 / `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，33步1021.451秒；base `34a51ba660fa3752b223c279f4386477d009a721`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增28补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-28-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-28-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-28-20261030-nohuman/run-001/final-artifact-validation.json)。24行=A/B、数字格式两位小数、仅C20最大14.724字体绿色；原输入4浮点尾数规范化约1e-15，非模型编辑；源码已在活动/远端，台账待推送 |
 
 - 2026-10-30 03:59 UTC：用户追问Order5为何停止；已说明原歧义公式写成文字、候选公式修正及后续CSV缺失阻塞，恢复优先处理5。独立审核 `/root/review_order5` 重申允许对2142feb一次正式定向复跑；新run002源码已冻结准备，原任务/evaluator/预算不变，只读观察文件状态，不以诊断代替正式PASS。本聊天Order8旧候选run002仍运行，待终态/清理后串行启动5；8的v8改动保留，不集成未验证补丁。
 
@@ -358,6 +358,8 @@ flowchart TD
 - 2026-10-30 05:17 UTC：Order27当前源码无补丁run001正式PASS，三完整性true。首响应677.566秒耗尽8192输出且无调用，现有协议重试恢复；初次选对E数量列但row_headers=false，模型第6步replace=true自行纠正；门禁要求保存/表头/排序键读回，22整表读回后23完成。原full189排序数据已正确但选F折扣列并把日期作为数值系列；当前单折线准确绑定X日期A2:A36、Y数量E2:E36，无新增27补丁，不宣称首响应长生成已修复。自有owner容器空、lease释放；5/12通过7待修，28未启动。
 
 - 2026-10-30 05:19 UTC：Order27正式结果台账正常推送并独立读回34a51ba，5/12交付；启动Order28当前源码干净无补丁基线run001，配置仅补source_order107身份，原9B thinking/100步1800秒/原evaluator不变。owner/slot/guest/开始时间见本题run001/output/resource-lease.json、run-status.json；7题待修，63未启动。
+
+- 2026-10-30 05:39 UTC：Order28最新源码无补丁run001正式PASS，三完整性true。24行周期利率=A/B，避免原full189额外乘100；最大C20=14.724，唯一绿色字体，结果为数值公式/显式两位小数格式。反复颜色/格式读回后补最终保存并完成，33步1021.451秒；输入4数字被原生保存规范化尾数约1e-15，模型无源格编辑，不声称字节保留。运行期间活动仅文档前进至f0494c3，src/bin/configs/依赖范围与PASS基点完全一致。自有owner容器空、lease和只读observer退出；6/12通过6待修，63未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
