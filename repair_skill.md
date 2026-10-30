@@ -285,8 +285,8 @@ flowchart TD
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
-| 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 排队，未认领运行资源 |
-| 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 排队，未认领运行资源 |
+| 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
+| 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-127-20261030-agent`；最新bd0f9e3干净detached无补丁run001正式运行，human_review=false |
 | 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 排队，未认领运行资源 |
 | 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 排队，未认领运行资源 |
 
@@ -313,7 +313,13 @@ flowchart TD
 
 - 115组合694dcb6同一子agent审核通过，无需新方案；10focused/Ruff/diff/check过。新run003/source干净detached同字节原config正式复跑，预算模型/evaluator不变；当前owner/名额以run003/output/resource-lease.json为准，尚未集成。
 
-已修复：115 / 227d2f97-562b-4ccb-ae47-a5ec9e142fbb；115-agent-v1、human_review=false、独立审核/root/review96方案/实际diff/组合通过。原错误是GraphicURL空图也计数成功；通用预解码拒绝非法图、不自动转换、插入已加载Graphic并反馈解码证据。原候选6c39c8a run002正式PASS1.0/32步1350.933秒；最新组合694dcb69fa1254fa5e231eb581e4f9b5800b8e2c run003正式PASS1.0/agent_done/20步1146.076秒，三完整性true、原9B thinking/100步1800秒/evaluator；seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711。原/参考均恰1图1152×648RGBA，像素SHA9e822df044ccc516f85e15e3fb4a4c69326094004fd4670d1d934867582c20d1一致。已快进本地活动、待GitHub推送核验；[结果](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/final-integrity.json)、[产物](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/artifact-validation.json)。原run001失败保留，不改历史全量分数；117按序下一题。
+已修复：115 / 227d2f97-562b-4ccb-ae47-a5ec9e142fbb；115-agent-v1、human_review=false、独立审核/root/review96方案/实际diff/组合通过。原错误是GraphicURL空图也计数成功；通用预解码拒绝非法图、不自动转换、插入已加载Graphic并反馈解码证据。原候选6c39c8a run002正式PASS1.0/32步1350.933秒；最新组合694dcb69fa1254fa5e231eb581e4f9b5800b8e2c run003正式PASS1.0/agent_done/20步1146.076秒，三完整性true、原9B thinking/100步1800秒/evaluator；seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711。原/参考均恰1图1152×648RGBA，像素SHA9e822df044ccc516f85e15e3fb4a4c69326094004fd4670d1d934867582c20d1一致。已快进本地活动并交付GitHub，远端fcff0bc18bf5fc10c8ba650be9cfe42bfdb3c6d7已读回核验；[结果](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/output/final-integrity.json)、[产物](/home/liuxv/liteagent-local-runs/repair-115-20261030-agent/run-003/artifact-validation.json)。原run001失败保留，不改历史全量分数；117按序下一题。
+
+- 2026-10-30 06:43 UTC：115组合PASS已交付GitHub，远端fcff0bc读回；117从该最新源码干净detached无补丁启动，同原模型预算任务/evaluator、默认单题串行。owner/slot/guest以本题run001/output/{resource-lease.json,run-status.json}为准。2/8正式通过已交付，104/113待修无获批新方案，117运行、127/130/132未启动。
+
+- 117完整终态独立审核/root/review96无新通用最小方案；ZIP固定成员名评分与题意未指定PDF名的差异单列，不能硬编码参考命名。原正式0保留，DOCX字节保持且原PDF子比较通过不销项。证据本题run001/{artifact-validation.json,pdf-subcomparison.json,terminal-review.json}。按序127最新干净无补丁复跑。
+
+- 127 run001已从bd0f9e3新detached无补丁启动，原task/sourceorder253、原9B thinking/100步1800秒/evaluator；owner lite-repair-578b6e47ab2d414288e0507fe937ecf1，slots[2]/5、shared兼容锁及独立guest，seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711。原始崩溃已由96通用修复消除，但必须本题原evaluator验证；当前状态本题run001/output/{resource-lease.json,run-status.json}。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
