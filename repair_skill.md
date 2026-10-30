@@ -285,7 +285,7 @@ flowchart TD
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；v8候选72305fc原条件run009正式deadline/null、46事件1968.265秒、三完整性true；typed真实29调用，40正确答案却选append_text_file，42/44/46写入检索缺接口后重复读取；四文件字节未改、Answer两处仍空，0done/evaluator未加载。/root/review96终态复核，保持待修、不集成、不盲跑第10轮 |
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；v1run003正式failed0；v2候选61023c4 run004正式deadline/null42events2075.65秒，三完整性true，0done/evaluator未加载。25create/28及33两张16×5空表保存，30inspect/31原生copy16×5成功；38/39粘贴保存实际GIMP，最终price两空表160空格。/root/review96终态复核，候选隔离待修，不集成/不盲run005 |
-| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；原基线及v1/v2均deadline/null，候选未集成。v3定位Writer读取遗漏原生自动题号5/6/10及选项标签，最小补回ListLabelString并统一分页offset；真实原生/表格/分页/不改源文件检查通过，24定向测试通过。human_review=false，独立/root/review96复核实际diff后冻结原题run004，结果待定 |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；v3候选bd93271 run004正式deadline/null18事件1939.427秒、三完整性true，无完成申请/evaluator。原生题号及选项在真实模型请求完整恢复，但未找/读参考，长推理29613字length/no-call后只重读学生0，后续9285字至截止；9人成绩99格仍空，12输入文件只读快照均原字节。human_review=false，独立/root/review96终态复核，候选隔离不集成，不盲run005 |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
@@ -385,6 +385,8 @@ flowchart TD
 - 2026-10-30最新请求104/113/117/127/132，human_review=false持续：117同名PDF专用提示run002 PASS1.0，127用户参考图+专用提示run004 PASS1.0；当前6733f57与其集成fd41cfd/290b7af运行源码/bin/config/各自任务定义均无diff，保留既有正式PASS，不重复无改动复跑；两题原benchmark eligible=false，不算原题条件通过。证据 /home/liuxv/liteagent-local-runs/verified-prompt-117-127-20261030.json。132原基线b8c7434与当前运行源码/bin/config/依赖/132定义均相同，源seal75fcc0相同，不为文档/别题定义变化重复基线；已有v2run003仍deadline/null，10学生读全但未读参考未写成绩、case说明到达真实请求，末轮无新通用最小方案，待独立当前条件复核。证据本题current-source-equivalence.json。
 
 - 132-agent-v3：直接原生证据确认旧读取遗漏自动题号5/6/10与选项字母。补回实际ListLabelString、表内递归、统一含标签Unicode分页及公开说明；24定向测试/Ruff/diff/bincheck通过，真实原文+合成表内/分页/源和活跃编辑器未改验证通过。独立/root/review96实际diff审核批准，候选bd93271fd9d6446b8bbc8b9b3986bd7f8c5442c6从新run-004/source干净detached正式原题启动；human_review=false，原9B thinking/100步1800秒/任务/evaluator不变。owner lite-repair-2fddc4c8a84044ff805c9dedef4d1cf0，独立guest；未获PASS、未集成。证据 [方案/审核](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/review-v3-actualdiff.json)、[运行](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/output/run-status.json)。
+
+- 132-agent-v3/bd93271 run004原条件正式终态deadline/rewardnull，18事件1939.427秒、source/config/OSWorld完整性全true，0done/evaluator未加载。request16有10份完整题号/100答案，编号修复正式生效；response16另有David第7题C误抄D（其余99一致），response18把学生答案与标准混淆29613字length无call，恢复压缩request19有10markers/1Q6，18重读学生0后request20恢复110markers/11Q6、9285字至deadline，未读Reference/未写保存。第1人成绩及姓名学号保留，其余9人99格空；12输入文件所有只读磁盘快照均原字节、after18后无执行事件，不当作evaluator产物。自有owner容器为空/控制器退出；独立/root/review96终态复核确认全部结论，无新直接通用最小责任层依据；候选不集成、不盲run005。证据 [诊断](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/diagnosis.json)、[正式结果](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/output/results/results.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/artifact-validation.json)、[独立终态复核](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/terminal-review.json)。最新指定104/113/117/127/132中2题用户修改条件PASS已集成，3题原条件待修；全批历史原条件3/8及原全量139/189不改写，人工审核关闭、独立/root/review96审核。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
