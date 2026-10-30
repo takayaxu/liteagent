@@ -354,7 +354,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v6候选6c3dce2 run007正式failed0/agent_done，10events/1078.634秒，三完整性true、资源清理。仅首段1真Tab/RIGHT165.1，正文多46字符；其余9非空未改。v7仅加强replacement范围及selected/full-body观察scope，待同一独立审核，尚未实施；旧001–007证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-007-diagnosis.json；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v6候选6c3dce2 run007正式failed0/agent_done，10events/1078.634秒，三完整性true、资源清理。仅首段1真Tab/RIGHT165.1，正文多46字符；其余9非空未改。v7仅加强replacement范围及selected/full-body观察scope，方案获同一独立审核通过并实施；34新scope测试/18真实读回只读projection过，稳定diff复审中；旧001–007证据保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-007-diagnosis.json；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -443,6 +443,8 @@ flowchart TD
 - 2026-10-30 10:21 UTC：Order65-v6稳定实际diff独立审核/root/review_order65通过（审阅SHA9c2ab624，独立138过/1基点旧失败，scope/context34过）；合并纯文档2486f68后冻结6c3dce211212cf9c0c06ab2276f5f675d5a101be。run007新detached干净源码、原run001逐字config，source seal448be229、OSWorld85c94bc3；原9Bthinking/100步1800秒/原题及evaluator，独立guest/写盘/端口，owner lite-repair-f3b662ed69274530a6595eb27c2315de slot2/5、兼容shared锁。只读/file归档不执行guest动作；132他题独立运行不干扰。结果待定、7/12通过不变，77未启动。审核/检查证据个人目录v6-agent-review.json、v6-checks.json及run007/prep.json。
 
 - 2026-10-30 10:44 UTC：Order65-v6 run007原evaluator正式failed/reward0/agent_done，10events/1078.634秒（含慢初始化；已有部署重试恢复，未改环境），evaluator后加载，三完整性true、自有owner f3b662ed69274530a6595eb27c2315de容器空/lease释放/观察器退出。12段10非空保留，仅首段有1真Tab与RIGHT165.1；模型第5步短find却填完整后缀，原参/执行一致，首段60→106字，其余11段逐字不变。第6/7实际请求能看到重复全文；8仅paragraph0完成被最终读回拒、9只读paragraph0、10同样完成接受；原评分在第二非空段无Tab/首段词数7失败。不能将明确scope/正确坐标当整题修好，也不把模型决策称传输缺陷。v7反馈scope/替换语义假设已交同一独立审核，未实施；7/12通过不变，77未启动。
+
+- 2026-10-30 10:55 UTC：Order65-v7限定方案同一独立审核/root/review_order65通过，个人repair树实施7文件（含新测试）；仅明确find替换边界、所选与全正文Tab事实统计、原生返回索引scope及压缩保留，不能当全文/格式完整可见或完成判定。34新测试覆盖12/80段与局部/空页/空段/direct/forward/normal/recovery，164focused过/1基点旧oneOf；run007真实整篇/单段context_hint显式scope-overlay只读回放18过，不冒称历史字段/正式PASS。Ruff/diff/check过，稳定diff待同一复审、尚未冻结/复跑/集成；7/12通过不变，77未启动。证据个人目录v7-checks.json、v7-run007-readonly-replay.json。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
