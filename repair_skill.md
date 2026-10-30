@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8修正后实际diff经同一独立审核/root/review_order65通过，候选2adcc20冻结，run009原条件正式复跑中；仅完整native indexed counts紧凑表及预算保留，所有目标仍模型自选。run008正式failed0，历史完整证据保留；本轮未集成；证据个人目录run-009/output、v8-agent-review.json；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8候选2adcc20 run009正式failed0/agent_done，23events/1373.18秒，三完整性true/自有资源清理。10非空段均真Tab且stop正确，5段前三词正确、5段整句末Tab；完整12行counts实际到达final模型，模型仍以2+分段作完成依据。V9仅通用空Tab分段事实汇总/作用边界说明待同一独立审核，尚未实施；run-009-diagnosis.json留证；全部65候选未集成；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -464,6 +464,9 @@ flowchart TD
 
 
 - 2026-10-30 11:51 UTC：Order65-v8修正实际diff同一独立审核/root/review_order65明确通过（内容3f2b9b13；独立222过/1旧失败，相邻118过/35旧失败，集合与冻结基点相同）。合并最新活动a965bba后冻结2adcc206ab2ff5aef879526905ddb5973ab598c5，干净run009/source、原run001逐字config/9Bthinking100步1800秒/65原题及evaluator。source seal fac4839a，整体OSWorld seal5fb8d864（保留他聊Order127任务改动，65及全部evaluator不变）；owner lite-repair-5855d401e43c4614b20d890e61d482bd，slot1/5，11:50:39UTC，独立guest/写盘/端口与兼容shared锁。只读/file观察器不执行guest动作。7/12交付不变，77未启动；候选未集成。证据个人目录v8-agent-review.json、v8-checks.json、v8-activity-compatibility.json及run009/prep.json、output资源/状态。
+
+
+- 2026-10-30 12:16 UTC：Order65 run009正式failed0/agent_done，23events/1373.18秒，原evaluator仅agent结束后加载，三完整性true，owner5855d401容器空/lease释放/controller及observer退出。12原始段10非空、词序保留，全10均真Tab/RIGHT165.1，raw0/1/7/8/9前三词正确，2–6复制全句后加Tab，counts6/6/10/6/12且后段0。step9–13模型称afterfirst3但原参已错，工具未改字；step22完整12行counts进入实际final请求，23仍称2+columns已满足，故不归因V8缺观察。V9通用空分段事实汇总与Tab/格式语义澄清待同一独立审核，未实施/未重跑；不选第三词、不改完成门/原题/评分。7/12交付不变、77未启动；未集成65候选。证据本题run-009-diagnosis.json及run009/formal-result-summary.json、final-readback-actually-visible.json、cleanup-verification.json。台账f6b4ff2已正常推送且GitHub API独立读回确认。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
