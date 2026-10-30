@@ -100,6 +100,59 @@ def test_rejected_calls_neither_confirm_nor_invalidate_unchanged_observations(co
     assert [r["paragraph_index"] for r in result["unconfirmed_ranges"]] == [0, 2]
 
 
+@pytest.mark.parametrize("code", ["INVALID_REQUEST", "TEXT_NOT_FOUND", "VERIFICATION_FAILED"])
+@pytest.mark.parametrize("forwarded", [False, True])
+def test_failure_feedback_reaches_model_without_changing_events(code, forwarded):
+    error = {"status": "error", "error": {"code": code, "message": "operation rejected"}}
+    if forwarded:
+        error = {"status": "error", "error_code": "DOWNSTREAM_FAILED",
+                 "error": "downstream Adapter call failed",
+                 "details": {"adapter": "libreoffice_writer", "response": error}}
+    rejected = change(3, executed=False, error=error, forwarded=forwarded)
+    # Failed forwarded calls have no successful context_hint to decode.
+    rejected.result = None
+    state = RuntimeState(task_id="synthetic-rejected-writer-format",
+        domain="multi_apps" if forwarded else "libreoffice_writer",
+        instruction="Update the selected italic text size while preserving the body.",
+        events=[ExecutionEvent(timestamp_utc="2026-01-01T00:00:00Z", **vars(e))
+                for e in [query(forwarded=forwarded), change(forwarded=forwarded), rejected]])
+    before = deepcopy(state.events)
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused.invalid"),
+        adapter_executor=None, model_client=SimpleNamespace(client=None))
+    messages = agent._messages(state, b"synthetic-image")
+    summary = json.loads(messages[2]["content"][0]["text"].split("\n")[1])
+    progress = summary[0]["writer_format_progress"]
+    if code == "VERIFICATION_FAILED":
+        assert progress["status"] == "invalidated"
+        assert "matching_readback_count" not in progress
+    else:
+        assert progress["matching_readback_count"] == 1
+        assert progress["unconfirmed_count"] == 2
+    failure = next(item for item in summary if item.get("step") == 3)
+    assert failure["error"] == error
+    assert failure["executed"] is False
+    assert state.events == before
+
+
+@pytest.mark.parametrize("error", [
+    None, "failed", ["failed"], {"error": "failed"},
+    {"error": {"code": []}}, {"error": {"code": {}}},
+    {"error": "failed", "details": []},
+    {"error": "failed", "details": {"response": "failed"}},
+    {"error": "failed", "details": {"response": {"error": "failed"}}},
+    {"error": "failed", "details": {"response": {"error": {"code": []}}}},
+])
+def test_unknown_failure_shapes_conservatively_invalidate_readback(error):
+    rejected = change(3, executed=False, error=error, forwarded=True)
+    rejected.result = None
+    history = [query(forwarded=True), change(forwarded=True), rejected]
+    before = deepcopy([vars(e) for e in history])
+    progress = writer_format_progress(history, "multi_apps")
+    assert progress["status"] == "invalidated"
+    assert "matching_readback_count" not in progress
+    assert [vars(e) for e in history] == before
+
+
 @pytest.mark.parametrize("operation", ["text.find_replace", "paragraph.split", "paragraph.set_format"])
 def test_untracked_text_or_format_changes_invalidate_and_new_query_recovers(operation):
     mutation = event(3, operation, {}, {"identity": IDENTITY})

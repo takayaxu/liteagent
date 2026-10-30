@@ -75,9 +75,16 @@ def writer_format_progress(events: list[Any], domain: str) -> dict[str, Any] | N
             invalidate(event, "operation outside the observed Writer document")
             continue
         if not getattr(event, "executed", False):
-            error = getattr(event, "error", None) or {}
-            code = (error.get("error") or {}).get("code")
-            if code not in _REJECTS:
+            error = getattr(event, "error", None)
+            native_error = error.get("error") if isinstance(error, dict) else None
+            # Multi-Apps keeps its wrapper message in error.error and the
+            # native Adapter error in details.response.error.
+            if not isinstance(native_error, dict) and isinstance(error, dict):
+                details = error.get("details")
+                response = details.get("response") if isinstance(details, dict) else None
+                native_error = response.get("error") if isinstance(response, dict) else None
+            code = native_error.get("code") if isinstance(native_error, dict) else None
+            if not isinstance(code, str) or code not in _REJECTS:
                 invalidate(event, "failed operation may have partial effects")
             continue
         if not isinstance(hint, dict):
