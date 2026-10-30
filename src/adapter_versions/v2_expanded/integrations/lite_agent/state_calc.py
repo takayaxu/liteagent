@@ -31,10 +31,10 @@ from .completion_policy import (
     effective_canonical_action,
     required_mutation_actions as collect_required_mutation_actions,
 )
+from .calc_monthly_summary import source_monthly_totals, validate_monthly_totals
 
 
 from .instruction_semantics import (
-    MONTH_TOKENS,
     requested_files,
     requested_audio_path,
     requested_ordered_image_slides,
@@ -580,196 +580,150 @@ class CalcStateMixin:
             return None
         return requested_monthly_column_totals_summary(self.instruction)
 
-    def monthly_column_totals_source_read(self) -> ExecutionEvent | None:
-        request = self.monthly_column_totals_request()
-        used_range = self.latest_workbook_used_range()
-        if request is None or used_range is None:
-            return None
-        source_sheet, source_range = used_range
-        if source_sheet == request["target_sheet"]:
-            return None
-        return next(
-            (
-                event
-                for event in self.successful_action_events("range.read")
-                if event.proposed.get("arguments")
-                == {"sheet": source_sheet, "range": source_range}
-            ),
-            None,
-        )
-
-    def monthly_column_totals_plan(self) -> dict[str, Any] | None:
-        request = self.monthly_column_totals_request()
-        source_event = self.monthly_column_totals_source_read()
-        if request is None or source_event is None:
-            return None
-        arguments = source_event.proposed.get("arguments", {})
-        source_sheet = str(arguments.get("sheet", ""))
-        source_range = str(arguments.get("range", ""))
-        geometry = a1_geometry(source_range)
-        rows = display_rows(source_event.result)
-        if geometry is None or not rows:
-            return None
-        header_index = None
-        month_columns: list[tuple[str, int]] = []
-        for row_index, row in enumerate(rows):
-            candidates = [
-                (str(value).strip(), column_index)
-                for column_index, value in enumerate(row)
-                if str(value).strip().casefold() in MONTH_TOKENS
-            ]
-            if len(candidates) >= 2:
-                header_index = row_index
-                month_columns = candidates
-                break
-        if header_index is None or not month_columns:
-            return None
-        data_start_row = geometry[1] + header_index + 1
-        data_end_row = geometry[3]
-        if data_start_row > data_end_row:
-            return None
-        source_start_column = column_number(geometry[0])
-        sheet_reference = calc_formula_sheet_reference(source_sheet)
-        formulas = [
-            f"=SUM({sheet_reference}.{column_label(source_start_column + column_index)}"
-            f"{data_start_row}:{column_label(source_start_column + column_index)}{data_end_row})"
-            for _month, column_index in month_columns
-        ]
-        values = [
-            [
-                {"kind": "string", "value": request["output_headers"][0]},
-                {"kind": "string", "value": request["output_headers"][1]},
-            ],
-            *[
-                [
-                    {"kind": "string", "value": month},
-                    {"kind": "formula", "value": formula},
-                ]
-                for (month, _column_index), formula in zip(
-                    month_columns, formulas, strict=True
-                )
-            ],
-        ]
-        target_range = f"A1:B{len(values)}"
-        return {
-            **request,
-            "source_sheet": source_sheet,
-            "source_range": source_range,
-            "months": [month for month, _column_index in month_columns],
-            "formulas": formulas,
-            "target_range": target_range,
-            "write_arguments": {
-                "sheet": request["target_sheet"],
-                "range": target_range,
-                "values": values,
-            },
-        }
-
-    def monthly_column_totals_target_created(self) -> bool:
-        request = self.monthly_column_totals_request()
-        return bool(
-            request
-            and any(
-                event.proposed.get("arguments") == {"name": request["target_sheet"]}
-                for event in self.successful_action_events("sheet.create")
-            )
-        )
-
-    def monthly_column_totals_mutations_satisfied(self) -> bool:
-        plan = self.monthly_column_totals_plan()
-        return bool(
-            plan
-            and self.monthly_column_totals_target_created()
-            and any(
-                event.proposed.get("arguments") == plan["write_arguments"]
-                for event in self.successful_action_events("range.write")
-            )
-        )
-
-    def next_monthly_column_totals_action(self) -> dict[str, Any] | None:
+    def monthly_column_totals_validation_error(self) -> str | None:
         request = self.monthly_column_totals_request()
         if request is None:
             return None
-        if not self.successful_action_events("workbook.inspect"):
-            return {"action": "workbook.inspect", "arguments": {}}
-        used_range = self.latest_workbook_used_range()
-        if self.monthly_column_totals_source_read() is None:
-            if used_range is None:
-                return None
-            return {
-                "action": "range.read",
-                "arguments": {"sheet": used_range[0], "range": used_range[1]},
-            }
-        plan = self.monthly_column_totals_plan()
-        if plan is None:
-            return None
-        if not self.monthly_column_totals_target_created():
-            return {
-                "action": "sheet.create",
-                "arguments": {"name": plan["target_sheet"]},
-            }
-        if not any(
-            event.proposed.get("arguments") == plan["write_arguments"]
-            for event in self.successful_action_events("range.write")
-        ):
-            return {"action": "range.write", "arguments": plan["write_arguments"]}
-        mutations = [
-            *self.successful_action_events("sheet.create"),
-            *self.successful_action_events("range.write"),
-        ]
-        last_mutation_step = max(event.step for event in mutations)
-        saves = [
-            event
-            for event in self.successful_action_events("workbook.save")
-            if event.step > last_mutation_step
-        ]
-        if not saves:
-            return {"action": "workbook.save", "arguments": {}}
-        read_arguments = {
-            "sheet": plan["target_sheet"],
-            "range": plan["target_range"],
-        }
-        if not any(
-            event.step > saves[-1].step
-            and event.proposed.get("arguments") == read_arguments
-            for event in self.successful_action_events("range.read")
-        ):
-            return {"action": "range.read", "arguments": read_arguments}
-        return None
-
-    def monthly_column_totals_readback_satisfied(self) -> bool:
-        plan = self.monthly_column_totals_plan()
-        if plan is None or not self.monthly_column_totals_mutations_satisfied():
-            return False
+        inspections = self.successful_action_events("workbook.inspect")
+        if not inspections:
+            return "inspect the initial workbook before creating the requested table"
+        initial_sheets = next(
+            (
+                mapping.get("sheets")
+                for mapping in self._result_mappings(inspections[0].result)
+                if isinstance(mapping.get("sheets"), list)
+            ),
+            None,
+        )
+        if not isinstance(initial_sheets, list) or not initial_sheets:
+            return "the initial workbook sheet inventory is unavailable"
+        initial_names: set[str] = set()
+        source_candidates: list[tuple[str, str, Any, ExecutionEvent]] = []
+        for sheet in initial_sheets:
+            if not isinstance(sheet, dict):
+                continue
+            name = sheet.get("name")
+            used = sheet.get("used_range_a1")
+            if not isinstance(name, str) or not name:
+                continue
+            initial_names.add(name.casefold())
+            if name.casefold() == request["target_sheet"].casefold():
+                continue
+            if not isinstance(used, str) or not used:
+                return f"the original used range for {name} is unavailable"
+            matching_reads = [
+                event
+                for event in self.successful_action_events("range.read")
+                if event.proposed.get("arguments") == {"sheet": name, "range": used}
+            ]
+            read = matching_reads[-1] if matching_reads else None
+            if read is None:
+                return f"read the complete original used range on {name}"
+            last_source_mutation = max(
+                (
+                    event.step
+                    for event in self.events
+                    if event.executed
+                    and event.proposed.get("kind") == "adapter"
+                    and event.proposed.get("action")
+                    not in {"range.read", "workbook.inspect", "workbook.save"}
+                    and isinstance(event.proposed.get("arguments"), dict)
+                    and event.proposed["arguments"].get("sheet") == name
+                ),
+                default=0,
+            )
+            if read.step <= last_source_mutation:
+                return f"re-read {name} after its latest modification"
+            months, totals, error = source_monthly_totals(name, used, read.result)
+            if months:
+                if error:
+                    return error
+                source_candidates.append((name, used, read.result, read))
+        if len(source_candidates) != 1:
+            return "the source worksheet is not unique from the observed monthly tables"
+        source_sheet, source_range, source_result, source_read = source_candidates[0]
+        if request["target_sheet"].casefold() in initial_names:
+            return "the requested output worksheet already existed before this task"
         saves = self.successful_action_events("workbook.save")
         if not saves:
-            return False
-        expected_rows = [
-            plan["output_headers"],
-            *[
-                [month, formula]
-                for month, formula in zip(plan["months"], plan["formulas"], strict=True)
-            ],
-        ]
-        for event in reversed(self.successful_action_events("range.read")):
-            if event.step <= saves[-1].step or event.proposed.get("arguments") != {
-                "sheet": plan["target_sheet"],
-                "range": plan["target_range"],
-            }:
-                continue
-            rows = display_rows(event.result)
-            formulas = matrix_field(event.result, "formulas")
-            if len(rows) != len(expected_rows) or len(formulas) != len(expected_rows):
-                return False
-            if (
-                rows[0] != plan["output_headers"]
-                or [row[0] for row in rows[1:]] != plan["months"]
-            ):
-                return False
-            return [normalized_calc_formula(row[1]) for row in formulas[1:]] == [
-                normalized_calc_formula(formula) for formula in plan["formulas"]
-            ]
-        return False
+            return "save the completed monthly totals table before read-back"
+        last_target_mutation = max(
+            (
+                event.step
+                for event in self.events
+                if event.executed
+                and event.proposed.get("kind") == "adapter"
+                and event.proposed.get("action")
+                not in {"range.read", "workbook.inspect", "workbook.save"}
+                and isinstance(event.proposed.get("arguments"), dict)
+                and event.proposed["arguments"].get("sheet") == request["target_sheet"]
+            ),
+            default=0,
+        )
+        last_source_mutation = max(
+            (
+                event.step
+                for event in self.events
+                if event.executed
+                and event.proposed.get("kind") == "adapter"
+                and event.proposed.get("action")
+                not in {"range.read", "workbook.inspect", "workbook.save"}
+                and isinstance(event.proposed.get("arguments"), dict)
+                and event.proposed["arguments"].get("sheet") == source_sheet
+            ),
+            default=0,
+        )
+        if source_read.step <= last_source_mutation:
+            return f"re-read {source_sheet} after its latest modification"
+        if saves[-1].step <= max(last_target_mutation, last_source_mutation):
+            return "save after the latest source or target table modification"
+        latest_sheets = next(
+            (
+                mapping.get("sheets")
+                for mapping in self._result_mappings(inspections[-1].result)
+                if isinstance(mapping.get("sheets"), list)
+            ),
+            None,
+        )
+        target_info = next(
+            (
+                sheet
+                for sheet in latest_sheets or []
+                if isinstance(sheet, dict)
+                and str(sheet.get("name", "")).casefold() == request["target_sheet"].casefold()
+            ),
+            None,
+        )
+        target_range = target_info.get("used_range_a1") if isinstance(target_info, dict) else None
+        if not isinstance(target_range, str) or not target_range:
+            return "inspect the new worksheet's complete used range after saving"
+        latest_inspection_step = inspections[-1].step
+        if latest_inspection_step <= max(last_target_mutation, last_source_mutation, saves[-1].step):
+            return "inspect the workbook after the latest table modification and save"
+        target_read = next(
+            (
+                event
+                for event in reversed(self.successful_action_events("range.read"))
+                if event.step > max(saves[-1].step, latest_inspection_step, last_target_mutation)
+                and event.proposed.get("arguments")
+                == {"sheet": request["target_sheet"], "range": target_range}
+            ),
+            None,
+        )
+        if target_read is None:
+            return "read back the new worksheet's complete used range after saving"
+        return validate_monthly_totals(
+            source_sheet=source_sheet,
+            source_range=source_range,
+            source_result=source_result,
+            target_headers=request["output_headers"],
+            target_range=target_range,
+            comparison_precision=4,
+            target_result=target_read.result,
+        )
+
+    def monthly_column_totals_readback_satisfied(self) -> bool:
+        return self.monthly_column_totals_validation_error() is None
 
     def scaled_number_display_request(self) -> dict[str, Any] | None:
         if self.domain != "libreoffice_calc":

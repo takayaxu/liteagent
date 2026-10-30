@@ -151,6 +151,15 @@ def _calc_errors(state: Any) -> list[str]:
     instruction = str(state.instruction)
     errors: list[str] = list(calc_semantics.sort_completion_missing(state))
 
+    monthly_request = state.monthly_column_totals_request()
+    if monthly_request is not None:
+        monthly_error = state.monthly_column_totals_validation_error()
+        if monthly_error:
+            errors.append(
+                "monthly totals table lacks complete, current source and target evidence: "
+                + monthly_error
+            )
+
     missing_scaled_outputs = [] if scaled_display_contract(instruction) else missing_scaled_display_outputs(
         instruction,
         _arguments(state, "range.set_scaled_display"),

@@ -385,22 +385,10 @@ class CompletionMixin:
                 )
         monthly_totals_request = state.monthly_column_totals_request()
         if monthly_totals_request is not None:
-            monthly_totals_plan = state.monthly_column_totals_plan()
-            if monthly_totals_plan is None:
+            error = state.monthly_column_totals_validation_error()
+            if error:
                 missing.append(
-                    "inspect and read the complete source table so every observed month column and "
-                    "its data-row bounds can be resolved"
-                )
-            elif not state.monthly_column_totals_mutations_satisfied():
-                next_step = state.next_monthly_column_totals_action()
-                missing.append(
-                    "complete the instruction-derived monthly totals table with exact headers, "
-                    f"month labels, and full-column SUM formulas; next step is {next_step}"
-                )
-            elif not state.monthly_column_totals_readback_satisfied():
-                missing.append(
-                    "save and read back the complete monthly totals table; verify every observed "
-                    "month label and source-range-derived SUM formula"
+                    "read-back does not yet prove a complete monthly totals table: " + error
                 )
         if requests_appended_named_rows(state.instruction):
             written_labels = state.written_row_labels()

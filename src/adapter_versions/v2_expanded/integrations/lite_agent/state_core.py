@@ -1463,8 +1463,6 @@ class RuntimeStateCoreMixin:
             return False
         if self.annual_percentage_change_request() is not None:
             return self.annual_percentage_change_mutations_satisfied()
-        if self.monthly_column_totals_request() is not None:
-            return self.monthly_column_totals_mutations_satisfied()
         if requested_sheet_copy_lifecycle(self.instruction) is not None:
             return self.sheet_copy_lifecycle_mutations_satisfied()
         if requested_slide_title_formatting(self.instruction) is not None:

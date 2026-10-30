@@ -581,7 +581,6 @@ class ExecutionEngineMixin:
                 merged_text_step = state.next_merged_text_action()
                 sheet_lifecycle_step = state.next_sheet_copy_lifecycle_action()
                 annual_change_step = state.next_annual_percentage_change_action()
-                monthly_totals_step = state.next_monthly_column_totals_action()
                 scaled_display_step = state.next_scaled_number_display_action()
                 labeled_concatenation_step = state.next_labeled_concatenation_action()
                 period_rate_step = state.next_period_rate_action()
@@ -601,7 +600,6 @@ class ExecutionEngineMixin:
                 content_format_step = state.next_slide_content_format_action()
                 calc_summary_step = (
                     annual_change_step
-                    or monthly_totals_step
                     or scaled_display_step
                     or labeled_concatenation_step
                     or period_rate_step
@@ -609,7 +607,6 @@ class ExecutionEngineMixin:
                 merged_text_step = None
                 sheet_lifecycle_step = None
                 annual_change_step = None
-                monthly_totals_step = None
                 scaled_display_step = None
                 labeled_concatenation_step = None
                 period_rate_step = None

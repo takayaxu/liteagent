@@ -1629,7 +1629,13 @@ def instruction_required_actions(
         instruction
     ):
         actions.extend(
-            ["workbook.inspect", "range.read", "sheet.create", "range.write"]
+            [
+                "workbook.inspect",
+                "range.read",
+                "sheet.create",
+                "range.write",
+                "cells.set_formulas",
+            ]
         )
     if domain == "libreoffice_calc" and requested_scaled_number_displays(instruction):
         actions.extend(

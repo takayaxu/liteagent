@@ -303,29 +303,6 @@ class ActionSelectionMixin:
                     f"annual percentage-change action must match the next instruction- and source-table-derived step: {annual_step!r}"
                 )
             return
-        monthly_totals_step = state.next_monthly_column_totals_action()
-        if (
-            state.monthly_column_totals_request() is not None
-            and monthly_totals_step is not None
-            and (
-                action
-                in {
-                    "workbook.inspect",
-                    "range.read",
-                    "sheet.create",
-                    "range.write",
-                    "workbook.save",
-                }
-            )
-        ):
-            if (
-                monthly_totals_step["action"] != action
-                or monthly_totals_step["arguments"] != arguments
-            ):
-                raise ValueError(
-                    f"monthly column-totals action must match the next instruction- and source-table-derived step: {monthly_totals_step!r}"
-                )
-            return
         sheet_lifecycle = requested_sheet_copy_lifecycle(state.instruction)
         if sheet_lifecycle is not None and action in {"sheet.rename", "sheet.copy"}:
             expected = state.next_sheet_copy_lifecycle_action()

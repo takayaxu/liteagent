@@ -67,6 +67,10 @@ def _semantic_mutation_actions(
         if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction)
         else set()
     )
+    if state.domain == "libreoffice_calc" and getattr(
+        state, "monthly_column_totals_request", lambda: None
+    )():
+        outcome_actions |= {"sheet.create", "range.write", "cells.set_formulas"}
     if calculation_request(state):
         outcome_actions |= {"range.write", "cells.set_formulas", "range.format"}
     return {
@@ -85,6 +89,10 @@ def _observed_mutation_actions(state: Any) -> set[str]:
 
 def _outcome_mutation_actions(state: Any) -> set[str]:
     """Recognize legal implementations as mutations without requiring each one."""
+    if state.domain == "libreoffice_calc" and getattr(
+        state, "monthly_column_totals_request", lambda: None
+    )():
+        return {"sheet.create", "range.write", "cells.set_formulas"}
     if calculation_request(state):
         return {"range.write", "cells.set_formulas", "range.format"}
     if state.domain == "libreoffice_calc" and scaled_display_contract(state.instruction):
