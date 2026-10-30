@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8候选2adcc20 run009正式failed0/agent_done，23events/1373.18秒，三完整性true/自有资源清理。10非空段均真Tab且stop正确，5段前三词正确、5段整句末Tab；完整12行counts实际到达final模型，模型仍以2+分段作完成依据。V9仅通用空Tab分段事实汇总/作用边界说明待同一独立审核，尚未实施；run-009-diagnosis.json留证；全部65候选未集成；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8候选2adcc20 run009正式failed0/agent_done，23events/1373.18秒，三完整性true/自有资源清理。10非空段均真Tab且stop正确，5段前三词正确、5段整句末Tab；完整12行counts实际到达final模型，模型仍以2+分段作完成依据。V9限定方案经同一独立审核通过，已实施通用空Tab分段事实汇总/作用边界说明，实际8文件diff复审中；run-009-diagnosis.json留证；全部65候选未集成；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -467,6 +467,9 @@ flowchart TD
 
 
 - 2026-10-30 12:16 UTC：Order65 run009正式failed0/agent_done，23events/1373.18秒，原evaluator仅agent结束后加载，三完整性true，owner5855d401容器空/lease释放/controller及observer退出。12原始段10非空、词序保留，全10均真Tab/RIGHT165.1，raw0/1/7/8/9前三词正确，2–6复制全句后加Tab，counts6/6/10/6/12且后段0。step9–13模型称afterfirst3但原参已错，工具未改字；step22完整12行counts进入实际final请求，23仍称2+columns已满足，故不归因V8缺观察。V9通用空分段事实汇总与Tab/格式语义澄清待同一独立审核，未实施/未重跑；不选第三词、不改完成门/原题/评分。7/12交付不变、77未启动；未集成65候选。证据本题run-009-diagnosis.json及run009/formal-result-summary.json、final-readback-actually-visible.json、cleanup-verification.json。台账f6b4ff2已正常推送且GitHub API独立读回确认。
+
+
+- 2026-10-30 12:27 UTC：Order65-v9限定方案同一独立审核/root/review_order65通过后实施8文件，纯native可用行空Tab分段事实汇总及replacement-only反馈、制表位不移动字符/不选词界说明；无参数/worker/完成门/任务/evaluator改动，不拒合法末尾Tab。142focused过含24新用例，相邻117过/27旧失败集合不变；run009实际事件1/7/22通过36组显式overlay只读回放，12/10/12计数行均留，final12可用/10Tab/5含零token分段/5均非零；5000正文427字，2000正文60字且partial，身份/scope/分页保留。strict description override及既有signature同步，实际direct/forward说明可见；Ruff8文件/diff/bin-check过。稳定diff待同一独立复审，未冻结run010/未集成。证据个人目录v9-checks.json、v9-run009-readonly-replay.json、v9-description-surface.json。7/12交付不变，77未启动。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
