@@ -704,7 +704,7 @@ class CalcStateMixin:
             (
                 event
                 for event in reversed(self.successful_action_events("range.read"))
-                if event.step > max(saves[-1].step, latest_inspection_step, last_target_mutation)
+                if event.step > max(saves[-1].step, last_target_mutation)
                 and event.proposed.get("arguments")
                 == {"sheet": request["target_sheet"], "range": target_range}
             ),

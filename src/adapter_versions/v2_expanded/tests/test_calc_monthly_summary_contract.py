@@ -253,6 +253,28 @@ def test_actual_strict_gate_accepts_non_a1_layout_with_blank_format_extension() 
     assert _strict_gate(_completed_state())["passed"]
 
 
+def test_final_inspect_after_fresh_full_read_does_not_invalidate_the_read() -> None:
+    state = _completed_state()
+    state.events.append(_event(8, "workbook.inspect", {}, state.events[-2].result["context_hint"]))
+    assert _strict_gate(state)["passed"]
+
+
+def test_final_inspect_preserves_rejection_of_overflow_and_wrong_totals() -> None:
+    for field in ("overflow", "wrong_total"):
+        state = _completed_state()
+        target = state.events[-1].result["context_hint"]
+        if field == "overflow":
+            target["values"][1][5] = 50
+            target["display_text"][1][5] = "50"
+            target["formulas"][1][5] = "=SUM(Sales.B2:B3)"
+            target["kinds"][1][5] = "formula"
+        else:
+            target["values"][3][3] = 19
+            target["display_text"][3][3] = "19"
+        state.events.append(_event(8, "workbook.inspect", {}, state.events[-2].result["context_hint"]))
+        assert not _strict_gate(state)["passed"]
+
+
 def test_actual_strict_gate_rejects_extra_formulas_like_original_failed_trajectory() -> None:
     state = _completed_state()
     target = state.events[-1].result["context_hint"]
