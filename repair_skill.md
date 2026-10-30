@@ -284,7 +284,7 @@ flowchart TD
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；v8候选72305fc原条件run009正式deadline/null、46事件1968.265秒、三完整性true；typed真实29调用，40正确答案却选append_text_file，42/44/46写入检索缺接口后重复读取；四文件字节未改、Answer两处仍空，0done/evaluator未加载。/root/review96终态复核，保持待修、不集成、不盲跑第10轮 |
-| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；原run001 deadline/null保留；最新活动fb668a2无补丁run002复跑中，human_review=false，原9B thinking/100步1800秒/原evaluator，独立guest，尚未评分 |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；fb668a2无补丁run002正式deadline/null、19events2334.413秒、完整性true、0done/evaluator未加载；模型漏抄行列/clipboard误用，step18 PDF导出覆盖price.docx。113-v1写前PDF后缀/来源alias保护+clipboard纯文本说明经/root/review96方案通过，隔离实施/实际diff经独立审核通过，候选68cd99d原条件run003复跑中，尚未通过/集成 |
 | 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`repair-132-20261030-agent`；原基线run001 deadline/null；v1run002 deadline/null35事件1926.525秒；v2a26fb3c run003 deadline/null17事件1961.313秒，三完整性true。读取工具/大小写说明真实可见，但模型未读参考未写评分，候选隔离，终态独立复核无新通用最小方案，不盲跑，human_review=false |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
@@ -371,6 +371,10 @@ flowchart TD
 - 2026-10-30 15:06 UTC：104-v8 run009正式deadline/null，46events1968.265秒，source/config/OSWorld完整性true，0done、evaluator未加载；四文件初末SHA相同，原6段及两处空白未变。模型40组装baaad/aaaaa但错误使用append_text_file的DOCX来源，42/44/46检索写入返回缺文本修改接口，43/45重复读源；v8 typed29实际调用有效，response43长推理24879字无调用。/root/review96独立终态复核通过，不集成失败候选，无已验证新方案不盲跑第10轮；证据本题run009/{artifact-validation.json,terminal-review.json,cleanup-verification.json}，自有容器空/controller退出。
 
 - 2026-10-30T15:08:14.674830+00:00：按最新请求human_review=false继续113；活动fb668a24404fa5ad79dea0246aa415f1532b9449新detached run002无补丁复跑，原config/模型预算/任务评分不变，不带104失败候选。owner lite-repair-7866d480516d4d5683ad9acad76c1504、slot[1]/5、shared兼容锁、独立guest；seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711，证据本题run002/output/{resource-lease.json,run-status.json}。
+
+- 2026-10-30 15:48 UTC：113 run002终态deadline/null19events2334.413秒，完整性三true、0done/evaluator未加载；源xlsx字节不变，price4214ZIP→1174PDF发生于step18 export_pdf(path=price.docx)，之前仅空段无表。模型step12另漏首列/15000行等，工具不改字，PDF修复不保证表格。v1原path不改名、大小写.pdf schema/validation、sharedworker写前suffix/sourcealias保护，保留same_basename、clipboard仅manifest澄清；/root/review96方案通过，38focused过+2旧oneOf失败基线复现、Ruff/diff/check过，同服务最终schema有效调用41.093秒，实际diff待审，未集成。原生clipboard合成诊断仅table/currency/bold成功、背景不保留，不作为PASS；两个probe自有guest均清理。证据本题run002/{artifact-validation.json,terminal-review.json,cleanup-verification.json}及review-v1.json、candidate-checks.json、pdf-schema-feasibility/result.json。
+
+- 2026-10-30T15:56:27.599617+00:00：113-v1候选68cd99d3b6dbc4d42034071500d08299b0c21150独立实际diff通过，9新增focused审核者独立全过，最终schema同服务probe有效41.093秒，38相邻检查通过及旧2oneOf失败基线复现。新run003/source干净detached、原字节config/任务模型预算evaluator不变；owner lite-repair-242ae239622f4b3f9cb1c70aef936536、slot[1]/5、独立guest/shared兼容锁，seal049f21de3f7086ff7e45f2c6c81027055aa72ec945568ef6a4609ea070c8b56e，证据review-v1-actualdiff.json及run003/output/{resource-lease.json,run-status.json}；未集成。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
