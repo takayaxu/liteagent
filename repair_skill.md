@@ -286,8 +286,8 @@ flowchart TD
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
-| 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-127-20261030-agent`；最新bd0f9e3干净detached无补丁run001正式运行，human_review=false |
-| 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 排队，未认领运行资源 |
+| 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；12f1baa run002正式failed0/19步1859.136秒、三完整性true；检索修复真实生效，保存附件/首图/背景链正确但原首图印章、Gold山景（不在三图）；上游tar/Gold LFS哈希同本地。独立审核无新工具方案，候选隔离、仍待修 |
+| 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-130-20261030-agent`；最新12df49c新detached无补丁run001运行，human_review=false |
 | 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 排队，未认领运行资源 |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
@@ -320,6 +320,14 @@ flowchart TD
 - 117完整终态独立审核/root/review96无新通用最小方案；ZIP固定成员名评分与题意未指定PDF名的差异单列，不能硬编码参考命名。原正式0保留，DOCX字节保持且原PDF子比较通过不销项。证据本题run001/{artifact-validation.json,pdf-subcomparison.json,terminal-review.json}。按序127最新干净无补丁复跑。
 
 - 127 run001已从bd0f9e3新detached无补丁启动，原task/sourceorder253、原9B thinking/100步1800秒/evaluator；owner lite-repair-578b6e47ab2d414288e0507fe937ecf1，slots[2]/5、shared兼容锁及独立guest，seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711。原始崩溃已由96通用修复消除，但必须本题原evaluator验证；当前状态本题run001/output/{resource-lease.json,run-status.json}。
+
+- 127 run001早期35k重复reasoning达到length无tool，不归网络；后期真实4/6/13/14/16附件查询均漏已有save，推翻只适用早期前缀的“未搜索附件”预审范围。127-agent-v1只为attachments.save添attachment/attachments/save/download四通用词，独立审核批准；原前缀恢复真实工具，排名2/1/1/3/1、events不变；9focused/Ruff/diff/check过，候选尚未冻结。证据plan-v1.json、review-v1.json、candidate-replay.json、run001/diagnosis.json。
+
+- 127实际diff同一审核通过，真实instruction/top6前缀附件路由排名3/2/1/5/1、actualtools全可调用、events不变；此前不带instruction排名2/1/1/3/1仅中性检索，不冒称真实排名。候选12f1baaa3a43740f83f4ea27f7d69d0686010a2f，新run002/source干净detached原config正式127复跑，owner/slot/guest见run002/output/resource-lease.json，尚未集成/推送。
+
+- 127 run002真实save提取设置均成功但原评分0。原始profile唯一Notes邮件附件SHA4c9a185b与保存/提取来源同，XML首图印章，背景文件与该图字节同；参考山景不在三图。上游镜像HEAD所示commit1e112283、tar LFS SHA002ad7e00d2ce361ca770f5c246c03850018ec4e94e5e9c4e12198b66e81b99c及GoldSHA1b19ee9db539d8eeabe3deab4e7579aeba472afad1dbd9538fd110830ab9ca0c均匹配本地，直连HF超时留证。独立终态审核无新通用缺陷，不改evaluator/first顺序/Gold，不集成失败候选；证据run002/{artifact-validation.json,terminal-review.json,mirror-identity.json}。按序130最新无补丁复跑，不带127补丁。
+
+- 130 run001从最新12df49c干净detached无补丁正式启动；owner lite-repair-58c71a5bef014d97875ded763e1eded1、slot[2]/5、shared兼容锁/独立guest，source seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711；原9B thinking/100步1800秒/task/evaluator。运行证据本题run001/output/{resource-lease.json,run-status.json}。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
