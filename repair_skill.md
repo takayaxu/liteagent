@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9修正后实际8文件diff经同一独立审核/root/review_order65通过，候选cd2f5b0冻结，run010原条件正式复测中；native空Tab分段纯事实汇总及literal/制表位语义，不选词界/目标，不改完成门。run009正式failed0且三完整性true/资源清理，完整计数到模型但5段整句末Tab；历史保留。全部65候选未集成；证据个人目录v9-agent-review.json及run-010/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9候选cd2f5b0 run010正式failed0/agent_done，24events/1285.1秒，三完整性true/资源清理。10非空均Tab且全分段有词，2段first4，5段短find+整句replacement重复原文，全部RIGHT173；native165.1布局被模型投影丢失。V10显式文字保留策略+已有布局保留待同一独立审核，尚未实施；run-010-diagnosis.json、layout-visibility-evidence.json留证；全部65候选未集成，human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -473,6 +473,9 @@ flowchart TD
 
 
 - 2026-10-30 12:40 UTC：Order65-v9首次实际diff因完整80-index scope+摘要再挤掉正文被同一审核否决，按原边界为正文预留256并缩短重复元数据，新真实native80×25分段/full scope反例6过，148focused过、相邻117过/27旧失败不变、36组run009显式overlay回放12/10/12行全留；未改旧测试，Ruff8文件/diff/bin-check过。修正实际diff明确通过（335d995f；独立252过/1旧失败、相邻118过/35旧失败集合相同；完整scope2000 direct/forward正文124保留）。合并最新活动3c6017b仅台账后冻结cd2f5b02440b51c6f8a3b3ab8634554c5b389d58，run010干净detached、原run001逐字config/9Bthinking100步1800秒/65原题与原evaluator。source seal c2aefdd8，OSWorld seal5fb8d864与run009一致；owner lite-repair-4e6eade0433c4f53b1b6351a9193e6c5 slot1/5，12:39:56UTC，独立guest/盘/端口及兼容shared锁，只读/file观察器不执行guest动作。7/12交付不变，77未启动；65未集成。证据个人目录v9-agent-review.json、v9-checks.json及run010/prep.json、output资源/状态。台账3c6017b已推送并独立API读回。
+
+
+- 2026-10-30 13:06 UTC：Order65 run010正式failed0/agent_done，24events1285.1秒，evaluator仅agent结束后加载，三完整性true，自有owner4e6eade0容器空/lease释放/controller及observer退出。12段10非空，firstTab词数3/3/4/3/3/3/3/3/3/4；raw0/1/4/5/6短find+整句replacement复制后半句（工具逐字执行），全部RIGHT173而native布局165.1；原生page_layouts在context_hint有值，实际首次format前请求已省略，whole段替换工具实际可用。final12行counts及tabbed10/all_nonzero10汇总到模型，模型把全非空分段当验收，不能称V9已修好。V10拟模型显式preserve_non_whitespace/allow_text_change通用策略及已有紧凑原生布局预算保留，待同一审核者批准，未实施/未run011；不固定词数/位置、不改完成门/原题/evaluator。7/12交付不变、77未启动。证据run-010-diagnosis.json、run010/formal-result-summary.json、final-readback-actually-visible.json、layout-visibility-evidence.json、cleanup-verification.json。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
