@@ -287,7 +287,7 @@ flowchart TD
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；12f1baa run002正式failed0/19步1859.136秒、三完整性true；检索修复真实生效，保存附件/首图/背景链正确但原首图印章、Gold山景（不在三图）；上游tar/Gold LFS哈希同本地。独立审核无新工具方案，候选隔离、仍待修 |
-| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-132-20261030-agent`；b8c7434新detached无补丁run001正式运行；owner lite-repair-ef26f8c2ecc147e3a2a6c8a909423998、slot[2]/5、shared锁、独立guest；human_review=false |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-132-20261030-agent`；b8c7434无补丁run001正式deadline/null、46事件1918.113秒、三完整性true；9人成绩仍空、参考被模型去重少6答案；132-agent-v1独立审核/diff通过，终态独立复核通过，候选10a3fd5新干净run002正式运行、原输入重置，human_review=false |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
@@ -331,6 +331,12 @@ flowchart TD
 已修复：130 / 98e8e339-5f91-4ed2-b2b2-12647cb134f4，最新活动源码12df49c无新增补丁run001正式passed/reward1.0/agent_done，19步580.916秒、三完整性true；原9B thinking/100步1800秒/evaluator。五TXT顺序直接拼接2249字符与实际逐字一致，所有非空runs10pt；原参考段落文本精确不同但原evaluator通过，如实记录，不宣称字节完全相同。human_review=false，沿用96已审核通用崩溃修复，不制造新补丁；[结果](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/output/final-integrity.json)、[产物](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/artifact-validation.json)。回执已交付GitHub，远端60c6df7e84e8b5356cfec893426b81c64fe15171读回核验；132按序运行，原全量分数不变。
 
 - 132 run001于08:34:52 UTC取得slot[2]/5、shared兼容锁，owner lite-repair-ef26f8c2ecc147e3a2a6c8a909423998；独立guest/写盘/动态端口，b8c7434与随后60c6df7仅台账差异，运行seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711；原9B thinking/100步1800秒/原任务和evaluator。租约/状态/日志见本题run001/output，human_review=false，无新增候选。
+
+- 132-agent-v1独立/root/review96修正稿与实际diff均通过：第7失败读executed=false不计，第8成功读成绩表后，后续mixedcatalog将尚未读取DOCX的reader全局隐藏；17模型reasoning想read而原参选去重、保存参考少6答案（工具缺陷与模型误选分开）。仅删tool_surface10行blanketfilter、新增27行跨来源回归，51focused/Ruff/diff/bincheck过，16实际前缀reader恢复/events不变；隔离候选10a3fd5d446e2e44d414e22a99fd9acad8f9f678，未集成。基线继续自然运行，若无补丁正式PASS则不集成候选；否则终态复核后再决定正式复跑。证据本题plan-v1.json、review-v1.json、review-diff.json、candidate-checks.json、run001/source-mutation-diagnosis.json。
+
+- 132 run001自然终态agent_deadline_exhausted/rewardnull、46事件1918.113秒，source/config/OSWorld完整性true、原evaluator未运行，无完成申请。全部来源最终读过但参考已在17被模型去重保存少6答案；44长推理length无call、重试maxchars超限正确拒绝、45重读损坏参考、46仅GUI点未输入，9人成绩仍空。原输入与Gold评分一致，非参考冲突。自有guest为空/lease释放，候选仍隔离；完整终态独立/root/review96复核中，证据本题run001/{diagnosis.json,artifact-validation.json,source-mutation-diagnosis.json,output/results/results.json}。
+
+- 132终态独立复核维持132-agent-v1通过；09:13:14 UTC新run-002/source干净detached10a3fd5正式启动，owner lite-repair-01ae7202924a4ecca7b3adfe033e8718、slot[1]/5、shared兼容锁、独立guest/写盘/端口，seal745dde74cd79c09d238beab48409e635791429087fae7730fead9e034b6ed597；原config字节SHA1add28f2f756913893b147b9c507c5a82ea8c5c5f8a35ce248cfe84dc381d264、9B thinking/100步1800秒/任务/evaluator不变、新原始输入。最新89ddbdc对candidatebase仅台账差异，未集成；证据本题run002/{prep.json,output/resource-lease.json,output/run-status.json}。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
