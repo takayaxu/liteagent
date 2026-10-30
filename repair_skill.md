@@ -277,6 +277,26 @@ flowchart TD
 
 ## 本轮修复台账
 
+### Docker 修复后指定队列（2026-10-30，8题，human_review=false）
+
+本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 1/8 正式通过，7/8 待修；历史批次分数不变。
+
+| 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
+| --- | --- | --- |
+| 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 排队，未认领运行资源 |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 排队，未认领运行资源 |
+| 115 | 227d2f97-562b-4ccb-ae47-a5ec9e142fbb | 排队，未认领运行资源 |
+| 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 排队，未认领运行资源 |
+| 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 排队，未认领运行资源 |
+| 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 排队，未认领运行资源 |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 排队，未认领运行资源 |
+
+- 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
+
+已修复：96 / 00fa164e-2612-4439-992e-157d019a8436，96-agent-v1，human_review=false，独立审核 `/root/review96` 方案/实际diff通过；候选 `5d551ab5e5d333b4db43861935ace458ae1d981b`，seal `605736d636ac6fe673721eeef27b7919bd30a6f63e597e66993b31beba9b7148`；run-001 passed/reward1.0/agent_done，9步715.411秒，source/config/OSWorld完整性均true，原9B thinking/100步1800秒/原evaluator，当前默认串行条件。原31段正文保留，表格紧接5.2 Main Results、2×12内容与参考逐格一致；[结果](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/artifact-validation.json)。本地已集成 `5d551ab`，待推送。共同故障证据：[原始只读回放](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/original-replay.json)、[96方案](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/plan-v1.json)。新基点与全量 `c8349c4` 仅 README/reports 文档差异，运行源码/bin/configs/依赖未变；正式验证按当前默认串行条件保留原模型/预算/evaluator。
+
+
+
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
 用户指定顺序：103、117、118、120、125、126、128、131、136、151、155、161、163、164。本队列最初 human_review=true；用户曾要求并行，后澄清“对话串行修，不开子智能体，我自己开多对话”。103完成后用户要求继续下一题。117曾按用户指令关闭人工审核；用户在2026-10-29重新要求继续修复并开启人工审核，因此从118起恢复 human_review=true：本对话串行诊断/实施，方案须由用户明确批准后才实施；不开子agent并行修题。原始身份与失败证据以 reports/20261026-v4-full189/wrong-tasks.json 为准；旧批次结果不用于销项。当前通过 4/14、待处理 10/14。
