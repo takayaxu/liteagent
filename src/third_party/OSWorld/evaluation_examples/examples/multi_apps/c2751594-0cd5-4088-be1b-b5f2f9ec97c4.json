@@ -1,7 +1,7 @@
 {
   "id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
   "snapshot": "thunderbird",
-  "instruction": "Help me export the first image from the doc file attached in the most recent email in Notes folder, and set this image as the new desktop background.",
+  "instruction": "Set /home/user/Desktop/reference-background.png as the new desktop background. Use this supplied image as the final wallpaper; the email attachment is not needed for this revised task.",
   "source": "authors",
   "config": [
     {
@@ -11,6 +11,10 @@
           {
             "url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/multi_apps/c2751594-0cd5-4088-be1b-b5f2f9ec97c4/thunderbird-profile.tar.gz",
             "path": "/home/user/thunderbird-profile.tar.gz"
+          },
+          {
+            "url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/multi_apps/c2751594-0cd5-4088-be1b-b5f2f9ec97c4/background.png",
+            "path": "/home/user/Desktop/reference-background.png"
           }
         ]
       }
