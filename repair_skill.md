@@ -338,7 +338,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v4方案/实际diff独立审核/root/review_order65通过，候选7a02e32冻结，run005原条件正式复测中；显式互斥text/tab片段与原字符串兼容，含v1–v3。138focused通过/3旧基线oneOf失败，真实9B合成只读生成合法typed数组、未执行文档。run004候选c8f9cc2正式deadline/null，64events/1862.544秒，三完整性true/evaluator未加载；after064为0真Tab/11字面\t，旧失败全部保留。未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-005/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v4候选7a02e32 run005在模型仍选择legacy字符串写入字面\t后主动精确取消，17events/exit130/无正式reward，三完整性true，自有资源清理。after015为0真Tab/2字面转义、段数保持；新v5拟所有strict模型替换统一显式segments表示，owner/non-strict保持两表示兼容，待独立审核，未实施。v1–v4及全部旧失败保留，未集成；证据 /home/liuxv/liteagent-local-runs/repair-65-20261030-nohuman/run-005-cancellation-diagnosis.json；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -411,6 +411,9 @@ flowchart TD
 
 
 - 2026-10-30 08:59 UTC：Order65-v4实际diff独立审核/root/review_order65通过；真实公共Qwen请求两替换分支共同必填字段完整，原step5只读探针选择inspect，不称行为改善；合成atomic只读探针生成合法text/tab数组并canonical恢复保真，未执行动作。首次探针stop误传列表的诊断脚本错误已单独归档v4-probe-invalid-stop，不影响正式任务。138focused通过/3旧失败，Ruff/diff/check通过；合并活动335a16c仅文档后冻结候选7a02e32（seal25df50417a3d3eae4a6ac385f4013d20655d073f2a31553e7271f83fe3960b97）。run005从新detached/原run001配置逐字副本正式启动，原9Bthinking/100步1800秒/任务/evaluator不变。owner ff9ca13c55064904bcc65a305db575d8，slot1，08:58:35UTC；资源/状态见run005/output，旁路观察只读/file。不集成未验证候选，7/12正式通过，77未启动。
+
+
+- 2026-10-30 09:08 UTC：Order65-v4 run005实际请求已包含typed选项，模型step9/12仍选legacy字符串并写入字面\t，step15重复被拒；短锚点前还8次inspect。主代理SIGINT精确自有controller2355420主动取消，exit130/17events，无正式reward/evaluator产物，不称评分0/PASS；三完整性true，自有owner ff9ca13c55064904bcc65a305db575d8容器空/lease释放/observer退出。after015磁盘快照12段10非空/0真Tab/2字面转义。候选7a02e32不集成；v5拟仅收紧所有strict模型侧替换表示为必填segments，Adapter及非strict两表示兼容保持，不按任务提示选策略，不混入定位/完成门/循环读取修复；交同一独立审核，未实施。7/12正式通过不变，77未启动。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
