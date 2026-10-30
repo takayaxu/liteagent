@@ -299,11 +299,10 @@ flowchart TD
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
-用户指定顺序：5、8、11、12、27、28、63、65、77、87、88、93。按题号串行处理；独立子 agent 只读审核方案，替代人工审核。原始失败身份及证据以 `reports/20261030-dockerfix-full189/wrong-tasks.md` 为准，不以旧批次 PASS 销项。当前正式通过 3/12，待处理 9/12。
+用户指定顺序：5、8、11、12、27、28、63、65、77、87、88、93。按题号串行处理；独立子 agent 只读审核方案，替代人工审核。原始失败身份及证据以 `reports/20261030-dockerfix-full189/wrong-tasks.md` 为准，不以旧批次 PASS 销项。当前正式通过 4/12，待处理 8/12。
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 12 | `a01fbce3-2793-461f-ab86-43680ccbae25` | 本对话 `/root`；当前9bcf39b新detached无补丁基线run001已启动，原9B thinking/100步1800秒/evaluator；只补原12身份source_order88，配置SHA8d4c3253b1f1219e7876c95dcc64f2a7308d032361f238be876ff89aeb46b0df；目录 `/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman`，原转换CSV只读观察，human_review=false，无12候选 |
 | 27 | `3a7c8185-25c1-4941-bd7b-96e823c9f21f` | 待处理；human_review=false |
 | 28 | `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 待处理；human_review=false |
 | 63 | `04578141-1d42-4146-b9cf-6fab4ce5fd74` | 待处理；human_review=false |
@@ -325,6 +324,7 @@ flowchart TD
 | 5 / `4f07fbe9-70de-4927-a4d5-bb28bc12c52c` | run002 passed/reward1.0/agent_done，7步251.753秒；Order5-v1，human_review=false，独立审核 `/root/review_order5`；候选 `2142feb040f3c900779f0e1834d93fdf9c781393`，seal `ef1d25def061138d1f5215b463fd17f01c91edac5f4b2eebab784642c36318cd`，原Qwen3.5-9B thinking/100步1800秒/原evaluator；source/config/OSWorld完整性均true | [正式结果](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/final-artifact-validation.json)。值/公式只改D1，B1/C1内容和C1两位小数格式保留，CSV与参考字节相同；原生保存有字体/边框/对齐XML序列化差异，不声称样式对象逐字节保留。已快进集成并交付GitHub，远端 `47df89c56794d4eda052adfdf1d8d5a90deea1de` 已独立读回，包含正式PASS候选 |
 | 8 / `26a8440e-c166-4c50-aef4-bfb77314b46b` | run003 passed/reward1.0/agent_done，24步869.347秒；Order8-v8，human_review=false，独立审核 `/root/review_order8`；候选 `85ddc83877546552ad36634a3af6e1f42210be5e`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原Qwen3.5-9B thinking/100步1800秒/evaluator，三完整性true | [正式结果](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/final-artifact-validation.json)；源表77格内容保留，新Sheet2恰7行2列、Jan–Jun总数正确，无多余非空单元格。已快进集成并交付GitHub，远端 `33c935eeb561939ab3c5ea317eae249049568aef` 经Git Data API非强制更新后独立读回、原始对象SHA逐项一致 |
 | 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，8步360.231秒；base `33c935eeb561939ab3c5ea317eae249049568aef`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增11补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/final-artifact-validation.json)。44个周末全部红色，C33已补齐，0多涂、日期内容不变；源码及台账已在活动/远端，独立读回 `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127` |
+| 12 / `a01fbce3-2793-461f-ab86-43680ccbae25` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，6步227.349秒；base `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增12补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/final-artifact-validation.json)。38个数值/公式保持，原一位小数精度保留，逗号显示CSV与参考字节相同；源码已在活动/远端，台账待推送 |
 
 - 2026-10-30 03:59 UTC：用户追问Order5为何停止；已说明原歧义公式写成文字、候选公式修正及后续CSV缺失阻塞，恢复优先处理5。独立审核 `/root/review_order5` 重申允许对2142feb一次正式定向复跑；新run002源码已冻结准备，原任务/evaluator/预算不变，只读观察文件状态，不以诊断代替正式PASS。本聊天Order8旧候选run002仍运行，待终态/清理后串行启动5；8的v8改动保留，不集成未验证补丁。
 
@@ -341,6 +341,8 @@ flowchart TD
 - 2026-10-30 04:45 UTC：Order11最新活动源码无补丁run001正式PASS，三完整性true，自有owner容器空/lease释放。完整读取A1:F33后标红44个周末格，包含原full189部分读取B2:F32漏掉的C33（2022-07-31周日），其余数据不变且0多涂。原评分函数只读比较旧产物与gold背景色仅差C33，直接填色/条件格式不是失败差异；原始诊断见本题original-readonly-diagnosis.json。无新增11补丁，不把本次成功归因到未触发的Order5/8保护；3/12通过9/12待修，下一题12尚未启动。
 
 - 2026-10-30 04:47 UTC：Order11原始结果/题单已正常推送并独立读回9bcf39b，3/12交付。按顺序启动Order12当前HEAD9bcf39b干净无补丁基线run001，配置仅补身份source_order88，其余原9B thinking/100步1800秒/evaluator不变；owner/slot/guest/开始时间见本题run001/output/resource-lease.json与run-status.json。旁路只读保存工作簿及转换后CSV状态，不执行guest转换/保存或修改evaluator。9题待修，27未启动。
+
+- 2026-10-30 04:51 UTC：Order12当前源码无补丁run001正式PASS，三完整性true，原evaluator已后置调用；38个数值/公式不变，原一位小数及逗号显示正确，CSV与参考字节相同。原full189同题CSV连续404，当前原条件已可取回，但历史缺失根因仍未证实，不把恢复归因到Order5/8补丁；未改evaluator/等待条件。ownerbf2747c9fc834b83ac39901e64917fd4容器空、lease与只读observer退出。4/12通过、8待修，下一题27未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
