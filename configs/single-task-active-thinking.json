@@ -120,6 +120,12 @@
       "domain": "vs_code",
       "task_id": "6ed0a554-cbee-4b44-84ea-fd6c042f4fe1",
       "source_order": 330
+    },
+    {
+      "order": 5,
+      "domain": "libreoffice_calc",
+      "task_id": "4f07fbe9-70de-4927-a4d5-bb28bc12c52c",
+      "source_order": 72
     }
   ]
 }

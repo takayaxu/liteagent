@@ -658,6 +658,57 @@ def test_literal_cells_use_existing_writers_without_inferred_types() -> None:
     ).hexdigest()
 
 
+@pytest.mark.parametrize("shape", ["row", "column", "matrix"])
+def test_expression_literal_cannot_overwrite_formula_in_any_batch_position(shape) -> None:
+    # A conflict beyond the bounded mutation observation must still reject the
+    # whole batch, including earlier valid writes, before changing any cell.
+    rows, columns = {"row": (1, 26), "column": (26, 1), "matrix": (2, 13)}[shape]
+    cells = [[_Cell(kind="number", value=17, number_format=7)
+              for _ in range(columns)] for _ in range(rows)]
+    cells[-1][-1] = _Cell(kind="formula", formula="=4*3", number_format=9)
+    session, target, doc = _session(cells, start_column=2, start_row=4)
+    flat = [42] * 25 + ["=4*5"]
+    values = [flat[:13], flat[13:]] if shape == "matrix" else flat
+    target_range = {
+        "row": "C5:AB5",
+        "column": "C5:C30",
+        "matrix": "C5:O6",
+    }[shape]
+    params = {"sheet": "Synthetic", "range": target_range, "values": values}
+    original = deepcopy(params)
+    before = deepcopy([[cell.__dict__ for cell in row] for row in cells])
+
+    with pytest.raises(AdapterError, match="No cells were written") as failure:
+        uno_worker._write(session, params)
+
+    expected_cell = {"row": "AB5", "column": "C30", "matrix": "O6"}[shape]
+    assert failure.value.code == "INVALID_REQUEST"
+    assert failure.value.details["cell"] == expected_cell
+    assert failure.value.details["current_formula"] == "=4*3"
+    assert '"kind":"formula"' in failure.value.message
+    assert '"kind":"string"' in failure.value.message
+    assert [[cell.__dict__ for cell in row] for row in target.cells] == before
+    assert doc.calculate_calls == 0
+    assert params == original
+
+
+@pytest.mark.parametrize("value,expected_kind", [
+    ({"kind": "string", "value": "=4*5"}, "string"),
+    ({"kind": "formula", "value": "=4*5"}, "formula"),
+    ("replacement text", "string"),
+    (20, "number"),
+    (None, "blank"),
+])
+def test_formula_replacement_with_explicit_kind_or_other_literals_stays_legal(value, expected_kind) -> None:
+    session, target, _ = _session([[_Cell(kind="formula", formula="=4*3")]])
+    result = uno_worker._write(session, {
+        "sheet": "Synthetic", "range": "A1", "values": [[value]],
+    })
+    assert result["kinds"] == [[expected_kind]]
+    if expected_kind == "string":
+        assert target.cells[0][0].getString() == (value["value"] if isinstance(value, dict) else value)
+
+
 def test_literal_write_error_keeps_conversion_without_claiming_rollback(monkeypatch) -> None:
     session, _, _ = _session([[_Cell()]])
     params = {"sheet": "Synthetic", "range": "A1", "values": [17]}

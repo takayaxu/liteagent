@@ -297,6 +297,41 @@ flowchart TD
 
 
 
+### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
+
+用户指定顺序：5、8、11、12、27、28、63、65、77、87、88、93。按题号串行处理；独立子 agent 只读审核方案，替代人工审核。原始失败身份及证据以 `reports/20261030-dockerfix-full189/wrong-tasks.md` 为准，不以旧批次 PASS 销项。当前正式通过 1/12，待处理 11/12。
+
+| Order | task ID | 状态与认领 |
+| --- | --- | --- |
+| 8 | `26a8440e-c166-4c50-aef4-bfb77314b46b` | 本对话 `/root` 认领；v7已审核候选 `18c47ac`，run001 HuggingFace直连超时/environment failure（无模型步骤），run002使用HF镜像原条件终态agent_deadline_exhausted/reward=null、49事件，原evaluator前后均未加载，source/config/OSWorld完整性true，自有guest/名额已释放。模型月总数及多余C:F内容错误反复被完成门拒绝；另有最终inspect/读回时序检查缺陷，v8经 `/root/review_order8` 审核通过且17focused通过，改动保留repair树未提交，未热改run002；Order5已正式PASS/本地集成，下一步从最新活动源码组合已审核v8再冻结验证；human_review=false，未集成 |
+| 11 | `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14` | 待处理；human_review=false |
+| 12 | `a01fbce3-2793-461f-ab86-43680ccbae25` | 待处理；human_review=false |
+| 27 | `3a7c8185-25c1-4941-bd7b-96e823c9f21f` | 待处理；human_review=false |
+| 28 | `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 待处理；human_review=false |
+| 63 | `04578141-1d42-4146-b9cf-6fab4ce5fd74` | 待处理；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 待处理；human_review=false |
+| 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
+| 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
+| 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
+| 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
+
+2026-10-30：第5题原始第3步将公式表达式以普通字符串写入已有公式单元格，第5/11步回读为 string、无公式，第12步完成门仍通过。失败运行 `c8349c4` 与基点间仅文档/报告变化，运行源码等价；正式失败有效，无需重复基线。v1经独立审核通过，在Calc写入前原子拒绝该歧义并保留显式公式/字符串路径。候选`8cebae8` run001运行完整性通过；第3步拒绝、第4步显式公式成功，显示及保存后读回正确，但原始evaluator因评分CSV缺失返回0；相同缺文件现象见原full189，未知转换失败原因。独立终态审核确认没有直接证据支持转换器通用修复；不重复盲测，候选不集成，Order5待修。
+
+2026-10-30：第8题原始第5步向Sheet2的A2:F2写六个公式，第6步重写B2，第7步给A2:A7尝试横向矩阵被正确拒绝，第8步改为纵向月标签，第9步纵向值写入B2:B7；最终Sheet2有6列和7行，预期仅2列，C2:F2多余公式保留，原始evaluator 0。用户要求“Month/Total”两列表格；模型混淆月合计与单人跨月合计，直到发现超宽结果才改向。运行源码已有 `monthly_column_totals_plan/mutations/readback` 及指令/完整源表解析，但针对性门禁位于旧 `_completion_gate`；strict generic路径只做操作类别检查，没有接入该合同，故观察结果虽为A1:F7仍放行。拟Order8-v1：将既有月汇总完整状态合同接入strict generic完成判定，核对全部观察月份、确切两列内容/公式及目标范围，阻止多余尾列完成；不选择模型参数、不改用户/任务数据。待独立审核。
+
+
+已修复：
+
+| Order / task ID | 正式结果、审核及源码 | 证据与交付 |
+| --- | --- | --- |
+| 5 / `4f07fbe9-70de-4927-a4d5-bb28bc12c52c` | run002 passed/reward1.0/agent_done，7步251.753秒；Order5-v1，human_review=false，独立审核 `/root/review_order5`；候选 `2142feb040f3c900779f0e1834d93fdf9c781393`，seal `ef1d25def061138d1f5215b463fd17f01c91edac5f4b2eebab784642c36318cd`，原Qwen3.5-9B thinking/100步1800秒/原evaluator；source/config/OSWorld完整性均true | [正式结果](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/final-artifact-validation.json)。值/公式只改D1，B1/C1内容和C1两位小数格式保留，CSV与参考字节相同；原生保存有字体/边框/对齐XML序列化差异，不声称样式对象逐字节保留。已快进集成并交付GitHub，远端 `47df89c56794d4eda052adfdf1d8d5a90deea1de` 已独立读回，包含正式PASS候选 |
+
+- 2026-10-30 03:59 UTC：用户追问Order5为何停止；已说明原歧义公式写成文字、候选公式修正及后续CSV缺失阻塞，恢复优先处理5。独立审核 `/root/review_order5` 重申允许对2142feb一次正式定向复跑；新run002源码已冻结准备，原任务/evaluator/预算不变，只读观察文件状态，不以诊断代替正式PASS。本聊天Order8旧候选run002仍运行，待终态/清理后串行启动5；8的v8改动保留，不集成未验证补丁。
+
+- 2026-10-30 04:03 UTC：Order8旧冻结候选run002已到agent_deadline_exhausted/reward=null、原evaluator未调用，不计正式0/PASS；完整性全true，精确owner容器空且lease释放。随后串行启动Order5 run002，从2142feb新detached/干净源码与原条件复测，HF_ENDPOINT=https://hf-mirror.com；实际owner/slot/开始时间见 `/home/liuxv/liteagent-local-runs/repair-5-20261030-nohuman/run-002/output/resource-lease.json`。只读旁路归档CSV存在/时间及失败画面，不执行转换/保存，不改evaluator。human_review=false，未集成，0/12正式通过不变。
+
+- 2026-10-30 04:12 UTC：Order5 run002正式PASS，原CSV已成功取回。第3步模型直接选择cells.set_formulas，4完成申请被保存/结构读回检查拒绝，5保存、6inspect、7完成；本次未触发v1歧义防护，不将CSV恢复归因于该补丁。run001与focused覆盖拒绝/恢复；两次隔离转换成功及本次原评测成功仍不能解释历史CSV缺失根因，不修改evaluator/options、不额外放大等待。owner2df8511abd6b4cc98830611a49d83d6e容器空、observer退出，原始失败保留；本地活动已快进至2142feb，运行范围与正式PASS相同。仅更新本队列台账，不提交其他对话未提交修改；1/12通过11/12待修。
+
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
 用户指定顺序：103、117、118、120、125、126、128、131、136、151、155、161、163、164。本队列最初 human_review=true；用户曾要求并行，后澄清“对话串行修，不开子智能体，我自己开多对话”。103完成后用户要求继续下一题。117曾按用户指令关闭人工审核；用户在2026-10-29重新要求继续修复并开启人工审核，因此从118起恢复 human_review=true：本对话串行诊断/实施，方案须由用户明确批准后才实施；不开子agent并行修题。原始身份与失败证据以 reports/20261026-v4-full189/wrong-tasks.json 为准；旧批次结果不用于销项。当前通过 4/14、待处理 10/14。
