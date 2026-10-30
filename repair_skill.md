@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8候选2adcc20 run009正式failed0/agent_done，23events/1373.18秒，三完整性true/自有资源清理。10非空段均真Tab且stop正确，5段前三词正确、5段整句末Tab；完整12行counts实际到达final模型，模型仍以2+分段作完成依据。V9限定方案经同一独立审核通过，已实施通用空Tab分段事实汇总/作用边界说明，实际8文件diff复审中；run-009-diagnosis.json留证；全部65候选未集成；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9修正后实际8文件diff经同一独立审核/root/review_order65通过，候选cd2f5b0冻结，run010原条件正式复测中；native空Tab分段纯事实汇总及literal/制表位语义，不选词界/目标，不改完成门。run009正式failed0且三完整性true/资源清理，完整计数到模型但5段整句末Tab；历史保留。全部65候选未集成；证据个人目录v9-agent-review.json及run-010/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -470,6 +470,9 @@ flowchart TD
 
 
 - 2026-10-30 12:27 UTC：Order65-v9限定方案同一独立审核/root/review_order65通过后实施8文件，纯native可用行空Tab分段事实汇总及replacement-only反馈、制表位不移动字符/不选词界说明；无参数/worker/完成门/任务/evaluator改动，不拒合法末尾Tab。142focused过含24新用例，相邻117过/27旧失败集合不变；run009实际事件1/7/22通过36组显式overlay只读回放，12/10/12计数行均留，final12可用/10Tab/5含零token分段/5均非零；5000正文427字，2000正文60字且partial，身份/scope/分页保留。strict description override及既有signature同步，实际direct/forward说明可见；Ruff8文件/diff/bin-check过。稳定diff待同一独立复审，未冻结run010/未集成。证据个人目录v9-checks.json、v9-run009-readonly-replay.json、v9-description-surface.json。7/12交付不变，77未启动。
+
+
+- 2026-10-30 12:40 UTC：Order65-v9首次实际diff因完整80-index scope+摘要再挤掉正文被同一审核否决，按原边界为正文预留256并缩短重复元数据，新真实native80×25分段/full scope反例6过，148focused过、相邻117过/27旧失败不变、36组run009显式overlay回放12/10/12行全留；未改旧测试，Ruff8文件/diff/bin-check过。修正实际diff明确通过（335d995f；独立252过/1旧失败、相邻118过/35旧失败集合相同；完整scope2000 direct/forward正文124保留）。合并最新活动3c6017b仅台账后冻结cd2f5b02440b51c6f8a3b3ab8634554c5b389d58，run010干净detached、原run001逐字config/9Bthinking100步1800秒/65原题与原evaluator。source seal c2aefdd8，OSWorld seal5fb8d864与run009一致；owner lite-repair-4e6eade0433c4f53b1b6351a9193e6c5 slot1/5，12:39:56UTC，独立guest/盘/端口及兼容shared锁，只读/file观察器不执行guest动作。7/12交付不变，77未启动；65未集成。证据个人目录v9-agent-review.json、v9-checks.json及run010/prep.json、output资源/状态。台账3c6017b已推送并独立API读回。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
