@@ -368,8 +368,8 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V10候选69d647e原条件run011正式deadline/null，21events/1863.887秒，原evaluator未调用；三完整性true、controller/observer退出、owner容器空/lease释放。六段重复文字、四段无Tab、三段首Tab前四词、全部非空段多余LEFT25.4；全部成功替换显式allow，preserve未选择。布局165.1与完整词数已到模型，不再归因反馈遗漏。当前同一独立审核/root/review_order65终态复核；全部65候选未集成，证据run-011-diagnosis.json及run-011/output；human_review=false |
-| 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 保留待修；V10候选69d647e原条件run011为deadline/null，21events/1863.887秒，evaluator未调用；三完整性true、资源已清理。同一独立审核/root/review_order65终审无新获批通用最小方案，禁止猜测性改动/同源码盲跑；全部65候选隔离未集成。六段正文重复、四段无Tab、多余LEFT25.4；策略/布局/完整词数已到模型。证据run-011-diagnosis.json及run-011/terminal-agent-review.json；human_review=false |
+| 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 本对话 /root认领；最新活动已提交源码干净无补丁基线准备，独立目录 /home/liuxv/liteagent-local-runs/repair-77-20261030-nohuman；保留65待修且不携带65失败补丁；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
@@ -491,6 +491,9 @@ flowchart TD
 
 
 - 2026-10-30 13:57 UTC：Order65 V10候选69d647e正式run011为agent_deadline_exhausted/reward=null，21事件1863.887秒，evaluator_loaded_after_agent=false；不是0分或PASS。首次编辑前8192输出预算全用于32135字符思考后length，既有恢复返回观察；原始数组字符串调用被本地校验拒绝。12原始段/10非空保留，raw0–5六段短find+后半句导致正文重复，成功替换全部选择allow_text_change，preserve从未选择；首次格式25.4/190.5在布局165.1及坐标说明可见时已由模型原参选错，后改RIGHT165.1但保留额外LEFT25.4。最终首Tab前词数[3,3,4,4,3,4,12,4,6,5]、raw3两个Tab、raw6–9无Tab；无propose_done，不能称完成门放行。本轮NO_TEXT_CHANGE零写入拒绝生效。source/config/OSWorld完整性全true，runner/observer退出、owner a527c643dc0745a5abc28b678183956e容器空且lease释放。主机诊断v2仅修正无DONE的终态取证与布局字段/进程检查，不改运行源码。同一独立审核/root/review_order65复核终态及是否有新通用最小方案，禁止同源码盲跑或脚本代选答案；7/12交付不变，77未启动。证据本题run-011-diagnosis.json、run-011/{formal-result-summary.json,layout-at-actual-format-call.json,first-edit-actual-call.json,cleanup-verification.json}。
+
+
+- 2026-10-30 14:02 UTC：Order65 run011同一独立终审/root/review_order65确认无新获批通用最小修复，保留待修、全部65候选不集成；策略/布局/计数已在错误决策前可见，不能继续归因信息缺失或放宽契约/代选答案。允许按skill无新证据分支串行继续77；77从最新活动已提交源码独立无补丁基线开始，不携带65失败补丁链。7/12已交付、65及77/87/88/93五题待修，human_review=false持续。终审证据本题run-011/terminal-agent-review.json。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
