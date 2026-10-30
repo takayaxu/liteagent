@@ -357,7 +357,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v7候选cbfb159 run008正式failed0/agent_done，28events/847.836秒，三完整性true、资源清理。10非空段9有Tab、末段未改，Tab前token3/3/4/6/10/6/12/4/6/5；原词序保留。scope反馈实际可见，整篇分段counts被压缩丢失但错误replacement counts仍可见。V8仅紧凑保留已有indexed token counts表待同一审核，未实施；证据个人目录run-008-diagnosis.json；未集成，human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v7候选cbfb159 run008正式failed0/agent_done，28events/847.836秒，三完整性true、资源清理。10非空段9有Tab、末段未改，Tab前token3/3/4/6/10/6/12/4/6/5；原词序保留。scope反馈实际可见，整篇分段counts被压缩丢失但错误replacement counts仍可见。V8仅紧凑保留已有indexed token counts表，方案同一独立审核通过并实施；稳定4文件diff复审中；证据个人目录run-008-diagnosis.json；未集成，human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -452,6 +452,8 @@ flowchart TD
 - 2026-10-30 10:59 UTC：Order65-v7稳定实际diff独立审核/root/review_order65通过（审阅SHAa7cbb084，独立172过/1基点旧oneOf，80索引2000/5000预算独立检查过）；合并最新活动后冻结cbfb159998856cf7da9a08c5c43f49913a38dd4f。新活动除文档外含他聊fd41cfd按用户要求追加Order117 PDF同basename题意，不回退该提交；已逐字核对Order65原题与全部evaluator无变化，整体OSWorld seal因此2556e56a（旧85c94bc3），不声称仅文档。run008新detached干净、原config逐字不变、原9Bthinking100步1800秒及65原评测；source seal339f7156，owner lite-repair-917ea2e1d1144a9c99e5e42326ba0f1f slot1/5，独立guest/写盘/端口与兼容shared。只读/file观察器，阶段正式复跑、结果待定，7/12通过不变、77未启动。证据v7-agent-review.json及run008/prep.json、output/resource-lease.json。
 
 - 2026-10-30 11:16 UTC：Order65-v7 run008正式failed/reward0/agent_done，28events/847.836秒，原evaluator后加载，三完整性true、自有owner917ea2e1d1144a9c99e5e42326ba0f1f容器空/lease释放。前两段3词正确，余已改7段4/6/10/6/12/4/6词，末段无Tab；10段RIGHT165.1，原12段/词序保留。step12重复改p1被原guard拒、后续多次默认只读p0；28错称10段indices0-8全部完成并接受。独立审核确认V7 scope保留，12段inspect及9段format的counts原有但实际压缩丢失；错误replacement-only counts持续可见，故不能把全错归因反馈缺失。V8仅新增通用紧凑indexed counts投影以保留该原生观察，待同一独立审核、未实施；不选固定词界/坐标/目标、不改完成门。65及28个evaluator与旧run逐字相同，117他聊题意变化单列。7/12通过不变、77未启动。
+
+- 2026-10-30 11:36 UTC：Order65-v8限定投影方案同一审核/root/review_order65通过后实施4文件（2修改/2新增）；完整native counts在details采样前形成indexed表，仅整行前缀、重复压缩准确更新visible/omitted，不从预览重算或非法补0，selected/returned范围明确，无目标数/合格/完成判断。交审前发现表挤掉5000预算原文，已修为该Writer context优先保留身份/正文；未改旧测试。44新测试过、110范围保留过，206综合过/1基点旧oneOf、后加2正文保留回归单独过；真实run008多事件36组只读overlay投影过，5000原文424/425/410字保持、2000如实局部/截断。Ruff/diff/check过，稳定实际diff待同一审核、未冻结/复跑/集成；7/12通过不变，77未启动。证据v8-checks.json、v8-run008-readonly-replay.json及v8-body-comparison-*.jsonl。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
