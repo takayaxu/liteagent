@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V9候选cd2f5b0 run010正式failed0/agent_done，24events/1285.1秒，三完整性true/资源清理。10非空均Tab且全分段有词，2段first4，5段短find+整句replacement重复原文，全部RIGHT173；native165.1布局被模型投影丢失。V10限定方案同一独立审核通过，已实施显式文字保留策略+已有布局保留，稳定15文件实际diff复审中；run-010-diagnosis.json、layout-visibility-evidence.json留证；全部65候选未集成，human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V10实际15文件diff同一独立审核/root/review_order65通过，候选69d647e冻结，run011原条件正式复测中；模型显式选文字保留策略、原生布局紧凑保留，不自动选词界/位置/策略，不改完成门。run010正式failed0/三完整性true/资源清理；历史保留。全部65候选未集成；证据v10-agent-review.json及run-011/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -479,6 +479,9 @@ flowchart TD
 
 
 - 2026-10-30 13:21 UTC：Order65-v10限定A显式文字保留+B原生布局投影同一独立审核通过后实施15文件（含3新及2必要strict旧fixture显式policy）。owner缺省allow、strict由模型选policy，preserve剔除str.isspace后按实际所有matches逐字符比较并在任何赋值前整次拒绝；不验证词数/词界、不自动纠正。布局只复制native完整style/尺寸，≤500字符整条前缀及遗漏，未扣indents/columns，多style不猜active；2k范围索引预览明确truncated，保留scope数值/正文/计数/summary/续读，5000完整。114policy+96layout过、285综合过/9基点旧失败，117相邻过/27旧失败集合不变；Ruff/diff/check过。native-v10真实UNO6探针通过且自有guest/lease清理；真实9B atomic/多route各生成合法显式preserve+typedTab（均未执行）。真实run01036组只读布局overlay回放通过，5000保留165.1；显式policyoverlay拒绝原5次复制，但2次first4仍合法，不能称整题修好。稳定diff待同一复审，未冻结run011/未集成。证据v10-checks.json、v10-run010-readonly-replay.json、v10-run010-policy-readonly-replay.json、native-v10/native-result.json及cleanup。7/12交付不变，77未启动。
+
+
+- 2026-10-30 13:24 UTC：Order65-v10实际diff独立审核/root/review_order65通过（内容fb85b784；304过/1基点旧失败，相邻118过/35基点旧失败集合相同，native归档18Writer文件与当前候选相同）。合并最新活动d36fcaf仅台账后冻结69d647efe8b751da0f4f6365685d3c4110db2e5c，新run011/source干净detached，原run001逐字config/原9Bthinking100步1800秒/原65任务及evaluator。source seal8fc34fc1，OSWorld5fb8d864与run010同；owner lite-repair-a527c643dc0745a5abc28b678183956e，slot2/5，13:24:20UTC，独立guest/盘/端口及兼容shared锁；另104他聊独立运行不干扰。只读/file观察器不执行guest动作，正式结果待定。7/12交付不变，77未启动；65未集成。证据v10-agent-review.json、v10-checks.json、run011/prep.json及output资源/状态。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
