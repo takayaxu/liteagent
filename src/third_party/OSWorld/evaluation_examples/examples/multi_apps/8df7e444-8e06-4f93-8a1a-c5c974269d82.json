@@ -1,7 +1,7 @@
 {
   "id": "8df7e444-8e06-4f93-8a1a-c5c974269d82",
   "snapshot": "libreoffice_writer",
-  "instruction": "The guidelines for submitting our essay work are provided in the \"reminder.docx\" on the Desktop. My essay is stored as a docx file in /home/user. Please assist me in organizing the files for submission according to the specified requirements.",
+  "instruction": "The guidelines for submitting our essay work are provided in the \"reminder.docx\" on the Desktop. My essay is stored as a docx file in /home/user. Please assist me in organizing the files for submission according to the specified requirements.\n\nFor this submission, name the exported PDF with the same basename as the original DOCX file, changing only the extension to .pdf.",
   "source": "authors",
   "config": [
     {
