@@ -308,7 +308,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 28 | `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 待处理；human_review=false |
+| 28 | `21ab7b40-77c2-4ae6-8321-e00d3a086c73` | 本对话 `/root`；当前34a51ba新detached无补丁基线run001已启动，原9B thinking/100步1800秒/evaluator；仅补source_order107身份，配置SHA4569cb255de5b693c4f23df9c59913701ace01b923d6e434c2881a328ebe4b72；目录 `/home/liuxv/liteagent-local-runs/repair-28-20261030-nohuman`，human_review=false，无28候选 |
 | 63 | `04578141-1d42-4146-b9cf-6fab4ce5fd74` | 待处理；human_review=false |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 待处理；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
@@ -329,7 +329,7 @@ flowchart TD
 | 8 / `26a8440e-c166-4c50-aef4-bfb77314b46b` | run003 passed/reward1.0/agent_done，24步869.347秒；Order8-v8，human_review=false，独立审核 `/root/review_order8`；候选 `85ddc83877546552ad36634a3af6e1f42210be5e`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原Qwen3.5-9B thinking/100步1800秒/evaluator，三完整性true | [正式结果](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-8-20261030-v7/run-003/final-artifact-validation.json)；源表77格内容保留，新Sheet2恰7行2列、Jan–Jun总数正确，无多余非空单元格。已快进集成并交付GitHub，远端 `33c935eeb561939ab3c5ea317eae249049568aef` 经Git Data API非强制更新后独立读回、原始对象SHA逐项一致 |
 | 11 / `8b1ce5f2-59d2-4dcc-b0b0-666a714b9a14` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，8步360.231秒；base `33c935eeb561939ab3c5ea317eae249049568aef`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增11补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-11-20261030-nohuman/run-001/final-artifact-validation.json)。44个周末全部红色，C33已补齐，0多涂、日期内容不变；源码及台账已在活动/远端，独立读回 `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127` |
 | 12 / `a01fbce3-2793-461f-ab86-43680ccbae25` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，6步227.349秒；base `9bcf39b21dd69ea9884e5ff59e81310dcf2b1127`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增12补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-12-20261030-nohuman/run-001/final-artifact-validation.json)。38个数值/公式保持，原一位小数精度保留，逗号显示CSV与参考字节相同；源码及台账已在活动/远端，独立读回 `acb2e15076f03c67771dc417761be6e0b0a8c176` |
-| 27 / `3a7c8185-25c1-4941-bd7b-96e823c9f21f` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，23步1403.045秒；base `acb2e15076f03c67771dc417761be6e0b0a8c176`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增27补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/final-artifact-validation.json)。35记录排序后整表与参考相同，Retail Price保留，单折线单Quantity系列，X=A2:A36、Y=E2:E36；源码已在活动/远端，台账待推送 |
+| 27 / `3a7c8185-25c1-4941-bd7b-96e823c9f21f` | 最新活动源码无补丁run001 passed/reward1.0/agent_done，23步1403.045秒；base `acb2e15076f03c67771dc417761be6e0b0a8c176`，seal `594ef2d169ef33f61640dcb63ae8a1be5417fb60119326941ea8a0ced3df4ce0`，原9B thinking/100步1800秒/evaluator，三完整性true；human_review=false，无新增27补丁 | [正式结果](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/output/final-integrity.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-27-20261030-nohuman/run-001/final-artifact-validation.json)。35记录排序后整表与参考相同，Retail Price保留，单折线单Quantity系列，X=A2:A36、Y=E2:E36；源码及台账已在活动/远端，独立读回 `34a51ba660fa3752b223c279f4386477d009a721` |
 
 - 2026-10-30 03:59 UTC：用户追问Order5为何停止；已说明原歧义公式写成文字、候选公式修正及后续CSV缺失阻塞，恢复优先处理5。独立审核 `/root/review_order5` 重申允许对2142feb一次正式定向复跑；新run002源码已冻结准备，原任务/evaluator/预算不变，只读观察文件状态，不以诊断代替正式PASS。本聊天Order8旧候选run002仍运行，待终态/清理后串行启动5；8的v8改动保留，不集成未验证补丁。
 
@@ -352,6 +352,8 @@ flowchart TD
 - 2026-10-30 04:53 UTC：Order12台账正常推送，独立读回acb2e15，4/12交付。按顺序启动Order27当前HEADacb2e15干净无补丁基线run001，配置仅补source_order106身份，原模型/预算/evaluator不变；本题run001/output/resource-lease.json及run-status.json索引owner/slot/guest/开始时间。8题待修，28未启动。
 
 - 2026-10-30 05:17 UTC：Order27当前源码无补丁run001正式PASS，三完整性true。首响应677.566秒耗尽8192输出且无调用，现有协议重试恢复；初次选对E数量列但row_headers=false，模型第6步replace=true自行纠正；门禁要求保存/表头/排序键读回，22整表读回后23完成。原full189排序数据已正确但选F折扣列并把日期作为数值系列；当前单折线准确绑定X日期A2:A36、Y数量E2:E36，无新增27补丁，不宣称首响应长生成已修复。自有owner容器空、lease释放；5/12通过7待修，28未启动。
+
+- 2026-10-30 05:19 UTC：Order27正式结果台账正常推送并独立读回34a51ba，5/12交付；启动Order28当前源码干净无补丁基线run001，配置仅补source_order107身份，原9B thinking/100步1800秒/原evaluator不变。owner/slot/guest/开始时间见本题run001/output/resource-lease.json、run-status.json；7题待修，63未启动。
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
 
