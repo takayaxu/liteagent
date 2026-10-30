@@ -279,13 +279,12 @@ flowchart TD
 
 ### Docker 修复后指定队列（2026-10-30，8题，human_review=false）
 
-本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 3/8 正式通过，5/8 待修；历史批次分数不变。
+本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前原条件 3/8 正式通过（96、115、130），117 经用户补充提示后额外通过，4/8 待修（104、113、127、132）；两种条件分开记录，历史批次分数不变。
 
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；独立目录 `repair-104-20261030-agent`；run001/002/004 failed0、run003/005 deadline/null；run005为39事件1973.599秒，三完整性true。v1-v4候选35ba9f9仍隔离，独立审核/root/review96终态确认无新通用最小方案、不盲跑；模型字母错误/重复模板，104保持待修 |
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
-| 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；12f1baa run002正式failed0/19步1859.136秒、三完整性true；检索修复真实生效，保存附件/首图/背景链正确但原首图印章、Gold山景（不在三图）；上游tar/Gold LFS哈希同本地。独立审核无新工具方案，候选隔离、仍待修 |
 | 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`repair-132-20261030-agent`；原基线run001 deadline/null；v1run002 deadline/null35事件1926.525秒；v2a26fb3c run003 deadline/null17事件1961.313秒，三完整性true。读取工具/大小写说明真实可见，但模型未读参考未写评分，候选隔离，终态独立复核无新通用最小方案，不盲跑，human_review=false |
 
@@ -347,6 +346,10 @@ flowchart TD
 - 132-agent-v2/a26fb3c run003正式deadline/rewardnull，17事件1961.313秒，三完整性true，无evaluator/完成申请/写入保存。真实request5后case-sensitive/use*说明可见，7-16读10学生，仍未读参考；response17推理27168字length无call、重试17inspect、nextstream26070字后deadline。10:19:41只读快照reference/grades均与输入原字节同，无后续mutation；不把快照当最终evaluator产物。owner c4336fe0593c439998fe40ce98b1dd47容器为空/租约释放，其他题资源未碰。候选不集成，终态独立复核中；3/8正式通过5待修。证据 [最新诊断](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/diagnosis.json)、[完整结果](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/output/results/results.json)、[批次回执](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/batch-result.json)。
 
 - 本队列本轮终态：独立/root/review96复核132run003无新通用最小方案，不run004、不集成失败候选。模型误称仅9题/Q6缺失，但真实上下文10学生全文及10处酒店题完整，无reader截断或参数改写；无done不能说completion放行。最终 **3/8正式PASS：96、115、130；5/8待修：104、113、117、127、132**。全部末次source/config/OSWorld完整性true；104/127/132失败候选保留隔离，无预算/模型/evaluator/题目/答案改动，历史189分数不变。人工审核关闭持续，全部方案由/root/review96独立审核；[132终态复核](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-003/terminal-review.json)、[8题汇总](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/batch-result.json)。
+
+- 用户后续明确授权117“这一题单独做提示，跟参考文件名一样”，覆盖本题禁止单题提示/修改题目文字的默认约束。117-user-prompt-v1独立/root/review96方案和实际diff/metadata通过，候选0c75e7ec3b0e851e0e8936ebeec4804931773038只在117 instruction末尾追加PDF与DOCX同basename改.pdf，其他JSON/原evaluator/输入/Gold/模型预算不变，无运行源码修改；新结果明确user-clarified/task_instruction_modified=true/original_benchmark_eligible=false，不回填原189/原题0分。新独立run002已启动，owner lite-repair-b20db91ae77e442eaecf8ba8aa9ec69f、slot[1]/5/shared锁/新guest，运行seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711、OSWorld摘要2556e56a456cfa4189d36d33890957fe8fa65eb46b339bf018feab2f5f66b639。证据 [方案](/home/liuxv/liteagent-local-runs/repair-117-20261030-prompt/plan-v1.json)、review-v1.json、review-diff.json、candidate-checks.json、run002/output/{resource-lease.json,run-status.json}；原条件3/8PASS5待修不变，补充提示结果待定。
+
+已修复（用户补充提示条件，非原题成绩）：117 / 8df7e444-8e06-4f93-8a1a-c5c974269d82。用户明确授权单题提示“跟参考文件名一样”；117-user-prompt-v1由/root/review96方案/实际diff/metadata独立审核通过，只追加“PDF与原DOCX同basename，扩展名.pdf”。正式候选0c75e7ec3b0e851e0e8936ebeec4804931773038，新guest run002 **passed/reward1.0/agent_done，10事件490.232秒**，source/config/OSWorld完整性true，原9B thinking/100步1800秒/原evaluator。ZIP恰原DOCX和同名PDF，成员名与Gold全同，DOCX原字节保留，PDF20页、原内容比较0.996931935≥.95；新提示实际首请求可见。仅题目instruction修改，原评测代码/参考数据/输入/runtime不变；user-clarified、task_instruction_modified=true、original_benchmark_eligible=false；原无提示0分和139/189历史保持。活动比候选仅其他聊天台账前进，任务/运行/条件无差异，已于fd41cfd193e3bd7cffdb0c96a9fac4b704d3a29e快进集成；GitHub待推送。证据 [新正式结果](/home/liuxv/liteagent-local-runs/repair-117-20261030-prompt/run-002/output/results/results.json)、[产物核对](/home/liuxv/liteagent-local-runs/repair-117-20261030-prompt/run-002/artifact-validation.json)、[集成](/home/liuxv/liteagent-local-runs/repair-117-20261030-prompt/run-002/integration.json)。当前本队列完成4/8（含1补充提示），4/8待修；不并入原条件3PASS。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
