@@ -362,7 +362,7 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；Order65-v7候选cbfb159 run008正式failed0/agent_done，28events/847.836秒，三完整性true、资源清理。10非空段9有Tab、末段未改，Tab前token3/3/4/6/10/6/12/4/6/5；原词序保留。scope反馈实际可见，整篇分段counts被压缩丢失但错误replacement counts仍可见。V8仅紧凑保留已有indexed token counts表，方案同一独立审核通过并实施；稳定4文件diff复审中；证据个人目录run-008-diagnosis.json；未集成，human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V8修正后实际diff经同一独立审核/root/review_order65通过，候选2adcc20冻结，run009原条件正式复跑中；仅完整native indexed counts紧凑表及预算保留，所有目标仍模型自选。run008正式failed0，历史完整证据保留；本轮未集成；证据个人目录run-009/output、v8-agent-review.json；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
@@ -461,6 +461,9 @@ flowchart TD
 - 2026-10-30 11:36 UTC：Order65-v8限定投影方案同一审核/root/review_order65通过后实施4文件（2修改/2新增）；完整native counts在details采样前形成indexed表，仅整行前缀、重复压缩准确更新visible/omitted，不从预览重算或非法补0，selected/returned范围明确，无目标数/合格/完成判断。交审前发现表挤掉5000预算原文，已修为该Writer context优先保留身份/正文；未改旧测试。44新测试过、110范围保留过，206综合过/1基点旧oneOf、后加2正文保留回归单独过；真实run008多事件36组只读overlay投影过，5000原文424/425/410字保持、2000如实局部/截断。Ruff/diff/check过，稳定实际diff待同一审核、未冻结/复跑/集成；7/12通过不变，77未启动。证据v8-checks.json、v8-run008-readonly-replay.json及v8-body-comparison-*.jsonl。
 
 - 2026-10-30 11:48 UTC：Order65-v8首次实际diff被同一独立审核否决：无table也追加说明使2旧正文用例回归、分页next丢失、80×25分段宽表挤掉身份/scope/正文。已在原批准边界修正条件文案、先保留身份/范围/分页、table至多1/3预算及紧预算减少正文预览行；125定向通过含3旧回归与6宽表/多层转发，真实run00836组只读overlay回放通过，Ruff/diff/check通过。稳定diff交同一审核者复审，尚未冻结/run009/集成。另已检查他聊290b7af仅Order127专用题意/参考输入，保留该授权修改，65 task及全部29个evaluator文件逐字未变，整个OSWorld seal会变化。7/12交付不变，77未启动。
+
+
+- 2026-10-30 11:51 UTC：Order65-v8修正实际diff同一独立审核/root/review_order65明确通过（内容3f2b9b13；独立222过/1旧失败，相邻118过/35旧失败，集合与冻结基点相同）。合并最新活动a965bba后冻结2adcc206ab2ff5aef879526905ddb5973ab598c5，干净run009/source、原run001逐字config/9Bthinking100步1800秒/65原题及evaluator。source seal fac4839a，整体OSWorld seal5fb8d864（保留他聊Order127任务改动，65及全部evaluator不变）；owner lite-repair-5855d401e43c4614b20d890e61d482bd，slot1/5，11:50:39UTC，独立guest/写盘/端口与兼容shared锁。只读/file观察器不执行guest动作。7/12交付不变，77未启动；候选未集成。证据个人目录v8-agent-review.json、v8-checks.json、v8-activity-compatibility.json及run009/prep.json、output资源/状态。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
