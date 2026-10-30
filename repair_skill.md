@@ -279,7 +279,7 @@ flowchart TD
 
 ### Docker 修复后指定队列（2026-10-30，8题，human_review=false）
 
-本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 2/8 正式通过，6/8 待修；历史批次分数不变。
+本聊天按用户指定顺序串行修复：96、104、113、115、117、127、130、132。以 [最新错题单](/home/liuxv/liteagent/reports/20261030-dockerfix-full189/wrong-tasks.md) 的 Order + task ID 为准，独立子 agent 只读审核方案，不人工审核，不并行修题。当前 3/8 正式通过，5/8 待修；历史批次分数不变。
 
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
@@ -287,8 +287,7 @@ flowchart TD
 | 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；`repair-113-20261030-agent`；acb2e15无补丁run001正式deadline/null、36事件1932.696秒、三完整性true、原evaluator未运行；独立审核/root/review96无新通用获批方案，不盲跑，保持待修 |
 | 117 | 8df7e444-8e06-4f93-8a1a-c5c974269d82 | 本聊天/root；fcff0bc无补丁run001正式failed0/17步531.048秒、三完整性true；ZIP成员名essay.pdf与参考原basename不同，题目未要求PDF名；DOCX原字节、原PDF子比较0.9969通过；独立审核无通用新方案，不盲跑、仍待修 |
 | 127 | c2751594-0cd5-4088-be1b-b5f2f9ec97c4 | 本聊天/root；12f1baa run002正式failed0/19步1859.136秒、三完整性true；检索修复真实生效，保存附件/首图/背景链正确但原首图印章、Gold山景（不在三图）；上游tar/Gold LFS哈希同本地。独立审核无新工具方案，候选隔离、仍待修 |
-| 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-130-20261030-agent`；最新12df49c新detached无补丁run001运行，human_review=false |
-| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 排队，未认领运行资源 |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`/home/liuxv/liteagent-local-runs/repair-132-20261030-agent`；最新b8c7434新detached无补丁run001准备，human_review=false |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
@@ -328,6 +327,8 @@ flowchart TD
 - 127 run002真实save提取设置均成功但原评分0。原始profile唯一Notes邮件附件SHA4c9a185b与保存/提取来源同，XML首图印章，背景文件与该图字节同；参考山景不在三图。上游镜像HEAD所示commit1e112283、tar LFS SHA002ad7e00d2ce361ca770f5c246c03850018ec4e94e5e9c4e12198b66e81b99c及GoldSHA1b19ee9db539d8eeabe3deab4e7579aeba472afad1dbd9538fd110830ab9ca0c均匹配本地，直连HF超时留证。独立终态审核无新通用缺陷，不改evaluator/first顺序/Gold，不集成失败候选；证据run002/{artifact-validation.json,terminal-review.json,mirror-identity.json}。按序130最新无补丁复跑，不带127补丁。
 
 - 130 run001从最新12df49c干净detached无补丁正式启动；owner lite-repair-58c71a5bef014d97875ded763e1eded1、slot[2]/5、shared兼容锁/独立guest，source seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711；原9B thinking/100步1800秒/task/evaluator。运行证据本题run001/output/{resource-lease.json,run-status.json}。
+
+已修复：130 / 98e8e339-5f91-4ed2-b2b2-12647cb134f4，最新活动源码12df49c无新增补丁run001正式passed/reward1.0/agent_done，19步580.916秒、三完整性true；原9B thinking/100步1800秒/evaluator。五TXT顺序直接拼接2249字符与实际逐字一致，所有非空runs10pt；原参考段落文本精确不同但原evaluator通过，如实记录，不宣称字节完全相同。human_review=false，沿用96已审核通用崩溃修复，不制造新补丁；[结果](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/output/final-integrity.json)、[产物](/home/liuxv/liteagent-local-runs/repair-130-20261030-agent/run-001/artifact-validation.json)。回执待推送；132按序准备，原全量分数不变。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
