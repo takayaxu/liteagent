@@ -189,7 +189,16 @@ TABLE_CELL_SELECTOR = {
     "additionalProperties": False,
 }
 TEXT_FORMAT_PROPERTIES = {
-    "color": RGB_COLOR,
+    "color": {
+        **RGB_COLOR,
+        "description": (
+            "Font color. When the instruction gives a supported color name, pass "
+            "that exact name so the Adapter resolves LibreOffice's native named "
+            "color; do not guess or convert the name to RGB. An exact #RRGGBB or "
+            "integer color explicitly given in the instruction or observed in "
+            "the source may be passed unchanged."
+        ),
+    },
     "font_size": {"type": "number", "exclusiveMinimum": 0},
     "font_name": NONEMPTY_STRING,
     "bold": {"type": "boolean"},
