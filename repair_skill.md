@@ -368,13 +368,13 @@ flowchart TD
 
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
-| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V10实际15文件diff同一独立审核/root/review_order65通过，候选69d647e冻结，run011原条件正式复测中；模型显式选文字保留策略、原生布局紧凑保留，不自动选词界/位置/策略，不改完成门。run010正式failed0/三完整性true/资源清理；历史保留。全部65候选未集成；证据v10-agent-review.json及run-011/output；human_review=false |
+| 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 本对话 /root；V10候选69d647e原条件run011正式deadline/null，21events/1863.887秒，原evaluator未调用；三完整性true、controller/observer退出、owner容器空/lease释放。六段重复文字、四段无Tab、三段首Tab前四词、全部非空段多余LEFT25.4；全部成功替换显式allow，preserve未选择。布局165.1与完整词数已到模型，不再归因反馈遗漏。当前同一独立审核/root/review_order65终态复核；全部65候选未集成，证据run-011-diagnosis.json及run-011/output；human_review=false |
 | 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 待处理；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
 
-2026-10-30：第5题原始第3步将公式表达式以普通字符串写入已有公式单元格，第5/11步回读为 string、无公式，第12步完成门仍通过。失败运行 `c8349c4` 与基点间仅文档/报告变化，运行源码等价；正式失败有效，无需重复基线。v1经独立审核通过，在Calc写入前原子拒绝该歧义并保留显式公式/字符串路径。候选`8cebae8` run001运行完整性通过；第3步拒绝、第4步显式公式成功，显示及保存后读回正确，但原始evaluator因评分CSV缺失返回0；相同缺文件现象见原full189，未知转换失败原因。独立终态审核确认没有直接证据支持转换器通用修复；不重复盲测，候选不集成，Order5待修。
+历史诊断（截至run001；后续run002已正式PASS并交付，见下方已修复表）：第5题原始第3步将公式表达式以普通字符串写入已有公式单元格，第5/11步回读为 string、无公式，第12步完成门仍通过。失败运行 `c8349c4` 与基点间仅文档/报告变化，运行源码等价；正式失败有效，无需重复基线。v1经独立审核通过，在Calc写入前原子拒绝该歧义并保留显式公式/字符串路径。候选`8cebae8` run001运行完整性通过；第3步拒绝、第4步显式公式成功，显示及保存后读回正确，但原始evaluator因评分CSV缺失返回0；相同缺文件现象见原full189，未知转换失败原因。独立终态审核确认没有直接证据支持转换器通用修复；不重复盲测，候选不集成，Order5待修。
 
 2026-10-30：第8题原始第5步向Sheet2的A2:F2写六个公式，第6步重写B2，第7步给A2:A7尝试横向矩阵被正确拒绝，第8步改为纵向月标签，第9步纵向值写入B2:B7；最终Sheet2有6列和7行，预期仅2列，C2:F2多余公式保留，原始evaluator 0。用户要求“Month/Total”两列表格；模型混淆月合计与单人跨月合计，直到发现超宽结果才改向。运行源码已有 `monthly_column_totals_plan/mutations/readback` 及指令/完整源表解析，但针对性门禁位于旧 `_completion_gate`；strict generic路径只做操作类别检查，没有接入该合同，故观察结果虽为A1:F7仍放行。拟Order8-v1：将既有月汇总完整状态合同接入strict generic完成判定，核对全部观察月份、确切两列内容/公式及目标范围，阻止多余尾列完成；不选择模型参数、不改用户/任务数据。待独立审核。
 
@@ -488,6 +488,9 @@ flowchart TD
 
 
 - 2026-10-30 13:24 UTC：Order65-v10实际diff独立审核/root/review_order65通过（内容fb85b784；304过/1基点旧失败，相邻118过/35基点旧失败集合相同，native归档18Writer文件与当前候选相同）。合并最新活动d36fcaf仅台账后冻结69d647efe8b751da0f4f6365685d3c4110db2e5c，新run011/source干净detached，原run001逐字config/原9Bthinking100步1800秒/原65任务及evaluator。source seal8fc34fc1，OSWorld5fb8d864与run010同；owner lite-repair-a527c643dc0745a5abc28b678183956e，slot2/5，13:24:20UTC，独立guest/盘/端口及兼容shared锁；另104他聊独立运行不干扰。只读/file观察器不执行guest动作，正式结果待定。7/12交付不变，77未启动；65未集成。证据v10-agent-review.json、v10-checks.json、run011/prep.json及output资源/状态。
+
+
+- 2026-10-30 13:57 UTC：Order65 V10候选69d647e正式run011为agent_deadline_exhausted/reward=null，21事件1863.887秒，evaluator_loaded_after_agent=false；不是0分或PASS。首次编辑前8192输出预算全用于32135字符思考后length，既有恢复返回观察；原始数组字符串调用被本地校验拒绝。12原始段/10非空保留，raw0–5六段短find+后半句导致正文重复，成功替换全部选择allow_text_change，preserve从未选择；首次格式25.4/190.5在布局165.1及坐标说明可见时已由模型原参选错，后改RIGHT165.1但保留额外LEFT25.4。最终首Tab前词数[3,3,4,4,3,4,12,4,6,5]、raw3两个Tab、raw6–9无Tab；无propose_done，不能称完成门放行。本轮NO_TEXT_CHANGE零写入拒绝生效。source/config/OSWorld完整性全true，runner/observer退出、owner a527c643dc0745a5abc28b678183956e容器空且lease释放。主机诊断v2仅修正无DONE的终态取证与布局字段/进程检查，不改运行源码。同一独立审核/root/review_order65复核终态及是否有新通用最小方案，禁止同源码盲跑或脚本代选答案；7/12交付不变，77未启动。证据本题run-011-diagnosis.json、run-011/{formal-result-summary.json,layout-at-actual-format-call.json,first-edit-actual-call.json,cleanup-verification.json}。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
