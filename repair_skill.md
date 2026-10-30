@@ -369,7 +369,7 @@ flowchart TD
 | Order | task ID | 状态与认领 |
 | --- | --- | --- |
 | 65 | `0a0faba3-5580-44df-965d-f562a99b291c` | 保留待修；V10候选69d647e原条件run011为deadline/null，21events/1863.887秒，evaluator未调用；三完整性true、资源已清理。同一独立审核/root/review_order65终审无新获批通用最小方案，禁止猜测性改动/同源码盲跑；全部65候选隔离未集成。六段正文重复、四段无Tab、多余LEFT25.4；策略/布局/完整词数已到模型。证据run-011-diagnosis.json及run-011/terminal-agent-review.json；human_review=false |
-| 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 本对话 /root认领；最新活动已提交源码干净无补丁基线准备，独立目录 /home/liuxv/liteagent-local-runs/repair-77-20261030-nohuman；保留65待修且不携带65失败补丁；human_review=false |
+| 77 | `88fe4b2d-3040-4c70-9a70-546a47764b48` | 本对话 /root；最新活动6319054干净无补丁run001正式基线运行中，owner d71557278b39487f880a8378174b67b3、slot2/5/shared兼容、独立guest/盘/端口，source seal75fcc013；保留65待修，不携带65失败补丁。目录 /home/liuxv/liteagent-local-runs/repair-77-20261030-nohuman/run-001/output；human_review=false |
 | 87 | `2fe4b718-3bd7-46ec-bdce-b184f5653624` | 待处理；human_review=false |
 | 88 | `3680a5ee-6870-426a-a997-eba929a0d25c` | 待处理；human_review=false |
 | 93 | `f7dfbef3-7697-431c-883a-db8583a4e4f9` | 待处理；human_review=false |
@@ -494,6 +494,9 @@ flowchart TD
 
 
 - 2026-10-30 14:02 UTC：Order65 run011同一独立终审/root/review_order65确认无新获批通用最小修复，保留待修、全部65候选不集成；策略/布局/计数已在错误决策前可见，不能继续归因信息缺失或放宽契约/代选答案。允许按skill无新证据分支串行继续77；77从最新活动已提交源码独立无补丁基线开始，不携带65失败补丁链。7/12已交付、65及77/87/88/93五题待修，human_review=false持续。终审证据本题run-011/terminal-agent-review.json。
+
+
+- 2026-10-30 14:03 UTC：Order77最新活动已提交6319054与原full189有21个运行/测试/config文件差异，先建干净detached run001/source无补丁基线。原默认config仅tasks改为77身份，SHA3c2ecceb6910b98c1d4143553c980504dec0c035f9d85ccdee69dd8357870959；原9Bthinking/100步1800秒/任务/evaluator不变。14:02:33UTC启动，controller2648301、owner d71557278b39487f880a8378174b67b3、slot2/5/shared兼容锁，独立guest/写盘/端口；source seal75fcc013dd020f696a1e75253226ea9e8fafe58e9bd5b94a1e28af0fa0eb1711、OSWorld5fb8d864。只读/file旁路归档，不执行guest编辑。证据本题run001/{prep.json,output/resource-lease.json,output/run-status.json}；65候选仍隔离待修，7/12交付、5待修。
 
 
 ### v4 指定队列（2026-10-28，14题，串行修复）
