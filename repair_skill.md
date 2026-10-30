@@ -284,8 +284,8 @@ flowchart TD
 | 待修题号 | 任务 ID | 责任人 / 工作树 / 当前阶段 |
 | --- | --- | --- |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 本聊天/root；v8候选72305fc原条件run009正式deadline/null、46事件1968.265秒、三完整性true；typed真实29调用，40正确答案却选append_text_file，42/44/46写入检索缺接口后重复读取；四文件字节未改、Answer两处仍空，0done/evaluator未加载。/root/review96终态复核，保持待修、不集成、不盲跑第10轮 |
-| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；fb668a2无补丁run002正式deadline/null、19events2334.413秒、完整性true、0done/evaluator未加载；模型漏抄行列/clipboard误用，step18 PDF导出覆盖price.docx。113-v1写前PDF后缀/来源alias保护+clipboard纯文本说明经/root/review96方案通过，隔离实施/实际diff经独立审核通过，候选68cd99d原条件run003正式failed0/13events1183.712秒，三完整性true；GUI复制改为ctrlC但起点A6，评分表11×5对gold15×5，空磁盘读回仍done放行；v2单Calc显式range复制剪贴板原语方案/实际diff经/root/review96通过，候选61023c4原条件run004运行中，尚未通过/集成 |
-| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；`repair-132-20261030-agent`；原基线run001 deadline/null；v1run002 deadline/null35事件1926.525秒；v2a26fb3c run003 deadline/null17事件1961.313秒，三完整性true。读取工具/大小写说明真实可见，但模型未读参考未写评分，候选隔离，终态独立复核无新通用最小方案，不盲跑，human_review=false |
+| 113 | 81c425f5-78f3-4771-afd6-3d2973825947 | 本聊天/root；v1run003正式failed0；v2候选61023c4 run004正式deadline/null42events2075.65秒，三完整性true，0done/evaluator未加载。25create/28及33两张16×5空表保存，30inspect/31原生copy16×5成功；38/39粘贴保存实际GIMP，最终price两空表160空格。/root/review96终态复核，候选隔离待修，不集成/不盲run005 |
+| 132 | aceb0368-56b8-4073-b70e-3dc9aee184e0 | 本聊天/root；原基线及v1/v2均deadline/null，候选未集成。v3定位Writer读取遗漏原生自动题号5/6/10及选项标签，最小补回ListLabelString并统一分页offset；真实原生/表格/分页/不改源文件检查通过，24定向测试通过。human_review=false，独立/root/review96复核实际diff后冻结原题run004，结果待定 |
 
 - 2026-10-30 北京时间10:04，本聊天启动96 run-001；[状态](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/run-status.json)、[租约](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/resource-lease.json)、[完整日志](/home/liuxv/liteagent-local-runs/repair-96-20261030-agent/run-001/output/runner.log)。实际owner/名额以租约为准；其他账号独立guest保留，不干扰。
 
@@ -379,6 +379,12 @@ flowchart TD
 - 2026-10-30 16:16 UTC：113-v1 run003正式failed/reward0/agent_done，13events1183.712秒、三完整性true，原evaluator仅结束后加载。3错误点选A6而非A1，4ctrlshiftend/5ctrlC、9粘贴；11仅导出独立PDF未损docx，12读盘0字、13仍done，评分postconfig保存内存表。实际11×5、gold15×5，漏前5行+多末空行；源used16包含末空白，不自动裁剪。normalgate放行回放由独立审核核对，不归auditedGUIshortcut。候选未集成；v2拟单Calc range.copy_to_clipboard，模型显式选sheet/range，返回范围/MIME，不paste/save/裁空，待审。native-probe-003合成跨copy进程退出后Writerpaste仍原生3×2/currency/bold，背景未保留、非正式PASS，guest已清理。
 
 - 2026-10-30T16:31:48.958899+00:00：113-v2候选61023c4cf7470fd9f89989022bce263f16b3904c正式run004；新增单Calc range.copy_to_clipboard，显式模型sheet/range、native selection核对、回执实际范围/MIME，只复制不paste/save/裁空；保留v1。独立方案/实际diff通过，12新focused审核者独立过、50相关测试过、Ruff/diff/check过，候选真实worker跨进程probe B2:B3→Writer2×1金额精确、源字节/modifiedflag不变且自有guest清理。merge932e9ac仅docs，runtime与5a0c33c一致；新干净detachedrun004，原config/任务/模型预算/evaluator不变，owner lite-repair-574f2f5276bf4b058d93abfc74e09de6、slot[1]/5、独立guest/shared兼容锁，seal1e49c0918a41295a9ac1f5639bc0f2790a7a98cd4f02469514336f64cfef7878；未集成。证据review-v2-actualdiff.json、v2-checks.json、native-candidate-probe/result.json及run004/output/{resource-lease.json,run-status.json}。
+
+- 2026-10-30 17:07 UTC：113-v2 run004正式deadline/null，42events2075.65秒，三完整性true、0done/evaluator未加载，源xlsx42份快照SHA同一。完整raw校正状态快照漏中间事件的错误摘要：25Writercreate，28/33成功各插16×5空表，30inspect后31原生copyA1:E16成功、实际范围/MIME/copiedtrue；最终price5354bytes两表160格全空，38paste39save实际GIMP图像/XCF保存框，非Writer。/root/review96独立读18份DOCX和原始截图，保持待修/不集成/无新方案不盲run005；证据run004/{artifact-validation.json,terminal-review.json,cleanup-verification.json}。此条覆盖过程误称无Writercreate/无price文件/复制始终失败的摘要，不覆盖正式null结果。
+
+- 2026-10-30最新请求104/113/117/127/132，human_review=false持续：117同名PDF专用提示run002 PASS1.0，127用户参考图+专用提示run004 PASS1.0；当前6733f57与其集成fd41cfd/290b7af运行源码/bin/config/各自任务定义均无diff，保留既有正式PASS，不重复无改动复跑；两题原benchmark eligible=false，不算原题条件通过。证据 /home/liuxv/liteagent-local-runs/verified-prompt-117-127-20261030.json。132原基线b8c7434与当前运行源码/bin/config/依赖/132定义均相同，源seal75fcc0相同，不为文档/别题定义变化重复基线；已有v2run003仍deadline/null，10学生读全但未读参考未写成绩、case说明到达真实请求，末轮无新通用最小方案，待独立当前条件复核。证据本题current-source-equivalence.json。
+
+- 132-agent-v3：直接原生证据确认旧读取遗漏自动题号5/6/10与选项字母。补回实际ListLabelString、表内递归、统一含标签Unicode分页及公开说明；24定向测试/Ruff/diff/bincheck通过，真实原文+合成表内/分页/源和活跃编辑器未改验证通过。独立/root/review96实际diff审核批准，候选bd93271fd9d6446b8bbc8b9b3986bd7f8c5442c6从新run-004/source干净detached正式原题启动；human_review=false，原9B thinking/100步1800秒/任务/evaluator不变。owner lite-repair-2fddc4c8a84044ff805c9dedef4d1cf0，独立guest；未获PASS、未集成。证据 [方案/审核](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/review-v3-actualdiff.json)、[运行](/home/liuxv/liteagent-local-runs/repair-132-20261030-agent/run-004/output/run-status.json)。
 
 ### Dockerfix 最新指定队列（2026-10-30，12题，human_review=false）
 
