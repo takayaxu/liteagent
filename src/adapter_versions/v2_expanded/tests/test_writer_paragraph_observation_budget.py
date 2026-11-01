@@ -7,7 +7,7 @@ from integrations.lite_agent.adapter_results import (
     adapter_context_hint,
     compact_context_hint_for_model,
 )
-from integrations.lite_agent.agent import LiteAgent
+from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.episode_control import mark_tool_result_for_audit
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
 
@@ -67,7 +67,7 @@ def rich_inspection(texts):
     }
 
 
-def observed_messages(body, *, forwarded, recovery):
+def observed_messages(body, *, forwarded, recovery, event_count=1):
     domain, action = "libreoffice_writer", "document.inspect"
     if forwarded:
         body = {
@@ -85,19 +85,23 @@ def observed_messages(body, *, forwarded, recovery):
         task_id="synthetic-paragraph-budget",
         domain=domain,
         instruction="Inspect the existing paragraphs.",
-        events=[observation],
+        events=[deepcopy(observation) for _ in range(event_count)],
     )
-    mark_tool_result_for_audit(state, observation)
+    for step, item in enumerate(state.events, 1):
+        item.step = step
+    mark_tool_result_for_audit(state, state.events[-1])
     original_events = deepcopy(state.events)
     # Build the real Agent request without constructing a network client.
-    messages = LiteAgent.__new__(LiteAgent)._messages(
+    agent = LiteAgent.__new__(LiteAgent)
+    agent.config = LiteAgentConfig(base_url="http://unused.invalid")
+    messages = agent._messages(
         state, b"synthetic-screenshot",
         protocol_recovery=recovery == "protocol",
         execution_recovery=recovery == "execution",
     )
     state_text = messages[2]["content"][0]["text"]
     summary = json.loads(state_text.split("\n")[1])
-    projected = next(item for item in summary if item.get("step") == 1)["result"]["context_hint"]
+    projected = next(item for item in summary if item.get("step") == event_count)["result"]["context_hint"]
     assert state.task_id not in state_text
     assert state.events == original_events
     assert len(json.dumps(projected, ensure_ascii=False)) <= 5000
@@ -162,3 +166,36 @@ def test_paragraph_observation_that_fits_keeps_native_formatting_nulls():
     assert row["nonempty_ordinal"] is None
     assert row["line_spacing"] is None
     assert projected == original
+
+
+@pytest.mark.parametrize("forwarded", [False, True])
+@pytest.mark.parametrize("recovery", [None, "protocol", "execution"])
+@pytest.mark.parametrize("event_count", [1, 7])
+def test_numbered_paragraphs_keep_native_labels_beside_text(forwarded, recovery, event_count):
+    texts = [f"Observed bibliography entry {index}. " * 8 for index in range(10)]
+    body = rich_inspection(texts)
+    for index, row in enumerate(body["result"]["paragraph_details"]):
+        row["numbering"] = {
+            "is_numbered": index != 3,
+            "list_label": f"[{index + 1}] " if index != 3 else "",
+            "level": 1 if index == 5 else 0,
+            "style_name": "ObservedList" if index != 3 else "",
+            "restart": False,
+            "start_value": -1,
+        }
+    original = deepcopy(body)
+
+    projected = observed_messages(
+        body, forwarded=forwarded, recovery=recovery, event_count=event_count
+    )
+
+    assert projected["next_paragraph_start"] == 40
+    for source, row in zip(body["result"]["paragraph_details"],
+                           projected["paragraph_details"], strict=True):
+        assert row["index"] == source["index"]
+        assert row["text_length"] == len(source["text"])
+        assert row["text"]
+        assert source["text"].startswith(row["text"].split("...<truncated>...")[0])
+        for key in ("is_numbered", "list_label", "level", "style_name"):
+            assert row["numbering"][key] == source["numbering"][key]
+    assert body == original

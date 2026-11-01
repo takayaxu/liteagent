@@ -441,14 +441,16 @@ def sanitize(
     return str(value)
 
 
-def _fit_string(value: str, budget: int) -> str | None:
+def _fit_string(
+    value: str, budget: int, *, minimum_chars: int = MODEL_CONTEXT_HINT_MIN_CHARS
+) -> str | None:
     if _json_size(value) <= budget:
         # Keep ordinary result strings bounded even when the enclosing object
         # has ample room; this leaves room for neighboring state fields.
         if len(value) <= MODEL_CONTEXT_MAX_STRING_CHARS:
             return value
         value = value[:MODEL_CONTEXT_MAX_STRING_CHARS]
-    if budget < MODEL_CONTEXT_HINT_MIN_CHARS:
+    if budget < minimum_chars:
         return None
     marker = "...<truncated>..."
     room = min(MODEL_CONTEXT_MAX_STRING_CHARS, max(0, budget - 2)) - len(marker)
@@ -499,7 +501,18 @@ def _fit(
             indices = [*range(head), *range(len(value) - (count - head), len(value))]
         else:
             indices = list(range(len(value)))
-        item_budget = max(MODEL_CONTEXT_HINT_MIN_CHARS, (budget - 2) // len(indices))
+        separators = (
+            2 * (len(indices) - 1)
+            if all(
+                isinstance(value[index], dict)
+                and {"index", "text_length", "text"}.issubset(value[index])
+                for index in indices
+            )
+            else 0
+        )
+        item_budget = max(
+            MODEL_CONTEXT_HINT_MIN_CHARS, (budget - 2 - separators) // len(indices)
+        )
         result = [
             item
             for index in indices
@@ -533,6 +546,14 @@ def _fit(
                 # Keep the observed paragraph and its address before optional
                 # formatting; an index without its source text is not a useful read.
                 priority = max(priority, {"index": 97, "text_length": 96, "text": 95}[key])
+            if (
+                paragraph_context
+                and key == "numbering"
+                and isinstance(value.get("numbering"), dict)
+            ):
+                # Native list labels are selectors for reference operations.
+                # Reserve their small observation before fitting paragraph prose.
+                priority = max(priority, 96)
             if value.get("observation_type") == "pdf_table" and key in {
                 "input_path", "page", "table_index", "table_count", "row_offset",
                 "row_count", "column_count", "next_row_offset", "truncated",
@@ -554,7 +575,8 @@ def _fit(
                 omitted += 1
                 continue
             available = budget - _json_size(result) - _json_size(key) - 4
-            if available < MODEL_CONTEXT_HINT_MIN_CHARS:
+            minimum = 32 if paragraph_context and key == "text" else MODEL_CONTEXT_HINT_MIN_CHARS
+            if available < minimum:
                 omitted += 1
                 continue
             child_priority = (
@@ -562,7 +584,19 @@ def _fit(
                 if key.casefold() in {"error", "previous_error"}
                 else key_priority
             )
-            item = _fit(raw_item, available, depth=depth + 1, key_priority=child_priority)
+            if paragraph_context and key == "numbering" and isinstance(raw_item, dict):
+                # Leave a bounded text preview beside the list selector.
+                raw_item = {
+                    field: raw_item[field]
+                    for field in ("is_numbered", "list_label", "level", "style_name")
+                    if field in raw_item
+                }
+                available = max(0, available - MODEL_CONTEXT_HINT_MIN_CHARS)
+            item = (
+                _fit_string(raw_item, available, minimum_chars=32)
+                if paragraph_context and key == "text" and isinstance(raw_item, str)
+                else _fit(raw_item, available, depth=depth + 1, key_priority=child_priority)
+            )
             # An observed JSON null is data, not a failed fit.
             if item is None and raw_item is not None:
                 omitted += 1
