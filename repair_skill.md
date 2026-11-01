@@ -277,6 +277,23 @@ flowchart TD
 
 ## 本轮修复台账
 
+### 人工审核指定队列（2026-11-01，66、79、114、189）
+
+用户指定最新 `reports/20261030-dockerfix-full189/wrong-tasks.md`，按66→79→114→189串行处理；本聊天 `/root`，`human_review=true` 持续生效。逐题在对话提交业务事实、直接根因证据与版本化通用方案，人工明确批准后才实施；不另建审核文档。启动基点 `237c8aa640812b78a5226680128c198906dca553`；主工作区已有未提交skill及未跟踪文档原样保留，本条仅追加本轮索引。
+
+| Order / task ID | 当前阶段 |
+| --- | --- |
+| 66 / `0b17a146-2934-46c7-8727-73ff6b6483e8` | 最新活动237c8aa无补丁run001正式PASS1.0/agent_done，6步263.42秒，三完整性true；无新增补丁。产物只改标题1/8处H2O，其余7处正常而参考全8处下标；原compare_subscript_contains只需一对下标即过，评分覆盖局限单列，不声称完整格式一致。回执已提交本地，待GitHub推送核验。 |
+| 79 / `adf5e2c3-64c7-4644-b7b6-d2f0167927e7` | 最新237c8aa无补丁run001已启动，human_review=true；默认只追加原任务身份source_order170、原9B thinking/100步1800秒/evaluator。owner lite-repair-f442abada7914241b2221f45b15c34a3、slot1/5、独立guest/写盘/端口，兼容shared锁；尚无获批修复。 |
+| 114 / `bb83cab4-e5c7-42c7-a67b-e46068032b86` | 按序待处理，未启动。 |
+| 189 / `7aeae0e2-70ee-4705-821d-1bba5d5b2ddd` | 按序待处理，未启动。 |
+
+66 run001证据：[准备](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/prep.json)、[资源租约](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/resource-lease.json)、[运行状态](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/run-status.json)、[日志](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/runner.log)。旧全量失败：1920×1080截图，模型三次原始y=826/820/820，公开schema仅0–719，0执行/无评分；最新运行与旧c834源码不同，先复跑，不据旧故障直接打补丁。
+
+
+66 [正式结果与产物核查](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/formal-result-summary.json)、[原始结果](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/results/results.json)。79于北京时间2026-11-01 16:20启动；[准备](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/prep.json)、[资源](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/output/resource-lease.json)、[状态](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/output/run-status.json)。当前1/4原始评分确认通过、3待核查；人工审核持续开启。
+
+
 ### 人工审核指定队列（2026-10-31，77、87、88、93）
 
 用户明确要求“根据repair_skill修 77、87、88、93，开启人工审核”；本聊天 `/root` 按该顺序串行处理，原为 `human_review=true`；用户最新“审批通过，关闭人工审核”后切换 `human_review=false` 持续，后续新方案改独立子 agent 审核，覆盖本聊天后续方案及失败重试；历史其他队列的审核选项和结果保留。当前基点 `3ac4d72293d74d0fa9cd1f02a69ab3e42017b31b`，个人证据目录 `/home/liuxv/liteagent-local-runs/repair-77-87-88-93-20261031-human`；启动时无本轮候选修复、guest或资源租约，当前阶段以表格及逐次记录为准。审核材料直接交当前对话，不另建审核文档。
