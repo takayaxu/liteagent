@@ -283,8 +283,8 @@ flowchart TD
 
 | Order / task ID | 当前阶段 |
 | --- | --- |
-| 66 / `0b17a146-2934-46c7-8727-73ff6b6483e8` | 最新活动237c8aa无补丁run001正式PASS1.0/agent_done，6步263.42秒，三完整性true；无新增补丁。产物只改标题1/8处H2O，其余7处正常而参考全8处下标；原compare_subscript_contains只需一对下标即过，评分覆盖局限单列，不声称完整格式一致。回执已提交本地，待GitHub推送核验。 |
-| 79 / `adf5e2c3-64c7-4644-b7b6-d2f0167927e7` | 最新237c8aa无补丁run001已启动，human_review=true；默认只追加原任务身份source_order170、原9B thinking/100步1800秒/evaluator。owner lite-repair-f442abada7914241b2221f45b15c34a3、slot1/5、独立guest/写盘/端口，兼容shared锁；尚无获批修复。 |
+| 66 / `0b17a146-2934-46c7-8727-73ff6b6483e8` | 最新活动237c8aa无补丁run001正式PASS1.0/agent_done，6步263.42秒，三完整性true；无新增补丁。产物只改标题1/8处H2O，其余7处正常而参考全8处下标；原compare_subscript_contains只需一对下标即过，评分覆盖局限单列，不声称完整格式一致。回执2183016已交付GitHub并核验远端。 |
+| 79 / `adf5e2c3-64c7-4644-b7b6-d2f0167927e7` | 已批准79-human-20261101-v1；候选5ab6c1d run002正式PASS1.0/agent_done、19步775.728秒、三完整性true，原条件不变；已快进活动源码，待GitHub交付核验。 |
 | 114 / `bb83cab4-e5c7-42c7-a67b-e46068032b86` | 按序待处理，未启动。 |
 | 189 / `7aeae0e2-70ee-4705-821d-1bba5d5b2ddd` | 按序待处理，未启动。 |
 
@@ -293,6 +293,12 @@ flowchart TD
 
 66 [正式结果与产物核查](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/formal-result-summary.json)、[原始结果](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/results/results.json)。79于北京时间2026-11-01 16:20启动；[准备](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/prep.json)、[资源](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/output/resource-lease.json)、[状态](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/output/run-status.json)。当前1/4原始评分确认通过、3待核查；人工审核持续开启。
 
+2026-11-01：66本地回执提交21830168ddf3f4de86654b2b4dfc4d7b32ff8144经常规Git网络超时后，用Git Data API上传完全相同blob/tree/commit，逐项SHA一致、force=false快进、远端读回同SHA，交付完成；[交付回执](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/api-delivery.json)。79无补丁基线仍运行，7已执行步骤全读取，尚无修改/完成申请/原评分；request8重复reasoning连续流式接收，不当网络断流。原生step5/6/7十条文献均有numbering，真实request8各十条该字段全丢失；next_paragraph_start真实保留，已更正初步判断。只读重放summarize_events复现，events不变；责任代码context_projection.py的_fit段落正文优先与逐条均分预算使numbering被挤掉。79-human-20261101-v1待本对话人工审核：仅让有原生numbering的段落压缩保留可执行编号证据（is_numbered、list_label、level、style_name等）及地址/正文/分页，原预算不变，不选文献位置/书签/引用、不改模型/评分。边界：不能保证消除模型重复推理，不能拿局部回放代替PASS；等待基线自然终态后核对是否仍适用再实施。未打补丁、未启动候选；114/189待序。证据[原事件/真实request与只读回放索引](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/projection-replay.json)、[基线状态](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/output/run-status.json)。
+
+2026-11-01：用户“批准方案1”明确批准79-human-20261101-v1；human_review=true持续。基线run001自然终态agent_deadline_exhausted/rewardnull、16events1872.742秒，三完整性true，未加载原evaluator、无完成申请；11新增文献、14书签、15交叉引用原参指向新源但SOURCE_NOT_NUMBERED正确拒绝、标记未改，16重读初段后截止。原编号压缩缺陷与后续模型漏编号分别记录。隔离实施已批准通用段落压缩：保留原生is_numbered/list_label/level/style_name与正文/地址/分页、预算不变；段落列表计入JSON分隔符，正文余量允许短且显式截断的预览；不改编号工具或完成门。21focused/Ruff/diff/bin-check过，adjacent146过24旧失败与干净基点完全相同；旧段落fixture缺config已仅测试修正。真实7事件前缀正常5/6/7与两恢复最新7均保留十条编号和正文、events不变，较旧恢复窗口仍可截断，不当PASS。候选5ab6c1d98ff809f401092383160d32ad0ce8b3b6冻结，新run002/source干净detached、同字节baseline-config SHA1e8ab5083251db8dc0a743d8fe28da24cf109e6788758c74278080ed52d5f67e正式79复跑；原9Bthinking/100步1800秒/任务evaluator，尚未集成。证据[基线终态](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-001/formal-result-summary.json)、[候选检查](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/candidate-checks.json)、[真实前缀回放](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/candidate-replay.json)、[资源](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/output/resource-lease.json)、[状态](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/output/run-status.json)。114/189按序未启动。
+
+
+2026-11-01：79候选run002正式PASS1.0/agent_done，19步775.728秒、三完整性true；模型8新增文献、10书签、11首次引用SOURCE_NOT_NUMBERED正确拒绝、12自行沿用source32给target36编号、13原生引用成功、14保存、15完成因缺读回拒绝、16/17/18读回、19完成。产物14编号文献、新文献只一条、原生REF Steinberg2003、标记无残留；原逐段文本不完全相同（空段不同），按原compare_docx_files默认空白归一化相同，正式评分1保留。真实request5的12段mixed仍丢编号，后续较小窗口模型实际读到[10]–[13]并自行补编号，不声称修复所有预算/单因素因果。持v4-integration.lock从2183016快进活动到5ab6c1d，与正式候选src/bin/configs完全相同，不增加组合改动；待GitHub交付核验。原基线deadline保留，human_review=true；[原始结果](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/output/results/results.json)、[完整性](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/output/final-integrity.json)、[产物核查](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/artifact-validation.json)。当前2/4正式通过（66、79），114/189按序未启动，不改历史全量统计。
 
 ### 人工审核指定队列（2026-10-31，77、87、88、93）
 

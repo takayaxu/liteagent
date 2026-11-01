@@ -689,6 +689,8 @@ Please help me visualize all numpy arrays in current python file within VS Code.
 
 [正式结果及产物核查](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/formal-result-summary.json) · [原始评分](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/results/results.json) · [完整性](/home/liuxv/liteagent-local-runs/repair-66-20261101-human/run-001/output/final-integrity.json)
 
+2026-11-01：Order79 / `adf5e2c3-64c7-4644-b7b6-d2f0167927e7` 已从活动待修集合移除：人工批准79-human-20261101-v1，候选 `5ab6c1d98ff809f401092383160d32ad0ce8b3b6` run002原始evaluator正式PASS1.0/agent_done，19步775.728秒，三完整性true，原9Bthinking/100步1800秒/任务evaluator不变。通用段落压缩保留编号与正文预览；产物14条编号文献、新文献及原生引用正确，原评分默认空白归一化相同、空段仍有差异。12段大窗口仍可能丢编号的已知局限保留，不声称所有压缩场景已修复。已集成活动源码，GitHub交付见[回执](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/api-delivery.json)。[原始结果](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/output/results/results.json) · [产物核查](/home/liuxv/liteagent-local-runs/repair-79-20261101-human/run-002/artifact-validation.json)。旧全量失败与原189题分数保留。
+
 ## 部分得分
 
 | 题号 | 应用 | reward |
