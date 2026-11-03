@@ -35,6 +35,16 @@ def constrain_tool(function: dict, state: Any) -> None:
     properties = parameters.get("properties", {})
     if not {"row_fields", "column_fields", "page_fields", "data_fields"} <= properties.keys():
         return
+    # Qwen's XML parser stringifies mixed string/object destinations. The
+    # existing scalar top-level relative fields express the same placement;
+    # publish that representation, as the stacked-layout contract does.
+    destination = properties.get("destination", {})
+    if "oneOf" in destination:
+        absolute = next(branch for branch in destination["oneOf"] if branch.get("type") == "string")
+        properties["destination"] = {
+            **absolute,
+            "description": "One A1 anchor. For relative placement omit destination and pass top-level below_range and blank_rows.",
+        }
     # Same disjoint category form as the percentage contract: Qwen lowering
     # intersects each branch with the complete owner/placement schema.
     parameters["oneOf"] = [{
@@ -55,5 +65,7 @@ def constrain_tool(function: dict, state: Any) -> None:
         "A cross-tab or multiple row groups changes this result. Choose which category "
         "to handle from the live inventory. To correct an existing table, retain its "
         "observed name and use replace=true; changing its name creates another table. "
-        "Retain already-correct tables and choose disjoint output ranges."
+        "Retain already-correct tables and choose disjoint output ranges. "
+        "For relative placement pass top-level below_range=<complete preceding output_range> "
+        "and blank_rows=<chosen gap>; omit destination. Never encode an object inside destination."
     )

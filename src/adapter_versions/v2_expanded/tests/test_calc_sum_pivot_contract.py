@@ -53,6 +53,8 @@ def test_generation_and_validation_preserve_placement_and_model_choice(wrapped):
             cases = [(valid, True), ({**valid, "row_fields": ["Region", "Department"]}, False),
                      ({**valid, "row_fields": ["Unknown"]}, False),
                      ({**valid, "column_fields": ["Department"]}, False),
+                     ({**valid, "destination": {"below_range": "L30:M40", "blank_rows": 1}}, False),
+                     ({**valid, "destination": '{"below_range": "L30:M40", "blank_rows": 1}'}, False),
                      ({**valid, "page_fields": ["Region"]}, False),
                      ({**valid, "data_fields": [{"field": "Amount ($)", "aggregation": "count"}]}, False),
                      ({**valid, "data_fields": [{"field": "Region"}]}, False),
