@@ -14,6 +14,10 @@ PERIOD = (
     + "Reconsidering the same hypothesis without evidence adds no new information. " * 9
     + "\n\n"
 )
+SENTENCE_PERIOD = " ".join(
+    f"Observation {index} confirms that this request needs another distinct action before it can be complete."
+    for index in range(16)
+) + " "
 
 
 def chunk(delta, finish=None):
@@ -60,6 +64,41 @@ def test_exact_reasoning_cycles_interrupt_and_preserve_received_evidence(channel
     assert snapshot["repetition"]["repetitions"] == 3
     assert snapshot["repetition"]["period_chars"] >= 1024
     assert stream.closed and stream.consumed < len(stream.chunks)
+
+
+@pytest.mark.parametrize("size", [1, 37, 30000])
+def test_exact_single_paragraph_sentence_cycle_interrupts(size):
+    reasoning = SENTENCE_PERIOD * 3 + "A new observation follows."
+    stream = Stream([
+        chunk({"reasoning": reasoning[index:index + size]})
+        for index in range(0, len(reasoning), size)
+    ])
+    with pytest.raises(StructuredToolProtocolError) as caught:
+        _aggregate_stream_response(stream)
+    repetition = caught.value.response_snapshot["repetition"]
+    assert repetition == {
+        "channel": "reasoning", "period_sentences": 16,
+        "period_chars": len(SENTENCE_PERIOD.strip()), "repetitions": 3,
+    }
+    assert stream.closed
+    assert caught.value.response_snapshot["message"]["reasoning"].startswith(SENTENCE_PERIOD * 3)
+
+
+@pytest.mark.parametrize("reasoning", [
+    SENTENCE_PERIOD * 2 + "A new observation follows.",
+    " ".join(f"Observation {i} contains unique evidence about the next step."
+             for i in range(200)),
+    '"' + SENTENCE_PERIOD * 4 + '"',
+    "```text\n" + SENTENCE_PERIOD * 4 + "\n```",
+    "> " + SENTENCE_PERIOD * 4,
+    "    " + SENTENCE_PERIOD * 4,
+])
+def test_single_paragraph_valid_prose_and_quoted_code_are_not_interrupted(reasoning):
+    response = _aggregate_stream_response(Stream([
+        chunk({"reasoning": reasoning[index:index + 23]})
+        for index in range(0, len(reasoning), 23)
+    ]))
+    assert response.choices[0].message.reasoning == reasoning
 
 
 @pytest.mark.parametrize("text", [

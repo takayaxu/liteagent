@@ -221,23 +221,75 @@ class _JsonArgumentProgress:
 
 
 class _ReasoningCycleDetector:
-    """Conservative liveness guard for exact multi-paragraph reasoning cycles.
+    """Conservative liveness guard for exact prose reasoning cycles.
 
     Three verbatim periods of at least 1024 characters are a recoverable
-    generation failure, not evidence of task completion. Quoted/code text is
-    excluded; a fence without an unambiguous close leaves detection suspended.
+    generation failure, not evidence of task completion. Check both paragraphs
+    and sentences within a single paragraph; quoted/code text is excluded.
     """
 
     def __init__(self) -> None:
         self.pending = ""
         self.paragraphs: deque[str] = deque(maxlen=36)
+        self.sentences: deque[str] = deque(maxlen=120)
+        self.sentence_offset = 0
+        self.sentence_suspended = False
         self.fence: str | None = None
         self.quote: str | None = None
+
+    def _append_sentence(self, sentence: str) -> dict[str, int] | None:
+        if not sentence:
+            return None
+        self.sentences.append(sentence)
+        sentences = list(self.sentences)
+        for width in range(2, min(40, len(sentences) // 3) + 1):
+            period = sentences[-width:]
+            period_chars = len(" ".join(period))
+            if period_chars < 1024 or len(set(period)) < 2:
+                continue
+            if period == sentences[-2 * width:-width] == sentences[-3 * width:-2 * width]:
+                return {"period_sentences": width, "period_chars": period_chars, "repetitions": 3}
+        return None
+
+    def _check_single_paragraph(self, paragraph: str, *, final: bool) -> dict[str, int] | None:
+        if self.sentence_suspended:
+            return None
+        tail = paragraph[max(0, self.sentence_offset - 2):]
+        if (
+            self.fence is not None or self.quote is not None
+            or paragraph.lstrip().startswith(('"', "'", "“", "‘", ">"))
+            or "```" in tail or "~~~" in tail
+            or re.search(r"(?m)^(?: {4}|\t|>)", tail)
+        ):
+            self.sentences.clear()
+            self.sentence_suspended = True
+            return None
+        for boundary in re.compile(r"(?<=[.!?])\s+(?=[A-Z])").finditer(
+            paragraph, self.sentence_offset
+        ):
+            sentence = paragraph[self.sentence_offset:boundary.start()].strip()
+            self.sentence_offset = boundary.end()
+            evidence = self._append_sentence(sentence)
+            if evidence is not None:
+                return evidence
+        if len(paragraph) - self.sentence_offset > 4096:
+            self.sentences.clear()
+            self.sentence_suspended = True
+            return None
+        if final:
+            return self._append_sentence(paragraph[self.sentence_offset:].strip())
+        return None
 
     def feed(self, value: str) -> dict[str, int] | None:
         self.pending += value
         while "\n\n" in self.pending:
             paragraph, self.pending = self.pending.split("\n\n", 1)
+            evidence = self._check_single_paragraph(paragraph, final=True)
+            self.sentences.clear()
+            self.sentence_offset = 0
+            self.sentence_suspended = False
+            if evidence is not None:
+                return evidence
             if self.quote is not None:
                 if re.search(r"(?<!\\)" + re.escape(self.quote) + r"[.,;:!?]?\s*$", paragraph):
                     self.quote = None
@@ -287,7 +339,7 @@ class _ReasoningCycleDetector:
                     continue
                 if period == paragraphs[-2 * width:-width] == paragraphs[-3 * width:-2 * width]:
                     return {"period_paragraphs": width, "period_chars": period_chars, "repetitions": 3}
-        return None
+        return self._check_single_paragraph(self.pending, final=False)
 
 
 def _aggregate_stream_response(
