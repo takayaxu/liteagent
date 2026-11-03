@@ -1420,8 +1420,13 @@ flowchart TD
 | Order | 正式结果与交付 |
 | --- | --- |
 | 4 | v2/9c0167b，run003 PASS1.0/11步359.826秒，源码补丁已集成de1feb5，待推送 |
+| 8 | f5959b0，run002 PASS1.0/15步492.666秒，源码补丁已集成70b5263，待推送 |
 | 13 | bb71960无补丁run001 PASS1.0/23步938.334秒，回执已集成de1feb5，待推送 |
 | 37 | bb71960无补丁run001 PASS1.0/17步733.466秒，回执已集成de1feb5，待推送 |
 | 82 | bb71960无补丁run001 PASS1.0/26步1012.423秒，回执已集成de1feb5，待推送 |
 
-活动待修复：8→28→65→76→101→104→107→109→114→132→172；本批15题身份、基线轨迹、正式评分和三完整性见reports/20261103-deadline15/baseline-receipt.json。历史deadline仍保留，不改全量成绩。
+活动待修复：28→65→76→101→104→107→109→114→132→172；本批15题身份、基线轨迹、正式评分和三完整性见reports/20261103-deadline15/baseline-receipt.json。历史deadline仍保留，不改全量成绩。
+
+- Order4交付网络核查：本地集成3b43e0e源码与run003 PASS一致，正常push失败GnuTLS recv(-110)，独立ls-remote连接超时，25秒有界读回也超时；保留“本地已集成，待推送”，未报告GitHub完成。Order8自审monthly-column-guidance-v1通过；63focused及10真实prefix/schema不变检查通过，Ruff/diff/bincheck通过；5项旧顶层oneOf夹具断言在干净上一候选同样失败（另20相邻通过），不改这些测试。冻结f5959b0，新干净run002/source，外部配置仅补原Order8身份，原9Bthinking/100步1800秒/task/evaluator不变。正式结果待定，未集成；根目录order008/{self-review-v1.json,checks-v1.json,prefix-replay-v1.json,run-002/prep.json}。
+
+- Order8 v1/f5959b0原条件run002正式PASS1.0/agent_done，15事件492.666秒，三完整性true、ownerf8b40632容器空/controller退出；保存产物7行2列、6个月份及总额同行，Sheet1全部单元格逐值保留。模型初始月份列误写公式已自行覆盖回标签，两次完成因缺保存后inventory被拒，14inspect后15完成；工具schema/路由/gate语义未变。持v4-integration.lock快进至70b5263，src/bin/configs与正式候选完全一致；5/15通过10待修，下一题28。4/8/13/37/82均本地已集成，GitHub网络仍待正常推送。证据reports/20261103-deadline15/order008-receipt.json与本轮order008/run-002/verification.json。
