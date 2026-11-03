@@ -322,7 +322,9 @@ def completion_outcome_issues(state: Any) -> list[dict[str, Any]]:
 
     from .calc_extremum_outcomes import outcome_issues as extremum_issues
 
-    scaled_issues = [*scaled_display_issues(state), *calculation_issues(state),
+    from .calc_rate_outcomes import outcome_issues as rate_issues
+
+    scaled_issues = [*rate_issues(state), *scaled_display_issues(state), *calculation_issues(state),
                      *period_issues(state), *extremum_issues(state)]
     instruction = str(state.instruction)
     counts = {"pivot_tables": requested_pivot_count(instruction), "charts": requested_chart_count(instruction)}

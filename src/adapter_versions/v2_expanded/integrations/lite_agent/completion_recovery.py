@@ -75,7 +75,7 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
             "populate it. Do not repeat reads of known blank cells instead of filling "
             "them; after the correction, save and read all named output ranges."
         )
-    from . import calc_formula_contract, calc_percentage_outcomes, calc_pivot_layout, calc_sum_pivot_contract, calc_monthly_summary
+    from . import calc_formula_contract, calc_percentage_outcomes, calc_pivot_layout, calc_sum_pivot_contract, calc_monthly_summary, calc_rate_outcomes
 
     for tool in tools:
         calc_formula_contract.constrain_tool(tool["function"], state)
@@ -83,6 +83,7 @@ def outcome_recovery_tools(state: Any, gate: dict[str, Any]) -> list[dict[str, A
         calc_pivot_layout.constrain_tool(tool["function"], state)
         calc_sum_pivot_contract.constrain_tool(tool["function"], state)
         calc_monthly_summary.constrain_tool(tool["function"], state)
+        calc_rate_outcomes.constrain_tool(tool["function"], state)
         tool["function"]["description"] += guidance
     return calc_formula_contract.constrain_tools(tools, state)
 
