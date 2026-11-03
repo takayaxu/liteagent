@@ -77,6 +77,26 @@ def test_explicit_media_playback_remains_required(instruction) -> None:
     assert "playback.open" in strict_instruction_required_actions("vlc", instruction)
 
 
+@pytest.mark.parametrize("instruction", [
+    "Allow independent player windows. When I play a video it goes to the first window.",
+    "I want to watch several videos simultaneously. When I play video it opens in the same window.",
+    "Change the global hotkey I use to play music.",
+    "Let me play videos separately by changing the instance preference.",
+])
+def test_media_nouns_in_preference_requests_are_not_directory_locations(instruction):
+    assert "playback.open" not in strict_instruction_required_actions("vlc", instruction)
+
+
+@pytest.mark.parametrize("instruction", [
+    "Please play a video from my Videos folder.",
+    "Open the clip in Videos.",
+    "Play the track in my Music directory.",
+    "Please open the Music folder audio.",
+])
+def test_explicit_media_directories_still_require_playback(instruction):
+    assert "playback.open" in strict_instruction_required_actions("vlc", instruction)
+
+
 class _PdfTextRunner:
     def __init__(self, text: str) -> None:
         self.text = text
