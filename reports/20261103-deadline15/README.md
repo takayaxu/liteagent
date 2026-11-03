@@ -34,8 +34,14 @@
 
 证据根目录：`/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103`。
 
-本批当前5/15确认通过（4、8、13、37、82）；其余10题待修，下一题28。
+本批当前6/15确认通过（4、8、13、28、37、82）；其余9题待修，下一题65。
 
 ## Order8
 
 候选 `f5959b0` 仅增加已有月度两列表契约说明及更具体的缺行反馈，schema/工具路由/执行/完成门规则不变。63focused、10真实prefix、Ruff/diff/bin检查通过；5项旧oneOf结构断言在未改基线同样失败。run002原模型/100步1800秒/原评估，正式PASS1.0，15事件492.666秒，三完整性true、自有容器清空。保存结果7行2列，6个月各有同行总额，原Sheet1单元格逐值保留。初始月份列误写公式被模型改回标签；两次完成申请因缺保存后inventory被拒，14inspect后15完成。回执见 [order008-receipt.json](order008-receipt.json)，候选待集成，不声称全程一次正确。
+
+## Order28
+
+最新基线failed0：24行period rate被再乘100；旧通用单位说明实际送达，原完成检查未核算单位。自审v1增加保守原生年率单位/每年期数/输出数值检查；run002证实新增反馈将显示格式混入单位错误，精确中断后v2分离数值与原有格式核验。run003在gate已通过时仍只看到历史拒绝，v3增加compaction后当前claim资格说明。run004证实inventory/header合并缺项无步骤证据，模型反复引用保存前inventory；v4仅拆清相同谓词诊断，公开实际检查步与最后修改/保存步，不改变freshness要求。前三轮无正式评分，不算0分或PASS；三完整性均true，精确自有资源清理，原日志保留。
+
+最终候选 `7b6b3e3`，run005原9Bthinking/100步1800秒/原task/evaluator正式PASS1.0，21事件681.173秒，三完整性true。保存24数值全部为原输入年率/每年期数，原A/B值与原XLSX逐值保留，只有C20绿色。模型初始公式正确，17完成因缺保存/结构检查拒绝后18save19inspect20读全列21完成；仍有重复设置绿色请求被拒。121focused/5真实prefix诊断不变检查及Ruff/diff/bincheck通过；v3另165focused通过，2项旧GRF测试在未改v2同失败。回执见 [order028-receipt.json](order028-receipt.json)，本地待集成。

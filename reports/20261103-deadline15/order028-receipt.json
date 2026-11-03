@@ -1,0 +1,29 @@
+{
+  "order": 28,
+  "task_id": "21ab7b40-77c2-4ae6-8321-e00d3a086c73",
+  "status": "passed",
+  "reward": 1.0,
+  "steps": 21,
+  "duration_seconds": 681.173,
+  "candidate_commit": "7b6b3e35a18b36153afae8aa9fcb465bb9fda11a",
+  "review_mode": "primary_agent_self_review_user_override",
+  "plan_version": "period-rate-unit-evidence-v4",
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "owned_containers_empty": true,
+  "source_cells_match_original_input_exactly": true,
+  "source_original_file": "/home/liuxv/liteagent-local-runs/latest-full189-12workers-20261102T080546Z/source/src/third_party/OSWorld/cache/21ab7b40-77c2-4ae6-8321-e00d3a086c73/PeriodRate.xlsx",
+  "native_UNO_input_values_match_saved_with_float_tolerance": 1e-14,
+  "all24rates_equal_observed_annual_divided_by_periods": true,
+  "green_cells": [
+    "C20"
+  ],
+  "max_value": 14.724,
+  "format_example": "General",
+  "formal_results": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order028/run-005/output/results/results.json",
+  "artifact_manifest": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order028/run-005/output/results/raw/run-1/28-libreoffice_calc-21ab7b40-77c2-4ae6-8321-e00d3a086c73/evaluator_artifacts/manifest.json",
+  "behavior_limits": "Unit facts corrected formulas from initial mutation; repeated green formatting blocked. Claim17 refused save/inventory,18save19inspect20fullread21done accepted. Current status and native inventory diagnostic actually sent; no guarantee of one-shot reasoning."
+}
