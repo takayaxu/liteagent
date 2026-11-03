@@ -1,0 +1,59 @@
+{
+  "order": 8,
+  "task_id": "26a8440e-c166-4c50-aef4-bfb77314b46b",
+  "status": "passed",
+  "reward": 1.0,
+  "steps": 15,
+  "duration_seconds": 492.666,
+  "candidate_commit": "f5959b0bb44e92b13094eb1295b386967fdfe59e",
+  "review_mode": "primary_agent_self_review_user_override",
+  "plan_version": "monthly-column-guidance-v1",
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "owned_containers_empty": true,
+  "source_cells_preserved": true,
+  "saved_table": [
+    [
+      "Month",
+      "Total"
+    ],
+    [
+      "Jan",
+      4852
+    ],
+    [
+      "Feb",
+      4587
+    ],
+    [
+      "Mar",
+      3943
+    ],
+    [
+      "Apr",
+      3857
+    ],
+    [
+      "May",
+      4677
+    ],
+    [
+      "Jun",
+      4243
+    ]
+  ],
+  "total_formulas": [
+    "=SUM(Sheet1!B2:B11)",
+    "=SUM(Sheet1!C2:C11)",
+    "=SUM(Sheet1!D2:D11)",
+    "=SUM(Sheet1!E2:E11)",
+    "=SUM(Sheet1!F2:F11)",
+    "=SUM(Sheet1!G2:G11)"
+  ],
+  "formal_results": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order008/run-002/output/results/results.json",
+  "artifact_manifest": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order008/run-002/output/results/raw/run-1/08-libreoffice_calc-26a8440e-c166-4c50-aef4-bfb77314b46b/evaluator_artifacts/manifest.json",
+  "behavior_limits": "Initial extra formulas in month column were model-corrected before save. Two completion attempts were refused for missing post-save workbook inventory; model14 inspected, model15 completed. No claim of perfect first-try execution."
+}

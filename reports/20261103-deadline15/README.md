@@ -30,8 +30,12 @@
 
 按原队列从Order4开始；候选方案 `independent-sum-schema-v1` 经主agent自审通过。最新基线48事件显示模型创建交叉表、后续混合分组并不断换名创建，完成检查已报告独立汇总差异。修复只在既有独立分组语义和完整源数据可解析时，把已有完成契约同步至pivot.create参数schema；保留模型选择分组、表名和位置，不变更API路由、评估、预算或自动代写操作。
 
-候选 `6d4a582`：191项定向检查通过、1项跳过，18个真实prefix/最终通用约束schema回放通过，Ruff、diff、source/import检查通过。回放是本地schema核查，不能代替正式PASS；恢复路径通过共享最终约束验证，未声称真实服务生成已验证。v1正式run002因第二张表relative destination对象被Qwen工具解析器字符串化而model_protocol_failure/null，三完整性true、未集成。v2候选 `9c0167b` 采用已有标量位置表达，191项检查通过1跳过、Ruff/diff/source检查通过；新run003正式PASS1.0/agent_done，11事件、359.826秒，三完整性true、自有容器已清空。保存产物恰有两张独立求和表，总额均为2368.15；原evaluator比较透视字段/筛选定义，位置和所有格式不在其覆盖范围。结果见 [order004-receipt.json](order004-receipt.json)。候选已验证，等待集成和推送。
+候选 `6d4a582`：191项定向检查通过、1项跳过，18个真实prefix/最终通用约束schema回放通过，Ruff、diff、source/import检查通过。回放是本地schema核查，不能代替正式PASS；恢复路径通过共享最终约束验证，未声称真实服务生成已验证。v1正式run002因第二张表relative destination对象被Qwen工具解析器字符串化而model_protocol_failure/null，三完整性true、未集成。v2候选 `9c0167b` 采用已有标量位置表达，191项检查通过1跳过、Ruff/diff/source检查通过；新run003正式PASS1.0/agent_done，11事件、359.826秒，三完整性true、自有容器已清空。保存产物恰有两张独立求和表，总额均为2368.15；原evaluator比较透视字段/筛选定义，位置和所有格式不在其覆盖范围。结果见 [order004-receipt.json](order004-receipt.json)。Order4补丁与回执已本地集成至3b43e0e；GitHub连接/TLS失败，当前待正常推送及远端核验。
 
 证据根目录：`/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103`。
 
-本批当前4/15确认通过（4、13、37、82）；其余11题待修，下一题8。
+本批当前5/15确认通过（4、8、13、37、82）；其余10题待修，下一题28。
+
+## Order8
+
+候选 `f5959b0` 仅增加已有月度两列表契约说明及更具体的缺行反馈，schema/工具路由/执行/完成门规则不变。63focused、10真实prefix、Ruff/diff/bin检查通过；5项旧oneOf结构断言在未改基线同样失败。run002原模型/100步1800秒/原评估，正式PASS1.0，15事件492.666秒，三完整性true、自有容器清空。保存结果7行2列，6个月各有同行总额，原Sheet1单元格逐值保留。初始月份列误写公式被模型改回标签；两次完成申请因缺保存后inventory被拒，14inspect后15完成。回执见 [order008-receipt.json](order008-receipt.json)，候选待集成，不声称全程一次正确。
