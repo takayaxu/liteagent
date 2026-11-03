@@ -237,7 +237,8 @@ def validate_monthly_totals(
         return "the requested headers are missing or ambiguous on the new sheet"
     header_row, first_column = positions[0]
     if header_row + len(months) >= len(target_rows):
-        return "the new table does not contain every observed month"
+        return ("the new table does not contain every observed month; each observed month "
+                "needs its own row with the total beside its label under the two requested column headers")
     expected_months = [month.casefold() for month in months]
     for offset, (month, expected_total) in enumerate(zip(expected_months, totals, strict=True), 1):
         row = target_rows[header_row + offset]
@@ -266,3 +267,30 @@ def validate_monthly_totals(
             if not _blank(value) or (isinstance(formula, str) and formula.strip()) or kind not in {"blank", "empty"}:
                 return "the new sheet contains non-empty cells outside the requested table"
     return None
+
+
+def constrain_tool(function: dict, state: Any) -> None:
+    """Explain the existing column-table contract without selecting operations."""
+    from .instruction_semantics import requested_monthly_column_totals_summary
+
+    if getattr(state, "domain", None) != "libreoffice_calc":
+        return
+    request = requested_monthly_column_totals_summary(state.instruction)
+    if request is None or function.get("name") not in {
+        "adapter__workbook_inspect", "adapter__range_read", "adapter__range_write",
+        "adapter__cells_set_formulas", "adapter__workbook_save", "propose_done",
+    }:
+        return
+    function["description"] += (
+        f" The requested table on {request['target_sheet']!r} has TWO COLUMNS "
+        f"headed {request['output_headers']!r}, with one source month per data ROW "
+        "and its total beside it on the SAME ROW. Horizontal source month headers "
+        "do not imply horizontal output totals. Observe the complete original used "
+        "range before choosing the source rows to sum. Keep each month label aligned "
+        "with its own total; formulas spread across one output row cannot satisfy "
+        "a vertical month column. Remove unintended overflow cells using observed "
+        "evidence, then save and inspect/read the complete final table. "
+        "In range.write.values, each inner array is one worksheet row: a vertical "
+        "label column needs one single-element array per label. Locations, formulas "
+        "and which correction to make remain your choice."
+    )
