@@ -135,7 +135,6 @@ def outcome_issues(state):
         value = cell.get("values")
         expected = item["rate"] * item["factor"] / item["count"]
         if (cell.get("kinds") not in {"number", "formula"} or not _number(value)
-                or _format_type(cell) not in {16, 32, 64}
                 or not math.isclose(value, expected, rel_tol=1e-10, abs_tol=1e-9)):
             wrong.append({"cell": address, "observed": value, "source_format_type": item["source_format_type"]})
     if missing or wrong:

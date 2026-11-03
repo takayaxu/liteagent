@@ -48,7 +48,9 @@ def test_preserves_input_rechecks_fresh_outputs_and_numeric_format():
     assert outcome_issues(state)[0]["code"] == "period_rate.source_unverified"
     state = current()
     state.events[-1].result["context_hint"]["number_formats"][1][0]["type"] = 4
-    assert outcome_issues(state)[0]["code"] == "period_rate.unit_mismatch"
+    assert outcome_issues(state) == []  # Display format belongs to the existing extremum gate.
+    state.events[-1].result["context_hint"]["number_formats"][1][0]["type"] = 256
+    assert outcome_issues(state) == []
     state = current()
     state.events.append(event(6, "workbook.save"))
     assert outcome_issues(state)[0]["code"] == "period_rate.output_unverified"
