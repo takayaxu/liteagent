@@ -1419,14 +1419,25 @@ flowchart TD
 
 | Order | 正式结果与交付 |
 | --- | --- |
-| 4 | v2/9c0167b，run003 PASS1.0/11步359.826秒，源码补丁已集成de1feb5，待推送 |
-| 8 | f5959b0，run002 PASS1.0/15步492.666秒，源码补丁已集成70b5263，待推送 |
-| 13 | bb71960无补丁run001 PASS1.0/23步938.334秒，回执已集成de1feb5，待推送 |
-| 37 | bb71960无补丁run001 PASS1.0/17步733.466秒，回执已集成de1feb5，待推送 |
-| 82 | bb71960无补丁run001 PASS1.0/26步1012.423秒，回执已集成de1feb5，待推送 |
+| 4 | v2/9c0167b，run003 PASS1.0/11步359.826秒，源码补丁已集成de1feb5，已推送 |
+| 28 | 7b6b3e3，run005 PASS1.0/21步681.173秒，已集成6d87af9 |
+| 8 | f5959b0，run002 PASS1.0/15步492.666秒，源码补丁已集成70b5263，已推送 |
+| 13 | bb71960无补丁run001 PASS1.0/23步938.334秒，回执已集成de1feb5，已推送 |
+| 37 | bb71960无补丁run001 PASS1.0/17步733.466秒，回执已集成de1feb5，已推送 |
+| 82 | bb71960无补丁run001 PASS1.0/26步1012.423秒，回执已集成de1feb5，已推送 |
 
-活动待修复：28→65→76→101→104→107→109→114→132→172；本批15题身份、基线轨迹、正式评分和三完整性见reports/20261103-deadline15/baseline-receipt.json。历史deadline仍保留，不改全量成绩。
+活动待修复：65→76→101→104→107→109→114→132→172；本批15题身份、基线轨迹、正式评分和三完整性见reports/20261103-deadline15/baseline-receipt.json。历史deadline仍保留，不改全量成绩。
 
 - Order4交付网络核查：本地集成3b43e0e源码与run003 PASS一致，正常push失败GnuTLS recv(-110)，独立ls-remote连接超时，25秒有界读回也超时；保留“本地已集成，待推送”，未报告GitHub完成。Order8自审monthly-column-guidance-v1通过；63focused及10真实prefix/schema不变检查通过，Ruff/diff/bincheck通过；5项旧顶层oneOf夹具断言在干净上一候选同样失败（另20相邻通过），不改这些测试。冻结f5959b0，新干净run002/source，外部配置仅补原Order8身份，原9Bthinking/100步1800秒/task/evaluator不变。正式结果待定，未集成；根目录order008/{self-review-v1.json,checks-v1.json,prefix-replay-v1.json,run-002/prep.json}。
 
 - Order8 v1/f5959b0原条件run002正式PASS1.0/agent_done，15事件492.666秒，三完整性true、ownerf8b40632容器空/controller退出；保存产物7行2列、6个月份及总额同行，Sheet1全部单元格逐值保留。模型初始月份列误写公式已自行覆盖回标签，两次完成因缺保存后inventory被拒，14inspect后15完成；工具schema/路由/gate语义未变。持v4-integration.lock快进至70b5263，src/bin/configs与正式候选完全一致；5/15通过10待修，下一题28。4/8/13/37/82均本地已集成，GitHub网络仍待正常推送。证据reports/20261103-deadline15/order008-receipt.json与本轮order008/run-002/verification.json。
+
+- GitHub交付恢复：正常非强制push成功，独立ls-remote读回codex/v4=5b08f2581d4e594c456ce078cd0c4e3fc16e24e3，包含4/8补丁及13/37/82无补丁回执，5/15已交付、10待修。Order28以最新基线failed0诊断：普通数字格式年利率百分数值被再乘100，24输出全部100倍；旧单位说明实际已送达，原gate仅验数字与绿色极值、未校验金额。自审period-rate-unit-evidence-v1通过：仅明确简单年率/期数/输出百分数值语义和完整原生来源下增加数值/来源保留/新鲜度核验及单位事实提示，不代写公式/位置，不改原evaluator。117focused、9真实prefix/24错误输出拒绝及仅内存纠正消除新差异回放、Ruff/diff/bincheck全通过。候选cdf4b02，新干净run002/source原9Bthinking/100步1800秒任务评估复跑中，owner57ab1408，资源/状态在本轮order028/run-002/output，未集成。
+
+- Order28 v1/cdf4b02 run002经直接证据发现候选反馈缺陷而精确SIGTERM自有controller649071，未取得正式原评分，不记0/PASS；source/config/OSWorld全true、owner57ab1408容器空。4写24条直接相除公式、7原生数值全对但格式TEXT256，新rate检查误将格式报unit_mismatch，9模型因此加100；不能归因原模型无视单位。v2自审通过并改正：新检查只查原生数字值和单位，显示格式仍由未改extremum checker负责；真实step7回放不再误报，内存补保存/inspect/读回仍由旧checker明确extremum.number_format_mismatch；旧24条错误值仍被拒。117focused/Ruff/diff/bincheck过，冻结ce71831，新干净run003/source、同字节配置/9Bthinking/100步1800秒/原评估，ownerac234980，结果待定未集成；完整诊断与复审证据在order028目录。
+
+- Order28 v2/ce71831 run003在直接确认恢复上下文遗漏当前gate状态后精确SIGTERM自有controller652945，无正式评分，不计0/PASS；三完整性true、ownerac234980容器空。24数值正确/数字格式已改0.00000/最大C20绿；prefix18/19/22当前gate均passedTrue missing[]，真实请求却仅保留历史拒绝并省略空completion_outcomes，18–22重复同范围读取、23重涂使保存再次过期。v3自审通过：仅在曾有拒绝完成申请后，在compaction之后追加当前structural_gate_passed及missing（含空），明确旧错误历史、仅允许模型重新申请不自动完成，不改工具/门限/原评估。165focused通过；2个旧GRF repair_confirm测试在干净v2同失败；15真实prefix三种正常/协议/执行恢复消息核查及Ruff/diff/bincheck过。候选126b354，新干净run004原字节配置/模型/100步1800秒，owner见本轮order028/run-004/output/resource-lease.json，结果待定未集成。
+
+- Order28 v3/126b354 run004确认新诊断不足后精确SIGTERM自有controller657335，三完整性true、owner1f0459c6容器空，无正式原评分不计0/PASS。初始24数值对，模型中途误将C18/C19绿又修正；prefix45唯一缺项是41inventory早于42save，而合并column_unverified提示observedNone，模型43–46读cells/47–48重复done均无效。current_completion_status已实际送达，不能声称仍完全缺反馈。v4自审通过，仅拆清inventory/header两诊断并公开真实步骤：workbook.inspect必须晚于最新mutation/save、range.read不能刷新inventory；不改原谓词/code/actions，保留所有合法操作。121focused、5真实prefix同拒绝/41对42证据回放、Ruff/diff/bincheck过。候选7b6b3e3，新干净run005同字节配置原模型/100步1800秒/任务evaluator，结果待定，未集成。
+
+- Order28 v4/7b6b3e3 run005正式PASS1.0，21事件681.173秒，三完整性true；24利率值与来源年率/期数一致，仅最大C20绿色，原输入单元格逐值保留。修复及回执6d87af9已快进集成，运行源码与通过候选完全一致。主agent自审、无人工/子agent；6/15确认通过，下一题65。证据reports/20261103-deadline15/order028-receipt.json。
