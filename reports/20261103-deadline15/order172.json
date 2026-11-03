@@ -1,0 +1,66 @@
+{
+  "order": 172,
+  "task_id": "f3977615-2b45-4ac5-8bba-80c17dbe2a37",
+  "review_mode": "self_review_user_override",
+  "candidate_commit": "fee10d20a326f8d39f236acf061bb719eecf6ae5",
+  "formal_result": {
+    "status": "passed",
+    "reward": 1.0,
+    "termination_reason": "agent_done",
+    "duration_seconds": 172.687,
+    "steps": 3,
+    "trajectory_manifest": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order172/run-003/output/results/raw/run-1/172-vlc-f3977615-2b45-4ac5-8bba-80c17dbe2a37/trajectory_manifest.json"
+  },
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "source_seal": {
+    "scope_roots": [
+      "integrations",
+      "scripts",
+      "tests",
+      "deployment",
+      "calc_adapter",
+      "chrome_adapter",
+      "gimp_adapter",
+      "impress_adapter",
+      "multi_apps_adapter",
+      "os_adapter",
+      "thunderbird_adapter",
+      "vlc_adapter",
+      "vscode_adapter",
+      "writer_adapter"
+    ],
+    "excludes": [
+      "__pycache__",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".venv*",
+      "*.pyc"
+    ],
+    "file_count": 651,
+    "total_bytes": 90319235,
+    "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+    "sha256": "20778346217e917541764a88741302fc6f69ccc6c01e35c397ae8477d96a7235"
+  },
+  "run": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order172/run-003",
+  "validation": {
+    "playback_intent_tests": "16 passed",
+    "whole_test_file": "36 passed; 1 unrelated pre-existing invoice-folder-search ordering failure",
+    "baseline_failure_reproduction": "same unrelated invoice-folder-search assertion fails in untouched d5c67b1",
+    "ruff": "passed",
+    "diff_check": "passed",
+    "bin_check": "passed; pre-existing proxy-file and fitz warnings",
+    "original_prefix_completion_replay": "passed with exact original first mutation and second proposal; required action remains preferences.configure"
+  },
+  "diagnosis": "VLC completion incorrectly treated ordinary media nouns as a source directory, imposing playback.open on a preference troubleshooting request. Require locational wording for ambiguous Videos/Music directory names.",
+  "effect": "Same setting successfully verified; model now completes in three actions. No media file selected, evaluator unchanged.",
+  "evidence": {
+    "plan": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order172/self-review-v1.json",
+    "source_equivalence": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order172/source-equivalence.json",
+    "original_prefix_replay": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order172/candidate-prefix-replay.json"
+  },
+  "created_at_utc": "2026-11-03T07:05:31.116025+00:00"
+}
