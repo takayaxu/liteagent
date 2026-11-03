@@ -1,0 +1,17 @@
+{
+  "order": 65,
+  "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+  "status": "skipped_by_user",
+  "user_instruction": "跳过65",
+  "review_mode": "self_review_user_override",
+  "latest_formal_result": {
+    "run": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order065/run-006",
+    "status": "failed",
+    "reward": 0.0,
+    "termination_reason": "stalled_no_progress"
+  },
+  "candidate_commit": "23aec030579ea97dc5b3dc8c01ab09a11122c26c",
+  "candidate_integrated": false,
+  "further_retries": false,
+  "recorded_at_utc": "2026-11-03T06:20:07.448010+00:00"
+}
