@@ -164,8 +164,16 @@ def outcome_issues(state):
     after = max([e.step for e, _, _ in mutations] + [e.step for e, a, _, _ in events if action_is_save(a)])
     header = cells[headers[0]]
     header_change = max((e.step for e, a, args in mutations if _source_touched(a, args, sheet, column, header_row, header_row)), default=0)
-    if latest[0].step <= after or header["step"] < header_change:
-        return [issue("column_unverified", "inspect current used extent and read header after any content change", None)]
+    if latest[0].step <= after:
+        return [issue("column_unverified",
+                      "native workbook.inspect after the latest mutation AND save; range.read observes cells but cannot refresh the workbook inventory",
+                      {"latest_workbook_inspect_step": latest[0].step,
+                       "must_be_after_step": after,
+                       "header_read_step": header["step"], "header_change_step": header_change})]
+    if header["step"] < header_change:
+        return [issue("column_unverified", "read the output header after its latest content change",
+                      {"header_read_step": header["step"], "header_change_step": header_change,
+                       "latest_workbook_inspect_step": latest[0].step})]
     values, missing = {}, []
     for row in range(first, last + 1):
         cell = cells.get((sheet, column, row), {})
