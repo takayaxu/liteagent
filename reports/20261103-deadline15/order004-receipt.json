@@ -1,0 +1,31 @@
+{
+  "order": 4,
+  "task_id": "535364ea-05bd-46ea-9937-9f55c68507e8",
+  "status": "passed",
+  "reward": 1.0,
+  "steps": 11,
+  "duration_seconds": 359.826,
+  "candidate_commit": "9c0167bb98c0b7738faa2cafa50afb60ff225742",
+  "review_mode": "primary_agent_self_review_user_override",
+  "plan_version": "independent-sum-schema-v2",
+  "source_sha256": "2ed95928b637ab152a3fed2177f3a6758ba5e766e6f6232f61013b1cb357d0fc",
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "owned_containers_empty": true,
+  "output": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order004/run-003/output",
+  "formal_results": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order004/run-003/output/results/results.json",
+  "artifact_manifest": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order004/run-003/output/results/raw/run-1/04-libreoffice_calc-535364ea-05bd-46ea-9937-9f55c68507e8/evaluator_artifacts/manifest.json",
+  "final_pivot_count": 2,
+  "pivot_names": [
+    "ProductRevenue",
+    "ChannelRevenue"
+  ],
+  "totals": [
+    2368.15,
+    2368.15
+  ],
+  "limits": "Original evaluator checks pivot fields/filter definitions, not arbitrary complete cell formatting or output position. Native save/readback checks were also retained."
+}
