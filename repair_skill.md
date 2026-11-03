@@ -1400,3 +1400,28 @@ flowchart TD
 - Order128正式交付核查：run004 PASS1.0/agent_done，13events，source/config/OSWorld全true。step8第一attempt约747秒470段重复RGB/save代码形成未闭合JSON，原协议校验拒绝且既有限重试恢复；未把这次字符串内循环说成空白修复生效。step9错误~/路径失败、10发现Desktop原图、11模型原文自选右中左命令裁剪保存、12只查文件存在、13完成通过；无打开原图/逐像素读回。产物SHA4b5e49c5…与原gold字节相同，962×1280；结果及上游参考均覆盖原2列且末2列黑色，正式评分与无损要求差异单列保留。通用JSON外部空白计时补丁63focused及两段旧真实流回放通过，本次正式流未直接触发该保护，不归因模型成功为补丁必然效果。仅已批准两文件补丁快进集成，运行源码与PASS候选相同，无任务答案/参考注入。自有容器/资源清理见run004-cleanup-verification.json；本队列4/14通过10待修，131未启动。
 
 - Order128交付完成：正常非强制push已成功，独立ls-remote读回codex/v4为5541bb3f42dd71fad7fedbed74c545f8c398d1f9，包含正式候选f82339c；运行源码与run004相同。正式PASS与参考共有的2列覆盖/黑边局限均保留；当前human_review=true，本队列4/14通过10待修，131未启动。最终回执 `/home/liuxv/liteagent-local-runs/repair-128-20261029-human/run-004/delivery.json`。
+
+### 模型请求 deadline 15 题队列（2026-11-03）
+
+用户指定 `latest-full189-12workers-20261102T080546Z/results.json` 中15题，按4→8→13→28→37→65→76→82→101→104→107→109→114→132→172串行；`human_review=false`，需修改时独立子agent审核。启动活动基点 `bb71960f775c433c8b6bfee4257b855fcc4cebfa`，原全量同提交/完整性ok；先按用户要求无补丁复跑，不将deadline/null认作业务评分失败，不改模型/100步1800秒预算。原有未提交台账/文档保留。
+
+本轮任务身份、原轨迹及状态索引：`/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/ledger.json`；完整旧事件摘要 `original-evidence.json`。当前Order4从干净detached提交树启动无补丁run001，owner `lite-repair-6e954da1a6c94a02869d75160c630887`；资源/状态/日志见本轮 `order004/run-001/output/{resource-lease.json,run-status.json,runner.log}`，结果待定；其余14题未启动，0/15确认通过，15待确认或待修。独立只读核查者 `/root/review_timeout_evidence`，未提出或实施源码补丁。
+
+- 本轮串行无补丁基线队列已启动，host controller PID503298（只管理15题基线，不实施修复、不修改模型/预算）；各题执行时重新解析活动codex/v4并建独立干净worktree，原任务身份补入默认配置。状态 `/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/baseline-queue-status.json`。独立审核agent启动被服务403拒绝（Subagent requests are disabled for this group），源码修复因此必须保留待独立审核；不自审、不默默切人工。
+
+- 2026-11-03：用户明确“关闭子agent，自己审核修复”，本聊天15题队列改为主agent自审，human_review=false/subagents=false；用户本次要求覆盖skill独立子agent审核约定，不再以403等待。15基线全部完成，三完整性全true：13/37/82 PASS1.0无补丁；4/8/76/101/114/172共6题deadline/null，28/65/107/109/132共5题failed0，104模型传输失败/null，剩12未通过。Order4最新48事件反复交叉/混合分组及新名字重建，deadline/null；自审independent-sum-schema-v1通过，仅在既有独立汇总语义及完整来源可解析时同步已有gate的schema约束，保留模型分组/名字/位置选择、不改路由/预算/evaluator。审核与18真实prefix只读schema回放在本轮order004目录；191focused通过1skip，source/import检查、Ruff及diff检查通过。候选独立修复树order004/repair，未集成。
+
+- Order4自审v1/6d4a582正式run002为model_protocol_failure/null、4成功事件，第5步三次relative destination对象被服务工具解析器字符串化并在本地拒绝，0越权执行，source/config/OSWorld三完整性true，未集成。真实request4约束已送达、第一张独立Product求和成功。v2自审通过：在同一独立求和契约中沿用已有stacked layout的A1字符串+顶层below_range/blank_rows标量表达，消除heterogeneous destination，不自动解析/选坐标/更改预算。证据order004/self-review-v2.json、run002原始模型响应。
+
+- Order4 v2/9c0167b原条件run003正式PASS1.0/agent_done，11事件359.826秒，三完整性true。两张原生独立求和表ProductRevenue(A1:B13)、ChannelRevenue(B16:C20)，总额均2368.15；首张Product、次张Sales Channel，0重复重建，保存后两输出完整读回，第二张顶层相对位置实际执行成功。自有ownere7e71cf8容器清空、controller退出；候选及报告de1feb5已持v4-integration.lock快进活动，src/bin/configs与正式PASS逐字相同，待正常推送。本聊天依用户要求主agent自审、无人工/子agent；4/15确认通过11待修，下一题8。原evaluator仅覆盖透视字段/筛选定义，不扩大为全部格式或位置真值；完整记录见reports/20261103-deadline15/。
+
+本队列已确认通过：
+
+| Order | 正式结果与交付 |
+| --- | --- |
+| 4 | v2/9c0167b，run003 PASS1.0/11步359.826秒，源码补丁已集成de1feb5，待推送 |
+| 13 | bb71960无补丁run001 PASS1.0/23步938.334秒，回执已集成de1feb5，待推送 |
+| 37 | bb71960无补丁run001 PASS1.0/17步733.466秒，回执已集成de1feb5，待推送 |
+| 82 | bb71960无补丁run001 PASS1.0/26步1012.423秒，回执已集成de1feb5，待推送 |
+
+活动待修复：8→28→65→76→101→104→107→109→114→132→172；本批15题身份、基线轨迹、正式评分和三完整性见reports/20261103-deadline15/baseline-receipt.json。历史deadline仍保留，不改全量成绩。
