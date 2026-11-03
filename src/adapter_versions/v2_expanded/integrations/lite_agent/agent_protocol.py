@@ -675,6 +675,19 @@ class AgentProtocolMixin:
         outcomes = completion_outcome_issues(state)
         if outcomes:
             state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        # A cleared outcome must remain visible after a rejected claim. An
+        # omitted empty issue list otherwise leaves only the historical error
+        # in a compact recovery turn, even when all current evidence is ready.
+        if any(event.proposed.get("kind") == "completion" and not event.executed
+               and isinstance(event.error, dict) and event.error.get("status") == "rejected"
+               for event in state.events):
+            current_gate = self._generic_completion_gate(state)
+            state_text += "\ncurrent_completion_status:\n" + json.dumps({
+                "structural_gate_passed": current_gate.get("passed") is True,
+                "missing": current_gate.get("missing", []),
+                "basis": "current execution ledger, recomputed after the latest tool result",
+                "meaning": "Earlier rejected-claim missing items are historical. A passed structural gate permits a fresh model completion claim; it does not complete the task or establish that every user requirement is satisfied. Review the instruction against current evidence and choose the next action.",
+            }, ensure_ascii=False)
         from . import notes_preservation
 
         notes_progress = notes_preservation.model_progress(state)
