@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import unquote
 
 from .answer_completion_progress import _call, _context
+from .atomic_tool_surface import atomic_provider_surface
 from .completion_policy import effective_canonical_action
 from .notes_preservation import source_texts
 
@@ -99,6 +100,12 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
 
             if action == 'range.write' and params is None and call.get('name') == 'adapter__adapter_call':
                 call = {}  # Model must compare and supply all write values itself.
+            if call.get('name') == 'adapter__adapter_call':
+                _, bindings = atomic_provider_surface(tools)
+                bound = [name for name, binding in bindings.items()
+                         if binding.get('adapter') == adapter and binding.get('action') == action]
+                if len(bound) == 1:
+                    call = {'name': bound[0], 'arguments': params or {}}
             if call:
                 if call['name'] == 'tools_search':
                     if action == 'document.read_file':

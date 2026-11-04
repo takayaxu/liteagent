@@ -185,3 +185,15 @@ def test_comparison_hint_avoids_self_reference_and_locale_separator_errors():
     assert 'never the destination cell' in p['next_step']
     assert 'semicolons' in p['next_step']
     assert '=IF' not in str(p)
+
+
+def test_suggested_call_matches_provider_atomic_name_and_flat_arguments(monkeypatch):
+    from integrations.lite_agent import grading_progress
+    s=ready()
+    s.events=s.events[:1]
+    monkeypatch.setattr(grading_progress,'atomic_provider_surface',lambda ts:(ts,{
+        'atomic__read_actual':{'adapter':'libreoffice_calc','action':'workbook.read_file'}}))
+    p=model_progress(s,tools(('libreoffice_calc','workbook.read_file')))
+    assert p['suggested_tool_call']['name']=='atomic__read_actual'
+    assert p['suggested_tool_call']['arguments']['path']=='/tmp/exams/marks.xlsx'
+    assert 'payload' not in p['suggested_tool_call']['arguments']
