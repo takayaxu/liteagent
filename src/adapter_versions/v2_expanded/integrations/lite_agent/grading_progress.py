@@ -27,6 +27,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     tools = tools or []
     inspection = None
     table = None
+    original_table = None
     table_step = write_step = save_step = 0
     saved_read_step = 0
     discovered: list[str] = []
@@ -42,6 +43,8 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             if (action == 'workbook.read_file' and body.get('sheets')
                     and (not write_step or save_step >= write_step)):
                 table = body['sheets'][0]
+                if original_table is None:
+                    original_table = table
                 table_step = event.step
                 if event.step > save_step > 0:
                     saved_read_step = event.step
@@ -99,6 +102,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'sheet and used range. Do not create a replacement workbook.',
                     'libreoffice_calc', 'workbook.inspect', {})
     sheet = inspection.get('active_sheet')
+    progress['sheet'] = sheet
     if table is not None and table_step < write_step:
         return step('read_live_target', 'The previous write changed the LIVE Calc workbook, not the saved disk file. '
                     'Read the full LIVE range now; workbook.read_file would return stale empty cells until save. '
@@ -167,26 +171,30 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         progress['existing_graded_rows'] = [{'display_text': old, 'cell_addresses': addresses[i]}
             for i, old in enumerate(rows[1:], 1) if i != index and all(
                 j < len(old) and str(old[j]).strip() for j in score_columns)]
+        observed_values = sorted({str(old[j]) for old in original_table.get('display_text', [])[1:] for j in score_columns
+            if j < len(old) and str(old[j]).strip()})
+        total_columns = [i for i, header in enumerate(headers) if re.search(r'(?i)total', str(header))]
+        progress['write_contract'] = {
+            'sheet': sheet,
+            'question_range': addresses[index][min(score_columns)] + ':' + addresses[index][max(score_columns)],
+            'question_headers': [headers[j] for j in score_columns],
+            'observed_existing_question_marker_values': observed_values,
+            'total_cells': [addresses[index][j] for j in total_columns],
+            'meaning': 'Copy sheet/address exactly. Select each indicator from existing marker convention; '
+                'reference points weight belongs only in the total formula, not the question markers. '
+                'Model authors all comparison values and the formula.'}
         progress.pop('table', None)
-        return step('compare_one_student_and_write', 'Work ONLY on current_row. Match its ID/name to '
-                    'current_student_source. Compare each marked answer with the same question in '
-                    'answer_key_source, in source order; do not solve the exam again. Derive scoring '
-                    'units from the reference heading and existing graded example: per-question '
-                    'indicators and total points use different units when the example shows this. '
-                    'For each raw_answer_pairs position compare the TWO LETTERS exactly; do not conflate '
-                    'neighboring questions. Use the example’s per-question indicator convention, then '
-                    'compute total POINTS by applying the reference’s points per correct question. '
-                    'Do NOT hand-count correct answers or type a literal total: use a Calc formula '
-                    'in the total cell, SUM over THIS row’s observed question-score cells multiplied '
-                    'by the per-correct-answer points derived from the reference and existing example. '
-                    'Derive and write the formula yourself as a TYPED cell: kind=formula, value=your '
-                    'formula string. A bare string is literal text, not a calculated formula. '
-                    'Do not copy another row’s addresses. '
-                    'Check the formula’s evaluated result from live range.read. The existing graded '
-                    'example must reproduce under the same units. Use range.write only for this row’s blank '
-                    'score cells and total using the exact observed addresses. Preserve completed '
-                    'rows, IDs, names and formatting. No Writer editing, no source cleanup, no duplicate insertion.',
-                    'libreoffice_calc', 'range.write')
+        return step('compare_one_student_and_write', 'Call range.write for ONLY current_row using '
+                    'write_contract.sheet and its observed question range / total cell. Do not use an '
+                    'empty or guessed sheet. Compare each raw_answer_pairs reference_answer and student_answer '
+                    'exactly, one source position at a time. Each question cell must use the original '
+                    'observed_existing_question_marker_values convention, NOT points per question. '
+                    'Preserve IDs, names and existing scored rows. Put a model-authored typed formula '
+                    'in the total cell: kind=formula, value=your SUM formula over THIS row’s question '
+                    'cells multiplied by the reference-derived points per correct answer. Do not hand-count '
+                    'a literal total. A bare string is literal text, not a formula. Submit the question '
+                    'markers AND typed total formula in the same row write, then read the live table. '
+                    'No Writer edits or source cleanup.', 'libreoffice_calc', 'range.write')
     if write_step > save_step:
         progress.pop('answer_key_source', None)
         return step('save_target', 'All question-score cells are now populated in the observed table. '

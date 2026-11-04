@@ -128,7 +128,17 @@ def test_unsaved_disk_preview_does_not_invalidate_need_for_live_read():
 
 def test_total_formula_guidance_has_no_embedded_points_or_formula_answer():
     p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
-    assert 'Do NOT hand-count' in p['next_step']
+    assert 'Do not hand-count' in p['next_step']
     assert 'SUM' in p['next_step']
     assert '=SUM' not in str(p)
     assert 'suggested_tool_call' not in p
+
+
+def test_write_contract_keeps_actual_sheet_markers_and_total_cell_after_table_compaction():
+    p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
+    assert 'table' not in p
+    assert p['write_contract']['sheet']=='Scores'
+    assert p['write_contract']['question_range']=='C3:D3'
+    assert p['write_contract']['total_cells']==['E3']
+    assert p['write_contract']['observed_existing_question_marker_values']==['0','1']
+    assert '5' not in p['write_contract']['observed_existing_question_marker_values']

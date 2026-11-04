@@ -724,7 +724,7 @@ class AgentProtocolMixin:
         grading = grading_progress.model_progress(state, tools=tools)
         if grading is not None:
             grading_step = {key: grading[key] for key in
-                            ("stage", "next_step", "suggested_tool_call", "required_operation")
+                            ("stage", "next_step", "suggested_tool_call", "required_operation", "write_contract")
                             if key in grading}
             state_text = ("Current step: follow this observed grading guidance.\n"
                           + json.dumps(grading_step, ensure_ascii=False)
