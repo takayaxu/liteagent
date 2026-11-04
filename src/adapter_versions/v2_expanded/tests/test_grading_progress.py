@@ -50,7 +50,9 @@ def ready():
             {'path':'/tmp/exams/Reference.docx','kind':'file'},
             {'path':'/tmp/exams/student.docx','kind':'file'}], 'truncated':False}, {'name_patterns':['*']}),
         read(4, '/tmp/exams/Reference.docx', 'Reference answers: 5 points each. Q1 A; Q2 B'),
-        read(5, '/tmp/exams/student.docx', 'Student ID: 18 Bea. Q1 C; Q2 B')])
+        read(5, '/tmp/exams/student.docx', 'Student ID: 18 Bea. Q1 C; Q2 B'),
+        event(6,'os','desktop.open_path',params={'path':'/tmp/exams/marks.xlsx'}),
+        event(7,'libreoffice_calc','workbook.inspect',{'url':'file:///tmp/exams/marks.xlsx','active_sheet':'Scores'})])
 
 
 def test_real_inventory_broadens_case_sensitive_globs_and_keeps_source_immutable():
@@ -128,7 +130,7 @@ def test_unsaved_disk_preview_does_not_invalidate_need_for_live_read():
 
 def test_total_formula_guidance_has_no_embedded_points_or_formula_answer():
     p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
-    assert 'Do not hand-count' in p['next_step']
+    assert 'TOTAL element' in p['next_step']
     assert 'SUM' in p['next_step']
     assert '=SUM' not in str(p)
     assert 'suggested_tool_call' not in p
@@ -142,3 +144,13 @@ def test_write_contract_keeps_actual_sheet_markers_and_total_cell_after_table_co
     assert p['write_contract']['total_cells']==['E3']
     assert p['write_contract']['observed_existing_question_marker_values']==['0','1']
     assert '5' not in p['write_contract']['observed_existing_question_marker_values']
+
+
+def test_read_preview_requires_open_and_live_identity_before_grading():
+    s=ready()
+    s.events=s.events[:5]
+    p=model_progress(s,tools(('os','desktop.open_path')))
+    assert p['stage']=='open_editable_target'
+    assert p['suggested_tool_call']['arguments']['payload']['params']['path']=='/tmp/exams/marks.xlsx'
+    s.events.append(event(6,'os','desktop.open_path',params={'path':'/tmp/exams/marks.xlsx'}))
+    assert model_progress(s,tools(('libreoffice_calc','workbook.inspect')))['stage']=='inspect_editable_target'

@@ -30,6 +30,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     original_table = None
     table_step = write_step = save_step = 0
     saved_read_step = 0
+    preview_step = open_step = inspect_step = 0
     discovered: list[str] = []
     complete_listing = False
     for event in state.events:
@@ -37,9 +38,15 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             continue
         adapter, action, args = effective_canonical_action(event, state.domain)
         body = _context(event)
+        if (action == 'desktop.open_path' and inspection
+                and _path(args.get('path')) == _path(inspection.get('url'))):
+            open_step = event.step
         if adapter == 'libreoffice_calc':
+            if action == 'workbook.read_file':
+                preview_step = event.step
             if action == 'workbook.inspect':
                 inspection = body
+                inspect_step = event.step
             if (action == 'workbook.read_file' and body.get('sheets')
                     and (not write_step or save_step >= write_step)):
                 table = body['sheets'][0]
@@ -148,6 +155,16 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     if any(j < len(row) and str(row[j]).strip() == '' for j in score_columns)]
     progress['remaining_rows_with_blank_scores'] = len(pending_rows)
     if pending_rows:
+        if open_step <= preview_step:
+            return step('open_editable_target', 'All source documents are read. The earlier workbook.read_file '
+                        'was a temporary disk preview and may have closed the live workbook. Open this '
+                        'exact target for editing now; do not reread any sources or write yet.',
+                        'os', 'desktop.open_path', {'path': target})
+        if inspect_step < open_step:
+            return step('inspect_editable_target', 'The target open was requested. Inspect the live Calc '
+                        'document now to confirm its URL and exact sheet before writing. Open success '
+                        'alone is not proof that the editable target is ready.',
+                        'libreoffice_calc', 'workbook.inspect', {})
         index, row = pending_rows[0]
         progress['current_row'] = {'display_text': row, 'cell_addresses': addresses[index], 'headers': headers}
         identities = [str(value) for j, value in enumerate(row) if j < min(score_columns) and str(value).strip()]
@@ -180,21 +197,21 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             'question_headers': [headers[j] for j in score_columns],
             'observed_existing_question_marker_values': observed_values,
             'total_cells': [addresses[index][j] for j in total_columns],
+            'total_value_contract': 'The values element for a total cell MUST be a JSON object with '
+                'kind equal to formula and value equal to your formula string. NOT a bare string.',
             'meaning': 'Copy sheet/address exactly. Select each indicator from existing marker convention; '
                 'reference points weight belongs only in the total formula, not the question markers. '
                 'Model authors all comparison values and the formula.'}
         progress.pop('table', None)
-        return step('compare_one_student_and_write', 'Call range.write for ONLY current_row using '
-                    'write_contract.sheet and its observed question range / total cell. Do not use an '
-                    'empty or guessed sheet. Compare each raw_answer_pairs reference_answer and student_answer '
-                    'exactly, one source position at a time. Each question cell must use the original '
-                    'observed_existing_question_marker_values convention, NOT points per question. '
-                    'Preserve IDs, names and existing scored rows. Put a model-authored typed formula '
-                    'in the total cell: kind=formula, value=your SUM formula over THIS row’s question '
-                    'cells multiplied by the reference-derived points per correct answer. Do not hand-count '
-                    'a literal total. A bare string is literal text, not a formula. Submit the question '
-                    'markers AND typed total formula in the same row write, then read the live table. '
-                    'No Writer edits or source cleanup.', 'libreoffice_calc', 'range.write')
+        return step('compare_one_student_and_write', 'WRITE ONE ROW. Copy write_contract.sheet and '
+                    'the observed row addresses. Each question marker is model-authored by comparing '
+                    'the two raw_answer_pairs letters, using ONLY the original observed marker convention. '
+                    'The TOTAL element in values MUST be an OBJECT with keys kind and value: '
+                    'kind="formula", value=your SUM formula string over this row’s question cells times '
+                    'reference-derived points. A bare formula string is WRONG: it writes text. '
+                    'Include all question markers and this typed total object in one rectangular row write. '
+                    'Preserve IDs, names and existing scored rows. Then read the live table.',
+                    'libreoffice_calc', 'range.write')
     if write_step > save_step:
         progress.pop('answer_key_source', None)
         return step('save_target', 'All question-score cells are now populated in the observed table. '
