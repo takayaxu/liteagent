@@ -698,6 +698,17 @@ class AgentProtocolMixin:
         calculation_evidence = calc_formula_contract.model_evidence(state)
         if calculation_evidence is not None:
             state_text += "\ncalculation_source_cells:\n" + json.dumps(calculation_evidence, ensure_ascii=False)
+        from . import answer_completion_progress
+
+        answer_progress = answer_completion_progress.model_progress(state, tools=tools)
+        if answer_progress is not None:
+            next_step = {key: answer_progress[key] for key in
+                         ("stage", "next_step", "suggested_tool_call", "write_contract")
+                         if key in answer_progress}
+            state_text = ("Current step: follow this evidence-based next-action guidance.\n"
+                          + json.dumps(next_step, ensure_ascii=False) + "\n" + state_text
+                          + "\nanswer_completion_progress:\n"
+                          + json.dumps(answer_progress, ensure_ascii=False))
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
