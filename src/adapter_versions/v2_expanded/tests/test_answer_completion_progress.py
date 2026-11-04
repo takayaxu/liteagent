@@ -59,7 +59,7 @@ def test_locate_and_read_actual_target_not_search_hits_as_content():
 
 def test_source_reader_search_keeps_future_edit_capability_explicit():
     p = model_progress(state([found(), read(2)]), tools())
-    assert p['stage'] == 'read_source_questions'
+    assert p['stage'] == 'discover_required_operation'
     assert p['suggested_tool_call']['arguments']['query'] == 'libreoffice_writer document.read_file paragraph.replace_text document.inspect'
     p = model_progress(state([found(), read(2)]), tools(('libreoffice_writer', 'document.read_file')))
     assert p['suggested_tool_call']['arguments']['payload']['params']['path'] == '/tmp/Quiz 9.docx'
@@ -71,23 +71,23 @@ def test_reader_does_not_activate_target_and_no_answer_payload_is_invented():
     p = model_progress(s, tools(('os', 'desktop.open_path')))
     assert p['stage'] == 'activate_target'
     s.events.append(event(5, 'desktop.open_path', params={'path': '/tmp/Answers.docx'}, adapter='os'))
-    assert model_progress(s, tools())['stage'] == 'inspect_live_answer_paragraphs'
+    assert model_progress(s, tools(('libreoffice_writer', 'document.inspect')))['stage'] == 'inspect_live_answer_paragraphs'
     s.events.append(event(6, 'document.inspect', {'paragraph_details': [
         {'index': 3, 'text': 'Quiz 9:', 'text_length': 7}, {'index': 4, 'text': '', 'text_length': 0}]}))
     p = model_progress(s, tools(('libreoffice_writer', 'paragraph.replace_text')))
     assert p['stage'] == 'solve_and_fill_one_section'
     assert 'suggested_tool_call' not in p  # No invalid empty replacement call.
     assert p['write_contract']['observed_empty_heading_anchors'] == ['Quiz 9:']
-    assert len(p['source_questions']) == 2
+    assert p['current_source_paths'] == ['/tmp/Quiz 9.docx']
 
 
 def test_unsaved_write_requires_save_and_readback_then_only_remaining_blank():
     s = ready()
     s.events += [event(5, 'desktop.open_path', params={'path': '/tmp/Answers.docx'}, adapter='os'),
                  event(6, 'text.find_replace')]
-    assert model_progress(s, tools())['stage'] == 'save_current_edits'
+    assert model_progress(s, tools(('libreoffice_writer', 'document.save')))['stage'] == 'save_current_edits'
     s.events.append(event(7, 'document.save'))
-    assert model_progress(s, tools())['stage'] == 'read_saved_answers'
+    assert model_progress(s, tools(('libreoffice_writer', 'document.read_file')))['stage'] == 'read_saved_answers'
     s.events.append(read(8, text=TARGET.replace('Quiz 9:\n', 'Quiz 9:\nz\n')))
     s.events.append(event(9, 'document.inspect', {'paragraph_details': [
         {'index': 5, 'text': 'Quiz 10:', 'text_length': 8}]}))
@@ -100,7 +100,7 @@ def test_unsaved_write_requires_save_and_readback_then_only_remaining_blank():
 def test_existing_answers_are_protected_and_content_presence_not_correctness():
     s = ready()
     s.events.append(read(5, text=TARGET.replace('abc', 'changed')))
-    assert model_progress(s, tools())['stage'] == 'restore_existing_answers'
+    assert model_progress(s, tools(('libreoffice_writer', 'text.find_replace')))['stage'] == 'restore_existing_answers'
     s = ready()
     s.events.append(read(5, text=TARGET.replace('Quiz 9:\n', 'Quiz 9:\nz\n').replace('Quiz 10:', 'Quiz 10:\nx')))
     p = model_progress(s, tools())
@@ -160,3 +160,37 @@ def test_numbered_questions_and_system_step_contain_no_runtime_selected_answers(
     messages = agent._messages(s, b'png', tools=available)
     assert 'takes precedence over general phase hints' in messages[0]['content']
     assert 'original answer example gives FORMAT ONLY' in messages[0]['content']
+
+
+def test_discovery_turn_omits_questions_and_stale_target_but_keeps_exact_next_call():
+    s = ready()
+    s.events += [event(5, 'desktop.open_path', params={'path': '/tmp/Answers.docx'}, adapter='os'),
+                 event(6, 'paragraph.replace_text'), event(7, 'document.save')]
+    available = tools()
+    p = model_progress(s, available)
+    assert p['stage'] == 'discover_required_operation'
+    assert p['required_operation'] == 'libreoffice_writer.document.read_file'
+    assert 'source_questions' not in p and 'current_questions' not in p
+    assert 'sections' not in p['target']
+    assert p['target']['reflects_latest_edit_and_save'] is False
+    assert 'text' not in p['original_target']
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused/v1', include_gui=False),
+                      SimpleNamespace(), model_client=SimpleNamespace(client=object()))
+    text = agent._messages(s, b'png', tools=available)[-1]['content'][0]['text']
+    assert len(text) < 10000
+    assert 'ONLY tool discovery' in text
+    assert 'Question' not in text
+
+
+def test_write_contract_binds_exact_observed_empty_paragraph_without_answers():
+    s = ready()
+    s.events += [event(5, 'desktop.open_path', params={'path': '/tmp/Answers.docx'}, adapter='os'),
+                 event(6, 'document.inspect', {'paragraph_details': [
+                     {'index': 3, 'text': 'Quiz 9:', 'text_length': 7},
+                     {'index': 4, 'text': '', 'text_length': 0}]})]
+    p = model_progress(s, tools(('libreoffice_writer', 'paragraph.replace_text')))
+    assert p['write_contract']['index'] == 4
+    assert p['write_contract']['observed_destination_text'] == ''
+    assert p['current_source_paths'] == ['/tmp/Quiz 9.docx']
+    assert 'source_questions' not in p
+    assert 'paragraphs' not in p['write_contract']

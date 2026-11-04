@@ -705,10 +705,20 @@ class AgentProtocolMixin:
             next_step = {key: answer_progress[key] for key in
                          ("stage", "next_step", "suggested_tool_call", "write_contract")
                          if key in answer_progress}
+            recent_state = compact_execution_summary_for_model(model_context(limit=2), max_chars=2400)
             state_text = ("Current step: follow this evidence-based next-action guidance.\n"
-                          + json.dumps(next_step, ensure_ascii=False) + "\n" + state_text
+                          + json.dumps(next_step, ensure_ascii=False)
+                          + "\nRecent truthful execution state (older source evidence is retained "
+                          "in the current-step projection):\n"
+                          + json.dumps(recent_state, ensure_ascii=False)
                           + "\nanswer_completion_progress:\n"
                           + json.dumps(answer_progress, ensure_ascii=False))
+            if outcomes:
+                state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+            if any(event.proposed.get("kind") == "completion" and not event.executed
+                   and isinstance(event.error, dict) and event.error.get("status") == "rejected"
+                   for event in state.events):
+                state_text += "\ncurrent_completion_status:\n" + json.dumps(current_gate, ensure_ascii=False)
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",

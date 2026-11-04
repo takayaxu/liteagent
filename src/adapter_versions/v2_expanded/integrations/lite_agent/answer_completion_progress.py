@@ -154,8 +154,37 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             if call:
                 progress["suggested_tool_call"] = call
                 if call["name"] == "tools_search":
-                    progress["next_step"] = ("Call tools_search now with the exact suggested query. "
-                        "The required operation is absent from this turn's routes. " + instruction)
+                    progress["stage"] = "discover_required_operation"
+                    progress["next_step"] = ("This turn is ONLY tool discovery. Call tools_search "
+                        "with the exact query in suggested_tool_call now. Do not solve questions, "
+                        "edit, save or plan later work on this turn. Required next operation: "
+                        + adapter + "." + action + ".")
+                    progress["required_operation"] = adapter + "." + action
+        # Present the current step, rather than repeating all source documents
+        # and an outdated empty target after a successful write.
+        original_evidence = progress.get("original_target")
+        if original_evidence:
+            progress["original_target"] = {"path": original_evidence["path"],
+                "sections": [s for s in original_evidence["sections"] if s["entry"]],
+                "meaning": "Provided entries to preserve; their letters are not answers to other tests."}
+        target_evidence = progress.get("target")
+        if target_evidence:
+            progress["target"] = {"path": target_evidence["path"],
+                "read_step": target_evidence["read_step"],
+                "reflects_latest_edit_and_save": target_evidence["read_step"] > max(latest_mutation, latest_save),
+                **({"sections": target_evidence["sections"]}
+                   if stage in {"verify_completion", "repair_answer_shape", "restore_existing_answers"} else {})}
+        if progress["stage"] == "discover_required_operation" or stage in {
+                "save_current_edits", "read_saved_answers", "read_existing_answers",
+                "read_source_questions", "activate_target", "inspect_live_answer_paragraphs"}:
+            for key in ("source_questions", "current_questions", "answer_position_checklist", "live_paragraphs"):
+                progress.pop(key, None)
+        elif stage == "solve_and_fill_one_section":
+            progress["current_source_paths"] = [item["path"] for item in progress.pop("source_questions", [])
+                if item["section_number"] == chosen["number"]]
+            progress["live_paragraphs"] = [{"index": item.get("index"), "text": item.get("text"),
+                                            "text_length": item.get("text_length")}
+                                           for item in progress.get("live_paragraphs", [])]
         return progress
 
     if known_path is None:
@@ -271,14 +300,27 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     progress["answer_position_checklist"] = [
         {"output_position": index + 1, "source_question": question["number"]}
         for index, question in enumerate(questions)]
+    heading = next((item for item in progress["live_paragraphs"]
+                    if item.get("text") == chosen["heading"]), None)
+    destination = None
+    if heading is not None:
+        following = next((item for item in progress["live_paragraphs"]
+                          if item.get("index") == heading.get("index", -2) + 1), None)
+        destination = following if following and following.get("text_length") == 0 else heading
+    if destination is None:
+        return step("inspect_live_answer_paragraphs", "The current heading is not in the observed "
+                    "paragraph page. Read the next native page to obtain its exact raw index; "
+                    "do not guess the location.", "libreoffice_writer", "document.inspect",
+                    {"paragraph_start": inspection.get("next_paragraph_start") or 0, "paragraph_limit": 12})
     progress["write_contract"] = {"adapter": "libreoffice_writer", "action": "paragraph.replace_text",
         "observed_empty_heading_anchors": [chosen["heading"]],
-        "index_source": "live_paragraphs raw index of this heading or its following empty paragraph",
-        "paragraphs_rule": "If replacing the heading paragraph, use [exact_original_heading, "
-                           "model_solved_sequence]. If replacing its empty answer paragraph, use "
-                           "[model_solved_sequence]. All other paragraphs stay unchanged.",
+        "index": destination["index"], "observed_destination_text": destination.get("text"),
+        "paragraphs_rule": "[your_solved_sequence]" if destination.get("text_length") == 0
+                           else "[exact_original_heading, your_solved_sequence]",
+        "index_source": "Exact observed raw index above. Do not reconsider other positions or sections.",
         "blank_paragraphs_between": 0}
     return step("solve_and_fill_one_section", "Work ONLY on current_section and current_questions. "
+                "Use exactly write_contract.index for this call; do not plan another section. "
                 "Choose one option for each numbered question. Then assemble the answer string left "
                 "to right using answer_position_checklist: character at position i MUST equal your "
                 "choice for question i. Recheck every character before submitting the write. "
