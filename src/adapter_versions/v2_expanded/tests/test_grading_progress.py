@@ -177,3 +177,11 @@ def test_formula_comparisons_and_original_rows_remain_model_authored():
     assert '=IF' not in str(p)
     assert p['original_graded_rows_to_preserve'][0]['values']==['17','Ada','1','0','5']
     assert p['write_contract']['row_cell_count']==3
+
+
+def test_comparison_hint_avoids_self_reference_and_locale_separator_errors():
+    p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
+    assert 'QUOTED TEXT CONSTANTS' in p['next_step']
+    assert 'never the destination cell' in p['next_step']
+    assert 'semicolons' in p['next_step']
+    assert '=IF' not in str(p)
