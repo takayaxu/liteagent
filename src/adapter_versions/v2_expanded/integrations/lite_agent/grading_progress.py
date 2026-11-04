@@ -131,6 +131,12 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'row. A successful write alone does not verify correct scores.',
                     'libreoffice_calc', 'workbook.read_file', {'path': target, 'max_rows': 100, 'max_columns': 40})
     progress['table'] = table
+    original_rows = original_table.get('display_text', []) if original_table else []
+    original_addresses = original_table.get('cell_addresses', []) if original_table else []
+    progress['original_graded_rows_to_preserve'] = [
+        {'values': row, 'cell_addresses': original_addresses[i]}
+        for i, row in enumerate(original_rows[1:], 1)
+        if len(row) > 2 and all(str(v).strip() for v in row)]
     if not complete_listing:
         return step('list_all_sources', 'List ALL files in the observed workbook directory using name_patterns=["*"]. '
                     'Lowercase answer/key globs can omit case-sensitive filenames; previous hits are not '
@@ -206,7 +212,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             'question_range': addresses[index][min(score_columns)] + ':' + addresses[index][max(score_columns)],
             'question_headers': [headers[j] for j in score_columns],
             'values_shape': 'TWO dimensional JSON array. Outer array contains exactly ONE row array. '
-                'Row array contains numeric question markers followed by the typed formula object. '
+                'Row array contains typed comparison formula objects followed by the typed total formula object. '
                 'Do not use address-keyed dictionaries, kind=text, quoted marker strings or one-dimensional values.',
             'row_cell_count': len(score_columns) + len(total_columns),
             'observed_existing_question_marker_values': observed_values,
@@ -218,7 +224,10 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                 'Model authors all comparison values and the formula.'}
         progress.pop('table', None)
         return step('compare_one_student_and_write', 'WRITE ONE ROW. values MUST be a TWO-DIMENSIONAL array: [one_row_array]. '
-                    'The one_row_array contains ordinary JSON NUMBER markers, then the total formula object. '
+                    'Every question cell MUST be a typed formula object (kind=formula,value=your formula). '
+                    'Author an IF formula comparing the two actual source letters as quoted text literals '
+                    'for that question; select the correct/incorrect return markers from the original example. '
+                    'Do not manually judge letters or insert literal question scores. The total is also a typed formula. '
                     'NOT a dictionary keyed by cell addresses, NOT kind=text, NOT a one-dimensional list. '
                     'Use one continuous rectangular range covering question cells through total, with '
                     'exactly write_contract.row_cell_count elements in that row. Copy write_contract.sheet. Each question marker is model-authored by comparing '
@@ -241,7 +250,10 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     progress['student_source_review'] = [{'path': p, 'observed_identity_and_answer_lines': [
         line for line in value.splitlines() if re.search(r'(?i)student|\banswer\b', line)]}
         for p, value in sources.items() if p not in keys]
-    return step('verify_completion', 'The saved table has been fully read back and no question-score '
+    return step('verify_completion', 'DO NOT hand-count, replace calculated totals with literals, or '
+                'change original_graded_rows_to_preserve. Those original entries are provided data, not '
+                'answers to re-grade. Verify formula operands against source letters, not a new mental count. '
+                'The saved table has been fully read back and no question-score '
                 'blanks remain. This is coverage, not proof of correct grading. Compare every score '
                 'with the actual student and reference answers, verify totals and preserved original '
                 'rows. Only if all user requirements are satisfied submit propose_done. Do not reread '

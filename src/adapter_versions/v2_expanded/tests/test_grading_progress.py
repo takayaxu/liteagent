@@ -169,3 +169,11 @@ def test_mixed_wrapper_gets_precise_write_discovery_then_no_search_loop():
     assert 'TWO-DIMENSIONAL' in p['next_step']
     assert p['write_contract']['row_cell_count']==3
     assert 'suggested_tool_call' not in p
+
+
+def test_formula_comparisons_and_original_rows_remain_model_authored():
+    p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
+    assert 'IF formula' in p['next_step']
+    assert '=IF' not in str(p)
+    assert p['original_graded_rows_to_preserve'][0]['values']==['17','Ada','1','0','5']
+    assert p['write_contract']['row_cell_count']==3
