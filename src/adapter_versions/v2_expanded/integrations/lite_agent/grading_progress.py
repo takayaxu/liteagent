@@ -176,8 +176,14 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'For each raw_answer_pairs position compare the TWO LETTERS exactly; do not conflate '
                     'neighboring questions. Use the example’s per-question indicator convention, then '
                     'compute total POINTS by applying the reference’s points per correct question. '
-                    'A count of correct questions is not a points total. Check the same rule reproduces '
-                    'the existing graded example. Calculate every score and total yourself, then range.write only this row’s blank '
+                    'Do NOT hand-count correct answers or type a literal total: use a Calc formula '
+                    'in the total cell, SUM over THIS row’s observed question-score cells multiplied '
+                    'by the per-correct-answer points derived from the reference and existing example. '
+                    'Derive and write the formula yourself as a TYPED cell: kind=formula, value=your '
+                    'formula string. A bare string is literal text, not a calculated formula. '
+                    'Do not copy another row’s addresses. '
+                    'Check the formula’s evaluated result from live range.read. The existing graded '
+                    'example must reproduce under the same units. Use range.write only for this row’s blank '
                     'score cells and total using the exact observed addresses. Preserve completed '
                     'rows, IDs, names and formatting. No Writer editing, no source cleanup, no duplicate insertion.',
                     'libreoffice_calc', 'range.write')

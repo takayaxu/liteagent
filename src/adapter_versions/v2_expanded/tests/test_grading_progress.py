@@ -124,3 +124,11 @@ def test_unsaved_disk_preview_does_not_invalidate_need_for_live_read():
     p=model_progress(s, tools(('libreoffice_calc','range.read')))
     assert p['stage']=='read_live_target'
     assert p['suggested_tool_call']['arguments']['payload']['params']['range']=='A1:E3'
+
+
+def test_total_formula_guidance_has_no_embedded_points_or_formula_answer():
+    p=model_progress(ready(),tools(('libreoffice_calc','range.write')))
+    assert 'Do NOT hand-count' in p['next_step']
+    assert 'SUM' in p['next_step']
+    assert '=SUM' not in str(p)
+    assert 'suggested_tool_call' not in p
