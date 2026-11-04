@@ -227,6 +227,9 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'Every question cell MUST be a typed formula object (kind=formula,value=your formula). '
                     'Author an IF formula comparing ONLY the two actual raw_answer_pairs source letters '
                     'as QUOTED TEXT CONSTANTS, never the destination cell or any empty score cell. '
+                    'Every formula value MUST start with =, followed by IF with exactly THREE arguments: '
+                    'first the equality comparison between those two quoted letters, then the correct '
+                    'marker, then the incorrect marker. Never pass each letter as a separate IF argument. '
                     'Use semicolons between IF arguments for Calc locale compatibility (commas cause508). '
                     'Select the correct/incorrect return markers from the original example. '
                     'Do not manually judge letters or insert literal question scores. The total is also a typed formula. '
@@ -240,6 +243,8 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'kind="formula", value=your SUM formula string over this row’s question cells times '
                     'reference-derived points. A bare formula string is WRONG: it writes text. '
                     'Include all question markers and this typed total object in one rectangular row write. '
+                    'Pass only sheet, range and values inside params. Omit payload.verify entirely: '
+                    'the following live range.read performs verification. Do not invent verification objects. '
                     'Preserve IDs, names and existing scored rows. Then read the live table.',
                     'libreoffice_calc', 'range.write')
     if write_step > save_step:
