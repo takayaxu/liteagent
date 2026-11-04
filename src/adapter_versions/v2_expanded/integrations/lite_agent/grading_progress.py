@@ -28,6 +28,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     inspection = None
     table = None
     table_step = write_step = save_step = 0
+    saved_read_step = 0
     discovered: list[str] = []
     complete_listing = False
     for event in state.events:
@@ -38,9 +39,12 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         if adapter == 'libreoffice_calc':
             if action == 'workbook.inspect':
                 inspection = body
-            if action == 'workbook.read_file' and body.get('sheets'):
+            if (action == 'workbook.read_file' and body.get('sheets')
+                    and (not write_step or save_step >= write_step)):
                 table = body['sheets'][0]
                 table_step = event.step
+                if event.step > save_step > 0:
+                    saved_read_step = event.step
             if action == 'range.read' and body.get('display_text'):
                 # Only a full observed table replaces the full table snapshot.
                 if table and body.get('range') == table.get('returned_range', table.get('used_range')):
@@ -95,7 +99,12 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'sheet and used range. Do not create a replacement workbook.',
                     'libreoffice_calc', 'workbook.inspect', {})
     sheet = inspection.get('active_sheet')
-    if table is None or table_step < write_step:
+    if table is not None and table_step < write_step:
+        return step('read_live_target', 'The previous write changed the LIVE Calc workbook, not the saved disk file. '
+                    'Read the full LIVE range now; workbook.read_file would return stale empty cells until save. '
+                    'Do not repeat the write.', 'libreoffice_calc', 'range.read',
+                    {'sheet': sheet, 'range': table.get('returned_range', table.get('used_range'))})
+    if table is None:
         return step('read_current_target', 'Read the saved/actual score table, including existing entries, '
                     'student identities and column headings. Read after each write before choosing another '
                     'row. A successful write alone does not verify correct scores.',
@@ -141,6 +150,20 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         matches = [(p, value) for p, value in sources.items() if p not in keys
                    and any(identity in value for identity in identities)]
         progress['current_student_source'] = [{'path': p, 'text': value} for p, value in matches]
+        def marked_answers(value: str) -> list[str]:
+            return re.findall(r'(?im)^.*?\banswer\b[^\w\n]*([A-Z])\s*$', value)
+
+        if len(matches) == 1 and len(keys) == 1:
+            key_answers = marked_answers(sources[keys[0]])
+            student_answers = marked_answers(matches[0][1])
+            if len(key_answers) == len(student_answers) == len(score_columns):
+                progress['raw_answer_pairs'] = [
+                    {'source_position': i + 1, 'column_header': headers[column],
+                     'target_cell': addresses[index][column],
+                     'reference_answer': key_answers[i], 'student_answer': student_answers[i]}
+                    for i, column in enumerate(score_columns)]
+                progress['pair_meaning'] = ('Verbatim marked source choices in occurrence order. '
+                    'No equality judgments, scores or total are computed here. Check source order yourself.')
         progress['existing_graded_rows'] = [{'display_text': old, 'cell_addresses': addresses[i]}
             for i, old in enumerate(rows[1:], 1) if i != index and all(
                 j < len(old) and str(old[j]).strip() for j in score_columns)]
@@ -149,8 +172,12 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'current_student_source. Compare each marked answer with the same question in '
                     'answer_key_source, in source order; do not solve the exam again. Derive scoring '
                     'units from the reference heading and existing graded example: per-question '
-                    'indicators and total points may use different units. Calculate every score and '
-                    'total yourself, recheck each comparison, then range.write only this row’s blank '
+                    'indicators and total points use different units when the example shows this. '
+                    'For each raw_answer_pairs position compare the TWO LETTERS exactly; do not conflate '
+                    'neighboring questions. Use the example’s per-question indicator convention, then '
+                    'compute total POINTS by applying the reference’s points per correct question. '
+                    'A count of correct questions is not a points total. Check the same rule reproduces '
+                    'the existing graded example. Calculate every score and total yourself, then range.write only this row’s blank '
                     'score cells and total using the exact observed addresses. Preserve completed '
                     'rows, IDs, names and formatting. No Writer editing, no source cleanup, no duplicate insertion.',
                     'libreoffice_calc', 'range.write')
@@ -159,10 +186,13 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         return step('save_target', 'All question-score cells are now populated in the observed table. '
                     'Save the target Calc workbook, then read it back; do not rewrite any sources.',
                     'libreoffice_calc', 'workbook.save', {})
-    if save_step > table_step:
+    if save_step > saved_read_step:
         return step('read_saved_target', 'Read the saved score table once and verify all rows, original '
                     'entries, per-question comparisons and totals.', 'libreoffice_calc', 'workbook.read_file',
                     {'path': target, 'max_rows': 100, 'max_columns': 40})
+    progress['student_source_review'] = [{'path': p, 'observed_identity_and_answer_lines': [
+        line for line in value.splitlines() if re.search(r'(?i)student|\banswer\b', line)]}
+        for p, value in sources.items() if p not in keys]
     return step('verify_completion', 'The saved table has been fully read back and no question-score '
                 'blanks remain. This is coverage, not proof of correct grading. Compare every score '
                 'with the actual student and reference answers, verify totals and preserved original '

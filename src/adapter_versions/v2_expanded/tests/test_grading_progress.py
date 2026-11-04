@@ -79,8 +79,8 @@ def test_per_student_projection_preserves_existing_and_never_supplies_scores():
 def test_write_read_save_read_does_not_repeat_or_forget_completed_rows():
     s=ready()
     s.events.append(event(6,'libreoffice_calc','range.write', params={'range':'C3:E3','values':[[0,1,5]]}))
-    assert model_progress(s,tools(('libreoffice_calc','workbook.read_file')))['stage']=='read_current_target'
-    s.events.append(event(7,'libreoffice_calc','workbook.read_file',{'sheets':[table(False)]}))
+    assert model_progress(s,tools(('libreoffice_calc','range.read')))['stage']=='read_live_target'
+    s.events.append(event(7,'libreoffice_calc','range.read',{**table(False), 'range':'A1:E3'}))
     assert model_progress(s,tools(('libreoffice_calc','workbook.save')))['stage']=='save_target'
     s.events.append(event(8,'libreoffice_calc','workbook.save'))
     assert model_progress(s,tools(('libreoffice_calc','workbook.read_file')))['stage']=='read_saved_target'
@@ -104,3 +104,23 @@ def test_unrelated_and_non_grading_requests_do_not_trigger():
     s=ready()
     s.instruction='Copy students answers to a new document.'
     assert model_progress(s) is None
+
+
+def test_raw_answer_pairs_are_observed_letters_not_generated_scores():
+    s=ready()
+    s.events[3]=read(4, '/tmp/exams/Reference.docx', 'Reference: 5 points per question\n【Answer】A\n【Answer】B')
+    s.events[4]=read(5, '/tmp/exams/student.docx', 'Student ID: 18 Bea\n【Answer】C\n【Answer】B')
+    p=model_progress(s, tools(('libreoffice_calc','range.write')))
+    assert p['raw_answer_pairs']==[
+        {'source_position':1,'column_header':'Q1','target_cell':'C3','reference_answer':'A','student_answer':'C'},
+        {'source_position':2,'column_header':'Q2','target_cell':'D3','reference_answer':'B','student_answer':'B'}]
+    assert 'score' not in p['raw_answer_pairs'][0]
+
+
+def test_unsaved_disk_preview_does_not_invalidate_need_for_live_read():
+    s=ready()
+    s.events.append(event(6,'libreoffice_calc','range.write',params={'range':'C3:E3','values':[[0,1,5]]}))
+    s.events.append(event(7,'libreoffice_calc','workbook.read_file',{'sheets':[table()]}))
+    p=model_progress(s, tools(('libreoffice_calc','range.read')))
+    assert p['stage']=='read_live_target'
+    assert p['suggested_tool_call']['arguments']['payload']['params']['range']=='A1:E3'
