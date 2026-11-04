@@ -1,0 +1,75 @@
+{
+  "order": 104,
+  "task_id": "1f18aa87-af6f-41ef-9853-cdb8f32ebdea",
+  "candidate_commit": "5dad2a64f648e6ea7a7926fab5579a04163aa858",
+  "review_mode": "human_user_directed_iterative_stage_prompt_repair",
+  "subagents": false,
+  "formal_result": {
+    "status": "passed",
+    "reward": 1.0,
+    "termination_reason": "agent_done",
+    "duration_seconds": 675.131
+  },
+  "events": 25,
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "business_result": {
+    "original_test1_preserved": true,
+    "test2": "baaad",
+    "test3": "aaaaa",
+    "one_sequence_per_section": true,
+    "remaining_blank_sections": 0
+  },
+  "boundary": "Original compare_docx_files ignore_case=true/ignore_blanks=true passed. Actual has one fewer blank separator than reference; not an exact paragraph-layout match.",
+  "extra_action": "Step24 attempted unrequested PDF export with incompatible path and same_basename. Native validation rejected it, no successful export or source mutation; step25 completion succeeded.",
+  "run": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order104/run-008",
+  "source_seal": {
+    "scope_roots": [
+      "integrations",
+      "scripts",
+      "tests",
+      "deployment",
+      "calc_adapter",
+      "chrome_adapter",
+      "gimp_adapter",
+      "impress_adapter",
+      "multi_apps_adapter",
+      "os_adapter",
+      "thunderbird_adapter",
+      "vlc_adapter",
+      "vscode_adapter",
+      "writer_adapter"
+    ],
+    "excludes": [
+      "__pycache__",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".venv*",
+      "*.pyc"
+    ],
+    "file_count": 653,
+    "total_bytes": 90353519,
+    "algorithm": "sha256 of relative_path\\0size\\0file_sha256\\n records",
+    "sha256": "36f4fa6008672d1b7dfd84bcfdb40bd8f7bee5732bdab63f9fc33a32e5cddb02"
+  },
+  "validation": {
+    "focused_tests": "13passed",
+    "real_prefix_checks": "8actual prefixes/24message modes; exact step and index with immutable tools/events",
+    "ruff": "passed",
+    "diff_check": "passed",
+    "source_import_check": "passed"
+  },
+  "scope": "Only evidence-based stage prompts and bounded current-step context; no tool/schema/gate/model/config/evaluator changes; model derives all option letters.",
+  "previous_attempts": {
+    "run006": "deadline/null; wrong assembled letters and duplicate entries",
+    "run007": "diagnostic SIGTERM/noformal score; correctTest2 but irrelevant re-solving and wrong tool search"
+  },
+  "evidence": {
+    "verification": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order104/run-008/verification.json",
+    "prefix_replay": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order104/stage-v3-prefix-replay.json",
+    "checks": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order104/stage-v3-checks.json"
+  }
+}
