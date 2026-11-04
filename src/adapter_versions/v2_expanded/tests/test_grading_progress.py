@@ -197,3 +197,15 @@ def test_suggested_call_matches_provider_atomic_name_and_flat_arguments(monkeypa
     assert p['suggested_tool_call']['name']=='atomic__read_actual'
     assert p['suggested_tool_call']['arguments']['path']=='/tmp/exams/marks.xlsx'
     assert 'payload' not in p['suggested_tool_call']['arguments']
+
+
+def test_saved_read_turn_does_not_recount_large_table_before_execution():
+    s=ready()
+    s.events.append(event(8,'libreoffice_calc','range.write',params={'range':'C3:E3','values':[[0,1,5]]}))
+    s.events.append(event(9,'libreoffice_calc','range.read',{**table(False),'range':'A1:E3'}))
+    s.events.append(event(10,'libreoffice_calc','workbook.save'))
+    p=model_progress(s,tools(('libreoffice_calc','workbook.read_file')))
+    assert p['stage']=='read_saved_target'
+    assert 'ONLY execute' in p['next_step']
+    assert 'table' not in p and 'answer_key_source' not in p
+    assert 'original_graded_rows_to_preserve' not in p

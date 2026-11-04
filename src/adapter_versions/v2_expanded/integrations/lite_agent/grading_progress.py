@@ -116,8 +116,11 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                         + adapter + '.' + action + '.')
                     progress['stage'] = 'discover_required_operation'
                 progress['suggested_tool_call'] = call
-        if progress['stage'] == 'discover_required_operation':
-            for key in ('answer_key_source', 'current_student_source', 'current_row', 'table'):
+        if progress['stage'] == 'discover_required_operation' or stage in {
+                'read_live_target', 'save_target', 'read_saved_target', 'read_current_target',
+                'open_editable_target', 'inspect_editable_target'}:
+            for key in ('answer_key_source', 'current_student_source', 'current_row', 'table',
+                        'raw_answer_pairs', 'original_graded_rows_to_preserve'):
                 progress.pop(key, None)
         return progress
 
@@ -260,8 +263,9 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'Save the target Calc workbook, then read it back; do not rewrite any sources.',
                     'libreoffice_calc', 'workbook.save', {})
     if save_step > saved_read_step:
-        return step('read_saved_target', 'Read the saved score table once and verify all rows, original '
-                    'entries, per-question comparisons and totals.', 'libreoffice_calc', 'workbook.read_file',
+        return step('read_saved_target', 'This turn ONLY execute the exact saved-file read in suggested_tool_call NOW. '
+                    'Do not compare scores, recount answers, analyze totals, or plan corrections on this turn. '
+                    'The file is saved; the next turn will contain the actual disk readback for review.', 'libreoffice_calc', 'workbook.read_file',
                     {'path': target, 'max_rows': 100, 'max_columns': 40})
     progress['student_source_review'] = [{'path': p, 'observed_identity_and_answer_lines': [
         line for line in value.splitlines() if re.search(r'(?i)student|\banswer\b', line)]}
