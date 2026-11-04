@@ -87,6 +87,16 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         progress.update(stage=stage, next_step=instruction)
         if adapter and action:
             call = _call(tools, adapter, action, params or {})
+            if action == 'range.write' and params is None:
+                routes = [route for tool in tools for route in
+                    tool.get('function', {}).get('parameters', {}).get('x-allowed-routes', [])]
+                latest = state.events[-1] if state.events else None
+                just_searched = (latest is not None and latest.executed and not latest.error
+                    and latest.proposed.get('arguments', {}).get('query') == 'libreoffice_calc range.write')
+                if len(routes) > 1 and not just_searched and any(
+                        t.get('function', {}).get('name') == 'tools_search' for t in tools):
+                    call = {'name': 'tools_search', 'arguments': {'query': 'libreoffice_calc range.write'}}
+
             if action == 'range.write' and params is None and call.get('name') == 'adapter__adapter_call':
                 call = {}  # Model must compare and supply all write values itself.
             if call:
@@ -195,6 +205,10 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             'sheet': sheet,
             'question_range': addresses[index][min(score_columns)] + ':' + addresses[index][max(score_columns)],
             'question_headers': [headers[j] for j in score_columns],
+            'values_shape': 'TWO dimensional JSON array. Outer array contains exactly ONE row array. '
+                'Row array contains numeric question markers followed by the typed formula object. '
+                'Do not use address-keyed dictionaries, kind=text, quoted marker strings or one-dimensional values.',
+            'row_cell_count': len(score_columns) + len(total_columns),
             'observed_existing_question_marker_values': observed_values,
             'total_cells': [addresses[index][j] for j in total_columns],
             'total_value_contract': 'The values element for a total cell MUST be a JSON object with '
@@ -203,8 +217,11 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                 'reference points weight belongs only in the total formula, not the question markers. '
                 'Model authors all comparison values and the formula.'}
         progress.pop('table', None)
-        return step('compare_one_student_and_write', 'WRITE ONE ROW. Copy write_contract.sheet and '
-                    'the observed row addresses. Each question marker is model-authored by comparing '
+        return step('compare_one_student_and_write', 'WRITE ONE ROW. values MUST be a TWO-DIMENSIONAL array: [one_row_array]. '
+                    'The one_row_array contains ordinary JSON NUMBER markers, then the total formula object. '
+                    'NOT a dictionary keyed by cell addresses, NOT kind=text, NOT a one-dimensional list. '
+                    'Use one continuous rectangular range covering question cells through total, with '
+                    'exactly write_contract.row_cell_count elements in that row. Copy write_contract.sheet. Each question marker is model-authored by comparing '
                     'the two raw_answer_pairs letters, using ONLY the original observed marker convention. '
                     'The TOTAL element in values MUST be an OBJECT with keys kind and value: '
                     'kind="formula", value=your SUM formula string over this row’s question cells times '

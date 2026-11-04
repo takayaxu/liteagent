@@ -154,3 +154,18 @@ def test_read_preview_requires_open_and_live_identity_before_grading():
     assert p['suggested_tool_call']['arguments']['payload']['params']['path']=='/tmp/exams/marks.xlsx'
     s.events.append(event(6,'os','desktop.open_path',params={'path':'/tmp/exams/marks.xlsx'}))
     assert model_progress(s,tools(('libreoffice_calc','workbook.inspect')))['stage']=='inspect_editable_target'
+
+
+def test_mixed_wrapper_gets_precise_write_discovery_then_no_search_loop():
+    s=ready()
+    ts=tools(('libreoffice_calc','range.write'),('os','filesystem.find'))
+    p=model_progress(s,ts)
+    assert p['stage']=='discover_required_operation'
+    assert p['suggested_tool_call']['arguments']['query']=='libreoffice_calc range.write'
+    s.events.append(ExecutionEvent(step=8,timestamp_utc='',executed=True,
+        proposed={'kind':'catalog','arguments':{'query':'libreoffice_calc range.write'}},result={}))
+    p=model_progress(s,ts)
+    assert p['stage']=='compare_one_student_and_write'
+    assert 'TWO-DIMENSIONAL' in p['next_step']
+    assert p['write_contract']['row_cell_count']==3
+    assert 'suggested_tool_call' not in p
