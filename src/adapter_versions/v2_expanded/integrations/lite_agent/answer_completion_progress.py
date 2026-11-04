@@ -39,13 +39,31 @@ def _sections(text: str) -> list[dict]:
             for i, match in enumerate(headings)]
 
 
+def _multiple_choice(text: str) -> list[dict]:
+    """Expose source questions/options, without selecting or assembling answers."""
+    questions = []
+    current = None
+    for line in text.splitlines():
+        question = re.match(r"^\s*(\d+)\.\s+(.+)", line)
+        option = re.match(r"^\s*([A-Za-z])\)\s+(.+)", line)
+        if question:
+            if current and current["options"]:
+                questions.append(current)
+            current = {"number": int(question[1]), "question": question[2], "options": {}}
+        elif option and current is not None:
+            current["options"][option[1]] = option[2]
+    if current and current["options"]:
+        questions.append(current)
+    return questions
+
+
 def _call(tools: list[dict], adapter: str, action: str, params: dict) -> dict:
     routes = {(r.get("adapter"), r.get("action")) for tool in tools
               for r in tool.get("function", {}).get("parameters", {}).get("x-allowed-routes", [])
               if isinstance(r, dict)}
     names = {tool.get("function", {}).get("name") for tool in tools}
     if (adapter, action) in routes:
-        if action == "text.find_replace" and not params:
+        if action in {"text.find_replace", "paragraph.replace_text", "paragraph.clear_text"} and not params:
             return {}  # The model must derive replacement content from questions.
         return {"name": "adapter__adapter_call", "arguments": {
             "adapter": adapter, "action": action, "payload": {"params": params}}}
@@ -54,7 +72,7 @@ def _call(tools: list[dict], adapter: str, action: str, params: dict) -> dict:
         # is discovered too. Search both needed public capabilities explicitly.
         query = adapter + " " + action
         if action == "document.read_file":
-            query += " text.find_replace"
+            query += " paragraph.replace_text document.inspect"
         return {"name": "tools_search", "arguments": {"query": query}}
     return {}
 
@@ -70,6 +88,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     current_target = None
     active_path = None
     latest_mutation = latest_save = 0
+    inspection = None
     for event in state.events:
         if not event.executed or event.error:
             continue
@@ -93,6 +112,7 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             if isinstance(path, str) and PurePosixPath(path).suffix.lower() in {".docx", ".doc", ".odt", ".rtf"}:
                 active_path = path
         if adapter == "libreoffice_writer" and action == "document.inspect":
+            inspection = {"step": event.step, **context}
             url = context.get("url", context.get("identity", {}).get("url"))
             if isinstance(url, str) and url.startswith("file://"):
                 active_path = unquote(url.removeprefix("file://"))
@@ -196,28 +216,74 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                         "or edit the test document. Search includes text.find_replace to retain the future "
                         "editing capability while discovering this additional reader.", "libreoffice_writer",
                         "document.read_file", {"path": path, "start_char": start, "max_chars": 12000})
-        source_evidence.extend({"path": p, "text": text[:9000], "text_omitted": len(text) > 9000}
+        source_evidence.extend({"path": p, "section_number": blank["number"],
+                                "multiple_choice_questions": _multiple_choice(text),
+                                "unparsed_source_text": text[:9000] if not _multiple_choice(text) else None}
                                for p, text in observed)
     progress["source_questions"] = source_evidence
-    if not blanks:
-        return step("verify_completion", "Every observed answer section has content in the saved target. "
-                    "Now check each newly added option against its source question, sequence length and "
-                    "the example format; content presence is not correctness. Preserve provided answers. "
-                    "If all requested entries are correct, claim completion with the saved target path.")
+    original_blanks = {item["heading"] for item in original["sections"] if not item["entry"]}
+    shape_issues = []
+    for section in target["sections"]:
+        if section["heading"] not in original_blanks or not section["entry"]:
+            continue
+        questions = next((item["multiple_choice_questions"] for item in source_evidence
+                          if item["section_number"] == section["number"]), [])
+        if questions and not re.fullmatch(r"[A-Za-z]{" + str(len(questions)) + "}", section["entry"]):
+            shape_issues.append({"heading": section["heading"], "observed_entry": section["entry"],
+                                 "required_letter_count": len(questions),
+                                 "issue": "Expected one compact answer sequence, one letter per question; "
+                                          "multiple sequences or extra text are not complete."})
+    progress["answer_shape_issues"] = shape_issues
+    progress["live_paragraphs"] = inspection.get("paragraph_details", []) if inspection else []
+    if not blanks and not shape_issues:
+        return step("verify_completion", "Every observed answer section has one saved sequence of the "
+                    "expected length. Re-solve each source question and compare the letter at its exact "
+                    "position with the saved sequence. A correct length is not a correct answer. "
+                    "Do not copy letters from the original example. If every position is correct and "
+                    "original answers are preserved, claim completion with the saved target path.")
     if active_path != known_path:
         return step("activate_target", "Open this exact answer document for editing. Source reads do not "
                     "activate it. Do not type into a test or at guessed screen coordinates.",
                     "os", "desktop.open_path", {"path": known_path})
-    progress["write_contract"] = {"adapter": "libreoffice_writer", "action": "text.find_replace",
-        "observed_empty_heading_anchors": [s["heading"] for s in blanks],
-        "replace_all": False, "case_sensitive": True,
-        "replacement_rule": "Keep the chosen heading unchanged, append an actual paragraph boundary "
-                            "(JSON \r), then your solved option sequence in the existing example format."}
-    return step("solve_and_fill_one_section", "Solve the multiple-choice questions in source_questions "
-                "for one blank section. Follow the existing answer sequence format; do not answer unrelated "
-                "essay/fill-in sections or add explanations absent from the example. Use text.find_replace: "
-                "find an exact empty heading from write_contract, replacement preserves that heading and "
-                "adds a paragraph plus your computed answers; replace_all=false, case_sensitive=true. "
-                "Do not use GUI typing, append at an unknown cursor, or treat DOCX as a UTF-8 text file. "
-                "After successful replacement, save, read back and continue with the remaining blank section.",
-                "libreoffice_writer", "text.find_replace")
+    if not inspection or inspection["step"] < latest_mutation:
+        return step("inspect_live_answer_paragraphs", "Inspect the active target's paragraph indices now. "
+                    "Use these raw indices for editing; do not guess cross-paragraph newline literals. "
+                    "This inspection locates text, not answers. Do not insert another sequence under a "
+                    "heading that already has one.", "libreoffice_writer", "document.inspect",
+                    {"paragraph_start": 0, "paragraph_limit": 12})
+    if shape_issues:
+        progress["write_contract"] = {"action": "paragraph.replace_text",
+            "index_source": "live_paragraphs raw index of the answer paragraph being repaired",
+            "paragraphs_rule": "One model-solved compact answer sequence; preserve every original "
+                               "provided entry. Clear only extra answer paragraphs belonging to this "
+                               "section with paragraph.clear_text at their observed indices.",
+            "blank_paragraphs_between": 0}
+        return step("repair_answer_shape", "Repair answer_shape_issues before adding anything else. "
+                    "Use observed live paragraph indices, replace the wrong answer paragraph, and "
+                    "clear extra answer paragraphs only within the same newly completed section. "
+                    "Do not replace the heading to insert yet another sequence. Keep original answers.",
+                    "libreoffice_writer", "paragraph.replace_text")
+    chosen = blanks[0]
+    questions = next((item["multiple_choice_questions"] for item in source_evidence
+                      if item["section_number"] == chosen["number"]), [])
+    progress["current_section"] = chosen["heading"]
+    progress["current_questions"] = questions
+    progress["answer_position_checklist"] = [
+        {"output_position": index + 1, "source_question": question["number"]}
+        for index, question in enumerate(questions)]
+    progress["write_contract"] = {"adapter": "libreoffice_writer", "action": "paragraph.replace_text",
+        "observed_empty_heading_anchors": [chosen["heading"]],
+        "index_source": "live_paragraphs raw index of this heading or its following empty paragraph",
+        "paragraphs_rule": "If replacing the heading paragraph, use [exact_original_heading, "
+                           "model_solved_sequence]. If replacing its empty answer paragraph, use "
+                           "[model_solved_sequence]. All other paragraphs stay unchanged.",
+        "blank_paragraphs_between": 0}
+    return step("solve_and_fill_one_section", "Work ONLY on current_section and current_questions. "
+                "Choose one option for each numbered question. Then assemble the answer string left "
+                "to right using answer_position_checklist: character at position i MUST equal your "
+                "choice for question i. Recheck every character before submitting the write. "
+                "The original answer example gives FORMAT ONLY; never reuse its letters for another "
+                "test. Submit paragraph.replace_text using an observed raw paragraph index and the "
+                "paragraph array in write_contract. No guessed newline strings or GUI typing. "
+                "After one successful write, stop editing: save and read back before the next section.",
+                "libreoffice_writer", "paragraph.replace_text")

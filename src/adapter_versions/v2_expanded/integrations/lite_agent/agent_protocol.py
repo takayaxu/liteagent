@@ -766,6 +766,17 @@ class AgentProtocolMixin:
                 state,
                 tools,
             )
+        if answer_progress is not None:
+            system_message += (
+                "\nCurrent answer-completion step (takes precedence over general phase hints): "
+                + json.dumps(next_step, ensure_ascii=False)
+                + "\nPerform this step before later edits. When suggested_tool_call is present, "
+                "use that exact provided tool and observed read-only/save arguments. Do not "
+                "substitute another edit for a required read or search. After a successful "
+                "write, save once, then read the saved target; do not repeat the insertion. "
+                "For answer content, solve only current_section and verify each output character "
+                "against its numbered source question; existing example letters are not new answers."
+            )
         return [
             {
                 "role": "system",
