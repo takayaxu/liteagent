@@ -719,6 +719,20 @@ class AgentProtocolMixin:
                    and isinstance(event.error, dict) and event.error.get("status") == "rejected"
                    for event in state.events):
                 state_text += "\ncurrent_completion_status:\n" + json.dumps(current_gate, ensure_ascii=False)
+        from . import grading_progress
+
+        grading = grading_progress.model_progress(state, tools=tools)
+        if grading is not None:
+            grading_step = {key: grading[key] for key in
+                            ("stage", "next_step", "suggested_tool_call", "required_operation")
+                            if key in grading}
+            state_text = ("Current step: follow this observed grading guidance.\n"
+                          + json.dumps(grading_step, ensure_ascii=False)
+                          + "\nRecent truthful execution state:\n"
+                          + json.dumps(compact_execution_summary_for_model(model_context(limit=2), max_chars=2400), ensure_ascii=False)
+                          + "\ngrading_progress:\n" + json.dumps(grading, ensure_ascii=False))
+            if outcomes:
+                state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
@@ -787,6 +801,11 @@ class AgentProtocolMixin:
                 "For answer content, solve only current_section and verify each output character "
                 "against its numbered source question; existing example letters are not new answers."
             )
+        if grading is not None:
+            system_message += ("\nCurrent grading step takes precedence over general phase hints: "
+                + json.dumps(grading_step, ensure_ascii=False)
+                + "\nOnly read the key/student papers. Write scores solely in the actual Calc target. "
+                "Never deduplicate answer letters. Choose all score values yourself from source comparisons.")
         return [
             {
                 "role": "system",
