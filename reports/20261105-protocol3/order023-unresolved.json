@@ -1,0 +1,41 @@
+{
+  "order": 23,
+  "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+  "human_review": false,
+  "reviewer_agent_id": "/root/review23",
+  "status": "unresolved",
+  "base_commit": "bcc96626c3318d5dc37f7e69e2ce38dcb214ea8f",
+  "attempts": [
+    {
+      "run": "run-001",
+      "commit": "bcc9662",
+      "status": "failed",
+      "reward": 0.0,
+      "seconds": 625.771,
+      "findings": "No protocol error; B/D fill correct; E header plus 19 data cells wrong; model misread truncated receipt preview as incomplete execution."
+    },
+    {
+      "run": "run-002",
+      "commit": "8bc2dd7",
+      "plan": "23-v2",
+      "status": "model_protocol_failure",
+      "reward": null,
+      "findings": "Correct header; model repeated string values after accurate array hint."
+    },
+    {
+      "run": "run-003",
+      "commit": "8dc5b19",
+      "plan": "23-v3",
+      "status": "model_protocol_failure",
+      "reward": null,
+      "seconds": 767.579,
+      "findings": "Formula JSON structure guidance actually delivered; model still repeated malformed string values."
+    }
+  ],
+  "all_integrity_checks": true,
+  "candidate_scope": "Schema-derived array/formula recovery feedback and conditional derived-text guidance; strict validation retained.",
+  "integration": false,
+  "push_candidates": false,
+  "evidence_root": "/home/liuxv/liteagent-local-runs/repair-23-20261105-agent",
+  "next_state": "Preserve failed candidates and evidence; no blind rerun without a new supported repair hypothesis."
+}

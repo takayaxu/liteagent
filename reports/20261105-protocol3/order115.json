@@ -36,9 +36,10 @@
     "sha256": "39a33257d2956f582853cc46b02449e6fb82a63e332e89b42e9dc5b1d7e9562c"
   },
   "cleanup": "Owned guest absent; resource pool empty.",
-  "delivery": "validated pending integration",
+  "delivery": "integrated and pushed; remote read-back verified",
   "other_orders": {
     "23": "unresolved; candidates isolated",
     "161": "pending"
-  }
+  },
+  "final_active_commit": "bdfa69aa13537fe00065427bef856f8f871e75d5"
 }

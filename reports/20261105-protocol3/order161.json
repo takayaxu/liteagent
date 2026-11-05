@@ -1,0 +1,20 @@
+{
+  "order": 161,
+  "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+  "human_review": false,
+  "source_commit": "bdfa69aa13537fe00065427bef856f8f871e75d5",
+  "result": "passed",
+  "reward": 1.0,
+  "steps": 50,
+  "seconds": 1798.654,
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "evidence": "/home/liuxv/liteagent-local-runs/repair-161-20261105-agent/run-001/output/results/results.json",
+  "behavior": "Step49 model selected playback.open with complete local path; returned native playing status and verification passed; step50 completed.",
+  "runtime_patch": "none; latest clean baseline passed",
+  "limitations": "Repeated filesystem.find searches cannot discover OS file search from VLC domain; many GUI attempts before successful playback. A proposed shared route change was rejected in independent review for inconsistent request-policy identity and was not implemented.",
+  "cleanup": "Owned guest absent and resource pool empty."
+}
