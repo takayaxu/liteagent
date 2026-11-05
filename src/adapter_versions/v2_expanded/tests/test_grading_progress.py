@@ -209,3 +209,39 @@ def test_saved_read_turn_does_not_recount_large_table_before_execution():
     assert 'ONLY execute' in p['next_step']
     assert 'table' not in p and 'answer_key_source' not in p
     assert 'original_graded_rows_to_preserve' not in p
+
+
+def test_checks_report_wrong_branch_without_supplying_replacement_scores():
+    from integrations.lite_agent.grading_progress import _observed_checks
+    original = table()
+    current = table(False)
+    current['display_text'][2][2:5] = ['1', '1', '10']
+    sources = {'/tmp/Reference.docx': 'Reference\n【Answer】A\n【Answer】B',
+               '/tmp/a.docx': '17 Ada\n【Answer】A\n【Answer】C',
+               '/tmp/b.docx': '18 Bea\n【Answer】C\n【Answer】B'}
+    check = _observed_checks(original, current, sources, ['/tmp/Reference.docx'], [2,3])
+    assert check['checked_rows'] == [3]
+    assert [i['cell'] for i in check['issues']] == ['C3']
+    assert 'expected' not in check['issues'][0]
+    assert check['issues'][0]['student_letter'] == 'C'
+    current['display_text'][1][4] = '99'
+    check = _observed_checks(original, current, sources, ['/tmp/Reference.docx'], [2,3])
+    assert check['original_entry_changes'] == [{'cell':'E2','original':'5','actual':'99'}]
+
+
+def test_completed_consistent_rows_produce_compact_final_review_not_regrading():
+    s=ready()
+    s.events[3]=read(4,'/tmp/exams/Reference.docx','Reference\n【Answer】A\n【Answer】B')
+    s.events[4]=read(5,'/tmp/exams/student.docx','18 Bea\n【Answer】C\n【Answer】B')
+    s.events.append(read(8,'/tmp/exams/provided.docx','17 Ada\n【Answer】A\n【Answer】C'))
+    s.events.append(event(9,'libreoffice_calc','range.write'))
+    s.events.append(event(10,'libreoffice_calc','range.read',{**table(False),'range':'A1:E3'}))
+    s.events.append(event(11,'libreoffice_calc','workbook.save'))
+    s.events.append(event(12,'libreoffice_calc','workbook.read_file',{'sheets':[table(False)]}))
+    p=model_progress(s,tools())
+    assert p['stage']=='verify_completion'
+    assert p['source_readback_checks']['checked_rows']==[3]
+    assert p['source_readback_checks']['issues']==[]
+    assert p['source_readback_checks']['unchecked_rows']==[]
+    assert 'student_source_review' not in p and 'table' not in p
+    assert 'Do not restart' in p['next_step']

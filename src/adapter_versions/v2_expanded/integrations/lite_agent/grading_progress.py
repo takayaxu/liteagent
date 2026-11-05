@@ -20,6 +20,91 @@ def _path(value: Any) -> str:
     return unquote(str(value or '').removeprefix('file://'))
 
 
+def _answers(text: str) -> list[str]:
+    return re.findall(r'(?im)^.*?\banswer\b[^\w\n]*([A-Z])\s*$', text)
+
+
+def _row_source(row: list, columns: list[int], sources: dict, keys: list[str]) -> list[tuple[str, str]]:
+    identities = [str(v) for v in row[:min(columns)] if str(v).strip()]
+    return [(path, value) for path, value in sources.items() if path not in keys
+            and any(identity in value for identity in identities)]
+
+
+def _observed_checks(original: dict, current: dict, sources: dict, keys: list[str],
+                     columns: list[int]) -> dict:
+    """Check observations; never produce replacement grades or formula arguments."""
+    before = original.get('display_text', [])
+    rows = current.get('display_text', [])
+    addresses = current.get('cell_addresses', [])
+    protected = []
+    for i, row in enumerate(before[1:], 1):
+        if all(str(v).strip() for v in row) and i < len(rows):
+            for j, value in enumerate(row):
+                if j < len(rows[i]) and str(rows[i][j]) != str(value):
+                    protected.append({'cell': addresses[i][j], 'original': value,
+                                      'actual': rows[i][j]})
+    result = {'original_entry_changes': protected, 'checked_rows': [], 'issues': [],
+              'unchecked_rows': [], 'meaning': 'Independent source/readback consistency checks, '
+              'not model review decisions or task acceptance. No replacement grades are supplied.'}
+    if len(keys) != 1 or keys[0] not in sources:
+        return result
+    key = _answers(sources[keys[0]])
+    conventions = {True: set(), False: set()}
+    for row in before[1:]:
+        match = _row_source(row, columns, sources, keys)
+        if len(match) != 1:
+            continue
+        answers = _answers(match[0][1])
+        if len(answers) != len(key) or len(key) != len(columns):
+            continue
+        for col, a, b in zip(columns, answers, key):
+            if col < len(row) and str(row[col]).strip():
+                conventions[a == b].add(str(row[col]))
+    if any(len(values) != 1 for values in conventions.values()):
+        result['unchecked_rows'] = ['original examples do not establish an unambiguous marker convention']
+        return result
+    markers = {kind: next(iter(values)) for kind, values in conventions.items()}
+    total_columns = [j for j, label in enumerate(before[0]) if re.search(r'(?i)total', str(label))]
+    scales = set()
+    for example in before[1:]:
+        try:
+            indicators = sum(float(example[c]) for c in columns)
+            if indicators and len(total_columns) == 1:
+                scales.add(float(example[total_columns[0]]) / indicators)
+        except (ValueError, TypeError, IndexError):
+            continue
+    for i, row in enumerate(rows[1:], 1):
+        if i >= len(before) or all(str(v).strip() for v in before[i]):
+            continue
+        match = _row_source(row, columns, sources, keys)
+        if len(match) != 1 or len(_answers(match[0][1])) != len(key) or len(key) != len(columns):
+            result['unchecked_rows'].append(i + 1)
+            continue
+        if any(not str(row[c]).strip() for c in columns):
+            continue
+        answers = _answers(match[0][1])
+        issues = []
+        for col, a, b in zip(columns, answers, key):
+            if str(row[col]) != markers[a == b]:
+                issues.append({'cell': addresses[i][col], 'actual': row[col],
+                    'source_path': match[0][0], 'student_letter': a, 'reference_letter': b,
+                    'reason': 'Readback marker contradicts the original example convention for these source letters; '
+                              'check formula equality and both true/false branches.'})
+        if len(scales) == 1 and len(total_columns) == 1:
+            col = total_columns[0]
+            try:
+                if abs(float(row[col]) - sum(float(row[c]) for c in columns) * next(iter(scales))) > 1e-9:
+                    issues.append({'cell': addresses[i][col], 'actual': row[col],
+                        'reason': 'Readback total is inconsistent with the question indicators and original example scale; '
+                                  'repair the model-authored total formula, do not hand-count.'})
+            except (ValueError, TypeError, IndexError):
+                issues.append({'cell': addresses[i][col], 'actual': row[col],
+                               'reason': 'Total readback is not numeric; inspect the formula.'})
+        result['checked_rows'].append(i + 1)
+        result['issues'].extend(issues)
+    return result
+
+
 def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
     text = state.instruction.lower()
     if not (state.domain == 'multi_apps' and 'student' in text and 'answer' in text
@@ -177,9 +262,25 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'question-score columns and total formula. Do not overwrite identity columns. '
                     'Read exact cell addresses if they are absent.', 'libreoffice_calc', 'range.read',
                     {'sheet': sheet, 'range': table.get('returned_range', table.get('used_range'))})
+    checks = _observed_checks(original_table, table, sources, keys, score_columns)
+    progress['source_readback_checks'] = checks
+    if checks['original_entry_changes']:
+        progress.pop('table', None)
+        progress.pop('answer_key_source', None)
+        return step('restore_original_entries', 'Restore ONLY the changed original entries listed in '
+                    'source_readback_checks.original_entry_changes to their exact original values. '
+                    'The user requested remaining students; provided graded entries must remain unchanged. '
+                    'Do not re-grade the original student, read sources again, or change any other cells. '
+                    'Use the observed sheet and addresses; then read the live table.',
+                    'libreoffice_calc', 'range.write')
     pending_rows = [(i, row) for i, row in enumerate(rows[1:], 1)
                     if any(j < len(row) and str(row[j]).strip() == '' for j in score_columns)]
+    repair_rows = [(i, row) for i, row in enumerate(rows[1:], 1)
+                   if any(issue['cell'] in addresses[i] for issue in checks['issues'])]
     progress['remaining_rows_with_blank_scores'] = len(pending_rows)
+    if repair_rows:
+        pending_rows = repair_rows + [item for item in pending_rows if item not in repair_rows]
+
     if pending_rows:
         if open_step <= preview_step:
             return step('open_editable_target', 'All source documents are read. The earlier workbook.read_file '
@@ -197,12 +298,9 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
         matches = [(p, value) for p, value in sources.items() if p not in keys
                    and any(identity in value for identity in identities)]
         progress['current_student_source'] = [{'path': p, 'text': value} for p, value in matches]
-        def marked_answers(value: str) -> list[str]:
-            return re.findall(r'(?im)^.*?\banswer\b[^\w\n]*([A-Z])\s*$', value)
-
         if len(matches) == 1 and len(keys) == 1:
-            key_answers = marked_answers(sources[keys[0]])
-            student_answers = marked_answers(matches[0][1])
+            key_answers = _answers(sources[keys[0]])
+            student_answers = _answers(matches[0][1])
             if len(key_answers) == len(student_answers) == len(score_columns):
                 progress['raw_answer_pairs'] = [
                     {'source_position': i + 1, 'column_header': headers[column],
@@ -241,6 +339,8 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'first the equality comparison between those two quoted letters, then the correct '
                     'marker, then the incorrect marker. Never pass each letter as a separate IF argument. '
                     'Use semicolons between IF arguments for Calc locale compatibility (commas cause508). '
+                    'Equality TRUE must return the example’s correct marker and FALSE its incorrect marker. '
+                    'Do not swap these branches when the two letters happen to differ. '
                     'Select the correct/incorrect return markers from the original example. '
                     'Do not manually judge letters or insert literal question scores. The total is also a typed formula. '
                     'Wrap the row in an extra outer array: values contains ONE ARRAY whose elements are '
@@ -267,14 +367,15 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'Do not compare scores, recount answers, analyze totals, or plan corrections on this turn. '
                     'The file is saved; the next turn will contain the actual disk readback for review.', 'libreoffice_calc', 'workbook.read_file',
                     {'path': target, 'max_rows': 100, 'max_columns': 40})
-    progress['student_source_review'] = [{'path': p, 'observed_identity_and_answer_lines': [
-        line for line in value.splitlines() if re.search(r'(?i)student|\banswer\b', line)]}
-        for p, value in sources.items() if p not in keys]
-    return step('verify_completion', 'DO NOT hand-count, replace calculated totals with literals, or '
-                'change original_graded_rows_to_preserve. Those original entries are provided data, not '
-                'answers to re-grade. Verify formula operands against source letters, not a new mental count. '
-                'The saved table has been fully read back and no question-score '
-                'blanks remain. This is coverage, not proof of correct grading. Compare every score '
-                'with the actual student and reference answers, verify totals and preserved original '
-                'rows. Only if all user requirements are satisfied submit propose_done. Do not reread '
-                'the same sources or repeat writes without a concrete discrepancy.')
+    progress.pop('table', None)
+    progress.pop('answer_key_source', None)
+    progress['saved_read_step'] = saved_read_step
+    progress['last_write_step'] = write_step
+    return step('verify_completion', 'The saved table is already read back. Review ONLY the current '
+                'source_readback_checks and original-entry preservation summary. Each checked row has '
+                'already been compared with the actual source letters and original marker convention; '
+                'this observation check does not establish unverified requirements. Do not restart a '
+                'student-by-student mental recount, reread unchanged sources, or replace formulas with '
+                'literal totals. If issues or unchecked_rows remain, address that specific evidence. '
+                'If all requested rows, totals, preservation and saved destination are satisfied, submit '
+                'propose_done now with the actual evidence. Do not invent a discrepancy by hand-counting.')
