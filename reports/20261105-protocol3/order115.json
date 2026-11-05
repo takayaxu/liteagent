@@ -1,0 +1,44 @@
+{
+  "order": 115,
+  "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+  "human_review": false,
+  "reviewer_agent_id": "/root/review23",
+  "plan_version": "115-path-pattern-v1",
+  "base_commit": "bcc96626c3318d5dc37f7e69e2ce38dcb214ea8f",
+  "candidate_commit": "f021864",
+  "original_root_cause": "Public nonblank path pattern \\S is treated as a whole-string generation constraint; real service produced single-character paths.",
+  "change": "Only GIMP image.export input_path/output_path patterns use equivalent whole-string nonblank rule.",
+  "validation": {
+    "focused_adjacent_passed": 17,
+    "ruff": "passed",
+    "bin_check": "passed",
+    "same_service_probe": "/home/liuxv/liteagent-local-runs/repair-115-20261105-agent/schema-probe.json"
+  },
+  "baseline": {
+    "status": "model_protocol_failure",
+    "reward": null,
+    "seconds": 1790.035
+  },
+  "formal_result": {
+    "status": "passed",
+    "reward": 1.0,
+    "seconds": 353.326,
+    "integrity": {
+      "source_matches": true,
+      "config_matches": true,
+      "osworld_matches": true
+    },
+    "result": "/home/liuxv/liteagent-local-runs/repair-115-20261105-agent/run-002/output/results/results.json"
+  },
+  "artifact": {
+    "docx_media_count": 1,
+    "docx_drawing_count": 1,
+    "sha256": "39a33257d2956f582853cc46b02449e6fb82a63e332e89b42e9dc5b1d7e9562c"
+  },
+  "cleanup": "Owned guest absent; resource pool empty.",
+  "delivery": "validated pending integration",
+  "other_orders": {
+    "23": "unresolved; candidates isolated",
+    "161": "pending"
+  }
+}
