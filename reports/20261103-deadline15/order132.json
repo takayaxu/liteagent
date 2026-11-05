@@ -1,0 +1,49 @@
+{
+  "order": 132,
+  "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+  "candidate_commit": "5eede351d85dc44512e93ed7dca2835b572d76d6",
+  "formal_result": {
+    "status": "passed",
+    "reward": 1.0,
+    "termination_reason": "agent_done",
+    "duration_seconds": 1488.11
+  },
+  "event_count": 62,
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "business_result": {
+    "nine_remaining_students_completed": true,
+    "all_100_question_markers_match_reference": true,
+    "all_10_totals_match_reference": true,
+    "all143cells_match_reference": true,
+    "original_provided_row_preserved": true,
+    "identity_columns_preserved": true,
+    "karen_total": 50,
+    "differences": []
+  },
+  "loop_evidence": {
+    "savedread_step": 61,
+    "next_action": "propose_done62",
+    "reads_of_reference": 1,
+    "writer_mutations": [],
+    "original_row_mutations": []
+  },
+  "review_mode": "primary_agent_self_review_user_override",
+  "integrated": false,
+  "run": "/home/liuxv/liteagent-local-runs/repair-timeouts15-20261103/order132/run-021",
+  "validation": {
+    "focused_tests": 32,
+    "v12_prefixes": 11,
+    "v12_message_modes": 33,
+    "v13_error_prefixes": 5,
+    "v13_message_modes": 15,
+    "ruff": "passed",
+    "diff_check": "passed",
+    "source_import_check": "passed"
+  },
+  "scope": "Evidence-based prompt projection and read-only source/readback consistency observations only. All row values/formulas authored by model. Original model/budget/task/evaluator/tool schemas and completion gates unchanged.",
+  "previous_failure": "run019: deadline after repeated whole-table mental recount and originalrow corruption. run020 diagnostic: newchecks caught wrongbranches; explicitbranchrepair refined in v13."
+}
