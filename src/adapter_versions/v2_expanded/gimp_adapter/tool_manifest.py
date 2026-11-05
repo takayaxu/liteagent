@@ -160,8 +160,8 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "Existing output artifacts are replaced; the input must be different."
         ),
         "properties": {
-            "input_path": {"type": "string", "minLength": 1, "pattern": r"\S"},
-            "output_path": {"type": "string", "minLength": 1, "pattern": r"\S"},
+            "input_path": {"type": "string", "minLength": 1, "pattern": r"^[\s\S]*\S[\s\S]*$"},
+            "output_path": {"type": "string", "minLength": 1, "pattern": r"^[\s\S]*\S[\s\S]*$"},
             "loader": {"type": "string", "enum": ["auto", "jpeg"],
                        "description": "Defaults to auto; jpeg explicitly forces the JPEG loader."},
             "quality": {"type": "number", "minimum": 0, "maximum": 1,
