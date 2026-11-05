@@ -64,6 +64,8 @@ def _observed_checks(original: dict, current: dict, sources: dict, keys: list[st
         result['unchecked_rows'] = ['original examples do not establish an unambiguous marker convention']
         return result
     markers = {kind: next(iter(values)) for kind, values in conventions.items()}
+    result['original_example_marker_convention'] = {'equal_letters': markers[True],
+                                                     'unequal_letters': markers[False]}
     total_columns = [j for j, label in enumerate(before[0]) if re.search(r'(?i)total', str(label))]
     scales = set()
     for example in before[1:]:
@@ -330,6 +332,23 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
             'meaning': 'Copy sheet/address exactly. Select each indicator from existing marker convention; '
                 'reference points weight belongs only in the total formula, not the question markers. '
                 'Model authors all comparison values and the formula.'}
+        progress['write_contract']['marker_convention_from_original_example'] = checks.get(
+            'original_example_marker_convention')
+        if repair_rows:
+            progress['write_contract']['current_errors'] = [issue for issue in checks['issues']
+                if issue['cell'] in addresses[index]]
+            progress.pop('table', None)
+            return step('repair_formula_branches', 'REPAIR THE EXISTING WRONG FORMULAS. Do not repeat the '
+                        'previous values or just change array packaging. The specific current_errors '
+                        'are in write_contract. For IF(equality;TRUE_value;FALSE_value), TRUE_value '
+                        'must ALWAYS be marker_convention_from_original_example.equal_letters and '
+                        'FALSE_value must ALWAYS be unequal_letters, for EVERY question, regardless '
+                        'of which letters appear. Do not swap return branches to match the current '
+                        'comparison. Keep the two source-letter operands exact. Author the corrected '
+                        'typed formula objects yourself, with = prefix and semicolons, inside ONE '
+                        'row array inside values. Preserve the SUM total formula. Call range.write '
+                        'for the observed current row and sheet, then live read; omit payload.verify.',
+                        'libreoffice_calc', 'range.write')
         progress.pop('table', None)
         return step('compare_one_student_and_write', 'WRITE ONE ROW. values MUST be a TWO-DIMENSIONAL array: [one_row_array]. '
                     'Every question cell MUST be a typed formula object (kind=formula,value=your formula). '
@@ -341,7 +360,9 @@ def model_progress(state: Any, tools: list[dict] | None = None) -> dict | None:
                     'Use semicolons between IF arguments for Calc locale compatibility (commas cause508). '
                     'Equality TRUE must return the example’s correct marker and FALSE its incorrect marker. '
                     'Do not swap these branches when the two letters happen to differ. '
-                    'Select the correct/incorrect return markers from the original example. '
+                    'Use write_contract.marker_convention_from_original_example: TRUE always equal_letters, '
+                    'FALSE always unequal_letters. This branch order is identical for EVERY question; '
+                    'never swap it when the letters differ. '
                     'Do not manually judge letters or insert literal question scores. The total is also a typed formula. '
                     'Wrap the row in an extra outer array: values contains ONE ARRAY whose elements are '
                     'the typed objects. NOT a dictionary keyed by cell addresses, NOT kind=text, '
