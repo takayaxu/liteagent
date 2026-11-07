@@ -108,16 +108,21 @@ def test_duplicate_creation_is_exposed_instead_of_endorsed():
 
 
 @pytest.mark.parametrize('mode', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
-def test_real_message_builder_keeps_stage_and_leaves_tools_events_unchanged(mode):
+@pytest.mark.parametrize('gate_passed', [True, False])
+def test_real_message_builder_keeps_stage_and_leaves_tools_events_unchanged(mode, gate_passed, monkeypatch):
     s = state(created(), event(2, 'presentation.save'), inspected())
     tools = [{'type': 'function', 'function': {'name': 'propose_done',
         'parameters': {'type': 'object', 'properties': {}}}}]
     before = deepcopy((s.events, tools))
     agent = LiteAgent(LiteAgentConfig(base_url='http://unused', include_gui=False),
                       SimpleNamespace(), model_client=SimpleNamespace(client=object()))
+    monkeypatch.setattr(agent, '_generic_completion_gate', lambda state: {
+        'passed': gate_passed, 'missing': [] if gate_passed else ['unfinished state']})
     messages = agent._messages(s, b'png', tools=tools, **mode)
     content = str(messages)
     assert 'Current native-summary step' in content
     assert 'review_remaining_clauses' in content
     assert 'current_completion_status' in content
+    assert 'Current native-summary step takes precedence' in messages[0]['content']
+    assert ('"suggested_tool_call": {"name": "propose_done"' in content) == gate_passed
     assert (s.events, tools) == before

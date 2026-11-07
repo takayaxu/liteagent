@@ -738,7 +738,18 @@ class AgentProtocolMixin:
         native_summary = native_summary_progress.model_progress(state, tools=tools)
         if native_summary is not None:
             gate = self._generic_completion_gate(state)
+            native_step = {key: native_summary[key] for key in
+                           ("stage", "next_step", "suggested_tool_call") if key in native_summary}
+            if (native_summary["stage"] == "review_remaining_clauses" and gate.get("passed") is True
+                    and any(t.get("function", {}).get("name") == "propose_done" for t in tools or [])):
+                native_step["suggested_tool_call"] = {"name": "propose_done", "arguments": {
+                    "reason": "The native summary was created, saved and read back with matching source titles.",
+                    "evidence": [f"Native creation step {native_summary['created_step']}; "
+                                 f"saved at step {native_summary['latest_save_step']}; "
+                                 f"matching readback at step {native_summary['readback_step']}."]}}
             state_text = ("Current native-summary step: use the observed progress below.\n"
+                          + json.dumps(native_step, ensure_ascii=False)
+                          + "\nObserved native-summary evidence:\n"
                           + json.dumps(native_summary, ensure_ascii=False)
                           + "\ncurrent_completion_status:\n"
                           + json.dumps(gate, ensure_ascii=False)
@@ -820,6 +831,15 @@ class AgentProtocolMixin:
                 + json.dumps(grading_step, ensure_ascii=False)
                 + "\nOnly read the key/student papers. Write scores solely in the actual Calc target. "
                 "Never deduplicate answer letters. Choose all score values yourself from source comparisons.")
+        if native_summary is not None:
+            system_message += (
+                "\nCurrent native-summary step takes precedence over general phase hints: "
+                + json.dumps(native_step, ensure_ascii=False)
+                + "\nReplan from this current step. A successful native creation already added the "
+                "returned page; creating again adds an extra page. When you conclude all user "
+                "requirements are satisfied, emit the provided propose_done call, not a creation "
+                "or inspection call. If a separate user requirement remains, address that specific "
+                "requirement instead. The existing completion gate still checks the execution ledger.")
         return [
             {
                 "role": "system",
