@@ -1,0 +1,23 @@
+{
+  "order": 30,
+  "formal_result": {
+    "task_id": "af23762e-2bfd-4a1d-aada-20fa8de9ce07",
+    "status": "passed",
+    "reward": 1.0,
+    "termination_reason": "agent_done",
+    "steps": 5,
+    "duration_seconds": 199.44
+  },
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "source_commit": "ee299b4f878d0511b14ad3db962a508e3cb33bf6",
+  "review_mode": "primary_agent_self_review_user_override",
+  "formal_run": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order030/run-003",
+  "runtime_patch": true,
+  "candidate_commit": "ee299b4f878d0511b14ad3db962a508e3cb33bf6",
+  "integrated": true,
+  "checks": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order030/stage-v2-checks.json"
+}
