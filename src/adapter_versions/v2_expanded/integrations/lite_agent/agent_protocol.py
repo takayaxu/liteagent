@@ -733,6 +733,20 @@ class AgentProtocolMixin:
                           + "\ngrading_progress:\n" + json.dumps(grading, ensure_ascii=False))
             if outcomes:
                 state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import native_summary_progress
+
+        native_summary = native_summary_progress.model_progress(state, tools=tools)
+        if native_summary is not None:
+            gate = self._generic_completion_gate(state)
+            state_text = ("Current native-summary step: use the observed progress below.\n"
+                          + json.dumps(native_summary, ensure_ascii=False)
+                          + "\ncurrent_completion_status:\n"
+                          + json.dumps(gate, ensure_ascii=False)
+                          + "\nRecent truthful execution state:\n"
+                          + json.dumps(compact_execution_summary_for_model(
+                              model_context(limit=2), max_chars=2400), ensure_ascii=False))
+            if outcomes:
+                state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
