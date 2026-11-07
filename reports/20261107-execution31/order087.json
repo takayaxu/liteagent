@@ -1,0 +1,18 @@
+{
+  "order": 87,
+  "candidate_commit": "2f8527115c3419fa2bf9d97b9c076b6d43761a43",
+  "status": "blocked_external_model_preflight",
+  "tasks_started": 0,
+  "reward": null,
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "reason": "model preflight APIConnectionError; user SSH tunnel repeatedly times out connecting original ModelArts port30118",
+  "candidate_integrated": false,
+  "checks": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order087/stage-v1-checks.json",
+  "baseline_verification": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order087/run-001/verification.json",
+  "reference_metadata_diagnostic": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order087/input-reference-metadata.json",
+  "review_mode": "primary_agent_self_review_user_override"
+}
