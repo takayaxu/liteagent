@@ -792,6 +792,12 @@ class AgentProtocolMixin:
                           + json.dumps(compact_execution_summary_for_model(
                               model_context(limit=2), max_chars=2000), ensure_ascii=False))
 
+        from . import terminal_default_progress
+
+        terminal_defaults = terminal_default_progress.model_progress(state)
+        if terminal_defaults is not None:
+            state_text += "\nCURRENT TERMINAL DEFAULT STEP:\n" + json.dumps(terminal_defaults, ensure_ascii=False)
+
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
@@ -882,6 +888,8 @@ class AgentProtocolMixin:
                 "requirements are satisfied, emit the provided propose_done call, not a creation "
                 "or inspection call. If a separate user requirement remains, address that specific "
                 "requirement instead. The existing completion gate still checks the execution ledger.")
+        if terminal_defaults is not None:
+            system_message += "\nCurrent terminal default stage: " + json.dumps(terminal_defaults, ensure_ascii=False)
         return [
             {
                 "role": "system",
