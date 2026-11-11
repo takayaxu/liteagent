@@ -764,6 +764,15 @@ class AgentProtocolMixin:
                               model_context(limit=2), max_chars=2400), ensure_ascii=False))
             if outcomes:
                 state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import column_merge_progress
+
+        column_merge = column_merge_progress.model_progress(state)
+        if column_merge is not None:
+            state_text = ("CURRENT COLUMN MERGE STEP:\n" + json.dumps(column_merge, ensure_ascii=False)
+                          + "\nRecent truthful execution state:\n"
+                          + json.dumps(compact_execution_summary_for_model(
+                              model_context(limit=2), max_chars=3000), ensure_ascii=False))
+
         from . import file_age_progress
 
         file_age = file_age_progress.model_progress(state)
@@ -840,6 +849,8 @@ class AgentProtocolMixin:
                 state,
                 tools,
             )
+        if column_merge is not None:
+            system_message += "\nCurrent column merge step: " + column_merge["next_step"]
         if file_age is not None:
             system_message += "\nCurrent file age step: " + file_age["next_step"]
         if mail_flags is not None:
