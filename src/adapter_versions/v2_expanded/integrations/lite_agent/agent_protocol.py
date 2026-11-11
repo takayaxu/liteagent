@@ -733,6 +733,13 @@ class AgentProtocolMixin:
                           + "\ngrading_progress:\n" + json.dumps(grading, ensure_ascii=False))
             if outcomes:
                 state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import copy_layout_progress
+
+        copy_layout = copy_layout_progress.model_progress(state)
+        if copy_layout is not None:
+            system += "\nCurrent copy-layout step: preserve one source-to-destination mapping per file. " + copy_layout["next_step"]
+            state_text += "\nObserved copy-layout progress:\n" + json.dumps(copy_layout, ensure_ascii=False)
+
         from . import native_summary_progress
 
         native_summary = native_summary_progress.model_progress(state, tools=tools)
