@@ -737,7 +737,6 @@ class AgentProtocolMixin:
 
         copy_layout = copy_layout_progress.model_progress(state)
         if copy_layout is not None:
-            system += "\nCurrent copy-layout step: preserve one source-to-destination mapping per file. " + copy_layout["next_step"]
             state_text += "\nObserved copy-layout progress:\n" + json.dumps(copy_layout, ensure_ascii=False)
 
         from . import native_summary_progress
@@ -822,6 +821,8 @@ class AgentProtocolMixin:
                 state,
                 tools,
             )
+        if copy_layout is not None:
+            system_message += "\nCurrent copy-layout step: " + copy_layout["next_step"]
         if answer_progress is not None:
             system_message += (
                 "\nCurrent answer-completion step (takes precedence over general phase hints): "
