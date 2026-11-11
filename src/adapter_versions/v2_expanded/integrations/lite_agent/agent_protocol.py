@@ -764,6 +764,15 @@ class AgentProtocolMixin:
                               model_context(limit=2), max_chars=2400), ensure_ascii=False))
             if outcomes:
                 state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import file_age_progress
+
+        file_age = file_age_progress.model_progress(state)
+        if file_age is not None:
+            state_text = ("CURRENT FILE AGE STEP:\n" + json.dumps(file_age, ensure_ascii=False)
+                          + "\nRecent truthful execution state:\n"
+                          + json.dumps(compact_execution_summary_for_model(
+                              model_context(limit=2), max_chars=3000), ensure_ascii=False))
+
         from . import mail_flag_progress
 
         mail_flags = mail_flag_progress.model_progress(state, screenshot)
@@ -831,6 +840,8 @@ class AgentProtocolMixin:
                 state,
                 tools,
             )
+        if file_age is not None:
+            system_message += "\nCurrent file age step: " + file_age["next_step"]
         if mail_flags is not None:
             system_message += "\nLive mail flag stage: " + json.dumps(mail_flags, ensure_ascii=False)
         if copy_layout is not None:
