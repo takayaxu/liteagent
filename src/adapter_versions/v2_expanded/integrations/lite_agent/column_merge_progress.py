@@ -1,5 +1,7 @@
 """Guide command-line column concatenation and terminal application launch."""
 import re
+import posixpath
+import shlex
 from .completion_policy import effective_canonical_action
 
 
@@ -17,10 +19,25 @@ def model_progress(state):
             commands.append({'step': event.step, 'params': params,
                 'executed': event.executed, 'error': event.error,
                 'stdout': body.get('stdout'), 'returncode': body.get('returncode')})
-    merged = [c for c in commands if c['executed'] and not c['error']
-              and c['params'].get('stdout_path') and 'paste' in ' '.join(c['params'].get('argv') or [])]
+    merged = []
+    for c in commands:
+        argv = c['params'].get('argv') or []
+        if not c['executed'] or c['error'] or 'paste' not in ' '.join(argv):
+            continue
+        output = c['params'].get('stdout_path')
+        if len(argv) >= 3 and argv[:2] == ['bash', '-c']:
+            tokens = shlex.split(argv[2])
+            if '>' in tokens and tokens.index('>') + 1 < len(tokens):
+                output = tokens[tokens.index('>') + 1]
+        if output:
+            if not output.startswith('/'):
+                cwd = c['params'].get('cwd_path') if c['params'].get('cwd_source') == 'explicit' else None
+                if not cwd:
+                    continue
+                output = posixpath.join(cwd, output)
+            merged.append({**c, 'actual_output': output})
     if merged:
-        output = merged[-1]['params']['stdout_path']
+        output = merged[-1]['actual_output']
         launched = [c for c in commands if c['executed'] and not c['error']
             and c['params'].get('terminal') is True and output in (c['params'].get('argv') or [])]
         if launched:
@@ -31,9 +48,13 @@ def model_progress(state):
                 'confirm the appropriate encoding/separators before native inspection. '
                 'Then propose_done; do not launch Calc again.'}
         return {'stage': 'open_csv_from_visible_terminal', 'commands': commands[-8:],
+            'actual_output': output,
+            'suggested_launch': {'adapter': 'os', 'action': 'command.run', 'payload': {'params': {
+                'argv': ['libreoffice', '--calc', output], 'terminal': True,
+                'cwd_source': 'home', 'provenance': 'shell_history'}}},
             'next_step': 'CURRENT STEP: read back the saved output CSV once and compare every '
                 'row to the two original input CSV rows. Then use command.run to open the exact '
-                'output_path in libreoffice --calc with terminal=true, cwd_source=home, '
+                'actual_output ABSOLUTE path in libreoffice --calc with terminal=true, cwd_source=home, '
                 'provenance=shell_history. A visible terminal gives the requested terminal '
                 'execution. Do not run the GUI launch synchronously or replace it with '
                 'desktop.open_path. After launch inspect screenshot/native Calc state.'}
