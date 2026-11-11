@@ -14,11 +14,18 @@ def model_progress(state):
     observed = {}
     writes = []
     launched = []
-    probes = []
+    typed_probe = []
+    submitted_probe = []
     for e in state.events:
         if not e.executed or e.error:
             continue
         domain, action, args = effective_canonical_action(e, state.domain)
+        if e.proposed.get('kind') == 'gui':
+            gui_args = e.proposed.get('arguments', {})
+            if gui_args.get('action') == 'type' and gui_args.get('text', '').strip() == 'stty size':
+                typed_probe.append(e.step)
+            if gui_args.get('action') == 'press' and gui_args.get('key') in {'enter', 'Return', 'Enter'} and typed_probe:
+                submitted_probe.append(e.step)
         if domain != 'os':
             continue
         if action in {'terminal.default_profile.inspect', 'terminal.default_profile.set_setting'}:
@@ -29,12 +36,6 @@ def model_progress(state):
                 writes.append(e.step)
         if action == 'terminal.launch':
             launched.append(e.step)
-        for body in iter_result_mappings(e.result):
-            for check in (body.get('verification') or {}).get('checks', []):
-                expected = check.get('expected_state') or {}
-                if (check.get('type') == 'terminal_size' and check.get('passed') is True
-                        and (not expected or (expected.get('columns') == columns and expected.get('rows') == rows))):
-                    probes.append(e.step)
     base = {'requested_character_dimensions': {'columns': columns, 'rows': rows},
             'observed_saved_defaults': observed,
             'meaning': 'Prompt guidance from actual receipts, not completion or an evaluator result.'}
@@ -53,16 +54,19 @@ def model_progress(state):
                 'next_step': 'Both saved dimensions have been read back. Now search os terminal.launch '
                 'and call it with argv=["bash"]. This opens an actual new terminal using the saved '
                 'defaults. Do not pass a geometry override. Do not propose_done or use echo as a size check.'}
-    if not any(step > max(launched) for step in probes):
-        return {**base, 'stage': 'probe_new_default_size',
-                'next_step': 'A new terminal has been opened. Search os command.run and call it with '
-                'params argv=["true"], cwd_source="home", provenance="none"; attach a payload.verify '
-                'check of type="terminal_size" using the requested columns/rows below. That existing '
-                'verifier opens a fresh terminal and reads real stty size without a geometry override. '
-                'Echoing the requested dimensions is not verification. If the check fails, inspect '
-                'actual profile startup settings rather than claiming success.',
-                'existing_verification_check': {'type': 'terminal_size', 'columns': columns, 'rows': rows}}
-    return {**base, 'stage': 'review_verified_defaults',
-            'next_step': 'Saved default preferences and actual fresh-terminal dimensions have been '
-            'verified. Review the instruction and propose_done if no requirement remains. '
-            'Do not repeat settings, print fabricated verification, or add a geometry override.'}
+    if not any(step > max(launched) for step in typed_probe):
+        return {**base, 'stage': 'type_real_tty_probe',
+                'next_step': 'The new terminal has focus. Use gui_action type with text="stty size". '
+                'A background command.run has no terminal input and cannot run stty. '
+                'This visible shell command checks actual rows and columns, not requested settings. '
+                'Use GUI fallback because the direct command tool cannot access this terminal TTY.'}
+    if not any(step > max(typed_probe) for step in submitted_probe):
+        return {**base, 'stage': 'submit_real_tty_probe',
+                'next_step': 'Use gui_action press key="enter" to run the typed stty size command. '
+                'Then read its real output in the next screenshot.'}
+    return {**base, 'stage': 'review_actual_tty_output',
+            'next_step': 'Read the latest terminal screenshot: stty prints ROWS then COLUMNS. '
+            'Compare that actual output with the requested dimensions. If it matches and saved '
+            'defaults are correct, propose_done with the observed evidence. If it differs, inspect '
+            'the startup settings and correct the cause; do not change font or force a one-window '
+            'geometry as a substitute for persistent defaults. This stage does not assert success.'}

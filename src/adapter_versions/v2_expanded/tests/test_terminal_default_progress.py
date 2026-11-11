@@ -20,10 +20,11 @@ def test_saved_defaults_are_not_actual_window_verification():
     assert model_progress(s)['stage']=='open_new_terminal'
     s.events.append(event(4,'terminal.launch',{'argv':['bash']}))
     p=model_progress(s)
-    assert p['stage']=='probe_new_default_size'
-    assert p['existing_verification_check']=={'type':'terminal_size','columns':110,'rows':35}
-    s.events.append(event(5,'command.run',body={'verification':{'checks':[{'type':'terminal_size','passed':True}]}}))
-    assert model_progress(s)['stage']=='review_verified_defaults'
+    assert p['stage']=='type_real_tty_probe'
+    s.events.append(SimpleNamespace(step=5,executed=True,error=None,proposed={'kind':'gui','arguments':{'action':'type','text':'stty size'}},result={}))
+    assert model_progress(s)['stage']=='submit_real_tty_probe'
+    s.events.append(SimpleNamespace(step=6,executed=True,error=None,proposed={'kind':'gui','arguments':{'action':'press','key':'enter'}},result={}))
+    assert model_progress(s)['stage']=='review_actual_tty_output'
 
 
 def test_unrelated_terminal_requests_unchanged():
