@@ -809,6 +809,10 @@ class AgentProtocolMixin:
                     "image_url": {"url": image_url},
                 }
             )
+        from . import mail_flag_progress
+
+        mail_flags = mail_flag_progress.model_progress(state)
+
         system_message = self._system_message(
             state,
             protocol_recovery=protocol_recovery,
@@ -821,6 +825,8 @@ class AgentProtocolMixin:
                 state,
                 tools,
             )
+        if mail_flags is not None:
+            system_message += "\nLive mail flag stage: " + json.dumps(mail_flags, ensure_ascii=False)
         if copy_layout is not None:
             system_message += "\nCurrent copy-layout step: " + copy_layout["next_step"]
         if answer_progress is not None:
