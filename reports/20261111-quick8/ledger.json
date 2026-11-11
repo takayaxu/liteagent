@@ -1,0 +1,548 @@
+{
+  "base_commit": "68a74f5ebf99815fefd1e2050869cb492eb5a6c1",
+  "orders": [
+    141,
+    151,
+    96,
+    103,
+    113,
+    97,
+    131,
+    122
+  ],
+  "current_order": 122,
+  "review_mode": "primary_agent_self_review_user_override",
+  "subagents": false,
+  "method": "stage_prompts_only_quick_repair",
+  "max_prompt_candidates_per_task": 2,
+  "skip_when_requires_non_prompt_fix": true,
+  "tasks": [
+    {
+      "order": 141,
+      "source_order": 280,
+      "domain": "os",
+      "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+      "status": "repaired_pass",
+      "base_commit": "68a74f5ebf99815fefd1e2050869cb492eb5a6c1",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order141/run-003",
+      "attempts": [
+        {
+          "order": 141,
+          "formal_result": {
+            "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+            "status": "failed",
+            "reward": 0.0,
+            "termination_reason": "agent_done",
+            "steps": 7,
+            "duration_seconds": 170.905,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "68a74f5ebf99815fefd1e2050869cb492eb5a6c1",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order141/run-001"
+        },
+        {
+          "order": 141,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "25a9f1ca09873b9e716ce7a2df2fc66c6ef62c06",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order141/run-002",
+          "disposition": "diagnostic_stop_invalid_verifier_guidance"
+        },
+        {
+          "order": 141,
+          "formal_result": {
+            "task_id": "13584542-872b-42d8-b299-866967b5c3ef",
+            "status": "passed",
+            "reward": 1.0,
+            "termination_reason": "agent_done",
+            "steps": 10,
+            "duration_seconds": 220.319,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "6fccc422d586fd41a6a0dfba6d96b7a46678b963",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order141/run-003",
+          "disposition": "repaired_pass"
+        }
+      ],
+      "reward": 1.0,
+      "integrated_commit": "f7d6ba9"
+    },
+    {
+      "order": 151,
+      "source_order": 291,
+      "domain": "thunderbird",
+      "task_id": "7b1e1ff9-bb85-49be-b01d-d6424be18cd0",
+      "status": "skipped_prompt_budget",
+      "base_commit": "codex/quick8-profile-stage",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order151/run-003",
+      "attempts": [
+        {
+          "order": 151,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order151/run-001",
+          "disposition": "diagnostic_stop_repeated_gui"
+        },
+        {
+          "order": 151,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "7e3999f6ce2e44d9bddb233d7e1c1151b7d6c889",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order151/run-002",
+          "disposition": "diagnostic_stop_wrong_page"
+        },
+        {
+          "order": 151,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "555da9b59773408ad179ed139d62e32ab50bdcf6",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order151/run-003",
+          "disposition": "skipped_prompt_budget"
+        }
+      ],
+      "reward": null,
+      "prepared_commit": "codex/quick8-profile-stage",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order151/source-v2",
+      "reason": "Two prompt candidates: Help navigation improved, but GUI find sent as press ctrl+f rather than hotkey, then repeated scroll/click loop. Diagnostic stop with no formal score; no integration."
+    },
+    {
+      "order": 96,
+      "source_order": 197,
+      "domain": "multi_apps",
+      "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+      "status": "baseline_pass",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order096/run-001",
+      "attempts": [
+        {
+          "order": 96,
+          "formal_result": {
+            "task_id": "00fa164e-2612-4439-992e-157d019a8436",
+            "status": "passed",
+            "reward": 1.0,
+            "termination_reason": "agent_done",
+            "steps": 10,
+            "duration_seconds": 262.264,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order096/run-001",
+          "disposition": "baseline_pass"
+        }
+      ],
+      "reward": 1.0
+    },
+    {
+      "order": 103,
+      "source_order": 212,
+      "domain": "multi_apps",
+      "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+      "status": "skipped_prompt_budget",
+      "prepared_commit": "codex/quick8-timetable-stage",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order103/source-v2",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "attempts": [
+        {
+          "order": 103,
+          "formal_result": {
+            "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+            "status": "failed",
+            "reward": 0.0,
+            "termination_reason": "agent_done",
+            "steps": 14,
+            "duration_seconds": 310.094,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order103/run-001"
+        },
+        {
+          "order": 103,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "4174e216997a2b142bd53698831ad5b4997e7d68",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order103/run-002",
+          "disposition": "diagnostic_stop_wrong_tool_and_cells"
+        },
+        {
+          "order": 103,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "9d8b1077a77cd6f395f62210b87a2e0e052f1b6d",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order103/run-003",
+          "disposition": "skipped_prompt_budget"
+        }
+      ],
+      "reward": null,
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order103/run-003",
+      "reason": "Baseline reward0 from extra GUI write C10. v1 used write while intending to read; v2 attempted fabricated replacement before workbook.inspect; two candidates exhausted, not integrated."
+    },
+    {
+      "order": 113,
+      "source_order": 229,
+      "domain": "multi_apps",
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "status": "skipped_prompt_budget",
+      "prepared_commit": "codex/quick8-rich-transfer-stage",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order113/source-v2",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order113/run-003",
+      "attempts": [
+        {
+          "order": 113,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order113/run-001",
+          "disposition": "diagnostic_stop_selection_and_hotkey"
+        },
+        {
+          "order": 113,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "015a7eb0f089ed2d979faa4a6ec8ef56db8ce262",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order113/run-002",
+          "disposition": "diagnostic_stop_create_after_paste"
+        },
+        {
+          "order": 113,
+          "formal_result": {
+            "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+            "status": "failed",
+            "reward": 0.0,
+            "termination_reason": "agent_done",
+            "steps": 9,
+            "duration_seconds": 220.348,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "d534d536bdb5ddd80154fe345c78eae3c98596b7",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order113/run-003",
+          "disposition": "skipped_prompt_budget"
+        }
+      ],
+      "reward": 0.0,
+      "reason": "Two candidates. Native rich paste produced 16x5, original evaluator expected15x5; copied trailing blank formatted row. Model skipped table.read/save guidance and claimed success. Formal v2 reward0, not integrated."
+    },
+    {
+      "order": 97,
+      "source_order": 202,
+      "domain": "multi_apps",
+      "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+      "status": "skipped_preexisting_reference_body_difference",
+      "prepared_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order097/baseline",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order097/run-001",
+      "attempts": [
+        {
+          "order": 97,
+          "formal_result": {
+            "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+            "status": "failed",
+            "reward": 0.0,
+            "termination_reason": "agent_done",
+            "steps": 20,
+            "duration_seconds": 441.64,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order097/run-001",
+          "disposition": "skipped_preexisting_reference_body_difference"
+        }
+      ],
+      "reward": 0.0,
+      "reason": "Original evaluator first mismatch: display slide4 shape index3 paragraph counts input/result/reference 11/11/10. Unchanged input body has trailing empty paragraph. Missing notes filled; existing notes preserved. Prompt cannot remove unrelated protected body difference; skipped without patch."
+    },
+    {
+      "order": 131,
+      "source_order": 266,
+      "domain": "multi_apps",
+      "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+      "status": "repaired_pass",
+      "prepared_commit": "codex/quick8-chapter-names-stage",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order131/source-v1",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order131/run-002",
+      "attempts": [
+        {
+          "order": 131,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order131/run-001",
+          "disposition": "diagnostic_stop_wrong_naming"
+        },
+        {
+          "order": 131,
+          "formal_result": {
+            "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+            "status": "passed",
+            "reward": 1.0,
+            "termination_reason": "agent_done",
+            "steps": 14,
+            "duration_seconds": 363.086,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "6bcf142b3c1b4de87759acb3fb88487b5bcf8706",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order131/run-002",
+          "disposition": "repaired_pass"
+        }
+      ],
+      "reward": 1.0,
+      "integrated_commit": "322d765"
+    },
+    {
+      "order": 122,
+      "source_order": 243,
+      "domain": "multi_apps",
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "status": "skipped_prompt_budget",
+      "prepared_commit": "codex/quick8-invoice-stage",
+      "prepared_tree": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order122/source-v2",
+      "base_commit": "f7d6ba9cfe596023a82c5194546b7bcc7cf2d132",
+      "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order122/run-003",
+      "attempts": [
+        {
+          "order": 122,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "322d765d520b0c2e6303cb7ad6b75d5b2a3178e4",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order122/run-001",
+          "disposition": "diagnostic_stop_repeated_mail_gui"
+        },
+        {
+          "order": 122,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "74190b872f2924b45308645a9fcf00c4c9387eb5",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order122/run-002",
+          "disposition": "diagnostic_stop_ignored_ledger"
+        },
+        {
+          "order": 122,
+          "formal_result": {
+            "task_id": null,
+            "status": null,
+            "reward": null,
+            "termination_reason": null,
+            "steps": null,
+            "duration_seconds": null,
+            "error": null
+          },
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "source_commit": "e2bb894a7165a4ab322174eaee8e51d7003fe2ed",
+          "review_mode": "primary_agent_self_review_user_override",
+          "formal_run": "/home/liuxv/liteagent-local-runs/repair-quick8-20261111/order122/run-003",
+          "disposition": "skipped_prompt_budget"
+        }
+      ],
+      "reward": null,
+      "reason": "Two prompt candidates. v2 queried mail and read observed tally workbook, then repeatedly searched filesystem.find without executing it. Diagnostic stop, no formal score; candidate not integrated."
+    }
+  ],
+  "status": "completed",
+  "summary": {
+    "passed": [
+      141,
+      96,
+      131
+    ],
+    "skipped": [
+      151,
+      103,
+      113,
+      97,
+      122
+    ]
+  }
+}
