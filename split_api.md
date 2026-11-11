@@ -116,10 +116,22 @@
 | VS Code | `codex/split-vscode-20261111` / `bbf10c6` | 34 PASS；20个单设置动作，四旧入口拒绝，指令只选相关设置 | 待正式复跑 |
 | VLC | `codex/split-vlc-20261111` | 16 PASS；8个单偏好动作，两个旧入口拒绝 | 待正式复跑 |
 | Chrome | `codex/split-chrome-20261111` / `d645082` | 11 PASS；8个单设置动作，旧入口拒绝 | 待正式复跑 |
-| GIMP | `codex/split-gimp-20261111` / `2b9295f` | 5 PASS；会话、三个单效果、独立保存和GUI打开 | 待原生执行及正式题目验收；单测不能证明GIMP真实效果 |
+| GIMP | `codex/split-gimp-20261111` / `2b9295f` | 5 PASS；会话、三个单效果、独立保存和GUI打开 | 与相邻用例共28 PASS；待原生执行及正式题目验收，单测不能证明GIMP真实效果 |
 
 GIMP具体契约落为 `image.open_session(path)` → `image.set_brightness/set_contrast/set_saturation(image_id,value)` → `image.save_session(image_id,output_path)`；独立只读 `image.inspect_session(image_id)`，独立GUI `image.open_session_gui(image_id)`。模型选择每张图、效果、值、输出位置和调用顺序。内部不可变XCF修订仅持久化编辑状态，效果接口不接收输出路径、不导出、不打开GUI。新效果值以亮度/对比度整数（避免旧浮点静默截断）、饱和度数值公开。原文件与非目标效果保持；校验失败不推进会话指针。
 
 Chrome保存设置仍需要暂时停止并恢复正在运行的Chrome以避免配置被浏览器覆盖，这是已有配置持久化机制，不是额外修改偏好；单设置接口未增加重启参数。原子契约按独立用户意图划分，相关底层字段仍由同一语义实现负责。
 
 另有2项Writer宏测试在候选与未修改主分支完全同现（`document.deduplicate_records`遗留），未混记为本次新增故障，也不在本次范围顺手扩改。所有组均通过源码导入检查；文档中PASS仅指明确列出的原题正式评分，其他PASS指对应定向检查。
+
+### 统一候选与复跑记录补充
+
+六组已在 `/home/liuxv/liteagent-local-runs/split-api-20261111/all-candidate` 合并，分支 `codex/split-all-20261111`。截至 `5b847a8`，公开面已移除全部11个旧入口；定向组合检查146 PASS。候选未集成主活动分支。
+
+132 run-002修复了自引用/逗号问题，但第三位学生的总分只写SUM漏乘分值。旧“修正公式分支”提示错误地让模型继续重写已正确的逐题标记，导致重复。已新增只针对总分错误格的阶段提示（`903dc73`），不生成分数、公式或新评分API。
+
+132 run-003统一候选未进入episode：Chrome guest服务缺少新增jsonschema依赖，部署失败，reward=null，三完整性true。这是本次实现遗漏；已在`5b847a8`用标准库的有限标量契约校验替换新增运行依赖，保留schema的类型、枚举、范围、必填和额外字段拒绝，77项相关检查通过。未在运行中的guest补装包或热改源码。
+
+132 run-004从干净`5b847a8`、新guest启动，沿用原模型/预算/评分，正在本对话监测。最终结果以该目录results/results.json和final-integrity.json为准。
+
+相邻VLC检查39 PASS，Chrome检查29 PASS。另行扩展的VS Code GUI/旧wrapper路径检查出现失败，未把它们称为通过：未修改主分支同样存在多项失败，GUI测试还涉及实际窗口环境；本次未改其controller/accessibility代码。旧VLC路径夹具已迁移至新单设置value字段，未为消除其他旧wrapper断言扩大运行源码修改。
