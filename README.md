@@ -153,6 +153,28 @@ curl --fail --silent --show-error "$QWEN_BASE_URL/models"
 结束标记。`parallel_tool_calls=false` 请求每轮单个工具调用；完整结束标记让模型
 在调用结束处停止生成，客户端仍检查恰好一个完整工具调用并执行参数 schema 校验。
 
+### 本地 llama.cpp Qwen3.5-9B
+
+调用本地 F16 多模态服务（`http://127.0.0.1:18009/v1`）时，使用
+`configs/single-task-local9b-thinking.json`。显式设置模型环境变量，覆盖机器上
+可能仍指向华为云的默认配置：
+
+```bash
+QWEN_BASE_URL=http://127.0.0.1:18009/v1 QWEN_MODEL=Qwen3.5-9B QWEN_API_KEY=EMPTY \
+  /var/lib/liteagent-shared/python-env/bin/python bin/run-osworld.py \
+  --config configs/single-task-local9b-thinking.json --orders 2 3
+```
+
+仍从已提交的独立工作树运行。该配置保留 thinking、100 步、1800 秒和严格工具
+参数校验，包含同一组有序 189 题，默认运行入口仍按所给 `--orders` 串行执行。
+全量并行 supervisor 使用本地服务时也必须保留 `tool_call_stop_sequence=null`。
+llama.cpp 会在解析工具调用前移除匹配的 stop 字符串；vLLM 的
+`include_stop_str_in_output` 参数在本地服务上无效，因此不能沿用 XML 工具调用
+闭合标记作为 stop，否则响应仅包含思考内容，缺失 `tool_calls`。不配置该 stop
+时由服务原生解析工具调用，客户端继续要求恰好一个调用并校验原始 schema。
+本地 `/v1/models` 不返回 `root` 字段，不要把磁盘权重路径填入 `served_root`；
+可在运行回执单独保存 `/props` 的模型路径和服务配置。
+
 ### 多对话并行修复
 
 不同对话各自从最新活动提交建立独立工作树，调用该工作树的
