@@ -135,9 +135,10 @@ def verified_live_mutation(state):
         domain, action, params = effective_canonical_action(event, state.domain)
         if domain != 'thunderbird' or action != 'messages.query':
             continue
-        observed = (event.result or {}).get('context_hint', {}).get('downstream_context')
+        hint = (event.result or {}).get('context_hint', {})
+        observed = hint.get('downstream_context', hint)
         if not isinstance(observed, dict):
-            observed = event.result or {}
+            observed = {}
         actual_folder = str(observed.get('folder', '')).rstrip('/').split('/')[-1].casefold()
         rows = observed.get('messages', [])
         count = observed.get('matched_count')
