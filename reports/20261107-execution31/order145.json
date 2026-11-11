@@ -1,0 +1,27 @@
+{
+  "order": 145,
+  "formal_result": {
+    "task_id": "37887e8c-da15-4192-923c-08fa390a176d",
+    "status": "passed",
+    "reward": 1.0,
+    "termination_reason": "agent_done",
+    "steps": 9,
+    "duration_seconds": 197.106
+  },
+  "integrity": {
+    "source_matches": true,
+    "config_matches": true,
+    "osworld_matches": true
+  },
+  "source_commit": "bc62bca7c27f934edb3842d1a27563d956bbcc8b",
+  "review_mode": "primary_agent_self_review_user_override",
+  "formal_run": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order145/run-003",
+  "runtime_patch": true,
+  "validated_runtime_commit": "bc62bca7c27f934edb3842d1a27563d956bbcc8b",
+  "integration_commit": "de0b125",
+  "checks": {
+    "focused": 4,
+    "source_import_check": true,
+    "real_prefix_replay": "/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order145/v3-real-prefix-replay.json"
+  }
+}
