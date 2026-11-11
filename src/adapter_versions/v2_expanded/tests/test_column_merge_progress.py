@@ -16,7 +16,7 @@ def test_merge_launch_and_verification_stages_follow_actual_events():
         proposed={'kind':'adapter','action':'adapter.call','arguments':{'adapter':'os',
             'action':'command.run','payload':{'params':{
                 'argv':['libreoffice','--calc','/tmp/result.csv'],'terminal':True}}}}))
-    assert model_progress(state)['stage']=='verify_open_csv'
+    assert model_progress(state)['stage']=='confirm_csv_import'
     state.events[-1].error={'failed':True}
     assert model_progress(state)['stage']=='open_csv_from_visible_terminal'
     state.instruction='Merge pictures'
