@@ -23,3 +23,12 @@
 本地首次正式请求暴露协议兼容问题（run-003，无分）：流式聚合同时含reasoning=null和非空reasoning_content，检查器过早判未思考；旧vLLM XML停止串也截断llama.cpp原生工具参数。同请求真实A/B确认去掉旧停止串后工具参数合法。通用修复检查两个reasoning别名并保留服务显式声明优先级；70项测试通过，真实thinking/原生工具调用通过。停止串仅在本批本地配置关闭，保留本地原始schema校验。
 
 Order87在协议修复后的run-004完成3步，原始评分0.8438601849044155，三完整性通过。仍遗漏GIMP，误把VLC Adapter下FFmpeg转换当成指定应用执行；阶段提示候选在隔离分支验证中，未集成。
+
+### 优先处理范围明确的题目
+
+用户指定跳过87，优先好修题。87保留待修且所有阶段候选未集成。
+
+- Order147：本地9B、最新源码无新增业务补丁复跑正式PASS，reward=1.0，5步150.954秒，三完整性通过。3份普通文件最终均0644，原始eval.sh输出“All files have the correct permissions.”。证据：`/home/liuxv/liteagent-local-runs/repair-execution31-20261107/order147/run-002/verification.json`。run-001因评分资源网络下载超时无分；run-002预置原始缓存后完整复跑，不修改评分脚本。
+- Order155：已启动最新源码无补丁复跑。后续优先141、143。
+
+当前正式PASS为5/31（5、11、30、71、147）；保留不同后端条件，不回写历史全量成绩。
