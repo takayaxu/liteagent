@@ -728,6 +728,12 @@ def collect_initial_completion_evidence(
         completion_claim_contract_errors(completion) if completion is not None else []
     )
     missing.extend(completion_claim_contradictions(completion))
+    if not mutations and state.domain == 'thunderbird':
+        from .mail_flag_progress import verified_live_mutation
+
+        live_mutation = verified_live_mutation(state)
+        if live_mutation is not None:
+            mutations.append(live_mutation)
     if not mutations:
         missing.extend(
             [

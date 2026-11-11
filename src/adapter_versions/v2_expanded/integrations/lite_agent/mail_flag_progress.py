@@ -37,11 +37,17 @@ def model_progress(state, screenshot=None):
     selected = any(a.get('action') == 'hotkey' and a.get('keys') == ['ctrl', 'a'] for a in actions)
     starred = any(a.get('action') == 'press' and a.get('key', '').lower() == 's' for a in actions)
     if starred:
-        return {'stage': 'verify_live_stars', 'next_step':
-            'CURRENT STEP: inspect the latest Thunderbird screenshot. Verify every message in '
-            'the requested folder has a filled star. Do not press S again if they are filled, '
-            'because S toggles. Wait briefly for Thunderbird to persist/index the change, then '
-            'propose_done if all messages are starred. Correct only any remaining unstarred rows.'}
+        if verified_live_mutation(state) is not None:
+            return {'stage': 'complete_live_verified_stars', 'next_step':
+                'CURRENT STEP: the real GUI star operation is followed by a full native query '
+                'of the requested folder, with every message starred. Inspect the latest '
+                'screenshot too; if all stars are filled, propose_done now. Do not toggle S again.'}
+        return {'stage': 'read_back_live_stars', 'next_step':
+            'CURRENT STEP ONLY: call messages.query for the exact requested folder with limit=500 '
+            'to read back the flags after the real GUI star operation. Do not call propose_done '
+            'yet. Compare returned_count with matched_count and verify every returned message '
+            'has starred=true. Do not press S again or write mailbox files. The next stage '
+            'will allow completion only after the full persisted readback.'}
     if selected:
         return {'stage': 'star_selected_messages', 'next_step':
             'CURRENT STEP ONLY: inspect the screenshot of the selected message rows. If some '
@@ -101,3 +107,43 @@ def screen_text_observations(screenshot):
         return observations[:250]
     except (OSError, ValueError, subprocess.TimeoutExpired):
         return []
+
+
+def verified_live_mutation(state):
+    """Return an actual GUI star action only with full subsequent native proof."""
+    if state.domain != 'thunderbird' or not re.search(
+            r'\bstar\b.*\b(every|all)\b.*\b(email|message)', state.instruction, re.I):
+        return None
+    match = re.search(r'\blocal\s+(.+?)\s+folder\b', state.instruction, re.I)
+    if not match:
+        return None
+    folder = match.group(1).strip(' `"').casefold()
+    toggles = [e for e in state.events if e.executed and not e.error
+               and e.proposed.get('tool') == 'gui_action'
+               and e.proposed.get('arguments', {}).get('action') == 'press'
+               and e.proposed.get('arguments', {}).get('key', '').lower() == 's']
+    if not toggles:
+        return None
+    toggle = toggles[-1]
+    from .completion_policy import effective_canonical_action
+
+    for event in reversed(state.events):
+        if not event.executed or event.error or event.step <= toggle.step:
+            continue
+        if event.proposed.get('tool') == 'gui_action':
+            return None  # A later GUI operation invalidates the earlier readback.
+        domain, action, params = effective_canonical_action(event, state.domain)
+        if domain != 'thunderbird' or action != 'messages.query':
+            continue
+        observed = (event.result or {}).get('context_hint', {}).get('downstream_context')
+        if not isinstance(observed, dict):
+            observed = event.result or {}
+        actual_folder = str(observed.get('folder', '')).rstrip('/').split('/')[-1].casefold()
+        rows = observed.get('messages', [])
+        count = observed.get('matched_count')
+        if (actual_folder == folder and isinstance(count, int) and count > 0
+                and observed.get('returned_count') == count and len(rows) == count
+                and all(isinstance(row, dict) and row.get('starred') is True for row in rows)):
+            return toggle
+        return None
+    return None
