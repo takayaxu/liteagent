@@ -106,7 +106,20 @@
 
 ## 实施进度
 
-- 11 个入口源码审计、关联题目表与拆分契约：已记录。
-- ZIP：待清理旧公开入口并定向检查。
-- OS / VS Code / VLC / Chrome / GIMP：待实施。
-- 本批正式复跑：尚未开始；没有宣称拆分后的题目已通过。
+以下候选均在仓库外独立工作树，未作为已通过修复集成到主分支。完整性/原评分均逐题保存。
+
+| 组 | 候选分支/提交 | 定向检查 | 正式复跑 |
+| --- | --- | --- | --- |
+| ZIP | `codex/split-api-20261111` / `69999f3` | 49 PASS；公开旧入口、搜索与执行分发已移除 | Order117 run-001 PASS1.0，14步357.173秒，三完整性true；132 run-001因评分公式循环诊断停止，无正式分 |
+| ZIP关联评分阶段提示 | `codex/split-zip-grading-stage-20261111` / `36925d5` | 20 PASS | 132 run-002运行中；仅提示比较来源字母常量、数字标记、分号，禁止自引用评分格，未自动生成答案/公式 |
+| OS | `codex/split-os-settings-20261111` / `cbd9f25` | 21 PASS；组合入口删除，单key修改无额外副作用 | 待复跑133/140 |
+| VS Code | `codex/split-vscode-20261111` / `bbf10c6` | 34 PASS；20个单设置动作，四旧入口拒绝，指令只选相关设置 | 待正式复跑 |
+| VLC | `codex/split-vlc-20261111` | 16 PASS；8个单偏好动作，两个旧入口拒绝 | 待正式复跑 |
+| Chrome | `codex/split-chrome-20261111` / `d645082` | 11 PASS；8个单设置动作，旧入口拒绝 | 待正式复跑 |
+| GIMP | `codex/split-gimp-20261111` / `2b9295f` | 5 PASS；会话、三个单效果、独立保存和GUI打开 | 待原生执行及正式题目验收；单测不能证明GIMP真实效果 |
+
+GIMP具体契约落为 `image.open_session(path)` → `image.set_brightness/set_contrast/set_saturation(image_id,value)` → `image.save_session(image_id,output_path)`；独立只读 `image.inspect_session(image_id)`，独立GUI `image.open_session_gui(image_id)`。模型选择每张图、效果、值、输出位置和调用顺序。内部不可变XCF修订仅持久化编辑状态，效果接口不接收输出路径、不导出、不打开GUI。新效果值以亮度/对比度整数（避免旧浮点静默截断）、饱和度数值公开。原文件与非目标效果保持；校验失败不推进会话指针。
+
+Chrome保存设置仍需要暂时停止并恢复正在运行的Chrome以避免配置被浏览器覆盖，这是已有配置持久化机制，不是额外修改偏好；单设置接口未增加重启参数。原子契约按独立用户意图划分，相关底层字段仍由同一语义实现负责。
+
+另有2项Writer宏测试在候选与未修改主分支完全同现（`document.deduplicate_records`遗留），未混记为本次新增故障，也不在本次范围顺手扩改。所有组均通过源码导入检查；文档中PASS仅指明确列出的原题正式评分，其他PASS指对应定向检查。
