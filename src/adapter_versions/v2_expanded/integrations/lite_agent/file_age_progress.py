@@ -13,15 +13,20 @@ def model_progress(state):
     root = paths[0] if paths else None
     inspected = []
     changed = []
+    compressed = []
+    reads = []
     for event in state.events:
         if not event.executed or event.error:
             continue
         domain, action, params = effective_canonical_action(event, state.domain)
+        if domain == 'os' and action == 'archive.compress_file':
+            compressed.append({'step': event.step, **params})
         if domain == 'os' and action == 'command.run':
             script = ' '.join(map(str, params.get('argv') or []))
             result = event.result or {}
             hint = result.get('context_hint', {})
             body = hint.get('downstream_context', hint)
+            reads.append({'step': event.step, 'script': script, 'stdout': body.get('stdout')})
             if 'date' in script and ('-mtime' in script or '-printf' in script):
                 inspected.append({'step': event.step, 'stdout': body.get('stdout')})
             if any(word in script for word in ('gzip', 'tar ', ' mv ', 'zip ')):
@@ -38,8 +43,32 @@ def model_progress(state):
                 'Do not reject date labels by mental arithmetic or fail_task before this check. '
                 'For exactly N days ago find -mtime N matches ages from N to N+1 days; '
                 'use +N only if the user explicitly says older than N days.'}
+    eligible = re.findall(r'(?m)^(/.+?) \d{4}-\d\d-\d\d ', inspected[0].get('stdout') or '')
+    completed = {item.get('source'): item for item in compressed}
+    pending = [path for path in eligible if path not in completed]
+    if eligible and not pending:
+        last_write = max(item['step'] for item in compressed)
+        outputs = [completed[path]['destination'] for path in eligible]
+        integrity_script = 'gzip -t -- ' + ' '.join(shlex.quote(path) for path in outputs)
+        verified = any(item['step'] > last_write and integrity_script in item['script'] for item in reads)
+        if verified:
+            return {'stage': 'complete_verified_archives', 'original_sources': eligible,
+                'actual_compression_receipts': compressed, 'actual_integrity_checks': reads[-2:],
+                'next_step': 'CURRENT STEP: all originally age-matched source files have successful '
+                    'compression receipts and gzip integrity checks. New files were already in '
+                    'their requested destination. If the final directory inspection matches the '
+                    'requested groups, call propose_done now. Do not reclassify generated archives '
+                    'by their new timestamps or repeat the date search.'}
+        return {'stage': 'test_actual_archives', 'original_sources': eligible,
+            'actual_compression_receipts': compressed,
+            'suggested_argv': ['bash', '-c', integrity_script],
+            'next_step': 'CURRENT STEP ONLY: run command.run with suggested_argv, cwd_source=home '
+                'and provenance=shell_history. This tests the actual compressed output files. '
+                'Do not repeat compression or age classification. Then inspect both destination '
+                'directories once and propose_done if all groups are correct. Generated archives '
+                'have new timestamps; they are outputs, not newly discovered source files.'}
     return {'stage': 'archive_and_verify_age_groups', 'guest_age_observations': inspected,
-        'performed_commands': changed, 'next_step':
+        'performed_commands': changed, 'actual_compression_receipts': compressed, 'pending_original_sources': pending, 'next_step':
         'CURRENT STEP: use the real find age results above. Archive/compress matching source '
         'files into the requested old destination. If they are already there, compress them '
         'in place rather than moving the directory into itself. Other files go into the new '
