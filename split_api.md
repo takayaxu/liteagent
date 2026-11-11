@@ -137,3 +137,7 @@ Chrome保存设置仍需要暂时停止并恢复正在运行的Chrome以避免�
 相邻VLC检查39 PASS，Chrome检查29 PASS。另行扩展的VS Code GUI/旧wrapper路径检查出现失败，未把它们称为通过：未修改主分支同样存在多项失败，GUI测试还涉及实际窗口环境；本次未改其controller/accessibility代码。旧VLC路径夹具已迁移至新单设置value字段，未为消除其他旧wrapper断言扩大运行源码修改。
 
 核对GIMP原题后补充：`e19bd559...`（无输入的桌面照片请求）与`2e6f678f...`（明确要求批处理而非逐张GUI）原evaluator均为`infeasible`。保留原题意、能力边界与评分，不把它们改成可行题，也不把infeasible标签注入模型提示。前文“多图由模型逐张处理”仅适用于允许逐张操作的任务；本题不适用，复跑应让模型根据实际输入与能力判断。没有给出的图片不能凭空构造，批处理方法要求不能被逐张GUI替代。
+
+公开工具构建旁路亦已修复：`7d0ec78`使build_tools只接受注册公开动作，旧推荐列表不能重新构造已删除工具；跨应用恢复路由仍验证owner注册表。11个旧入口的直接工具/转发检查全部通过。统一候选158项定向检查通过，原生部署已验证Chrome/GIMP服务可启动（132 run-004），各题效果仍等待原评分，不据此提前销项。
+
+当前可查看的完整拆分源码：`/home/liuxv/liteagent-local-runs/split-api-20261111/all-candidate`。主活动目录目前只有本文件的记录提交，运行修复保持候选隔离。进度台账：`/home/liuxv/liteagent-local-runs/split-api-20261111/ledger.json`，关联35题（20道189题、15道独立Chrome/GIMP题）；本批仅117正式PASS，其余未销项。
