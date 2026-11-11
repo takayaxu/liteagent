@@ -41,8 +41,21 @@ def model_progress(state):
         launched = [c for c in commands if c['executed'] and not c['error']
             and c['params'].get('terminal') is True and output in (c['params'].get('argv') or [])]
         if launched:
+            import_confirmed = any(e.executed and not e.error and e.step > launched[-1]['step']
+                and e.proposed.get('tool') == 'gui_action'
+                and e.proposed.get('arguments', {}).get('action') == 'press'
+                and e.proposed.get('arguments', {}).get('key') == 'enter' for e in state.events)
+            if not import_confirmed:
+                return {'stage': 'confirm_csv_import', 'commands': commands[-5:], 'next_step':
+                    'CURRENT STEP: inspect the screenshot. If the CSV Text Import dialog is open '
+                    'and the preview has the requested one-column concatenated data, call '
+                    'gui_action action=press key="enter" with fallback_reason="Confirm the visible '
+                    'CSV import dialog after checking its preview." Do not guess pointer coordinates '
+                    'outside the 1280x720 image. If the dialog is absent, discover and call Calc '
+                    'workbook.inspect instead. Never relaunch or remerge just to confirm import.'}
             return {'stage': 'verify_open_csv', 'commands': commands[-8:], 'next_step':
-                'CURRENT STEP: inspect the current screenshot and use Calc workbook.inspect '
+                'CURRENT STEP ONLY: use tools_search query="libreoffice_calc workbook.inspect" if not exposed, '
+                'then call that read-only inspection to confirm the current screenshot and '
                 'to confirm the exact output CSV is open, one output column and all requested '
                 'rows are present. If a CSV import dialog is visible, inspect the preview and '
                 'confirm the appropriate encoding/separators before native inspection. '
