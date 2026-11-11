@@ -16,6 +16,7 @@ from .atomic_tool_surface import atomic_provider_surface, restore_adapter_argume
 from openai import OpenAI
 
 from .qwen_pivot_schema import lower_pivot_schemas
+from .provider_union_surface import split_discriminated_tools
 from .qwen_shape_format_schema import lower_shape_format_schemas
 from .reasoning import (
     SUPPORTED_REASONING_EFFORTS,
@@ -952,6 +953,7 @@ class StructuredToolModelClient:
                 first_system["content"].append({"type": "text", "text": guidance})
             else:
                 first_system["content"] = str(first_system.get("content") or "") + "\n" + guidance
+        provider_surface, union_bindings = split_discriminated_tools(provider_surface)
         request_tools = _qwen_schema_compatible_tools(model, provider_surface)
         request = {
             "model": model,
@@ -1086,6 +1088,16 @@ class StructuredToolModelClient:
             )
         provider_tool = tool
         provider_arguments_raw = arguments_raw
+        union_binding = union_bindings.get(tool)
+        if union_binding is not None:
+            union_errors = list(Draft202012Validator(union_binding["schema"]).iter_errors(arguments))
+            if union_errors:
+                raise StructuredToolProtocolError(
+                    "tool arguments do not satisfy the exposed branch schema",
+                    response_snapshot=self._response_snapshot(response, choice, message),
+                    tool_name=tool,
+                )
+            tool = union_binding["original_name"]
         binding = atomic_bindings.get(tool)
         if binding is not None:
             atomic_errors = sorted(
