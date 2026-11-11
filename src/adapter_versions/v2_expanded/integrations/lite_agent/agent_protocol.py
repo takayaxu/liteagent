@@ -812,6 +812,8 @@ class AgentProtocolMixin:
         from . import mail_flag_progress
 
         mail_flags = mail_flag_progress.model_progress(state)
+        if mail_flags is not None:
+            mail_flags["current_screenshot_text_centers"] = mail_flag_progress.screen_text_observations(screenshot)
 
         system_message = self._system_message(
             state,
