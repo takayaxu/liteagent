@@ -764,6 +764,16 @@ class AgentProtocolMixin:
                               model_context(limit=2), max_chars=2400), ensure_ascii=False))
             if outcomes:
                 state_text += "\ncompletion_outcomes:\n" + json.dumps(outcomes, ensure_ascii=False)
+        from . import mail_flag_progress
+
+        mail_flags = mail_flag_progress.model_progress(state, screenshot)
+        if mail_flags is not None:
+            state_text = ("CURRENT LIVE MAIL STEP: follow this observed stage only.\n"
+                          + json.dumps(mail_flags, ensure_ascii=False)
+                          + "\nRecent truthful execution state:\n"
+                          + json.dumps(compact_execution_summary_for_model(
+                              model_context(limit=2), max_chars=2000), ensure_ascii=False))
+
         message_content: list[dict[str, Any]] = [
             {
                 "type": "text",
@@ -809,10 +819,6 @@ class AgentProtocolMixin:
                     "image_url": {"url": image_url},
                 }
             )
-        from . import mail_flag_progress
-
-        mail_flags = mail_flag_progress.model_progress(state, screenshot)
-
         system_message = self._system_message(
             state,
             protocol_recovery=protocol_recovery,
