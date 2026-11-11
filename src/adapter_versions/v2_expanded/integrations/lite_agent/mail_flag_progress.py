@@ -33,6 +33,7 @@ def model_progress(state, screenshot=None):
                 'Its coordinates come from OCR of THIS screenshot in the 1280x720 model image. '
                 'Do not reuse an older guessed coordinate or edit mailbox headers. '
                 'After this click the next stage selects the visible message rows.'}
+    focused = any(a.get('action') == 'press' and a.get('key', '').lower() == 'f6' for a in actions)
     selected = any(a.get('action') == 'hotkey' and a.get('keys') == ['ctrl', 'a'] for a in actions)
     starred = any(a.get('action') == 'press' and a.get('key', '').lower() == 's' for a in actions)
     if starred:
@@ -47,6 +48,20 @@ def model_progress(state, screenshot=None):
             'are unstarred, use gui_action press key="s" to add stars to the selected messages. '
             'Use fallback_reason="Profile-backed flags do not synchronize the live Thunderbird '
             'message index; perform the change through the application." Do not change folders.'}
+    reason = 'Mailbox-header updates do not synchronize live Thunderbird flags.'
+    if folder_clicked and not focused:
+        return {'stage': 'focus_live_message_list', 'suggested_tool_call': {
+            'action': 'press', 'fallback_reason': reason, 'key': 'f6'},
+            'next_step': 'CURRENT STEP ONLY: call gui_action action=press key="f6" with the '
+                'provided fallback_reason. The target folder was opened by the observed click; '
+                'F6 moves focus from the folder tree into its message list. Do not call '
+                'messages.update_flags or propose_done. Next stage selects all visible messages.'}
+    if focused and not selected:
+        return {'stage': 'select_all_live_messages', 'suggested_tool_call': {
+            'action': 'hotkey', 'fallback_reason': reason, 'keys': ['ctrl', 'a']},
+            'next_step': 'CURRENT STEP ONLY: call gui_action action=hotkey keys=["ctrl","a"] '
+                'with the provided fallback_reason. F6 already focused the message list. '
+                'Do not edit mailbox files or call propose_done. The next stage presses S.'}
     return {'stage': 'select_live_folder_messages', 'folder_already_clicked': bool(folder_clicked), 'next_step':
         'CURRENT STEP: perform the star operation in the live Thunderbird application. '
         'messages.update_flags edits mailbox headers but does not synchronize the running '
