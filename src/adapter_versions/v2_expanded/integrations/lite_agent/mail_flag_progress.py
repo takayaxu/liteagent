@@ -24,6 +24,10 @@ def model_progress(state, screenshot=None):
     folder_clicked = target_box and any(a.get('action') == 'click' and
         abs(int(a.get('x', -10000)) - target_box['x']) < 12 and
         abs(int(a.get('y', -10000)) - target_box['y']) < 12 for a in actions)
+    live_title = target and any(o['text'].casefold() == target.casefold()
+        and o['x'] >= 250 and o['y'] < 120 for o in text)
+    if live_title and actions:
+        folder_clicked = True
     if target_box and not folder_clicked:
         return {'stage': 'open_observed_folder', 'observed_folder_text': target_box,
             'suggested_tool_call': {'action': 'click',

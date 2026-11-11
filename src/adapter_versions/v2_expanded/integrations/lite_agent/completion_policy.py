@@ -743,6 +743,12 @@ def collect_initial_completion_evidence(
         )
         return successful, mutations, missing, required_mutation_set
 
+    if state.domain == 'thunderbird':
+        from .mail_flag_progress import model_progress, verified_live_mutation
+
+        if model_progress(state) is not None and verified_live_mutation(state) is None:
+            missing.append('verify live Thunderbird star changes with a full subsequent messages.query; '
+                           'mailbox-header update verification alone does not verify the running application')
     last_mutation_step = mutations[-1].step
     if requires_terminal_provenance(state.instruction):
         command_events = [
