@@ -197,12 +197,15 @@ def observed_reasoning_mode(
                             dumped = candidate_message
     if dumped is None:
         return None
+    # Providers may expose both aliases, with one null and the other populated.
+    # An empty alias must not hide the actual reasoning on the other channel.
+    present = False
     for key in ("reasoning", "reasoning_content"):
         if key not in dumped:
             continue
         value = dumped.get(key)
-        if isinstance(value, str):
-            return "thinking" if value.strip() else "non_thinking"
-        if value is None:
-            return "non_thinking"
-    return None
+        if isinstance(value, str) and value.strip():
+            return "thinking"
+        if value is None or isinstance(value, str):
+            present = True
+    return "non_thinking" if present else None
