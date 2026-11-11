@@ -22,7 +22,12 @@ def model_progress(state):
     if not observed:
         return None
     return {'observed_operations': observed,
-            'next_step': 'For each discovered source, determine its relative path under the source root '
+            'next_step': 'Your next copy must handle exactly ONE source/output pair. Prefer filesystem.copy: '
+            'source is one observed input file; destination is its complete output FILE path; '
+            'set create_parents=true. Do not use a list of all destination directories. '
+            'If you choose copy_to_directories instead, destinations must contain just the ONE '
+            'directory belonging to the selected source for this hierarchy-preserving mapping. '
+            'For each discovered source, determine its relative path under the source root '
             'and the matching destination path. Copy that source only to its own matching directory; '
             'do not supply directories belonging to other source files in destinations. '
             'copy_to_directories duplicates ONE source into EVERY supplied directory. '
