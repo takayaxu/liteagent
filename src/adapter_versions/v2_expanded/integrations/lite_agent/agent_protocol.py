@@ -792,6 +792,12 @@ class AgentProtocolMixin:
                           + json.dumps(compact_execution_summary_for_model(
                               model_context(limit=2), max_chars=2000), ensure_ascii=False))
 
+        from . import sentence_spacing_progress
+
+        sentence_spacing = sentence_spacing_progress.model_progress(state)
+        if sentence_spacing is not None:
+            state_text += "\nCURRENT SENTENCE SPACING STEP:\n" + json.dumps(sentence_spacing, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -894,6 +900,8 @@ class AgentProtocolMixin:
                 "requirements are satisfied, emit the provided propose_done call, not a creation "
                 "or inspection call. If a separate user requirement remains, address that specific "
                 "requirement instead. The existing completion gate still checks the execution ledger.")
+        if sentence_spacing is not None:
+            system_message += "\nCurrent sentence spacing stage: " + json.dumps(sentence_spacing, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
