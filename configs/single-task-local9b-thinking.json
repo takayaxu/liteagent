@@ -1240,6 +1240,22 @@
         "facts": "file_copy_ledger",
         "text": "Check the archive member list and the actual selected-photo directory against the recorded include decisions, not against the number of image opens. Verify original photo contents and the requested folder layout. If these checks are complete, propose_done with the actual archive/copy evidence; do not restart browsing."
       }
+    ],
+    "185f29bd-5da0-40a6-b69c-ba7f4e0324ef": [
+      {
+        "until_action": "os:filesystem.find",
+        "text": "Current input-discovery stage: the Excel workbook is a data source, not a PDF form. pdf.form.inspect input_path accepts only an existing .pdf template, never an .xlsx path. Discover the actual source workbook and PDF template paths with filesystem.find before calling a path-requiring PDF tool. Use tools_search for filesystem.find if needed. Do not guess paths from the instruction title."
+      },
+      {
+        "after_action": "os:filesystem.find",
+        "until_action": "os:pdf.form.inspect",
+        "text": "Use exact discovered paths and their file types. Read the XLSX with the public Calc file reader; inspect the actual PDF template with pdf.form.inspect. If a needed workbook-reading operation is not exposed, discover it with tools_search rather than passing the XLSX to a PDF tool. Preserve the source workbook and use an observed .pdf path for PDF form inspection."
+      },
+      {
+        "after_action": "os:pdf.form.inspect",
+        "facts": "pdf_source_ledger",
+        "text": "Current stage: transfer the observed workbook rows to individual PDFs. CURRENT PDF SOURCE FACTS retains the complete executed source read, including rows omitted from the generic preview. Use these rows; do not reread merely because the earlier preview was shorter. Only call routes in the currently exposed tool schema. If another source window is actually needed, first tools_search for workbook.read_file; never replay an expired route. For each employee, use the original observed PDF template as input_path, a distinct output_path named exactly as requested, and one pdf.form.fill call. Copy exact field_name strings from the native index, never the human label with inserted underscores. Transfer the employee information and put the literal √ in the rating field matching each source value; omit blank/unselected fields. Do not enumerate every template field in reasoning. Fill the next employee whose output is not recorded in verified_executed_fills. After all source employees have outputs, inspect saved PDFs and verify names and values before propose_done. fields must be an array of objects, for example [{\"field_name\":\"exact native field name\",\"value\":\"literal text\"}]. Never send a field-name-to-value dictionary. Align each rating with its source column header; keep every criterion attached to its own value."
+      }
     ]
   },
   "task_protocol_overrides": {
