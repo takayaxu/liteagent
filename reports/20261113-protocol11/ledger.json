@@ -138,11 +138,73 @@
     {
       "order": 100,
       "task_id": "82e3c869-49f6-4305-a7ce-f3e64a0618e7",
-      "status": "pending",
+      "status": "passed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-03/raw/run-1/100-multi_apps-82e3c869-49f6-4305-a7ce-f3e64a0618e7",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "a5814aeedbbf2454db3a06a0e30bbb4d4e928efe",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-v1-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null
+        },
+        {
+          "attempt": 2,
+          "commit": "c2d00873025f430ba85d45c2332b2fcc226f6d8c",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-v2-config.json",
+          "status": "configuration_correction_during_early_episode",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null
+        },
+        {
+          "attempt": 3,
+          "commit": "6d781e940abcd86ec50638065ed09a9e15117c93",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-run003",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-v3-config.json",
+          "status": "failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 0.0,
+          "duration_seconds": 628.868,
+          "steps": 21,
+          "protocol_errors": 0
+        },
+        {
+          "attempt": 4,
+          "commit": "015632f0449a8266be1ef3e68aa3cf8af12d7adf",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-run004",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order100-v4-config.json",
+          "status": "passed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 1.0,
+          "duration_seconds": 461.376,
+          "steps": 18,
+          "protocol_errors": 0
+        }
+      ],
+      "reward": 1.0,
+      "passing_attempt": 4,
+      "evaluation_coverage_note": "Original evaluator requires four named photo paths after ZIP extraction, and does not reject extra images. Passing archive contains five photos. Report evaluator PASS only, not exact selection equivalence."
     },
     {
       "order": 101,

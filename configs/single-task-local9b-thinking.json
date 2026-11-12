@@ -1222,10 +1222,31 @@
         "after_action": "libreoffice_calc:workbook.save_as",
         "text": "After conversion, inspect and read back the saved XLSX to verify it contains the exported contact data. If the saved workbook is empty, the source CSV was not converted: open the exported source and correct the XLSX. Once the saved output is verified, propose_done with the observed evidence; do not repeat export or save-as."
       }
+    ],
+    "82e3c869-49f6-4305-a7ce-f3e64a0618e7": [
+      {
+        "after_action": "os:filesystem.find",
+        "until_action": "os:desktop.open_path",
+        "text": "The source paths have been discovered. Discover desktop.open_path with tools_search and open one exact observed image path. The current file inventory tool cannot open an image; use tool discovery rather than guessing GUI coordinates."
+      },
+      {
+        "after_action": "os:desktop.open_path",
+        "until_action": "os:archive.create_zip",
+        "facts": "file_copy_ledger",
+        "text": "Current stage is visual review and selective copying. Establish the intended speaker from visible written talk/event context and consistent nonfacial cues; a microphone holder or a person at the front is not sufficient alone. Examine the whole image, including people in the background. For each exact source filename, record include/exclude/uncertain plus brief visible evidence in a temporary text manifest under /tmp using a discovered file-writing action before leaving that image. Never copy an uncertain photo merely to continue the previous copying pattern. Resolve uncertainty from another observation or event context and update the notes. The CURRENT EXECUTED COPY FACTS are authoritative for executed copies: opened_sources is not copied_sources, and generic workflow phase labels do not prove classification or copying complete. If the current visual decision is include and its exact source is absent from verified_executed_copies, perform that filesystem.copy before moving on. Open the next unreviewed image directly by its observed path; no repeated viewer closing is needed. Before archiving, compare the actual destination listing with all include decisions and correct any omission or extra file. The selection remains your decision from the source images."
+      },
+      {
+        "after_action": "os:archive.create_zip",
+        "facts": "file_copy_ledger",
+        "text": "Check the archive member list and the actual selected-photo directory against the recorded include decisions, not against the number of image opens. Verify original photo contents and the requested folder layout. If these checks are complete, propose_done with the actual archive/copy evidence; do not restart browsing."
+      }
     ]
   },
   "task_protocol_overrides": {
     "c867c42d-a52d-4a24-8ae3-f75d256b5618": {
+      "gui_coordinate_space": "normalized_1000"
+    },
+    "82e3c869-49f6-4305-a7ce-f3e64a0618e7": {
       "gui_coordinate_space": "normalized_1000"
     }
   }
