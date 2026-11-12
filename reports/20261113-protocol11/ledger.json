@@ -43,7 +43,13 @@
             "source_matches": true,
             "config_matches": true,
             "osworld_matches": true
-          }
+          },
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         },
         {
           "attempt": 2,
@@ -56,7 +62,13 @@
             "source_matches": true,
             "config_matches": true,
             "osworld_matches": true
-          }
+          },
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         },
         {
           "attempt": 3,
@@ -69,7 +81,13 @@
             "source_matches": true,
             "config_matches": true,
             "osworld_matches": true
-          }
+          },
+          "main_protocol_errors": 1,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 1,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 1
         },
         {
           "attempt": 4,
@@ -84,7 +102,12 @@
             "source_matches": true,
             "config_matches": true,
             "osworld_matches": true
-          }
+          },
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
       "reward": 1.0,
@@ -113,7 +136,12 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "diagnosis": "Exported 30 contacts to CSV, but workbook.inspect showed empty Untitled 1; saved it as contacts.xlsx without loading the CSV."
+          "diagnosis": "Exported 30 contacts to CSV, but workbook.inspect showed empty Untitled 1; saved it as contacts.xlsx without loading the CSV.",
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 1,
+          "total_protocol_or_contract_rejections": 1
         },
         {
           "attempt": 2,
@@ -129,7 +157,12 @@
           "reward": 1.0,
           "duration_seconds": 239.696,
           "steps": 4,
-          "protocol_errors": 0
+          "protocol_errors": 0,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
       "reward": 1.0,
@@ -154,7 +187,13 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "reward": null
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 3,
+          "total_protocol_or_contract_rejections": 3
         },
         {
           "attempt": 2,
@@ -167,7 +206,13 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "reward": null
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         },
         {
           "attempt": 3,
@@ -183,7 +228,12 @@
           "reward": 0.0,
           "duration_seconds": 628.868,
           "steps": 21,
-          "protocol_errors": 0
+          "protocol_errors": 0,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 1,
+          "total_protocol_or_contract_rejections": 1
         },
         {
           "attempt": 4,
@@ -199,7 +249,12 @@
           "reward": 1.0,
           "duration_seconds": 461.376,
           "steps": 18,
-          "protocol_errors": 0
+          "protocol_errors": 0,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
       "reward": 1.0,
@@ -228,7 +283,12 @@
           "reward": null,
           "duration_seconds": 880.329,
           "steps": null,
-          "protocol_errors": 4
+          "protocol_errors": 4,
+          "main_protocol_errors": 4,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 3,
+          "total_protocol_or_contract_rejections": 7
         },
         {
           "attempt": 2,
@@ -241,7 +301,13 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "reward": null
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 2,
+          "total_protocol_or_contract_rejections": 2
         },
         {
           "attempt": 3,
@@ -257,7 +323,12 @@
           "reward": 0.5042,
           "duration_seconds": 625.523,
           "steps": 15,
-          "protocol_errors": 0
+          "protocol_errors": 0,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         },
         {
           "attempt": 4,
@@ -270,7 +341,13 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "reward": null
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
       "reward": 0.5042,
@@ -297,7 +374,13 @@
             "config_matches": true,
             "osworld_matches": true
           },
-          "reward": null
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 2,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 2,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 2
         },
         {
           "attempt": 2,
@@ -313,13 +396,77 @@
           "reward": null,
           "duration_seconds": 600.946,
           "steps": null,
-          "protocol_errors": 3
+          "protocol_errors": 3,
+          "main_protocol_errors": 3,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 3
         },
         {
           "attempt": 3,
           "commit": "5f355c89abbb98416ecf7dd81c7050ff913d5f28",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-run003",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-v3-config.json",
+          "status": "model_protocol_failure",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "duration_seconds": 1061.412,
+          "steps": null,
+          "main_protocol_errors": 3,
+          "nested_execution_protocol_errors": 0,
+          "protocol_errors": 4,
+          "recovered_checker_protocol_errors": 1,
+          "execution_validation_or_guard_rejections": 4,
+          "total_protocol_or_contract_rejections": 8
+        },
+        {
+          "attempt": 4,
+          "commit": "d771d85bb47a5d5d3407ca17b695c163b042c453",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-run004",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-v4-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
+        },
+        {
+          "attempt": 5,
+          "commit": "d771d85bb47a5d5d3407ca17b695c163b042c453",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-run005",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-v5-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 10,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 1,
+          "protocol_errors": 11,
+          "execution_validation_or_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 11
+        },
+        {
+          "attempt": 6,
+          "commit": "1c83d4f36ebd25edf108c84f28942f939fdd7e1f",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-run006",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-v6-config.json",
           "status": "running"
         }
       ],
