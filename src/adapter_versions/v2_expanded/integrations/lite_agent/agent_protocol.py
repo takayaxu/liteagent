@@ -817,6 +817,12 @@ class AgentProtocolMixin:
         if italic_size is not None:
             state_text += "\nCURRENT ITALIC SIZE STEP:\n" + json.dumps(italic_size, ensure_ascii=False)
 
+        from . import system_volume_progress
+
+        system_volume = system_volume_progress.model_progress(state)
+        if system_volume is not None:
+            state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(system_volume, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -934,6 +940,9 @@ class AgentProtocolMixin:
 
         if italic_size is not None:
             system_message += "\nCurrent italic size stage: " + json.dumps(italic_size, ensure_ascii=False)
+
+        if system_volume is not None:
+            system_message += "\nCurrent request stage: " + json.dumps(system_volume, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
