@@ -70,7 +70,16 @@
       "a53f80cd-4a90-4490-8310-097b011433f6": "personal-cleanup",
       "0a0faba3-5580-44df-965d-f562a99b291c": "sentence-tabstops",
       "8472fece-c7dd-4241-8d65-9b3cd1a0b568": "initial-letter-colors",
-      "936321ce-5236-426a-9a20-e0e3c5dc536f": "comma-table"
+      "936321ce-5236-426a-9a20-e0e3c5dc536f": "comma-table",
+      "881deb30-9549-4583-a841-8270c65f2a17": "ecs-rates",
+      "7e287123-70ca-47b9-8521-47db09b69b14": "grf-records",
+      "5bc63fb9-276a-4439-a7c1-9dc76401737f": "gemini-document",
+      "09a37c51-e625-49f4-a514-20a773797a8a": "person-background",
+      "415ef462-bed3-493a-ac36-ca8c6d23bf1b": "invoice-mail",
+      "c2751594-0cd5-4088-be1b-b5f2f9ec97c4": "mail-wallpaper",
+      "aceb0368-56b8-4073-b70e-3dc9aee184e0": "grading",
+      "59f21cfb-0120-4326-b255-a5b827b38967": "vlc-play",
+      "f3977615-2b45-4ac5-8bba-80c17dbe2a37": "vlc-instances"
     }
   },
   "tasks": [

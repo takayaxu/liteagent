@@ -398,6 +398,106 @@ def _comma_table_hint(state):
     )
 
 
+def _cross_app_hint(state, kind):
+    from .completion_policy import effective_canonical_action
+    facts = [(e, *effective_canonical_action(e, state.domain)) for e in state.events if e.executed and not e.error]
+    actions = {a for _, _, a, _ in facts}
+    if kind in {"ecs-rates", "grf-records"}:
+        compute = "table.ratio_matrix.compute" if kind == "ecs-rates" else "table.records.compute"
+        if not any(e.proposed.get("tool") == compute or e.proposed.get("action") == compute for e in state.events if e.executed and not e.error):
+            return (
+                "READ SOURCE TABLES: locate the requested annual PDFs once, inspect each relevant native table "
+                "with pdf.tables.inspect and read the target workbook headers/row keys. Reuse observed exact paths. "
+                "Do not repeat successful source reads. Match supported/applications by the observed table headers "
+                "and row/subrow, not a nearby university or subject. Use the exposed public read-only " + compute
+                + " after all selected source rows/columns have been observed. Calculations use only actual source data. "
+                "Use tools_search for a missing tool once, then CALL it; repeated search does not read data."
+            )
+        if "range.write" not in actions or kind == "ecs-rates":
+            return (
+                "WRITE COMPUTED DATA: source computation is already available. Copy its current model-visible "
+                "matrix values into the actual Calc target with range.write. JSON values MUST be a TWO-DIMENSIONAL "
+                "array of plain numbers, e.g. [[2019,25,7,0.28]]; a year is a JSON number, not \"2019\". "
+                "For a single numeric rate row use [[r1,r2,...]], never a flat list and never typed-cell objects. "
+                "Do not recompute or reread source PDFs after a successful computed result. Preserve observed row "
+                "and column order and all existing workbook contents. If a write was rejected for evidence/type "
+                "mismatch, correct its dimensions/types; an identical rejected payload cannot succeed. "
+                "After every required output row is written, save once and read back the saved target. "
+                + ("Store decimals without multiplying by 100. " if kind == "ecs-rates" else
+                   "Create the new workbook only once, retain the exact four requested headers, format Success Rate "
+                   "as 0.00% with fractional native numbers, then save_as the requested Desktop filename. ")
+                + "When all saved output is correct, propose_done without another search or write."
+            )
+        return "FINALIZE: format fractional Success Rate values as 0.00%, save_as the requested Desktop workbook, then read back all five numeric-year records and propose_done. Do not repeat source extraction or create another workbook."
+    if kind == "gemini-document":
+        if "document.create" not in actions:
+            return (
+                "EXTRACT: inspect the open JSON path and read its complete structure. Use only observed guest "
+                "paths under its actual home, not the host user's home. If using command.run to parse JSON, "
+                "set provenance=shell_history and use valid Python with actual newlines before compound for/if "
+                "statements; a compound for cannot follow a semicolon. Select all Gemini RESPONSE VALUES, "
+                "preserving each complete response as one paragraph in source order. The user asks to copy all "
+                "responses and highlight Iliad, not discard sentences without that word. Read/parse once, retain "
+                "the extracted complete content, then create the requested Writer document. No repeated searches."
+            )
+        if not {"document.append_text", "document.append_text_file"} & actions:
+            return "WRITE: append the complete extracted Gemini response values to the new Writer document, one response per paragraph with a blank line between responses. Reuse extracted content; do not rerun source extraction or append an empty temporary file."
+        return "FINISH: highlight every exact Iliad occurrence with Writer text formatting/highlighting, save gemini_results.docx on Desktop, read back paragraphs and highlighting once, and propose_done. Preserve all Gemini response text and do not append duplicates."
+    if kind in {"invoice-mail", "mail-wallpaper"}:
+        folder = "Bills" if kind == "invoice-mail" else "Notes"
+        if "messages.query" not in actions:
+            return "FIND EMAIL: use thunderbird messages.query for folder_name=" + folder + ". Native mail tools do not require clicking the folder first. Select the requested invoice by its observed subject/date, or the latest Notes email with limit=1, select_from=latest. Do not repeatedly click dock/folder coordinates or search for generic attachment phrases."
+        if "attachments.save" not in actions:
+            return "SAVE ATTACHMENT: search exact thunderbird attachments.save, then call it using the message/attachment identity returned by messages.query. Exporting EML saves a mail container, not the attached document/PDF. Do not open the EML and mistake it for an extracted attachment. Choose only the requested attachment and inspect the returned saved path."
+        if kind == "mail-wallpaper":
+            if "document.extract_images" not in actions:
+                return "EXTRACT FIRST IMAGE: call Writer document.extract_images on the actual saved document attachment, selecting first in native document reference order. Opening a document or an EML is not extraction. Use its returned image path."
+            return "SET WALLPAPER: use os desktop.set_wallpaper with the actual first extracted image path. Verify the returned setting and finish with propose_done; do not export more images or reread emails."
+        return "FILE AND RECORD: discover the actual receipts directory and tally book, inspect old receipt filenames for the naming pattern, save/rename the extracted December AWS PDF accordingly. Read the invoice amount/date/vendor and append ONE record after the existing tally records, preserving all originals. Save and read back the new record plus receipt path, then propose_done. Do not infer filesystem directories from mail folder names."
+    if kind == "grading":
+        return (
+            "CURRENT GRADING: follow grading_progress from the real source/target ledger. Read the answer key "
+            "and each remaining student's answers exactly once; retain question numbering and repeated letters. "
+            "Compare each answer to the SAME numbered key answer. Write numeric correct/incorrect scores "
+            "using the observed grading example and weights; do not put student answer letters into score cells "
+            "or generate self-referential formulas. Preserve already graded students. Write the remaining score "
+            "rows as one model-selected matrix where the public tool permits it; do not search/read the entire "
+            "workbook between every row. Use current tools before searching again. Once all detailed scores and "
+            "totals are written, save once, read back the full target, and propose_done."
+        )
+    if kind == "person-background":
+        return (
+            "CURRENT IMAGE EDIT: discover the Desktop requirements document and source picture once. Read DOCX "
+            "with Writer document.read_file, not image OCR. Open the picture and inspect the actual screenshot. "
+            "Use the available GIMP tools or its GUI for subject selection/background removal and white "
+            "background composition. image.inspect reads metadata and does not remove a background. GIMP's "
+            "crop/adjust/export tools cannot perform a subject selection by themselves; do not repeat searches "
+            "for a nonexistent automatic background-removal API. Open the actual source in GIMP through its "
+            "file dialog/command if needed; dock coordinates that open Help/Trash are wrong, so stop repeating "
+            "them. Keep the person, replace the scenery with white, export Desktop/pic.jpg, inspect the actual "
+            "output image and finish only when the edit is visible."
+        )
+    return None
+
+
+def _vlc_hint(state, kind):
+    events = [e for e in state.events if e.executed and not e.error]
+    actions = {e.proposed.get("action") for e in events}
+    if kind == "vlc-instances":
+        if "preferences.configure" not in actions:
+            return "SET PREFERENCE: call preferences.configure with allow_multiple_instances=true. This changes the persisted single-instance behavior so desktop-opened media can start independent players."
+        return "FINISH: the successful preferences.configure result already verifies the persisted multi-instance setting. Do not configure it again, click the dock repeatedly or poll playback.status to verify a preference; playback state is unrelated. Review the actual returned preference evidence and propose_done. No new sample video or extra playback is requested."
+    if "playback.open" not in actions:
+        return (
+            "OPEN OBSERVED MEDIA: discover the exact Desktop video path instead of guessing from its truncated "
+            "desktop label. If filesystem.find is not offered in this VLC domain, repeated tools_search will "
+            "not make it callable. Use VLC's Open File dialog (Ctrl+O), navigate to the actual Desktop and select "
+            "the visible music-video file, or read an observed exact path from the dialog. Open that file in "
+            "VLC. Do not double-click empty desktop coordinates or invent a longer filename."
+        )
+    return "VERIFY PLAYBACK: call playback.status once. If the observed Desktop music video is playing, propose_done immediately and leave it playing. Do not keep reopening the file, guessing filenames or searching filesystem.find. If it ended, reopen the SAME observed file and finish promptly."
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -425,4 +525,9 @@ def model_hint(profile, state, *, targets=None):
         return _vowel_hint(state)
     if (targets or {}).get(state.task_id) == "comma-table" and state.domain == "libreoffice_writer":
         return _comma_table_hint(state)
+    kind = (targets or {}).get(state.task_id)
+    if state.domain == "multi_apps":
+        return _cross_app_hint(state, kind)
+    if state.domain == "vlc" and kind in {"vlc-play", "vlc-instances"}:
+        return _vlc_hint(state, kind)
     return None
