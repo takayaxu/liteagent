@@ -1,0 +1,20 @@
+--- a/common/parsers/parsers.cpp
++++ b/common/parsers/parsers.cpp
+@@ -17,6 +17,17 @@
+     auto         params = common_chat_tool_parameters(function);
+     auto         doc    = std::make_shared<const common_chat_schema_document>(common_chat_schema_from_json(params));
+     const auto * object = dynamic_cast<const common_chat_schema_object *>(doc->root.get());
++    if (!object && params.is_object() && params.contains("properties")) {
++        // Composed object schemas wrap the root in a conjunction/union. XML
++        // parameters still come from the declared sibling object properties.
++        // Keep every property schema and the root required list intact.
++        auto fields = params;
++        for (const auto * key : {"oneOf", "anyOf", "allOf", "not", "if", "then", "else"}) {
++            fields.erase(key);
++        }
++        doc = std::make_shared<const common_chat_schema_document>(common_chat_schema_from_json(fields));
++        object = dynamic_cast<const common_chat_schema_object *>(doc->root.get());
++    }
+     if (!object) {
+         return;
+     }
