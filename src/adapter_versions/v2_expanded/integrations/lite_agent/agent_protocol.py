@@ -898,6 +898,12 @@ class AgentProtocolMixin:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
             system_message += "\nCurrent terminal default stage: " + json.dumps(terminal_defaults, ensure_ascii=False)
+        from .task_stage_prompts import stage_prompt_text
+        scoped_stage = stage_prompt_text(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if scoped_stage:
+            system_message += "\nCurrent task stage guidance:\n" + scoped_stage
         return [
             {
                 "role": "system",
