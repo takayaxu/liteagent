@@ -42,3 +42,10 @@ integrity all true for both table batches. Order164 has no protocol errors but
 evaluator reward 0.8876506679495418, so is FAILED, not counted as passing.
 Orders172,177 continue under unchanged budgets. Full batch acquires exclusive
 resources and waits until these checks release their guests.
+
+Diagnostic closeout: the remaining Order172 was interrupted during subsequent GUI
+menu/search cycling after its preferences call executed; it has no terminal score.
+Order177 was not run as an original-task episode in this group; only its actual
+failed request was replayed and schema-validated. Diagnostic interruption preserves
+all logs and has source/config/OSWorld integrity true. See diagnostic-stop.json.
+The fresh full189 at 895bf96 started after all diagnostic resources were released.
