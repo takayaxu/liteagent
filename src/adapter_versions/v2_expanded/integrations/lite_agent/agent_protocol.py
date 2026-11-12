@@ -912,7 +912,7 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
-            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops"}:
+            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "
                     "Call exactly ONE provided tool now. Use its current schema and actual observations. "

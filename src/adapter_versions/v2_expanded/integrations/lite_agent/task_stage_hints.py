@@ -403,6 +403,12 @@ def _cross_app_hint(state, kind):
     facts = [(e, *effective_canonical_action(e, state.domain)) for e in state.events if e.executed and not e.error]
     actions = {a for _, _, a, _ in facts}
     if kind in {"ecs-rates", "grf-records"}:
+        source_reads = [e for e, _, a, _ in facts if a == "pdf.tables.inspect"]
+        if kind == "ecs-rates" and len(source_reads) >= 9:
+            if "workbook.inspect" not in actions:
+                return "CURRENT STEP ONLY: all nine annual source PDF tables have been read. Use tools_search query='libreoffice_calc workbook.inspect', then CALL workbook.inspect. Do not recalculate, reread PDFs, guess destinations or attempt writes yet."
+            if "range.read" not in actions:
+                return "CURRENT STEP ONLY: read the actual target workbook's observed used range with libreoffice_calc range.read to identify the year rows and university columns. The source PDFs are already observed. Do not write or reread PDFs now."
         compute = "table.ratio_matrix.compute" if kind == "ecs-rates" else "table.records.compute"
         if not any(e.proposed.get("tool") == compute or e.proposed.get("action") == compute for e in state.events if e.executed and not e.error):
             return (
