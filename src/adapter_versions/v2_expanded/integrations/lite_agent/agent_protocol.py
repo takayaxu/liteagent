@@ -1034,6 +1034,17 @@ class AgentProtocolMixin:
                     next_step = "CURRENT STEP ONLY: the marker input has been sent. Call document.inspect now to verify its actual highlighting effect. If missing, tools_search exact libreoffice_writer document.inspect, then call it."
                 elif dialog_open and "find all" in controls:
                     next_step = "CURRENT STEP ONLY: Find All is enabled in the current dialog. Click its observed coordinates now; closing and highlighting are later stages."
+                elif dialog_open and "find" in controls:
+                    point = controls["find"].get("adjacent_find_input_point")
+                    input_focused = bool(point and last_args.get("action") == "click"
+                        and abs(last_args.get("x", -100) - point[0]) <= 3
+                        and abs(last_args.get("y", -100) - point[1]) <= 3)
+                    next_step = ("CURRENT STEP ONLY: the Find input was focused. TYPE Iliad now; do not click Find All until it becomes enabled."
+                        if input_focused else "CURRENT STEP ONLY: CLICK the observed adjacent_find_input_point to focus the empty Find field. Entering Iliad is the next turn; do not click Find All yet.")
+                elif not dialog_open and not selected and not marker_clicked:
+                    next_step = ("CURRENT STEP ONLY: a click has brought focus to Writer. Send Ctrl+H once now to open Find and Replace, then inspect the next screenshot."
+                        if last_args.get("action") == "click" else
+                        "CURRENT STEP ONLY: no Find and Replace dialog is visible. CLICK inside the visible Writer text body to give it keyboard focus. Do not send another Ctrl+H before this focus click.")
                 message_content = [{"type": "text", "text": json.dumps({
                     "instruction": state.instruction, "current_stage": scoped_hint,
                     "current_screenshot_observations": observed_gui, "next_step": next_step,
