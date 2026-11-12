@@ -943,7 +943,7 @@ class AgentProtocolMixin:
                 message_content = [{"type": "text", "text": json.dumps({
                     "instruction": state.instruction,
                     "current_stage": scoped_hint,
-                    "latest_native_readback": latest_document_read if scoped_hint.startswith("FINISH:") else {},
+                    "latest_native_readback": latest_document_read if scoped_hint.startswith(("TAB FORMAT:", "PERSIST:", "VERIFY:", "FINISH:")) else {},
                     "recent_execution_facts": [{"step": e.step,
                         "action": e.proposed.get("action", e.proposed.get("tool")),
                         "arguments": e.proposed.get("arguments"),
@@ -952,6 +952,23 @@ class AgentProtocolMixin:
                 }, ensure_ascii=False)}]
             if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith("EXTRACT BEFORE WRITING:"):
+                from .completion_policy import effective_canonical_action
+                from .completion_outcomes import result_payload
+                reads = []
+                for event in state.events:
+                    _, action, args = effective_canonical_action(event, state.domain)
+                    if action == "file.read_text" and event.executed and not event.error:
+                        reads.append({"arguments": args, "source_preview": str(result_payload(event))[:2000]})
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction, "current_stage": scoped_hint,
+                    "observed_source_reads": reads,
+                    "command_call_shape": {"adapter": "os", "action": "command.run",
+                        "payload": {"params": {"argv": ["python3", "-c", "<your extraction script>"],
+                            "provenance": "shell_history"}}},
+                    "note": "Replace only the script placeholder with your source-based extraction code. Close argv immediately after its third string. Copy ALL Gemini values; Iliad is a highlighting criterion, never an extraction filter. No additional source reads are needed.",
+                    "recent_errors": [e.error for e in state.events[-3:] if e.error],
+                }, ensure_ascii=False)}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):

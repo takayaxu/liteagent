@@ -462,8 +462,11 @@ def _cross_app_hint(state, kind):
             return (
                 "EXTRACT BEFORE WRITING: the JSON is a NESTED object. Gemini response values are under "
                 "nested keys, not the top-level question ID. Do not append the raw JSON to Word. "
-                "Use os command.run with provenance=shell_history to parse the observed JSON path using "
-                "a valid multiline Python script. Recursively walk dictionaries/lists in source order: "
+                "Use os command.run to parse the already observed JSON path; no further file.read_text is needed. "
+                "The command.run params object must have argv=[\"python3\",\"-c\",\"<script>\"] "
+                "and provenance=\"shell_history\" as a SEPARATE named field OUTSIDE the argv array. "
+                "argv contains ONLY those three strings; never append parameter names, [0], or objects to it. "
+                "Use a valid multiline Python script. Recursively walk dictionaries/lists in source order: "
                 "whenever a dictionary key equals Gemini (case-insensitive), collect that string VALUE; "
                 "otherwise recurse into its value. Do not collect GPT3, origin_input or declare_input. "
                 "Preserve each full response, replacing internal line breaks with spaces if needed so "
@@ -471,6 +474,8 @@ def _cross_app_hint(state, kind):
                 "Write the extracted strings into a NEW plain text file such as /tmp/gemini-responses.txt, "
                 "print the response count and verify the file contains extracted responses only. "
                 "Use actual newlines in Python before def/for/if; do not put compound statements after semicolons. "
+                "To avoid escape ambiguity, build paragraph separators with chr(10)*2 and normalize each response "
+                "with ' '.join(response.splitlines()); do not write literal backslash+n characters. "
                 "Only after this extraction create the requested Word document and append that NEW TEXT file."
             )
         if "document.create" not in actions:
