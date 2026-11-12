@@ -162,6 +162,7 @@ def test_pdf_source_facts_preserve_omitted_rows_exact_names_and_verified_receipt
     text = stage_fact_text(stages, state, [])
     facts = json.loads(text.split('CURRENT PDF SOURCE FACTS: ', 1)[1].split('\n')[0])
     assert facts['observed_workbook_reads'][0]['sheets'][0]['display_text'][-1] == ['omitted row']
+    assert facts['observed_workbook_reads'][0]['sheets'][0]['source_rows_by_header'] == [{'preview': 'omitted row'}]
     assert facts['observed_pdf_fields'][0]['fields'] == [
         {'field_name': 'ExactRow1'}, {'field_name': 'Signature', 'field_type': '/Sig', 'writable': False}]
     assert facts['verified_executed_fills'][0]['output_path'] == '/done.pdf'
@@ -179,3 +180,11 @@ def test_pdf_facts_do_not_change_other_task_messages(recovery):
     state = RuntimeState(task_id='other', domain='os', instruction='Inspect a file.')
     tools = build_tools('os', [], include_gui=True)
     assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
+
+
+def test_source_header_view_never_collapses_duplicate_or_incomplete_columns():
+    from integrations.lite_agent.task_stage_prompts import _source_sheet_facts
+    for rows in ([["same", "same"], ["first", "second"]], [["one", "two"], ["short"]]):
+        facts = _source_sheet_facts({"display_text": rows})
+        assert facts["display_text"] == rows
+        assert "source_rows_by_header" not in facts

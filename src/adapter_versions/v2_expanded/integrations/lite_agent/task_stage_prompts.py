@@ -150,8 +150,7 @@ def _pdf_source_facts(state: Any) -> str:
                 if isinstance(result.get("sheets"), list):
                     workbooks.append({"step": event.step, "path": result.get("path"),
                         "truncated": result.get("truncated"), "sheets": [
-                            {key: sheet[key] for key in ("name", "returned_range", "truncated", "display_text")
-                             if key in sheet} for sheet in result["sheets"] if isinstance(sheet, dict)]})
+                            _source_sheet_facts(sheet) for sheet in result["sheets"] if isinstance(sheet, dict)]})
                     break
         elif owner == "os" and action == "pdf.form.inspect":
             context = (event.result.get("context_hint") or {}).get("downstream_context")
@@ -170,3 +169,18 @@ def _pdf_source_facts(state: Any) -> str:
         "\nThese are executed observations, not inferred assignments. Use exact field_name strings, "
         "not human labels. Source rows omitted from an earlier preview are retained here. "
         "A successful fill receipt records execution; inspect the saved output before completion.")
+
+
+def _source_sheet_facts(sheet: dict[str, Any]) -> dict[str, Any]:
+    facts = {key: sheet[key] for key in ("name", "returned_range", "truncated", "display_text")
+             if key in sheet}
+    rows = sheet.get("display_text")
+    # Preserve the raw grid. Add a lossless header view only when columns are
+    # unambiguous; never infer headers, values, target fields, or output names.
+    if isinstance(rows, list) and rows and isinstance(rows[0], list):
+        headers = rows[0]
+        if (headers and all(isinstance(h, str) and h.strip() for h in headers)
+                and len(set(headers)) == len(headers)
+                and all(isinstance(row, list) and len(row) == len(headers) for row in rows[1:])):
+            facts["source_rows_by_header"] = [dict(zip(headers, row)) for row in rows[1:]]
+    return facts
