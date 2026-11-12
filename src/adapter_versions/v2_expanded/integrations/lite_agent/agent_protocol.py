@@ -937,9 +937,13 @@ class AgentProtocolMixin:
                     "note": "The next operation comes from actual presentation inspection and the full immutable execution ledger; historical display-number aliases are omitted to avoid mixing them with native indices. The tool schema and completion checks are unchanged.",
                 }, ensure_ascii=False)}]
             if scoped_kind == "sentence-tabstops":
+                from .completion_outcomes import result_payload
+                latest_document_read = next((result_payload(e) for e in reversed(state.events)
+                    if e.executed and not e.error and e.proposed.get("action") == "document.inspect"), {})
                 message_content = [{"type": "text", "text": json.dumps({
                     "instruction": state.instruction,
                     "current_stage": scoped_hint,
+                    "latest_native_readback": latest_document_read,
                     "recent_execution_facts": [{"step": e.step,
                         "action": e.proposed.get("action", e.proposed.get("tool")),
                         "arguments": e.proposed.get("arguments"),
