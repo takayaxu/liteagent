@@ -57,3 +57,20 @@ def test_failed_observation_does_not_advance_stage():
     assert "inspect the open workbook" in model_hint(PROFILE, state)
     event.executed = True
     assert "read the observed source range" in model_hint(PROFILE, state)
+
+
+def test_live_anchors_use_current_observation_and_flat_label_writes():
+    from integrations.lite_agent.task_stage_hints import _sales_anchors
+    state = RuntimeState(SALES, "libreoffice_calc", "Calculate total sales and growth.")
+    state.events = [
+        ExecutionEvent(1, "", {"action": "range.read"}, executed=True,
+                       result={"cell_addresses": [["D4", "E4"]],
+                               "display_text": [["Jan", "Feb"]]}),
+        ExecutionEvent(2, "", {"action": "range.write", "arguments":
+                       {"range": "C20", "values": ["Total"]}}, executed=True),
+        ExecutionEvent(3, "", {"action": "range.write", "arguments":
+                       {"range": "C21", "values": [["Growth"]]}}, executed=True),
+    ]
+    anchors = json.loads(_sales_anchors(state))
+    assert anchors["Jan_growth_cell_must_be_blank"] == "D21"
+    assert anchors["Feb_formula_from_observed_Total_row"] == "=(E20-D20)/D20"

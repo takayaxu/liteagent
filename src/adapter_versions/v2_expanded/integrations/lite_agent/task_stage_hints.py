@@ -5,9 +5,55 @@ Only instruction facts and actual public observations may inform these hints.
 """
 from __future__ import annotations
 
-from .completion_outcomes import completion_outcome_issues
+import json
+import re
+
+from .completion_outcomes import completion_outcome_issues, result_payload
 
 PROFILE = "deadline-repair-20261113-v1"
+
+
+def _sales_anchors(state):
+    """Repeat observed addresses explicitly; never infer them from the task ID."""
+    months = {}
+    rows = {}
+    cells = {}
+    for event in state.events:
+        if not event.executed or event.error:
+            continue
+        if event.proposed.get("action") not in {"range.read", "range.write"}:
+            continue
+        body = result_payload(event)
+        addresses = body.get("cell_addresses", [])
+        values = body.get("display_text") or body.get("values", [])
+        for ar, vr in zip(addresses, values):
+            for address, value in zip(ar, vr):
+                cells[address] = value
+                if value in ("Jan", "Feb", "Mar", "Apr", "May", "Jun"):
+                    months[value] = address
+                if value in ("Total", "Growth"):
+                    rows[value] = address
+        # Some write responses omit cell_addresses but include the exact A1 range.
+        args = event.proposed.get("arguments", {})
+        raw_values = args.get("values")
+        if event.proposed.get("action") == "range.write" and isinstance(raw_values, list):
+            match = re.fullmatch(r"([A-Z]+)([0-9]+)(?::[A-Z]+[0-9]+)?", args.get("range", ""))
+            if match:
+                for offset, row in enumerate(raw_values):
+                    value = row[0] if isinstance(row, list) and row else row
+                    if value in ("Total", "Growth"):
+                        rows[value] = f"{match[1]}{int(match[2])+offset}"
+    data = {"month_header_cells": months, "written_row_label_cells": rows}
+    if "Total" in rows and "Growth" in rows and all(m in months for m in ("Jan", "Feb")):
+        total_row = re.search(r"[0-9]+$", rows["Total"])[0]
+        growth_row = re.search(r"[0-9]+$", rows["Growth"])[0]
+        jan_col = re.match(r"[A-Z]+", months["Jan"])[0]
+        feb_col = re.match(r"[A-Z]+", months["Feb"])[0]
+        data.update({"Jan_growth_cell_must_be_blank": jan_col+growth_row,
+                     "Feb_growth_cell": feb_col+growth_row,
+                     "Feb_formula_from_observed_Total_row": f"=({feb_col}{total_row}-{jan_col}{total_row})/{jan_col}{total_row}",
+                     "direction": "advance COLUMN letters for each later month; Total ROW number stays fixed"})
+    return json.dumps(data, ensure_ascii=False)
 
 
 def _sales_hint(state):
@@ -21,7 +67,8 @@ def _sales_hint(state):
     defects = [i for i in issues if i.get("code") == "period.values_mismatch"]
     mutations = [e for e in events if e.proposed.get("action") in
                  {"range.write", "cells.set_formulas", "range.clear", "range.format", "chart.create"}]
-    labels = {str(row[0]) for e in events if e.proposed.get("action") == "range.write"
+    labels = {str(row[0] if isinstance(row, list) else row)
+              for e in events if e.proposed.get("action") == "range.write"
               for row in e.proposed.get("arguments", {}).get("values", []) if row}
     if defects or "cells.set_formulas" not in actions or not {"Total", "Growth"} <= labels:
         return (
@@ -32,7 +79,9 @@ def _sales_hint(state):
             "Write Total and Growth as plain text labels with range.write, not text-valued formulas. "
             "Use cells.set_formulas for the numeric formulas and percent number format for growth. "
             "Check current completion_outcomes for concrete defects; correct them using observed addresses. "
-            "Do not repeat a successful read whose required cells are already present."
+            "Do not repeat a successful read whose required cells are already present. "
+            "If Jan contains any formula, clear that ONE cell with range.clear; do not replace it with another formula. "
+            "Division always uses /; a semicolon separates FUNCTION ARGUMENTS only and cannot replace /."
         )
     chart_events = [e for e in events if e.proposed.get("action") == "chart.create"]
     if len(chart_events) < 2 or any(i.get("code") == "period.chart_mismatch" for i in issues):
@@ -65,5 +114,8 @@ def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
     if (targets or {}).get(state.task_id) == "sales-growth" and state.domain == "libreoffice_calc":
-        return _sales_hint(state)
+        return (_sales_hint(state) + "\nLive address anchors: " + _sales_anchors(state)
+                + "\nPrefer these concrete live row/column mappings over earlier reasoning. "
+                "The Growth chart category header range starts at the observed FEB column, "
+                "not Jan. Do not proceed to charts while the growth cells contain errors or wrong references.")
     return None
