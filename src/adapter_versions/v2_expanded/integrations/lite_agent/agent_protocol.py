@@ -1011,6 +1011,8 @@ class AgentProtocolMixin:
                 }, ensure_ascii=False)}]
             if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith("PARAGRAPH "):
+                message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "gemini-document" and scoped_hint.startswith("HIGHLIGHT USING WRITER GUI:"):
                 from .task_stage_hints import gemini_gui_observations
                 images = [item for item in message_content if item.get("type") == "image_url"]
@@ -1073,19 +1075,8 @@ class AgentProtocolMixin:
                     "note": "Replace only the script placeholder with your source-based extraction code. Close argv immediately after its third string. Copy ALL Gemini values; Iliad is a highlighting criterion, never an extraction filter. No additional source reads are needed.",
                     "recent_errors": [e.error for e in state.events[-3:] if e.error],
                 }, ensure_ascii=False)}]
-            if scoped_kind == "gemini-document" and scoped_hint.startswith("WRITE:"):
-                from .completion_policy import effective_canonical_action
-                created = [args for e in state.events if e.executed and not e.error
-                    for _, action, args in [effective_canonical_action(e, state.domain)]
-                    if action == "document.create"]
-                message_content = [{"type": "text", "text": json.dumps({
-                    "instruction": state.instruction, "current_stage": scoped_hint,
-                    "successful_document_creation": created,
-                    "next_public_call": {"adapter": "libreoffice_writer", "action": "document.append_text_file",
-                        "payload": {"params": {"path": "/tmp/gemini-responses.txt"}}},
-                    "note": "The new extracted text file and the new Writer document already exist according to successful execution facts. Append the file through this native action now. No cat, sed, conversion, extra temporary copy, or manual text reconstruction is needed. If the action is absent from the current schema, tools_search exact query 'libreoffice_writer document.append_text_file' once, then call it.",
-                    "recent_errors": [e.error for e in state.events[-3:] if e.error],
-                }, ensure_ascii=False)}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith(("READ RESPONSES:", "WRITE PARAGRAPHS:")):
+                message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):

@@ -175,6 +175,9 @@ def test_gemini_selected_text_advances_to_close_marker_then_native_verification(
     state.events = [ExecutionEvent(i, "", {"action": "adapter.call", "arguments": {
         "adapter": "libreoffice_writer", "action": action, "payload": {"params": {}}}}, executed=True)
         for i, action in enumerate(("document.create", "document.append_text_file"), 1)]
+    state.events.append(ExecutionEvent(3, "", {"action": "adapter.call", "arguments": {
+        "adapter": "libreoffice_writer", "action": "document.inspect", "payload": {"params": {}}}},
+        executed=True, result={"nonempty_paragraph_count": 6, "highlighting": {"highlighted_run_count": 0}}))
     observed = {"visible_selected_text_status": "Selected: 33 words, 165 characters",
         "visible_control_text": [{"visible_text": "Find and Replace", "image_pixel_center": [663, 238]},
             {"visible_text": "Close", "image_pixel_center": [864, 545]}],
@@ -185,6 +188,30 @@ def test_gemini_selected_text_advances_to_close_marker_then_native_verification(
     assert "CLOSE the dialog now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
     observed["visible_control_text"] = []
     assert "CLICK the observed yellow toolbar swatch" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
-    state.events.append(ExecutionEvent(3, "", {"kind": "gui", "arguments": {
+    state.events.append(ExecutionEvent(4, "", {"kind": "gui", "arguments": {
         "action": "click", "x": 675, "y": 104}}, executed=True))
     assert "Call document.inspect now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
+
+
+def test_gemini_native_paragraph_arrays_and_wrapped_highlight_readback():
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    state = RuntimeState("synthetic", "multi_apps", "Copy all Gemini values and highlight Iliad.")
+    def event(step, adapter, action, params=None, body=None):
+        return ExecutionEvent(step, "", {"action": "adapter.call", "arguments": {
+            "adapter": adapter, "action": action, "payload": {"params": params or {}}}}, executed=True,
+            result={"adapter_response": {"result": {"response": {"result": body or {}}}}})
+    state.events = [event(0, "os", "command.run", {"argv": ["python3", "-c",
+        "walk=lambda x:x; gemini=[]; open('/tmp/gemini-responses.txt','w')"],
+        "cwd_source": "home", "provenance": "shell_history"}, {"returncode": 0}),
+        event(1, "libreoffice_writer", "document.create")]
+    text = "Keep the whole first response.\n\nIliad in the second response."
+    state.events.append(event(2, "vs_code", "file.read_text", {"path": "/tmp/gemini-responses.txt"},
+        {"files": [{"source_total_chars": len(text), "chunks": [{"start_char": 0, "text": text}]}]}))
+    hint = _cross_app_hint(state, "gemini-document")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    assert call["action"] == "document.append_paragraphs"
+    assert call["payload"]["params"] == {"paragraphs": text.split("\n\n"), "blank_paragraphs_between": 1}
+    state.events += [event(3, "libreoffice_writer", "document.append_paragraphs"),
+        event(4, "libreoffice_writer", "document.inspect", body={"nonempty_paragraph_count": 2,
+            "highlighting": {"highlighted_run_count": 1}})]
+    assert _cross_app_hint(state, "gemini-document").startswith("PERSIST:")

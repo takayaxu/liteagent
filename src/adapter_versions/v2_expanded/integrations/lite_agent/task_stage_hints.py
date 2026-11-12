@@ -13,6 +13,16 @@ from .completion_outcomes import completion_outcome_issues, result_payload
 PROFILE = "deadline-repair-20261113-v1"
 
 
+def gemini_native_result(event):
+    """Unwrap the public multi-app response without changing shared evidence code."""
+    body = result_payload(event)
+    if isinstance(body.get("response"), dict) and isinstance(body["response"].get("result"), dict):
+        return body["response"]["result"]
+    if isinstance(body.get("downstream_context"), dict):
+        return body["downstream_context"]
+    return body
+
+
 def gemini_gui_observations(screenshot):
     """Read only the current screenshot; returned coordinates never execute actions."""
     import csv
@@ -545,10 +555,62 @@ def _cross_app_hint(state, kind):
                 "responses and highlight Iliad, not discard sentences without that word. Read/parse once, retain "
                 "the extracted complete content, then create the requested Writer document. No repeated searches."
             )
-        if not {"document.append_text", "document.append_text_file"} & actions:
-            return "WRITE: append ONLY the NEW extracted Gemini plain text file to the new Writer document, one response per paragraph with a blank line between responses. NEVER append llm_answers.json itself. Reuse extracted content; do not rerun source extraction or append an empty temporary file."
+        if not {"document.append_text", "document.append_text_file", "document.append_paragraphs"} & actions:
+            response_text = None
+            for event, _, action, args in facts:
+                if action != "file.read_text" or args.get("path") != "/tmp/gemini-responses.txt":
+                    continue
+                body = gemini_native_result(event)
+                if isinstance(body.get("content"), str) and not body.get("truncated"):
+                    response_text = body["content"]
+                for file in body.get("files", []):
+                    chunks = sorted(file.get("chunks", []), key=lambda c: c.get("start_char", 0))
+                    cursor = 0
+                    pieces = []
+                    for chunk in chunks:
+                        if chunk.get("start_char") != cursor or not isinstance(chunk.get("text"), str):
+                            break
+                        pieces.append(chunk["text"])
+                        cursor += len(chunk["text"])
+                    if pieces and cursor == file.get("source_total_chars"):
+                        response_text = "".join(pieces)
+            if response_text is None:
+                return "READ RESPONSES: call vs_code file.read_text with path=/tmp/gemini-responses.txt and max_chars=100000 once. Read the NEW extracted file only, not the source JSON. Its complete observed strings will supply native paragraphs. Do not cat, sed, convert, re-extract or append yet."
+            call = {"adapter": "libreoffice_writer", "action": "document.append_paragraphs",
+                "payload": {"params": {"paragraphs": response_text.split("\n\n"),
+                    "blank_paragraphs_between": 1}}}
+            return ("WRITE PARAGRAPHS: use the exact complete observed response strings below, one array "
+                "item per native paragraph, with one blank separator paragraph. Copy ALL strings in full; "
+                "do not shorten, summarize or insert ellipses. document.append_text_file would insert manual "
+                "line breaks inside one paragraph, so use document.append_paragraphs. If missing, search "
+                "exact libreoffice_writer document.append_paragraphs once, then call this public action: "
+                + json.dumps(call, ensure_ascii=False))
         reads = [e for e, _, a, _ in facts if a == "document.inspect"]
-        highlighting = result_payload(reads[-1]).get("highlighting", {}) if reads else {}
+        if not reads:
+            return "PARAGRAPH OBSERVE: inspect the new Writer document with paragraph_start=0, paragraph_limit=1 now. Text-file insertion preserves manual line breaks; each response still needs a native paragraph. Do not highlight until the native paragraph structure is verified."
+        document = gemini_native_result(reads[-1])
+        structured = [e for e, _, a, _ in facts if a == "paragraph.replace_text"]
+        if structured and reads[-1].step <= structured[-1].step:
+            return "PARAGRAPH VERIFY: document.inspect with paragraph_start=0, paragraph_limit=12 once. Confirm each response occupies its own native paragraph and the blank separator paragraphs remain. Do not replace the text again."
+        if document.get("nonempty_paragraph_count") == 1:
+            paragraphs = document.get("paragraph_details", [])
+            paragraph = paragraphs[0] if paragraphs else {}
+            text = paragraph.get("text", "")
+            if not text or len(text) != paragraph.get("text_length"):
+                return "PARAGRAPH OBSERVE: read the COMPLETE live paragraph using document.inspect paragraph_start=0, paragraph_limit=1. The overview is truncated and cannot supply replacement text."
+            responses = text.split("\n\n")
+            if len(responses) > 1 and all(r.strip() for r in responses):
+                call = {"adapter": "libreoffice_writer", "action": "paragraph.replace_text",
+                    "payload": {"params": {"index": paragraph["index"], "paragraphs": responses,
+                        "blank_paragraphs_between": 1}}}
+                return ("PARAGRAPH REPAIR: the complete native read contains all responses in one paragraph "
+                    "with manual newlines. Convert them to separate native paragraphs without changing ANY "
+                    "response text. The exact array below comes only from the complete public read, split at "
+                    "the existing double-newline response boundaries. Copy the entire call, all strings in "
+                    "full, blank_paragraphs_between=1. Do not summarize, omit text or append duplicates. "
+                    "If needed search exact libreoffice_writer paragraph.replace_text once. "
+                    + json.dumps(call, ensure_ascii=False))
+        highlighting = document.get("highlighting", {})
         if not highlighting.get("highlighted_run_count"):
             return (
                 "HIGHLIGHT USING WRITER GUI: all Gemini responses are already appended. The public "
@@ -562,7 +624,7 @@ def _cross_app_hint(state, kind):
                 "summary. Keep every response and never append again."
             )
         last_edit = max((e.step for e, _, a, _ in facts
-                         if a in {"document.append_text", "document.append_text_file"}
+                         if a in {"document.append_text", "document.append_text_file", "document.append_paragraphs", "paragraph.replace_text"}
                          or e.proposed.get("kind") == "gui"), default=0)
         saves = [e for e, _, a, _ in facts if a == "document.save" and e.step > last_edit]
         if not saves:
