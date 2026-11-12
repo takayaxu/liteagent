@@ -823,6 +823,12 @@ class AgentProtocolMixin:
         if system_volume is not None:
             state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(system_volume, ensure_ascii=False)
 
+        from . import relative_copy_progress
+
+        relative_copy = relative_copy_progress.model_progress(state)
+        if relative_copy is not None:
+            state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(relative_copy, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -943,6 +949,9 @@ class AgentProtocolMixin:
 
         if system_volume is not None:
             system_message += "\nCurrent request stage: " + json.dumps(system_volume, ensure_ascii=False)
+
+        if relative_copy is not None:
+            system_message += "\nCurrent request stage: " + json.dumps(relative_copy, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
