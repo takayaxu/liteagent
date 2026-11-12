@@ -459,24 +459,27 @@ def _cross_app_hint(state, kind):
         if extracted and "document.create" not in actions:
             return "CURRENT STEP ONLY: Gemini response extraction already SUCCEEDED and wrote /tmp/gemini-responses.txt. Do not rerun Python or reread the source JSON. Search libreoffice_writer document.create if needed, then create Desktop/gemini_results.docx once. The next stage appends the extracted TEXT file."
         if "file.read_text" in actions and not extracted:
+            source_event, source_args = next((e, args) for e, _, a, args in facts if a == "file.read_text")
+            source_path = result_payload(source_event).get("path") or source_args.get("path")
+            script = (
+                "import json; from pathlib import Path; "
+                "walk=lambda x: [r for k,v in x.items() for r in "
+                "([v] if k.lower()=='gemini' and isinstance(v,str) else walk(v))] "
+                "if isinstance(x,dict) else [r for v in x for r in walk(v)] "
+                "if isinstance(x,list) else []; "
+                f"responses=walk(json.loads(Path({source_path!r}).expanduser().read_text())); "
+                "Path('/tmp/gemini-responses.txt').write_text((chr(10)*2).join(' '.join(r.splitlines()) "
+                "for r in responses)); print(len(responses))"
+            )
+            call = {"adapter": "os", "action": "command.run", "payload": {"params": {
+                "argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"}}}
             return (
-                "EXTRACT BEFORE WRITING: the JSON is a NESTED object. Gemini response values are under "
-                "nested keys, not the top-level question ID. Do not append the raw JSON to Word. "
-                "Use os command.run to parse the already observed JSON path; no further file.read_text is needed. "
-                "The command.run params object must have argv=[\"python3\",\"-c\",\"<script>\"] "
-                "and provenance=\"shell_history\" as a SEPARATE named field OUTSIDE the argv array. "
-                "argv contains ONLY those three strings; never append parameter names, [0], or objects to it. "
-                "Use a valid multiline Python script. Recursively walk dictionaries/lists in source order: "
-                "whenever a dictionary key equals Gemini (case-insensitive), collect that string VALUE; "
-                "otherwise recurse into its value. Do not collect GPT3, origin_input or declare_input. "
-                "Preserve each full response, replacing internal line breaks with spaces if needed so "
-                "one response becomes one paragraph; separate responses with two newlines. "
-                "Write the extracted strings into the NEW plain text file /tmp/gemini-responses.txt, "
-                "print the response count and verify the file contains extracted responses only. "
-                "Use actual newlines in Python before def/for/if; do not put compound statements after semicolons. "
-                "To avoid escape ambiguity, build paragraph separators with chr(10)*2 and normalize each response "
-                "with ' '.join(response.splitlines()); do not write literal backslash+n characters. "
-                "Only after this extraction create the requested Word document and append that NEW TEXT file."
+                "EXTRACT BEFORE WRITING: copy all nested Gemini string values, preserving source order. "
+                "Iliad is a highlighting criterion only. The source path below comes from the successful "
+                "public read. This one-line script avoids multiline and separator escaping errors. "
+                "Call the public adapter tool with exactly this JSON argument object; keep cwd_source and "
+                "provenance OUTSIDE argv. Do not add optional fields or reread the source. "
+                + json.dumps(call, ensure_ascii=False)
             )
         if "document.create" not in actions:
             return (

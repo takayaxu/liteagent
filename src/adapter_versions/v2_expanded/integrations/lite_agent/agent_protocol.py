@@ -965,7 +965,7 @@ class AgentProtocolMixin:
                     "observed_source_reads": reads,
                     "command_call_shape": {"adapter": "os", "action": "command.run",
                         "payload": {"params": {"argv": ["python3", "-c", "<your extraction script>"],
-                            "provenance": "shell_history"}}},
+                            "cwd_source": "home", "provenance": "shell_history"}}},
                     "note": "Replace only the script placeholder with your source-based extraction code. Close argv immediately after its third string. Copy ALL Gemini values; Iliad is a highlighting criterion, never an extraction filter. No additional source reads are needed.",
                     "recent_errors": [e.error for e in state.events[-3:] if e.error],
                 }, ensure_ascii=False)}]
