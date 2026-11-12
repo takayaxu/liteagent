@@ -203,7 +203,8 @@ def _demographic_hint(state):
         return (
             "PIVOTS: create one native pivot for each of Sex, Civil Status and Highest Educational Attainment, "
             "using the complete observed source table. Use that field as row_fields and as a COUNT data field "
-            "with show_data_as=total_percentage. Start the first table below the title. Stack each next table "
+            "with show_data_as=total_percentage. Start the first table DIRECTLY below the title in A2; "
+            "do not insert an extra blank row between the title and first table. Stack each next table "
             "below the preceding pivot's ACTUAL returned output_range using below_range and blank_rows=1; "
             "do not guess occupied heights. Existing successful pivots already exist: create only the missing field. "
             "Do not reread correct pivot output repeatedly before the final save."
