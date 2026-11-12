@@ -35,3 +35,10 @@ and complete correct parameters after the patch. Twelve concurrent streaming rep
 of those actual requests pass their supplied schemas; median generation speed 9.50
 tokens/sec. These are protocol/throughput checks, not OSWorld task scores.
 Representative original-task reruns and final full189 results are recorded separately.
+
+Representative original-evaluator checks: orders 4,8,28 PASS (1.0), respectively
+435.641s / 590.864s / 1042.033s, zero protocol errors. Source/config/OSWorld
+integrity all true for both table batches. Order164 has no protocol errors but
+evaluator reward 0.8876506679495418, so is FAILED, not counted as passing.
+Orders172,177 continue under unchanged budgets. Full batch acquires exclusive
+resources and waits until these checks release their guests.
