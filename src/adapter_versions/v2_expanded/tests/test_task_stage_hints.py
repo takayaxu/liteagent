@@ -9,13 +9,21 @@ from PIL import Image
 
 from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
 from integrations.lite_agent.state_model import ExecutionEvent, RuntimeState
-from integrations.lite_agent.task_stage_hints import PROFILE, SALES, model_hint
+from integrations.lite_agent.task_stage_hints import PROFILE, model_hint as scoped_model_hint
+
+SALES = "0326d92d-d218-48a8-9ca1-981cd6d064c7"
+TARGETS = {SALES: "sales-growth"}
+
+
+def model_hint(profile, state):
+    return scoped_model_hint(profile, state, targets=TARGETS)
 
 
 def test_profile_is_opt_in_and_exact_task_and_domain_scoped():
     state = RuntimeState(SALES, "libreoffice_calc", "Calculate total sales and growth.")
     assert model_hint(None, state) is None
     assert model_hint("unknown", state) is None
+    assert scoped_model_hint(PROFILE, state) is None
     assert model_hint(PROFILE, state).startswith("OBSERVE:")
     assert model_hint(PROFILE, replace(state, domain="multi_apps")) is None
     root = Path(__file__).resolve().parents[4]
@@ -33,7 +41,7 @@ def test_actual_messages_remain_identical_for_other_task_and_hide_identity():
     out = io.BytesIO()
     Image.new("RGB", (20, 20)).save(out, format="PNG")
     before = agent._messages(state, out.getvalue(), tools=[])
-    agent.config = replace(config, task_stage_hints=PROFILE)
+    agent.config = replace(config, task_stage_hints=PROFILE, task_stage_hint_targets=TARGETS)
     assert agent._messages(state, out.getvalue(), tools=[]) == before
     state.task_id = SALES
     messages = agent._messages(state, out.getvalue(), tools=[])

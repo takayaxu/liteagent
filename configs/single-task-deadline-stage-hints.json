@@ -62,7 +62,10 @@
     "concurrency": 1,
     "no_mid_run_condition_changes": true,
     "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain.",
-    "task_stage_hints": "deadline-repair-20261113-v1"
+    "task_stage_hints": "deadline-repair-20261113-v1",
+    "task_stage_hint_targets": {
+      "0326d92d-d218-48a8-9ca1-981cd6d064c7": "sales-growth"
+    }
   },
   "tasks": [
     {

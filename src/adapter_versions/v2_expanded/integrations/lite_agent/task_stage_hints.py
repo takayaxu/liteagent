@@ -5,10 +5,9 @@ Only instruction facts and actual public observations may inform these hints.
 """
 from __future__ import annotations
 
-from .completion_outcomes import completion_outcome_issues, result_payload
+from .completion_outcomes import completion_outcome_issues
 
 PROFILE = "deadline-repair-20261113-v1"
-SALES = "0326d92d-d218-48a8-9ca1-981cd6d064c7"
 
 
 def _sales_hint(state):
@@ -62,9 +61,9 @@ def _sales_hint(state):
     )
 
 
-def model_hint(profile, state):
+def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
-    if state.task_id == SALES and state.domain == "libreoffice_calc":
+    if (targets or {}).get(state.task_id) == "sales-growth" and state.domain == "libreoffice_calc":
         return _sales_hint(state)
     return None

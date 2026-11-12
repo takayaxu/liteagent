@@ -1196,6 +1196,7 @@ def run_task(
     metadata: dict[str, Any],
 ) -> dict[str, Any]:
     from desktop_env.desktop_env import DesktopEnv
+    from integrations.lite_agent.task_stage_hints import model_hint
 
     started_at = utc_now()
     started = time.monotonic()
@@ -1220,8 +1221,8 @@ def run_task(
         "task_id": task["task_id"],
         "domain": task["domain"],
         "task_specific_stage_hints_exposed": bool(
-            __import__("integrations.lite_agent.task_stage_hints", fromlist=["model_hint"])
-            .model_hint(config.get("protocol", {}).get("task_stage_hints"), state)
+            model_hint(config.get("protocol", {}).get("task_stage_hints"), state,
+                       targets=config.get("protocol", {}).get("task_stage_hint_targets"))
         ),
         "status": "environment_failure",
         "reward": None,
@@ -1408,6 +1409,7 @@ def run_task(
             tool_call_stop_sequence=config.get("protocol", {}).get("tool_call_stop_sequence"),
             read_audit_gate=config.get("protocol", {}).get("read_audit_gate", False),
             task_stage_hints=config.get("protocol", {}).get("task_stage_hints"),
+            task_stage_hint_targets=config.get("protocol", {}).get("task_stage_hint_targets"),
             request_timeout_seconds=args.request_timeout,
         )
         request_context = {"step_num": 0, "attempt": 0, "screenshot": ""}

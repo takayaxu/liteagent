@@ -37,6 +37,7 @@ class LiteAgentConfig:
     read_audit_gate: bool = False
     # Explicit user-authorized prompt experiment. Disabled in normal runs.
     task_stage_hints: str | None = None
+    task_stage_hint_targets: dict[str, str] | None = None
 
     def __post_init__(self) -> None:
         if self.allow_task_specific_or_golden:
