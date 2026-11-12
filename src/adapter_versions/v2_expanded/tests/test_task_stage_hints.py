@@ -138,3 +138,29 @@ def test_gemini_extraction_example_keeps_all_responses_in_nested_source_order(tm
     script = params["argv"][2].replace("/tmp/gemini-responses.txt", str(output))
     exec(compile(script, "source-based-extraction-example", "exec"), {})
     assert output.read_text() == "No keyword still retain\n\nIliad response"
+
+
+def test_full_queue_other_173_actual_messages_are_unchanged(monkeypatch):
+    import integrations.lite_agent.task_stage_hints as hints
+    root = Path(__file__).resolve().parents[4]
+    config = json.loads((root / "configs/single-task-deadline-stage-hints.json").read_text())
+    targets = config["protocol"]["task_stage_hint_targets"]
+    basic = LiteAgentConfig(base_url="http://unused", include_gui=False)
+    agent = LiteAgent(basic, object(), model_client=SimpleNamespace(client=object()))
+    out = io.BytesIO()
+    Image.new("RGB", (20, 20)).save(out, format="PNG")
+    def unexpected_ocr(_):
+        raise AssertionError("Single-task OCR must never run for an unrelated task")
+    monkeypatch.setattr(hints, "gemini_gui_observations", unexpected_ocr)
+    checked = 0
+    for task in config["tasks"]:
+        if task["task_id"] in targets:
+            continue
+        source = root / "src/third_party/OSWorld/evaluation_examples/examples" / task["domain"] / (task["task_id"] + ".json")
+        state = RuntimeState(task["task_id"], task["domain"], json.loads(source.read_text())["instruction"])
+        agent.config = basic
+        before = agent._messages(state, out.getvalue(), tools=[])
+        agent.config = replace(basic, task_stage_hints=PROFILE, task_stage_hint_targets=targets)
+        assert agent._messages(state, out.getvalue(), tools=[]) == before
+        checked += 1
+    assert checked == 173
