@@ -911,6 +911,17 @@ class AgentProtocolMixin:
         scoped_hint = model_hint(self.config.task_stage_hints, state,
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
+            if (self.config.task_stage_hint_targets or {}).get(state.task_id) == "demographic-pivots":
+                system_message = (
+                    "You are a desktop agent completing the user's instruction using the public tools. "
+                    "Call exactly ONE provided tool now. Use its current schema and actual observations. "
+                    "An executed=false call has not succeeded; inspect errors and partial effects. "
+                    "Do not invent values or claim actions absent from successful events. "
+                    "The current stage below takes priority over future stages. "
+                    "If a needed action is unavailable use tools_search. "
+                    "propose_done requests completion review; it does not bypass the existing checks. "
+                    "Keep edits within the user's requested scope.\n"
+                )
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
         scoped_stage = stage_prompt_text(
