@@ -8,6 +8,7 @@ from typing import Any, Iterable
 
 from integrations.openapa_osworld.tool_catalog import action_signature, public_actions
 from writer_adapter.schema import DOCUMENT_SELECTOR_SCHEMA as WRITER_DOCUMENT_SELECTOR_SCHEMA
+from chrome_adapter.schema import LOCATOR_KEYS, TARGET_REQUIRED_ACTIONS
 
 from .tool_catalog import DIRECT_ACTION_SCHEMAS, build_tools, tool_name
 
@@ -38,7 +39,7 @@ def _downstream_params_schema(adapter: str, action: str) -> dict[str, Any]:
         if isinstance(description, str) and description:
             params["description"] = description
         return params
-    return {
+    schema = {
         "type": "object",
         "properties": {},
         "required": [],
@@ -47,6 +48,19 @@ def _downstream_params_schema(adapter: str, action: str) -> dict[str, Any]:
             f"{action_signature(adapter, action)}"
         ),
     }
+    if adapter == "chrome" and action == "page.read":
+        schema["properties"]["locator"] = {
+            "type": "object",
+            "description": "Optional element locator; omit to read the entire page. A tab URL belongs in payload.target, never in locator.",
+            "properties": {
+                **{key: {"type": "string", "minLength": 1} for key in sorted(LOCATOR_KEYS)},
+                "name": {"type": "string"},
+                "index": {"type": "integer", "minimum": 0},
+                "exact": {"type": "boolean"},
+            },
+            "oneOf": [{"required": [key]} for key in sorted(LOCATOR_KEYS)],
+        }
+    return schema
 
 
 def _route_payload_schema(
@@ -58,6 +72,13 @@ def _route_payload_schema(
     if adapter == "libreoffice_writer":
         properties["document"] = copy.deepcopy(WRITER_DOCUMENT_SELECTOR_SCHEMA)
     payload["required"] = ["params"]
+    if adapter == "chrome" and action in TARGET_REQUIRED_ACTIONS:
+        native_tool = build_tools(
+            adapter, [action], include_gui=False, include_control_tools=False,
+            strict_generic=True,
+        )[0]
+        properties["target"] = copy.deepcopy(native_tool["function"]["parameters"]["properties"]["target"])
+        payload["required"].append("target")
     return payload
 
 

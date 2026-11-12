@@ -548,7 +548,7 @@
     {
       "order": 111,
       "task_id": "a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
-      "status": "pending",
+      "status": "passed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-02/raw/run-1/111-multi_apps-a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/results.json",
@@ -558,9 +558,25 @@
           "commit": "4a119b25eb6de047c7ce2b82eab6d00a3665f360",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order111-run001",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order111-v1-config.json",
-          "status": "running",
-          "reward": null,
-          "interruption_note": "Supervisor exited 143, but the owned pilot continued as an orphan. Corrected after inspecting all descendant command lines; attempt 1 remains authoritative."
+          "status": "passed",
+          "reward": 1.0,
+          "interruption_note": "Supervisor exited 143, but the owned pilot continued as an orphan. Corrected after inspecting all descendant command lines; attempt 1 remains authoritative.",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "integrity_method": "recovered-final-integrity.json",
+          "steps": 30,
+          "duration_seconds": 660.872,
+          "main_protocol_errors": 1,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 1,
+          "execution_validation_or_guard_rejections": 6,
+          "execution_contract_validation_rejections": 4,
+          "repeated_action_guard_rejections": 2,
+          "total_protocol_or_contract_rejections": 5
         },
         {
           "attempt": 2,
@@ -575,7 +591,9 @@
           },
           "reward": null
         }
-      ]
+      ],
+      "reward": 1.0,
+      "passing_attempt": 1
     },
     {
       "order": 113,
