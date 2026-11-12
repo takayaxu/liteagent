@@ -493,7 +493,23 @@ def _cross_app_hint(state, kind):
             )
         if not {"document.append_text", "document.append_text_file"} & actions:
             return "WRITE: append ONLY the NEW extracted Gemini plain text file to the new Writer document, one response per paragraph with a blank line between responses. NEVER append llm_answers.json itself. Reuse extracted content; do not rerun source extraction or append an empty temporary file."
-        return "FINISH: highlight every exact Iliad occurrence with Writer text formatting/highlighting, save gemini_results.docx on Desktop, read back paragraphs and highlighting once, and propose_done. Preserve all Gemini response text and do not append duplicates."
+        reads = [e for e, _, a, _ in facts if a == "document.inspect"]
+        highlighting = result_payload(reads[-1]).get("highlighting", {}) if reads else {}
+        if not highlighting.get("highlighted_run_count"):
+            return (
+                "HIGHLIGHT USING WRITER GUI: all Gemini responses are already appended. The public "
+                "text.set_format accepts bold/italic/font_size/script only; it CANNOT set highlighting. "
+                "Do not invent highlight/background parameters or repeat tools_search. text.find locates "
+                "matches but does not select them in the GUI. Use GUI Ctrl+H to open Find and Replace, "
+                "search the literal Iliad, click the visible Find All button, then close the dialog while "
+                "keeping all occurrences selected. Apply yellow Character Highlighting using Writer's "
+                "visible marker toolbar control; use the current screenshot to identify it. Do not "
+                "guess a highlighting hotkey. Then document.inspect once to read the native highlighting "
+                "summary. Keep every response and never append again."
+            )
+        if "document.save" not in actions:
+            return "PERSIST: native inspection now reports highlighting. Save Desktop/gemini_results.docx with document.save, then inspect the saved paragraphs and highlighting once. Do not repeat GUI highlighting on already highlighted matches."
+        return "FINISH: compare the saved Gemini paragraphs and Iliad highlighting with the instruction, then propose_done. Do not search, re-extract, append duplicates or repeat identical inspections."
     if kind in {"invoice-mail", "mail-wallpaper"}:
         folder = "Bills" if kind == "invoice-mail" else "Notes"
         if "messages.query" not in actions:
