@@ -456,6 +456,8 @@ def _cross_app_hint(state, kind):
                         and ("write_text" in json.dumps(args) or "open(" in json.dumps(args))
                         and ("walk" in json.dumps(args) or "def " in json.dumps(args))
                         for _, _, a, args in facts)
+        if extracted and "document.create" not in actions:
+            return "CURRENT STEP ONLY: Gemini response extraction already SUCCEEDED and wrote /tmp/gemini-responses.txt. Do not rerun Python or reread the source JSON. Search libreoffice_writer document.create if needed, then create Desktop/gemini_results.docx once. The next stage appends the extracted TEXT file."
         if "file.read_text" in actions and not extracted:
             return (
                 "EXTRACT BEFORE WRITING: the JSON is a NESTED object. Gemini response values are under "
