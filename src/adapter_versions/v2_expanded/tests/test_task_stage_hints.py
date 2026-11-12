@@ -211,7 +211,28 @@ def test_gemini_native_paragraph_arrays_and_wrapped_highlight_readback():
     call = json.loads(hint[hint.index('{"adapter"'):])
     assert call["action"] == "document.append_paragraphs"
     assert call["payload"]["params"] == {"paragraphs": text.split("\n\n"), "blank_paragraphs_between": 1}
-    state.events += [event(3, "libreoffice_writer", "document.append_paragraphs"),
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False,
+        task_stage_hints=PROFILE, task_stage_hint_targets={"synthetic": "gemini-document"}),
+        object(), model_client=SimpleNamespace(client=object()))
+    out = io.BytesIO()
+    Image.new("RGB", (20, 20)).save(out, format="PNG")
+    missing_api = agent._messages(state, out.getvalue(), tools=[])
+    assert "call tools_search now" in missing_api[0]["content"]
+    assert text.split("\n\n")[0] not in json.dumps(missing_api)
+    tool = {"type": "function", "function": {"name": "adapter__adapter_call", "parameters": {
+        "type": "object", "properties": {"action": {"type": "string", "enum": ["document.append_paragraphs"]}}}}}
+    ready = agent._messages(state, out.getvalue(), tools=[tool])
+    assert "CALL libreoffice_writer document.append_paragraphs" in ready[0]["content"]
+    assert json.loads(ready[-1]["content"][0]["text"])["next_public_call"] == call
+    state.events += [event(3, "libreoffice_writer", "document.append_paragraphs", call["payload"]["params"]),
         event(4, "libreoffice_writer", "document.inspect", body={"nonempty_paragraph_count": 2,
             "highlighting": {"highlighted_run_count": 1}})]
     assert _cross_app_hint(state, "gemini-document").startswith("PERSIST:")
+    assert "libreoffice_writer document.save" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
+    tool["function"]["parameters"]["properties"]["action"]["enum"] = ["document.save"]
+    saving = agent._messages(state, out.getvalue(), tools=[tool])
+    assert json.loads(saving[-1]["content"][0]["text"])["next_public_call"]["action"] == "document.save"
+    state.events += [event(5, "libreoffice_writer", "document.save"),
+        event(6, "libreoffice_writer", "document.inspect", body={"nonempty_paragraph_count": 2,
+            "highlighting": {"highlighted_run_count": 1}})]
+    assert "call propose_done now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]

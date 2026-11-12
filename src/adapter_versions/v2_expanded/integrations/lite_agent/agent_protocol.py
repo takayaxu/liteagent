@@ -1013,6 +1013,57 @@ class AgentProtocolMixin:
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "gemini-document" and scoped_hint.startswith("PARAGRAPH "):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith(("PARAGRAPH ", "PERSIST:", "VERIFY:", "FINISH:")):
+                from .task_stage_hints import gemini_native_result
+                from .completion_policy import effective_canonical_action
+                native_reads = [e for e in state.events if e.executed and not e.error
+                    and effective_canonical_action(e, state.domain)[1] == "document.inspect"]
+                native = gemini_native_result(native_reads[-1]) if native_reads else {}
+                written = [args for e in state.events if e.executed and not e.error
+                    for _, action, args in [effective_canonical_action(e, state.domain)]
+                    if action == "document.append_paragraphs"]
+                facts = {"new_document_already_created": True,
+                    "observed_responses_already_written": len(written[-1].get("paragraphs", [])) if written else None,
+                    "native_identity": native.get("identity"),
+                    "native_paragraph_count": native.get("paragraph_count"),
+                    "native_nonempty_paragraph_count": native.get("nonempty_paragraph_count"),
+                    "native_highlighting": native.get("highlighting")}
+                if scoped_hint.startswith("FINISH:"):
+                    scoped_hint = ("CURRENT STEP ONLY: review the saved native read-back facts below and "
+                        "call propose_done now with truthful evidence. Extraction, native paragraphs, "
+                        "highlighting and final-save read-back have completed. Do not search or inspect "
+                        "again merely because an older preview was abbreviated. Existing completion "
+                        "checks still review this claim.")
+                    message_content = [{"type": "text", "text": json.dumps({
+                        "instruction": state.instruction, "current_stage": scoped_hint, "observed_facts": facts,
+                    }, ensure_ascii=False)}]
+                else:
+                    if scoped_hint.startswith("PARAGRAPH REPAIR:"):
+                        call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
+                    else:
+                        save = scoped_hint.startswith("PERSIST:")
+                        full = scoped_hint.startswith(("VERIFY:", "PARAGRAPH VERIFY:"))
+                        call = {"adapter": "libreoffice_writer", "action": "document.save" if save else "document.inspect",
+                            "payload": {"params": {} if save else {"paragraph_start": 0, "paragraph_limit": 12 if full else 1}}}
+                    wanted = call["action"]
+                    exposed = any(wanted in t.get("function", {}).get("parameters", {})
+                        .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                    if exposed:
+                        scoped_hint = ("CURRENT STEP ONLY: CALL libreoffice_writer " + wanted
+                            + " now with next_public_call below. Source extraction, reading and response "
+                            "writing are already complete. Do not find JSON files, rerun commands, "
+                            "append again or return to an earlier stage.")
+                        context = {"next_public_call": call}
+                    else:
+                        scoped_hint = ("CURRENT STEP ONLY: CALL tools_search now with exact query "
+                            "libreoffice_writer " + wanted + ". Source extraction, reading and response "
+                            "writing are already complete. This step discovers the next native API; "
+                            "do not find files, run commands, append again or repeat old reads.")
+                        context = {"required_discovery_query": "libreoffice_writer " + wanted}
+                    message_content = [{"type": "text", "text": json.dumps({
+                        "instruction": state.instruction, "current_stage": scoped_hint,
+                        "observed_facts": facts, **context,
+                    }, ensure_ascii=False)}]
             if scoped_kind == "gemini-document" and scoped_hint.startswith("HIGHLIGHT USING WRITER GUI:"):
                 from .task_stage_hints import gemini_gui_observations
                 images = [item for item in message_content if item.get("type") == "image_url"]
