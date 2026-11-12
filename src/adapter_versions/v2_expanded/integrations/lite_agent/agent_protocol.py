@@ -1076,7 +1076,30 @@ class AgentProtocolMixin:
                     "recent_errors": [e.error for e in state.events[-3:] if e.error],
                 }, ensure_ascii=False)}]
             if scoped_kind == "gemini-document" and scoped_hint.startswith(("READ RESPONSES:", "WRITE PARAGRAPHS:")):
-                message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+                if scoped_hint.startswith("WRITE PARAGRAPHS:"):
+                    exposed = any("document.append_paragraphs" in t.get("function", {}).get("parameters", {})
+                        .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                    if not exposed:
+                        scoped_hint = ("CURRENT STEP ONLY: call tools_search now with exact query "
+                            "libreoffice_writer document.append_paragraphs. Extraction and the complete "
+                            "response read have already succeeded; the new Writer document exists. "
+                            "Do not find files, reread JSON, run commands or append anything yet. "
+                            "The next stage will provide the exact observed paragraph array.")
+                        message_content = [{"type": "text", "text": scoped_hint}]
+                    else:
+                        call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
+                        scoped_hint = ("CURRENT STEP ONLY: CALL libreoffice_writer document.append_paragraphs "
+                            "now with the complete observed array supplied below. All source reading and "
+                            "document creation are complete. Copy every string exactly; do not shorten, "
+                            "summarize, insert ellipses or restart filesystem discovery. "
+                            "blank_paragraphs_between is 1 and is outside the paragraphs array.")
+                        message_content = [{"type": "text", "text": json.dumps({
+                            "instruction": state.instruction, "current_stage": scoped_hint,
+                            "observed_response_count": len(call["payload"]["params"]["paragraphs"]),
+                            "next_public_call": call,
+                        }, ensure_ascii=False)}]
+                else:
+                    message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):
