@@ -188,3 +188,9 @@ def test_source_header_view_never_collapses_duplicate_or_incomplete_columns():
         facts = _source_sheet_facts({"display_text": rows})
         assert facts["display_text"] == rows
         assert "source_rows_by_header" not in facts
+
+
+def test_review_context_requires_the_specific_native_review_role():
+    with pytest.raises(ValueError, match="review_call requires"):
+        LiteAgentConfig(base_url='http://unused', task_stage_prompts={
+            'target': [{'text': 'Review observed content.', 'context_mode': 'review_call'}]})

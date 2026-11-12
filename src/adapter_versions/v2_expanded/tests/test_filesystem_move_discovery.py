@@ -936,7 +936,7 @@ def _classification_state():
     return state
 
 
-def _independent_check(state, selected, *, decided="/home/user/Desktop/Code", disposition="move", sufficient=True, screenshot=None, quote=""):
+def _independent_check(state, selected, *, thinking=False, budget=4096, stages=None, decided="/home/user/Desktop/Code", disposition="move", sufficient=True, screenshot=None, quote=""):
     client = Mock()
     client.propose.return_value = {
         "tool": "organization__classification_verdict",
@@ -948,7 +948,8 @@ def _independent_check(state, selected, *, decided="/home/user/Desktop/Code", di
     }
     executor = Mock()
     executor.execute.return_value = {"executed": True, "result": {"verification_passed": True}}
-    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False), executor, model_client=client)
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False,
+        enable_thinking=thinking, max_output_tokens=budget, task_stage_prompts=stages), executor, model_client=client)
     event = agent.execute_proposal(state, {
         "tool": VERIFY_TOOL,
         "arguments_raw": json.dumps({
@@ -1356,3 +1357,32 @@ def test_checker_table_quote_correction_is_bounded_and_never_joins_cells(correct
     assert "bad-draft-marker" not in json.dumps(state.filesystem_organization_model_context())
     assert state.filesystem_organization_current_entry()["path"] == "/home/user/Desktop/data.xlsx"
     executor.execute.assert_not_called()
+
+
+@pytest.mark.parametrize("thinking,budget,expected", [(False, 8192, 512), (True, 8192, 8192), (True, 256, 256)])
+def test_classification_checker_respects_configured_thinking_output_budget(thinking, budget, expected):
+    state = _classification_state()
+    _, event, client, _ = _independent_check(state, "/home/user/Desktop/Code", thinking=thinking, budget=budget)
+    assert event.executed, event.error
+    assert client.propose.call_args.kwargs["output_token_budget"] == expected
+    assert client.propose.call_args.kwargs["enable_thinking"] is thinking
+
+
+@pytest.mark.parametrize("mode", ["full", "review_call"])
+def test_checker_stage_is_isolated_by_exact_task_and_role(mode):
+    from copy import deepcopy
+    state = _classification_state()
+    marker = "CURRENT_SCOPED_REVIEW_MARKER"
+    stages = {state.task_id: [{"when_tool": "organization__classification_verdict",
+        "text": marker, "context_mode": mode}]}
+    _, _, baseline, _ = _independent_check(deepcopy(state), "/home/user/Desktop/Code")
+    _, _, scoped, _ = _independent_check(deepcopy(state), "/home/user/Desktop/Code", stages=stages)
+    original = baseline.propose.call_args.kwargs["messages"]
+    updated = scoped.propose.call_args.kwargs["messages"]
+    assert marker in updated[0]["content"]
+    assert updated[1:] == original[1:]
+    if mode == "review_call":
+        assert updated[0]["content"] == marker
+    state.task_id = "other-task"
+    _, _, untouched, _ = _independent_check(state, "/home/user/Desktop/Code", stages=stages)
+    assert untouched.propose.call_args.kwargs["messages"] == original

@@ -401,13 +401,24 @@ def check_classification(agent: Any, state: Any, arguments: dict[str, Any], scre
         )},
         {"role": "user", "content": content},
     ]
+    from .task_stage_prompts import selected_stages
+    stages = selected_stages(getattr(agent.config, "task_stage_prompts", None), state, [verdict_tool])
+    if stages:
+        guidance = "\n".join(stage["text"] for stage in stages)
+        if any(stage.get("context_mode") == "review_call" for stage in stages):
+            messages[0]["content"] = guidance
+        else:
+            messages[0]["content"] += "\nCurrent task stage guidance:\n" + guidance
     agent.assert_agent_surface_safe(state, messages, [verdict_tool])
     diagnostics: list[dict[str, Any]] = []
     for attempt in range(2):
         try:
             proposal = agent.model_client.propose(
                 model=agent.config.model, messages=messages, tools=[verdict_tool],
-                temperature=0, output_token_budget=min(agent.config.max_output_tokens, 512),
+                temperature=0, output_token_budget=(
+                    agent.config.max_output_tokens if agent.config.enable_thinking
+                    else min(agent.config.max_output_tokens, 512)
+                ),
                 enable_thinking=agent.config.enable_thinking,
                 reasoning_effort=agent.config.reasoning_effort,
                 reasoning_mode=agent.config.reasoning_mode, expected_model=agent.config.model,

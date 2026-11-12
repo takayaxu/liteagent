@@ -32,8 +32,11 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         raise ValueError(f"unknown qualified stage action: {reference}")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call"}:
                 raise ValueError("unknown task stage context_mode")
+            if (stage.get("context_mode") == "review_call"
+                    and stage.get("when_tool") != "organization__classification_verdict"):
+                raise ValueError("review_call requires the classification verdict tool")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
                 raise ValueError("task stage prompt fields must be nonempty strings")
 
