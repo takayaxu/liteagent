@@ -597,6 +597,13 @@ class AgentProtocolMixin:
         url = f"data:{media_type};base64," + base64.b64encode(encoded).decode("ascii")
         return url, coordinate_frame
 
+    def _prepare_agent_image(self, screenshot: bytes):
+        url, frame = self._prepare_model_image(screenshot)
+        space = getattr(getattr(self, "config", None), "gui_coordinate_space", "image_pixels")
+        if frame is not None and space == "normalized_1000":
+            frame["coordinate_space"] = space
+        return url, frame
+
     def _messages(
         self,
         state: RuntimeState,
@@ -837,18 +844,26 @@ class AgentProtocolMixin:
         if evidence and evidence.get("action") == "desktop.open_path":
             include_screenshot = True
         if include_screenshot:
-            image_url, coordinate_frame = self._prepare_model_image(screenshot)
+            image_url, coordinate_frame = self._prepare_agent_image(screenshot)
             if coordinate_frame is not None and (not tools or "gui_action" in tool_names):
                 self._latest_gui_coordinate_frame = coordinate_frame
                 width, height = coordinate_frame["model_size"]
+                normalized_coordinates = coordinate_frame.get("coordinate_space") == "normalized_1000"
+                coordinate_width, coordinate_height = (1001, 1001) if normalized_coordinates else (width, height)
                 if tools is not None:
                     for tool in tools:
                         function = tool.get("function", {})
                         if function.get("name") == "gui_action":
                             function["parameters"] = gui_action_schema_for_image(
-                                width, height
+                                coordinate_width, coordinate_height
                             )
                 message_content[0]["text"] += (
+                    f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
+                    "For gui_action use separate integer x/y (and to_x/to_y for drag) "
+                    "on a normalized 0..1000 grid on EACH axis, origin at top left. "
+                    "The right edge is x=1000 and bottom edge y=1000. "
+                    "The executor maps this grid to desktop pixels exactly once."
+                ) if normalized_coordinates else (
                     f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
                     f"For gui_action use pixel coordinates in this image: x/to_x from 0 to {width - 1}, "
                     f"y/to_y from 0 to {height - 1}, origin at the top left. "

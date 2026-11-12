@@ -315,12 +315,20 @@ def map_gui_coordinates(
             raise ValueError(f"invalid GUI coordinate frame: {key}")
         dimensions.append(size)
     model_size, desktop_size = dimensions
+    coordinate_space = coordinate_frame.get("coordinate_space", "image_pixels")
+    if coordinate_space not in {"image_pixels", "normalized_1000"}:
+        raise ValueError("unsupported GUI coordinate space")
     axes = {"click": ("x", "y"), "double_click": ("x", "y"),
             "drag": ("x", "y", "to_x", "to_y")}.get(normalized["action"], ())
     for field in axes:
         axis = 0 if field in {"x", "to_x"} else 1
         value = normalized[field]
         source, target = model_size[axis], desktop_size[axis]
+        if coordinate_space == "normalized_1000":
+            if not 0 <= value <= 1000:
+                raise ValueError(f"GUI coordinate {field}={value} is outside the normalized grid (0..1000)")
+            normalized[field] = min(target - 1, (2 * value * target + 1000) // 2000)
+            continue
         if not 0 <= value < source:
             raise ValueError(f"GUI coordinate {field}={value} is outside the model image (0..{source - 1})")
         # Round to the nearest desktop pixel, clipping only the rounded edge.

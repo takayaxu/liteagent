@@ -95,6 +95,17 @@ def _qwen_schema_compatible_tools(
         function = tool.get("function", {})
         if "parameters" in function:
             function["parameters"] = _provider_array_uniqueness(function["parameters"])
+        if function.get("name", "").startswith("gui_action__variant_"):
+            # Qwen XML must generate one scalar per numeric GUI field. The
+            # numeric branch is a valid subset of the public compatibility
+            # union; validate returned arguments against the original schema.
+            for field in ("x", "y", "to_x", "to_y", "seconds", "amount"):
+                properties = function.get("parameters", {}).get("properties", {})
+                alternatives = properties.get(field, {}).get("anyOf", [])
+                numeric = next((item for item in alternatives
+                                if item.get("type") in {"integer", "number"}), None)
+                if numeric is not None:
+                    properties[field] = deepcopy(numeric)
     return lower_shape_format_schemas(lower_pivot_schemas(compatible))
 
 
@@ -1092,10 +1103,13 @@ class StructuredToolModelClient:
         if union_binding is not None:
             union_errors = list(Draft202012Validator(union_binding["schema"]).iter_errors(arguments))
             if union_errors:
+                actionable = _actionable_validation_errors(union_errors)
                 raise StructuredToolProtocolError(
                     "tool arguments do not satisfy the exposed branch schema",
                     response_snapshot=self._response_snapshot(response, choice, message),
                     tool_name=tool,
+                    missing_fields=_safe_missing_fields(actionable),
+                    schema_hints=_schema_validation_hints(actionable, instance=arguments),
                 )
             tool = union_binding["original_name"]
         binding = atomic_bindings.get(tool)
