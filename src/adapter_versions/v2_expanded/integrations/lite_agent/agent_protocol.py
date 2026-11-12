@@ -950,6 +950,18 @@ class AgentProtocolMixin:
                         "executed": e.executed, "error": e.error}
                         for e in state.events[-4:]],
                 }, ensure_ascii=False)}]
+            if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
+                tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
+            ):
+                system_message = (
+                    "Call the one provided read-only calculation tool now. Its description contains the "
+                    "actual observed source paths, worksheet year keys and column order. Use ALL nine "
+                    "sources paired with their years, copy the exact column_keys from the tool description, "
+                    "source_row_label=Total, line_index=0, numerator=Supported, denominator=Application. "
+                    "The public calculation handles observed university aliases; do not debate them or "
+                    "calculate individual fractions in reasoning. Emit exactly one complete tool call."
+                )
+                message_content = [{"type": "text", "text": state.instruction}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
         scoped_stage = stage_prompt_text(
