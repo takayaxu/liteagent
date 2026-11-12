@@ -268,8 +268,8 @@ def _tabstop_hint(state):
                        and e.proposed.get("arguments", {}).get("find", "").startswith(prefix)
                        and "\t" in e.proposed.get("arguments", {}).get("replacement", "") for e in events)
         if not p.get("has_tab_character") and not inserted:
-            anchor = p["text"][:words[3].end()] if len(words) > 3 else prefix
-            replacement = prefix + "\t" + p["text"][words[3].start():words[3].end()] if len(words) > 3 else prefix
+            anchor = p["text"][words[2].start():words[3].end()] if len(words) > 3 else prefix
+            replacement = (words[2].group() + "\t" + words[3].group()) if len(words) > 3 else prefix
             anchors.append({"paragraph_index": index, "first_three_words": prefix,
                             "find": anchor, "replacement": replacement})
     if anchors:
