@@ -2537,3 +2537,40 @@ def test_text_batch_projection_preserves_nested_wrapper_and_multiple_events() ->
     assert nested["files"][0]["metadata"]["pages_processed"] == 3
     assert nested["has_more"] is True
     assert "preview" not in encoded
+
+
+def test_picture_inventory_survives_rich_earlier_pages() -> None:
+    observation = {
+        "slide_count": 9,
+        "inspected_slides": [1, 4, 8],
+        "slides": [
+            {
+                "slide": page,
+                "graphic_shapes": [{"path": [7], "kind": "GraphicObjectShape",
+                                    "width": 9000, "height": 7000 + page}],
+                "text_shapes": [
+                    {"path": [n], "paragraphs": [
+                        {"index": k, "text": "Observed paragraph. " * 20}
+                        for k in range(15)
+                    ]}
+                    for n in range(6)
+                ],
+            }
+            for page in [1, 4, 8]
+        ],
+    }
+    original = copy.deepcopy(observation)
+    projected = compact_context_hint_for_model(
+        compact_presentation_hint_for_model(observation), remaining_chars=6000,
+    )
+    assert len(json.dumps(projected, ensure_ascii=False)) <= 6000
+    inventory = projected["picture_inventory"]
+    assert [page["slide_index"] for page in inventory] == [1, 4, 8]
+    for page, index in zip(inventory, [1, 4, 8]):
+        assert page["display_slide_number"] == index + 1
+        assert page["pictures"][0]["tool_target"] == {
+            "slide": index, "selector": {"path": [7]},
+        }
+        assert page["pictures"][0]["height"] == 7000 + index
+        assert page["pictures_omitted"] == 0
+    assert observation == original

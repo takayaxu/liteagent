@@ -287,7 +287,8 @@ def _compact_presentation_hint_for_model(
         key: value.get(key)
         for key in ("identity", "url", "title", "slide_count", "inspected_slides", "source_images",
                     "notes_status", "notes_status_omitted", "notes_status_guidance",
-                    "paragraph_inventory", "paragraph_inventory_count")
+                    "paragraph_inventory", "paragraph_inventory_count",
+                    "picture_inventory")
         if key in value
     }
     slides: list[dict[str, Any]] = []
@@ -721,6 +722,28 @@ def compact_presentation_hint_for_model(
             "paragraph_count" in shape and "tool_target" in shape and "path" in shape
             for page in slide_summaries for shape in page["text_shapes"]
         ),
+        # Reserve actionable picture observations across pages before rich text
+        # consumes the bounded view. An inspected later page must not appear
+        # unknown merely because an earlier page contains many paragraphs.
+        **({"picture_inventory": [
+            {
+                "slide_index": page["slide_index"],
+                "display_slide_number": page["display_slide_number"],
+                "pictures": [
+                    {key: shape[key] for key in (
+                        "tool_target", "kind", "x", "y", "width", "height",
+                        "layout_role",
+                    ) if key in shape}
+                    for shape in page["graphic_shapes"] + page["picture_containers"]
+                ],
+                "pictures_omitted": (
+                    page["graphic_shapes_omitted"] + page["picture_containers_omitted"]
+                ),
+            }
+            for page in slide_summaries
+            if page["graphic_shapes"] or page["picture_containers"]
+            or page["graphic_shapes_omitted"] or page["picture_containers_omitted"]
+        ]} if value.get("inspected_slides") else {}),
         # Reserve the small per-page notes inventory before rich shape details.
         # A page omitted below is not thereby known to have blank notes.
         "notes_status": [
