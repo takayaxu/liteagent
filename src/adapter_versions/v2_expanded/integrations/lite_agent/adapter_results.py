@@ -732,7 +732,7 @@ def compact_presentation_hint_for_model(
                 "pictures": [
                     {key: shape[key] for key in (
                         "tool_target", "kind", "x", "y", "width", "height",
-                        "layout_role",
+                        "layout_role", "graphic_count", "bitmap_fill_count",
                     ) if key in shape}
                     for shape in page["graphic_shapes"] + page["picture_containers"]
                 ],
