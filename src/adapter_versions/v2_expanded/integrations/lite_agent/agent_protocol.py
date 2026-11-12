@@ -971,7 +971,7 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
-            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records", "gemini-document"}:
+            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records", "gemini-document", "person-background"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "
                     "Call exactly ONE provided tool now. Use its current schema and actual observations. "
@@ -1011,6 +1011,27 @@ class AgentProtocolMixin:
                 }, ensure_ascii=False)}]
             if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+            if scoped_kind == "person-background" and scoped_hint.startswith("BACKGROUND STEP:"):
+                call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
+                wanted = call["action"]
+                query = call["adapter"] + " " + wanted
+                exposed = any(wanted in t.get("function", {}).get("parameters", {})
+                    .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                scoped_hint = ("CURRENT STEP ONLY: CALL " + (query + " with next_public_call below." if exposed
+                    else "tools_search exact query " + query + ".") + " Use the already observed exact paths. "
+                    "Do not click dock/folder coordinates or repeat discovery. " + scoped_hint.split("\n")[0])
+                message_content = [{"type": "text", "text": json.dumps({"instruction": state.instruction,
+                    "current_stage": scoped_hint, **({"next_public_call": call} if exposed else
+                    {"required_discovery_query": query})}, ensure_ascii=False)}]
+            if scoped_kind == "person-background" and scoped_hint.startswith(("BACKGROUND EDIT:", "BACKGROUND FINISH:")):
+                images = [item for item in message_content if item.get("type") == "image_url"]
+                if not images:
+                    images = [{"type": "image_url", "image_url": {"url": self._image_url(screenshot)}}]
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction, "current_stage": scoped_hint,
+                    "latest_inputs": [{"arguments": e.proposed.get("arguments"), "executed": e.executed,
+                        "error": e.error} for e in state.events[-3:]],
+                }, ensure_ascii=False)}, *images]
             if scoped_kind == "gemini-document" and scoped_hint.startswith("NATIVE GEMINI"):
                 if scoped_hint.startswith("NATIVE GEMINI FINISH:"):
                     message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]

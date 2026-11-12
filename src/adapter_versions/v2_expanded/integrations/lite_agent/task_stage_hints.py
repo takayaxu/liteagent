@@ -565,17 +565,43 @@ def _cross_app_hint(state, kind):
             "totals are written, save once, read back the full target, and propose_done."
         )
     if kind == "person-background":
-        return (
-            "CURRENT IMAGE EDIT: discover the Desktop requirements document and source picture once. Read DOCX "
-            "with Writer document.read_file, not image OCR. Open the picture and inspect the actual screenshot. "
-            "Use the available GIMP tools or its GUI for subject selection/background removal and white "
-            "background composition. image.inspect reads metadata and does not remove a background. GIMP's "
-            "crop/adjust/export tools cannot perform a subject selection by themselves; do not repeat searches "
-            "for a nonexistent automatic background-removal API. Open the actual source in GIMP through its "
-            "file dialog/command if needed; dock coordinates that open Help/Trash are wrong, so stop repeating "
-            "them. Keep the person, replace the scenery with white, export Desktop/pic.jpg, inspect the actual "
-            "output image and finish only when the edit is visible."
-        )
+        paths = []
+        for e, _, action, _ in facts:
+            if action == "filesystem.find":
+                body = gemini_native_result(e)
+                paths.extend(m.get("path") for m in body.get("matches", []) if m.get("kind") == "file")
+        pictures = [p for p in paths if str(p).lower().endswith((".jpg", ".jpeg", ".png")) and not str(p).endswith("/pic.jpg")]
+        documents = [p for p in paths if str(p).lower().endswith(".docx")]
+        def call_stage(note, adapter, action, params):
+            return "BACKGROUND STEP: " + note + "\n" + json.dumps({"adapter": adapter,
+                "action": action, "payload": {"params": params}}, ensure_ascii=False)
+        if not paths:
+            return call_stage("Discover the actual Desktop source picture and requirements document.",
+                "os", "filesystem.find", {"roots": ["~/Desktop"], "name_patterns": ["*.jpg", "*.png", "*.docx"],
+                    "kind": "file", "recursive": False, "max_results": 20})
+        if documents and not any(action == "document.read_file" for _, _, action, _ in facts):
+            return call_stage("Read the actual requirements DOCX now. Do not click dock or folders; the exact file path is already observed.",
+                "libreoffice_writer", "document.read_file", {"path": documents[0]})
+        if pictures and not any(action == "desktop.open_path" and args.get("path") == pictures[0] for _, _, action, args in facts):
+            return call_stage("Open the actual source image and inspect its screenshot before selecting the person. Do not launch an unrelated dock icon.",
+                "os", "desktop.open_path", {"path": pictures[0]})
+        if not any(action == "command.run" and "grabCut" in json.dumps(args) for _, _, action, args in facts):
+            return ("BACKGROUND EDIT: the source picture is open. Inspect the actual person silhouette and "
+                "choose a foreground rectangle enclosing head, backpack, arms, legs and shoes. Use a public "
+                "os command.run finite Python script with cv2 GrabCut (no pretrained model/download needed): "
+                "read ONLY the observed source image, initialize background/foreground from the image and "
+                "your screenshot-selected rectangle, refine the mask for 8-12 iterations, compose retained "
+                "person pixels on pure white, and write Desktop/pic.jpg. Preserve image dimensions and the "
+                "person's pixels. Keep cwd_source=home and provenance=shell_history outside argv. Do not "
+                "invent a nonexistent background-removal API, use OCR for subjects or repeat GIMP searches. "
+                "Observed image path: " + json.dumps(pictures[0] if pictures else None)
+                + ". The current user asks final white background; the DOCX's transparent intermediate "
+                "does not change that final output. After editing, OPEN the actual pic.jpg and inspect "
+                "the result; correct concrete scenery leaks or missing person areas only.")
+        if any(action == "desktop.open_path" and args.get("path") == "/home/user/Desktop/pic.jpg" for _, _, action, args in facts):
+            return "BACKGROUND FINISH: inspect the CURRENT screenshot of the saved pic.jpg. If the whole person is retained on white and the file is present, propose_done with that observed evidence. If a visible defect remains, correct only that defect. Do not reopen the same image or repeat searches."
+        return call_stage("The segmentation command has executed. Open the ACTUAL saved output now to inspect person completeness and a clean white background. If correct, propose_done; do not rerun edits or discovery without a visible defect.",
+            "os", "desktop.open_path", {"path": "/home/user/Desktop/pic.jpg"})
     return None
 
 
