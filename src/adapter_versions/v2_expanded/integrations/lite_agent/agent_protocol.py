@@ -811,6 +811,12 @@ class AgentProtocolMixin:
         if bibliography_append is not None:
             state_text += "\nCURRENT BIBLIOGRAPHY STEP:\n" + json.dumps(bibliography_append, ensure_ascii=False)
 
+        from . import italic_size_progress
+
+        italic_size = italic_size_progress.model_progress(state)
+        if italic_size is not None:
+            state_text += "\nCURRENT ITALIC SIZE STEP:\n" + json.dumps(italic_size, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -925,6 +931,9 @@ class AgentProtocolMixin:
             system_message += "\nCurrent sentence spacing stage: " + json.dumps(sentence_spacing, ensure_ascii=False)
         if bibliography_append is not None:
             system_message += "\nCurrent bibliography stage: " + json.dumps(bibliography_append, ensure_ascii=False)
+
+        if italic_size is not None:
+            system_message += "\nCurrent italic size stage: " + json.dumps(italic_size, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
