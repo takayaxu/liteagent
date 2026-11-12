@@ -26,10 +26,12 @@ def gemini_gui_observations(screenshot):
             image = source.convert("RGB")
         width, height = image.size
         scale = min(1, 1280 / width, 720 / height)
+        ocr_image = io.BytesIO()
+        image.resize((width * 2, height * 2)).save(ocr_image, format="PNG")
         process = subprocess.run(["tesseract", "stdin", "stdout", "--psm", "11", "tsv"],
-            input=screenshot, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=5, check=True)
+            input=ocr_image.getvalue(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=8, check=True)
         lines = {}
-        for word in csv.DictReader(io.StringIO(process.stdout.decode()), delimiter="\t"):
+        for word in csv.DictReader(io.StringIO(process.stdout.decode()), delimiter="\t", quoting=csv.QUOTE_NONE):
             if not word.get("text", "").strip():
                 continue
             key = tuple(word[k] for k in ("page_num", "block_num", "par_num", "line_num"))
@@ -39,10 +41,10 @@ def gemini_gui_observations(screenshot):
             label = " ".join(w["text"] for w in words).strip()
             if label.lower().replace(":", "") not in {"find", "find all", "close", "iliad", "find and replace"}:
                 continue
-            left = min(int(w["left"]) for w in words)
-            top = min(int(w["top"]) for w in words)
-            right = max(int(w["left"]) + int(w["width"]) for w in words)
-            bottom = max(int(w["top"]) + int(w["height"]) for w in words)
+            left = min(int(w["left"]) for w in words) / 2
+            top = min(int(w["top"]) for w in words) / 2
+            right = max(int(w["left"]) + int(w["width"]) for w in words) / 2
+            bottom = max(int(w["top"]) + int(w["height"]) for w in words) / 2
             control = {"visible_text": label, "image_pixel_center": [round((left + right) * scale / 2), round((top + bottom) * scale / 2)]}
             if label.lower().rstrip(":") == "find":
                 control["adjacent_find_input_point"] = [round((right + 70) * scale), round((top + bottom) * scale / 2)]
