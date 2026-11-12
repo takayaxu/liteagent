@@ -135,3 +135,47 @@ def test_copy_fact_projection_does_not_change_other_task_requests(recovery):
     state.task_id = 'target'
     messages = candidate._messages(state, b'synthetic', tools=tools, **recovery)
     assert 'CURRENT EXECUTED COPY FACTS:' in messages[-1]['content'][0]['text']
+
+
+def test_pdf_source_facts_preserve_omitted_rows_exact_names_and_verified_receipts():
+    import json
+    from integrations.lite_agent.task_stage_prompts import stage_fact_text
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer source data.')
+    stages = {'target': [{'text': 'Use observed source.', 'facts': 'pdf_source_ledger'}]}
+    def add(owner, action, params, result, executed=True):
+        state.events.append(ExecutionEvent(step=len(state.events)+1, timestamp_utc='test',
+            proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+                'adapter': owner, 'action': action, 'payload': {'params': params}}},
+            executed=executed, result={'verification_passed': True, **result}))
+    add('libreoffice_calc', 'workbook.read_file', {'path': '/source.xlsx'}, {
+        'context_hint': {'downstream_context': {'sheets': [{'display_text': [['preview']]}]}},
+        'adapter_response': {'result': {'path': '/source.xlsx', 'sheets': [
+            {'name': 'Sheet1', 'returned_range': 'A1:A2', 'display_text': [['preview'], ['omitted row']]}]}}})
+    add('os', 'pdf.form.inspect', {'input_path': '/template.pdf'}, {
+        'context_hint': {'downstream_context': {'input_path': '/template.pdf', 'fields': [
+            {'field_name': 'ExactRow1', 'label': 'Exact_Row_1'},
+            {'field_name': 'Signature', 'field_type': '/Sig', 'writable': False}]}},
+        'adapter_response': {'truncated': True, 'preview': 'invalid JSON'}})
+    add('os', 'pdf.form.fill', {'input_path': '/template.pdf', 'output_path': '/done.pdf',
+        'fields': [{'field_name': 'ExactRow1', 'value': 'observed'}]}, {})
+    add('os', 'pdf.form.fill', {'output_path': '/failed.pdf'}, {}, executed=False)
+    text = stage_fact_text(stages, state, [])
+    facts = json.loads(text.split('CURRENT PDF SOURCE FACTS: ', 1)[1].split('\n')[0])
+    assert facts['observed_workbook_reads'][0]['sheets'][0]['display_text'][-1] == ['omitted row']
+    assert facts['observed_pdf_fields'][0]['fields'] == [
+        {'field_name': 'ExactRow1'}, {'field_name': 'Signature', 'field_type': '/Sig', 'writable': False}]
+    assert facts['verified_executed_fills'][0]['output_path'] == '/done.pdf'
+    assert 'Exact_Row_1' not in text and '/failed.pdf' not in text
+    state.task_id = 'other'
+    assert stage_fact_text(stages, state, []) == ''
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_pdf_facts_do_not_change_other_task_messages(recovery):
+    stages = {'target': [{'text': 'Use observed source.', 'facts': 'pdf_source_ledger'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    state = RuntimeState(task_id='other', domain='os', instruction='Inspect a file.')
+    tools = build_tools('os', [], include_gui=True)
+    assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)

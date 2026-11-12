@@ -30,7 +30,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         known = False
                     if not known:
                         raise ValueError(f"unknown qualified stage action: {reference}")
-            if stage.get("facts", "file_copy_ledger") != "file_copy_ledger":
+            if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
             if stage.get("context_mode", "full") not in {"full", "bound_call"}:
                 raise ValueError("unknown task stage context_mode")
@@ -91,6 +91,9 @@ def bound_call_context(overrides: Any, state: Any, tools: Any) -> str | None:
 
 
 def stage_fact_text(overrides: Any, state: Any, tools: Any) -> str:
+    if any(stage.get("facts") == "pdf_source_ledger"
+           for stage in selected_stages(overrides, state, tools)):
+        return _pdf_source_facts(state)
     if not any(stage.get("facts") == "file_copy_ledger"
                for stage in selected_stages(overrides, state, tools)):
         return ""
@@ -128,3 +131,42 @@ def stage_fact_text(overrides: Any, state: Any, tools: Any) -> str:
               "files from the number of opened images or from a plan. This is "
               "execution history, not a current directory listing; verify final "
               "membership separately after any deletion or replacement.")
+
+
+def _pdf_source_facts(state: Any) -> str:
+    """Reproject observed source windows and exact PDF names, never assignments."""
+    import json
+    from .adapter_results import has_passed_verification
+    from .completion_policy import effective_canonical_action
+    from .result_envelopes import iter_result_mappings
+    workbooks, forms, writes = [], [], []
+    for event in state.successful_adapter_events():
+        if not has_passed_verification(event.result):
+            continue
+        owner, action, arguments = effective_canonical_action(event, state.domain)
+        if owner == "libreoffice_calc" and action == "workbook.read_file":
+            # Raw successful envelopes retain rows omitted by the generic preview.
+            for result in iter_result_mappings(event.result):
+                if isinstance(result.get("sheets"), list):
+                    workbooks.append({"step": event.step, "path": result.get("path"),
+                        "truncated": result.get("truncated"), "sheets": [
+                            {key: sheet[key] for key in ("name", "returned_range", "truncated", "display_text")
+                             if key in sheet} for sheet in result["sheets"] if isinstance(sheet, dict)]})
+                    break
+        elif owner == "os" and action == "pdf.form.inspect":
+            context = (event.result.get("context_hint") or {}).get("downstream_context")
+            if isinstance(context, dict) and isinstance(context.get("fields"), list):
+                forms.append({"step": event.step, **{key: context[key] for key in (
+                    "input_path", "field_offset", "next_offset", "truncated", "context_truncated", "guidance")
+                    if key in context}, "fields": [
+                        {key: field[key] for key in ("field_name", "field_type", "writable", "value") if key in field}
+                        for field in context["fields"] if isinstance(field, dict)]})
+        elif owner == "os" and action == "pdf.form.fill":
+            writes.append({"step": event.step, "input_path": arguments.get("input_path"),
+                "output_path": arguments.get("output_path"), "fields": arguments.get("fields")})
+    return "\nCURRENT PDF SOURCE FACTS: " + json.dumps({
+        "observed_workbook_reads": workbooks, "observed_pdf_fields": forms,
+        "verified_executed_fills": writes}, ensure_ascii=False) + (
+        "\nThese are executed observations, not inferred assignments. Use exact field_name strings, "
+        "not human labels. Source rows omitted from an earlier preview are retained here. "
+        "A successful fill receipt records execution; inspect the saved output before completion.")
