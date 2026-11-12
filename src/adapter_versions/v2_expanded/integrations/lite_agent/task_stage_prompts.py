@@ -40,7 +40,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                     raise ValueError("hotkey stage predicates require 2 to 6 keys separated by +")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization", "workflow_call"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
@@ -100,6 +100,33 @@ def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, st
 
 def stage_prompt_text(overrides: Any, state: Any, tools: Any) -> str:
     return "\n".join(stage["text"] for stage in selected_stages(overrides, state, tools))
+
+
+def workflow_stage_projection(overrides: Any, state: Any, tools: Any) -> tuple[str, str] | None:
+    stages = [stage for stage in selected_stages(overrides, state, tools)
+              if stage.get("context_mode") == "workflow_call"]
+    if not stages:
+        return None
+    import json
+    system = (
+        "Execute the CURRENT STAGE before later workflow actions. Return one structured tool call. "
+        "If its native operation is not currently exposed, use tools_search for that exact public route. "
+        "Use the current schema and observed arguments; never substitute an unrelated operation. "
+        "Use only actually executed facts, and inspect partial effects after a failed action. "
+        "Completion still requires the original task and execution checks.\n"
+        + "\n".join(stage["text"] for stage in stages)
+    )
+    context = json.dumps({
+        "recent_execution_facts": state.context_summary(limit=8, strict_generic=True),
+        "executed_gui_hotkeys": [
+            {"step": event.step, "keys": event.proposed["arguments"]["keys"]}
+            for event in state.events
+            if event.executed and not event.error and event.proposed.get("kind") == "gui"
+            and isinstance(event.proposed.get("arguments"), dict)
+            and event.proposed["arguments"].get("action") == "hotkey"
+        ],
+    }, ensure_ascii=False)
+    return system, context
 
 
 def bound_call_context(overrides: Any, state: Any, tools: Any) -> str | None:

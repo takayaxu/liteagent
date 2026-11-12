@@ -77,6 +77,26 @@ def test_hotkey_stage_does_not_change_other_task_messages(recovery):
     assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
 
 
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_workflow_projection_is_exact_task_only_and_keeps_instruction_and_execution_facts(recovery):
+    stages = {'target': [{'context_mode': 'workflow_call', 'text': 'CURRENT STAGE: inspect observed state.'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    state = RuntimeState(task_id='other', domain='multi_apps', instruction='Original request stays verbatim.')
+    tools = build_tools('multi_apps', [], include_gui=True)
+    assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
+    state.task_id = 'target'
+    state.events.append(ExecutionEvent(step=1, timestamp_utc='test',
+        proposed={'kind': 'gui', 'arguments': {'action': 'hotkey', 'keys': ['ctrl', 'c']}}, executed=True))
+    messages = agent(stages)._messages(state, b'synthetic', tools=tools, **recovery)
+    assert messages[1] == {'role': 'user', 'content': state.instruction}
+    assert 'CURRENT STAGE: inspect observed state.' in messages[0]['content']
+    assert len(messages[0]['content']) < 1000
+    assert [item['type'] for item in messages[-1]['content']] == ['text']
+    assert '"keys": ["ctrl", "c"]' in messages[-1]['content'][0]['text']
+
+
 @pytest.mark.parametrize('shortcut', ['ctrl', 'ctrl+', '+c', ['ctrl', 'c']])
 def test_invalid_hotkey_stage_predicates_are_rejected(shortcut):
     with pytest.raises(ValueError, match='hotkey stage predicates'):

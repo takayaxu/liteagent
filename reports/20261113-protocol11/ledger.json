@@ -719,7 +719,65 @@
           "commit": "e9b75d1c165bda02f7adad92fc67854d6f7bbffe",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run004",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v4-config.json",
-          "status": "running"
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 2,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 2,
+          "total_protocol_or_contract_rejections": 0
+        },
+        {
+          "attempt": 5,
+          "commit": "7efe45aae4c117da61e5e39d8ad9a68a1616b9b3",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run005",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v5-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 1,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 1,
+          "execution_validation_or_guard_rejections": 3,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 3,
+          "total_protocol_or_contract_rejections": 1
+        },
+        {
+          "attempt": 6,
+          "commit": "3809f6a3a050f78263b735f93e0eb37b512f76d3",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run006",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v6-config.json",
+          "status": "failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 0.0,
+          "duration_seconds": 318.753,
+          "steps": 17,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 4,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 4,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
       "reward": 0.0
