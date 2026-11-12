@@ -236,3 +236,20 @@ def test_gemini_native_paragraph_arrays_and_wrapped_highlight_readback():
         event(6, "libreoffice_writer", "document.inspect", body={"nonempty_paragraph_count": 2,
             "highlighting": {"highlighted_run_count": 1}})]
     assert "call propose_done now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
+
+
+def test_vlc_gui_playback_and_persisted_preference_use_actual_readback():
+    from integrations.lite_agent.task_stage_hints import _vlc_hint
+    state = RuntimeState("synthetic", "vlc", "Play the Desktop music video.")
+    state.events = [ExecutionEvent(1, "", {"kind": "gui", "arguments": {"action": "press", "key": "enter"}}, executed=True),
+        ExecutionEvent(2, "", {"action": "playback.status", "arguments": {}}, executed=True,
+            result={"state": "playing", "source": "/home/user/Desktop/observed-video.mp4"})]
+    assert _vlc_hint(state, "vlc-play").startswith("FINISH:")
+    state.events = [ExecutionEvent(1, "", {"action": "preferences.configure", "arguments": {
+        "allow_multiple_instances": False}}, executed=True,
+        result={"semantic_preferences": {"allow_multiple_instances": False}})]
+    assert _vlc_hint(state, "vlc-instances").startswith("SET PREFERENCE:")
+    state.events.append(ExecutionEvent(2, "", {"action": "preferences.configure", "arguments": {
+        "allow_multiple_instances": True}}, executed=True,
+        result={"semantic_preferences": {"allow_multiple_instances": True}}))
+    assert _vlc_hint(state, "vlc-instances").startswith("FINISH:")

@@ -673,16 +673,30 @@ def _vlc_hint(state, kind):
     events = [e for e in state.events if e.executed and not e.error]
     actions = {e.proposed.get("action") for e in events}
     if kind == "vlc-instances":
-        if "preferences.configure" not in actions:
+        configured = any(e.proposed.get("action") == "preferences.configure"
+            and e.proposed.get("arguments", {}).get("allow_multiple_instances") is True
+            and (result_payload(e).get("semantic_preferences", {}).get("allow_multiple_instances") is True
+                 or result_payload(e).get("after", {}).get("one-instance-when-started-from-file") == "0")
+            for e in events)
+        if not configured:
             return "SET PREFERENCE: call preferences.configure with allow_multiple_instances=true. This changes the persisted single-instance behavior so desktop-opened media can start independent players."
         return "FINISH: the successful preferences.configure result already verifies the persisted multi-instance setting. Do not configure it again, click the dock repeatedly or poll playback.status to verify a preference; playback state is unrelated. Review the actual returned preference evidence and propose_done. No new sample video or extra playback is requested."
+    statuses = [result_payload(e) for e in events if e.proposed.get("action") == "playback.status"]
+    if statuses and statuses[-1].get("state") == "playing" and "/Desktop/" in str(statuses[-1].get("source", "")):
+        return ("FINISH: native playback.status reports playing for the actual Desktop source "
+                + str(statuses[-1]["source"]) + ". If this is the requested observed music video, "
+                "propose_done now and leave it playing. Opening through the GUI does not create a "
+                "playback.open event; no extra native open is required. Do not reopen the chooser or poll again.")
     if "playback.open" not in actions:
         return (
             "OPEN OBSERVED MEDIA: discover the exact Desktop video path instead of guessing from its truncated "
             "desktop label. If filesystem.find is not offered in this VLC domain, repeated tools_search will "
             "not make it callable. Use VLC's Open File dialog (Ctrl+O), navigate to the actual Desktop and select "
             "the visible music-video file, or read an observed exact path from the dialog. Open that file in "
-            "VLC. Do not double-click empty desktop coordinates or invent a longer filename."
+            "VLC. Do not double-click empty desktop coordinates or invent a longer filename. "
+            "Continue from the CURRENT screenshot: if the chooser is still open, finish selecting the "
+            "file; if VLC already shows the video, call playback.status now instead of reopening it. "
+            "A successful GUI open need not have a playback.open event."
         )
     return "VERIFY PLAYBACK: call playback.status once. If the observed Desktop music video is playing, propose_done immediately and leave it playing. Do not keep reopening the file, guessing filenames or searching filesystem.find. If it ended, reopen the SAME observed file and finish promptly."
 
