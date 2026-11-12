@@ -889,15 +889,29 @@ class RuntimeStateCoreMixin:
         if self.domain != "multi_apps":
             return False
         instruction = str(self.instruction)
-        intent = re.search(
-            r"(?i)\b(?:organize|organization|categorize|classify|place|put|move|relocate|rename)\b",
-            instruction,
+        filesystem_object = r"\b(?:files?|folders?|directories|directory|desktop|file\s+system|file-manager)\b"
+        content_object = (
+            r"\b(?:text|contents?|data|results?|slides?|paragraphs?|cells?|rows?|columns?|cursor|selection)\b"
+            r"(?!\s+files?\b)"
         )
-        filesystem_object = re.search(
-            r"(?i)\b(?:files?|folders?|directories|directory|file\s+system|file-manager|category\s+folders?)\b",
-            instruction,
-        )
-        return bool(intent and filesystem_object)
+        # Associate the verb with its object. A file mentioned in another clause
+        # does not turn placing its text into a filesystem relocation request.
+        for clause in re.split(r"[.!?;\n]", instruction):
+            for intent in re.finditer(
+                r"(?i)\b(?:organize[ds]?|organization|categorize[ds]?|classif(?:y|ied)|place[ds]?|put|move[ds]?|relocate[ds]?|rename[ds]?)\b",
+                clause,
+            ):
+                following = clause[intent.end():]
+                target = re.search(filesystem_object, following, re.I)
+                if target and not re.search(content_object, following[:target.end()], re.I):
+                    return True
+                # Also recognize passive requests: files should be moved.
+                if re.search(
+                    filesystem_object + r"\s+(?:(?:should|must|need\s+to)\s+)?be\s*$",
+                    clause[:intent.start()], re.I,
+                ):
+                    return True
+        return False
 
     def filesystem_move_requested(self) -> bool:
         """Return true for directory/file moves, excluding output-table wording."""

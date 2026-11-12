@@ -519,6 +519,40 @@ def test_organize_table_results_is_not_filesystem_organization() -> None:
     assert state.filesystem_observation_state() is None
 
 
+@pytest.mark.parametrize("instruction", [
+    'I want to convert an Impress file into a document editable in Writer. Simply place all the text from Impress into "script.docx" on the Desktop.',
+    'Open the file and place all the text into a Writer document on the Desktop.',
+    'Put the contents of this file into a new document.',
+    'Move the data from this file into a spreadsheet.',
+    'Organize the results from these files in a table.',
+    'Classify the text in this file by sentiment.',
+    'Move the cursor to the end of the file.',
+    'Place the slides from the presentation file in a document.',
+])
+def test_content_placement_does_not_enable_filesystem_organization(instruction: str) -> None:
+    state = RuntimeState(task_id="content-placement", domain="multi_apps", instruction=instruction)
+    assert state.filesystem_organization_requested() is False
+    assert state.filesystem_move_requested() is False
+    assert state.filesystem_observation_state() is None
+
+
+@pytest.mark.parametrize("instruction", [
+    'Organize the files and folders on the Desktop into category folders.',
+    'Can you organize my desktop by identifying academic papers, coding projects, and other documents, ensuring no file is misplaced? Specifically, place academic papers in the Paper_reading folder, coding projects in Projects, and categorize everything else under Miscellaneous.',
+    'Move all text files into the Archive folder.',
+    'Put these files in the Documents directory.',
+    'Place academic papers in the Paper_reading folder.',
+    'Classify files by their contents and move them into folders.',
+    'Rename the selected file to report.pdf.',
+    'The files should be moved into Archive.',
+    'Place the text in a document; move the source file into Archive.',
+])
+def test_filesystem_object_placement_still_enables_organization(instruction: str) -> None:
+    state = RuntimeState(task_id="object-placement", domain="multi_apps", instruction=instruction)
+    assert state.filesystem_organization_requested() is True
+    assert state.filesystem_move_requested() is True
+
+
 def test_organization_pending_entries_follow_successful_renames() -> None:
     state = _organization_state()
     _checked(state, "/home/user/Desktop/paper.pdf", "/home/user/Desktop/Paper_reading")
