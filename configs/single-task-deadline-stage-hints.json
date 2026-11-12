@@ -66,7 +66,8 @@
     "task_stage_hint_targets": {
       "0326d92d-d218-48a8-9ca1-981cd6d064c7": "sales-growth",
       "4de54231-e4b5-49e3-b2ba-61a0bec721c0": "combined-data",
-      "30e3e107-1cfb-46ee-a755-2cd080d7ba6a": "demographic-pivots"
+      "30e3e107-1cfb-46ee-a755-2cd080d7ba6a": "demographic-pivots",
+      "a53f80cd-4a90-4490-8310-097b011433f6": "personal-cleanup"
     }
   },
   "tasks": [

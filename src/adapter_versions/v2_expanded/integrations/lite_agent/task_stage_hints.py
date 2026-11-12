@@ -222,6 +222,28 @@ def _demographic_hint(state):
     return "FINISH: compare all three read-back percentage tables and the blank separators to the observed source, and verify blue fill/bold white title across A1:C1. If current completion state is satisfied, propose_done now; repeating saves invalidates final read-back and repeating reads does not fix a formatting defect. Repair only the exact reported issue."
 
 
+def _personal_cleanup_hint(state):
+    step = state.next_title_range_personal_info_cleanup_action()
+    if step:
+        return (
+            "CURRENT EDIT: use the observed next cleanup operation below. The slide parameters are "
+            "native ZERO-BASED indices: human slides 2 and 3 mean slide=1 and slide=2; "
+            "human slide 4 means slide=3. Do not reconsider or add one to an observed native index. "
+            "Shape paths come from presentation.inspect. After deletion indices may change; use "
+            "current observed paths or the existing descending-index cleanup plan. Keep all non-personal content. "
+            "Call the provided public Adapter tool directly with its current schema. "
+            "Do not reselect these shapes in the GUI or emit only reasoning. "
+            "Observed next operation: " + json.dumps(step, ensure_ascii=False)
+        )
+    if not state.title_range_personal_info_cleanup_plan():
+        return "OBSERVE: presentation.inspect native slides [1,2,3] once to identify titles on human slides 2-3 and personal text/icons on human slide 4. Read the inspected native shape paths; do not spend turns debating slide numbering."
+    events = [e for e in state.events if e.executed and not e.error]
+    saved = any(e.proposed.get("action") == "presentation.save" for e in events)
+    if not saved:
+        return "PERSIST: the observed title-format and personal-information deletions have executed. Call presentation.save once now, not another deletion or format."
+    return "FINISH: inspect the saved slides once to confirm both titles are bold black and all requested personal text/icons are absent. If the current completion check is satisfied, call propose_done immediately; preserve all other content."
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -241,4 +263,6 @@ def model_hint(profile, state, *, targets=None):
                 '{"sheet":"Sheet2","range":"A1:C1","format":'
                 '{"background_color":"#0000ff","font_color":"#ffffff","bold":true}}. '
                 'Do not format only A1 or omit font_color.')
+    if (targets or {}).get(state.task_id) == "personal-cleanup" and state.domain == "libreoffice_impress":
+        return _personal_cleanup_hint(state)
     return None
