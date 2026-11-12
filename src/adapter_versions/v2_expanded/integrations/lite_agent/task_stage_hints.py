@@ -268,7 +268,10 @@ def _tabstop_hint(state):
                        and e.proposed.get("arguments", {}).get("find", "").startswith(prefix)
                        and "\t" in e.proposed.get("arguments", {}).get("replacement", "") for e in events)
         if not p.get("has_tab_character") and not inserted:
-            anchors.append({"paragraph_index": index, "first_three_words": prefix})
+            anchor = p["text"][:words[3].end()] if len(words) > 3 else prefix
+            replacement = prefix + "\t" + p["text"][words[3].start():words[3].end()] if len(words) > 3 else prefix
+            anchors.append({"paragraph_index": index, "first_three_words": prefix,
+                            "find": anchor, "replacement": replacement})
     if anchors:
         return (
             "INSERT REAL TABS: keep each sentence in its ORIGINAL paragraph. Do NOT paragraph.split after "
@@ -278,7 +281,10 @@ def _tabstop_hint(state):
             "(literal backslash plus t). Preserve all original words, punctuation, blank paragraphs and formatting. "
             "Do not re-read identical complete paragraphs or reconstruct document text. "
             "Pending observed anchors: " + json.dumps(anchors, ensure_ascii=False)
-            + ". Choose the next anchor yourself and execute its one local replacement."
+            + ". Choose the next anchor yourself and execute its one local replacement. "
+            "The replacement is a JSON string: preserve its single \\t escape exactly; "
+            "do not double the backslash. After all insertions apply the format to ALL sentence indices, "
+            "not an index guessed from one-based numbering."
         )
     formats = [e for e in events if e.proposed.get("action") == "paragraph.set_format"]
     if not formats:

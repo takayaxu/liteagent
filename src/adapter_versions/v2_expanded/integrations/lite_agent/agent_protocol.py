@@ -912,7 +912,7 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
-            if scoped_kind in {"demographic-pivots", "personal-cleanup"}:
+            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "
                     "Call exactly ONE provided tool now. Use its current schema and actual observations. "
@@ -935,6 +935,16 @@ class AgentProtocolMixin:
                         "executed": e.executed, "error": e.error}
                         for e in state.events[-8:]],
                     "note": "The next operation comes from actual presentation inspection and the full immutable execution ledger; historical display-number aliases are omitted to avoid mixing them with native indices. The tool schema and completion checks are unchanged.",
+                }, ensure_ascii=False)}]
+            if scoped_kind == "sentence-tabstops":
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction,
+                    "current_stage": scoped_hint,
+                    "recent_execution_facts": [{"step": e.step,
+                        "action": e.proposed.get("action", e.proposed.get("tool")),
+                        "arguments": e.proposed.get("arguments"),
+                        "executed": e.executed, "error": e.error}
+                        for e in state.events[-4:]],
                 }, ensure_ascii=False)}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
