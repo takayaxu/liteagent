@@ -644,7 +644,7 @@
     {
       "order": 113,
       "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
-      "status": "pending",
+      "status": "failed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/113-multi_apps-81c425f5-78f3-4771-afd6-3d2973825947",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
@@ -675,9 +675,33 @@
           "commit": "6be05c8e68460f596755298ea942c2569185f464",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run002",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v2-config.json",
+          "status": "failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 0.0,
+          "duration_seconds": 266.54,
+          "steps": 14,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
+        },
+        {
+          "attempt": 3,
+          "commit": "e4e3ec7e8566520fdd1a695e4d8c2b9830b7959d",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run003",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v3-config.json",
           "status": "running"
         }
-      ]
+      ],
+      "reward": 0.0
     },
     {
       "order": 114,
