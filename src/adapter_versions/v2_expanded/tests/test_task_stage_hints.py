@@ -164,3 +164,27 @@ def test_full_queue_other_173_actual_messages_are_unchanged(monkeypatch):
         assert agent._messages(state, out.getvalue(), tools=[]) == before
         checked += 1
     assert checked == 173
+
+
+def test_gemini_selected_text_advances_to_close_marker_then_native_verification(monkeypatch):
+    import integrations.lite_agent.task_stage_hints as hints
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=True,
+        task_stage_hints=PROFILE, task_stage_hint_targets={"synthetic": "gemini-document"}),
+        object(), model_client=SimpleNamespace(client=object()))
+    state = RuntimeState("synthetic", "multi_apps", "Copy all Gemini values and highlight Iliad.")
+    state.events = [ExecutionEvent(i, "", {"action": "adapter.call", "arguments": {
+        "adapter": "libreoffice_writer", "action": action, "payload": {"params": {}}}}, executed=True)
+        for i, action in enumerate(("document.create", "document.append_text_file"), 1)]
+    observed = {"visible_selected_text_status": "Selected: 33 words, 165 characters",
+        "visible_control_text": [{"visible_text": "Find and Replace", "image_pixel_center": [663, 238]},
+            {"visible_text": "Close", "image_pixel_center": [864, 545]}],
+        "visible_yellow_toolbar_swatch_image_pixel_center": [675, 104]}
+    monkeypatch.setattr(hints, "gemini_gui_observations", lambda _: observed)
+    out = io.BytesIO()
+    Image.new("RGB", (20, 20)).save(out, format="PNG")
+    assert "CLOSE the dialog now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
+    observed["visible_control_text"] = []
+    assert "CLICK the observed yellow toolbar swatch" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
+    state.events.append(ExecutionEvent(3, "", {"kind": "gui", "arguments": {
+        "action": "click", "x": 675, "y": 104}}, executed=True))
+    assert "Call document.inspect now" in agent._messages(state, out.getvalue(), tools=[])[0]["content"]
