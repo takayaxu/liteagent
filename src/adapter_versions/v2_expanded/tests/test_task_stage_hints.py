@@ -152,7 +152,7 @@ def test_gemini_source_draft_preserves_values_paragraphs_and_highlights(tmp_path
     from xml.etree import ElementTree as ET
     from integrations.lite_agent.task_stage_hints import _cross_app_hint
     source = tmp_path / "source.json"
-    values = ["No keyword\nretain & preserve <text>", "Iliad response, another Iliad"]
+    values = ["No keyword\nretain  & preserve <text>", "Iliad response, another Iliad"]
     source.write_text(json.dumps({"first": {"Gemini": values[0], "GPT3": "omit"},
         "next": [{"gemini": values[1]}]}))
     def event(step, adapter, action, params=None, body=None):
@@ -170,7 +170,14 @@ def test_gemini_source_draft_preserves_values_paragraphs_and_highlights(tmp_path
     root = ET.parse(output).getroot()
     ns = {"text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0"}
     paragraphs = root.findall(".//text:p", ns)
-    assert ["".join(p.itertext()) for p in paragraphs] == [values[0].replace("\n", "\\n"), "", values[1]]
+    def native_text(element):
+        content = element.text or ""
+        for child in element:
+            content += (" " if child.tag == "{" + ns["text"] + "}s" else
+                "\t" if child.tag == "{" + ns["text"] + "}tab" else native_text(child))
+            content += child.tail or ""
+        return content
+    assert [native_text(p) for p in paragraphs] == [values[0].replace("\n", "\\n"), "", values[1]]
     assert [s.text for s in root.findall(".//text:span", ns)] == ["Iliad", "Iliad"]
     state.events.append(event(2, "os", "command.run", params, {"returncode": 0}))
     assert '"action": "desktop.open_path"' in _cross_app_hint(state, "gemini-document")
