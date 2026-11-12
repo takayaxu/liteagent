@@ -209,11 +209,74 @@
     {
       "order": 101,
       "task_id": "185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
-      "status": "pending",
+      "status": "input_reference_mismatch",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/101-multi_apps-185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "6c3aee6e4a06cbf856a4c550c12ec3f53a194664",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-v1-config.json",
+          "status": "model_protocol_failure",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "duration_seconds": 880.329,
+          "steps": null,
+          "protocol_errors": 4
+        },
+        {
+          "attempt": 2,
+          "commit": "71760f9a94fc2702584e85a2e26296ce27835ab7",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-v2-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null
+        },
+        {
+          "attempt": 3,
+          "commit": "d338826410e3794e0d5fbc1f908fa3b6752f4918",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-run003",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-v3-config.json",
+          "status": "failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 0.5042,
+          "duration_seconds": 625.523,
+          "steps": 15,
+          "protocol_errors": 0
+        },
+        {
+          "attempt": 4,
+          "commit": "a1101fb0d64d2d32dc206f1a4d7d733e68ad4426",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-run004",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-v4-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null
+        }
+      ],
+      "reward": 0.5042,
+      "protocol_cleared": true,
+      "source_faithful_score_upper_bound": 0.506,
+      "input_reference_audit": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-input-reference-audit.json"
     },
     {
       "order": 102,
@@ -222,7 +285,15 @@
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "a1101fb0d64d2d32dc206f1a4d7d733e68ad4426",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order102-v1-config.json",
+          "status": "running"
+        }
+      ]
     },
     {
       "order": 105,
