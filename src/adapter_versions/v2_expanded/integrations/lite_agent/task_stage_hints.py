@@ -170,6 +170,57 @@ def _combined_hint(state):
     return "FINISH: compare the saved read-back against all requirements. If correct, propose_done now; avoid repeated reads, fills, formatting or saves. Repair only a concrete defect."
 
 
+def _demographic_hint(state):
+    events = [e for e in state.events if e.executed and not e.error]
+    actions = [e.proposed.get("action") for e in events]
+    if "workbook.inspect" not in actions:
+        return "OBSERVE: inspect the workbook to find the source sheet and its entire used range."
+    if "range.read" not in actions:
+        return "OBSERVE SOURCE: read the source table including Sex, Civil Status and Highest Educational Attainment headers and every record. Derive pivot fields from those exact observed headers."
+    if "sheet.create" not in actions:
+        return "DESTINATION: create the requested Sheet2 once, then merge its A1:C1 and write Demographic Profile into A1. Preserve the source sheet."
+    if "range.merge" not in actions:
+        return "TITLE: merge A1:C1 in Sheet2 and write the plain text Demographic Profile in A1."
+    title_written = any(e.proposed.get("action") == "range.write" and
+                        "Demographic Profile" in json.dumps(e.proposed.get("arguments", {}).get("values")) for e in events)
+    if not title_written:
+        return "TITLE TEXT: write Demographic Profile into Sheet2!A1 as plain text."
+    title_formatted = any(e.proposed.get("action") == "range.format"
+                         and e.proposed.get("arguments", {}).get("sheet") == "Sheet2"
+                         and e.proposed.get("arguments", {}).get("range") == "A1:C1"
+                         and e.proposed.get("arguments", {}).get("format", {}).get("bold") is True
+                         and e.proposed.get("arguments", {}).get("format", {}).get("font_color", "").lower() == "#ffffff"
+                         and e.proposed.get("arguments", {}).get("format", {}).get("background_color", "").lower() == "#0000ff"
+                         for e in events)
+    if not title_formatted:
+        return (
+            "TITLE FORMAT: apply ALL THREE properties in ONE range.format to the ENTIRE merged A1:C1 "
+            "in Sheet2: background_color=#0000ff, font_color=#ffffff, bold=true. Formatting A1 alone "
+            "or issuing separate incomplete formats cannot establish that the whole merged region is correct."
+        )
+    pivots = [e for e in events if e.proposed.get("action") == "pivot.create"]
+    if len(pivots) < 3:
+        return (
+            "PIVOTS: create one native pivot for each of Sex, Civil Status and Highest Educational Attainment, "
+            "using the complete observed source table. Use that field as row_fields and as a COUNT data field "
+            "with show_data_as=total_percentage. Start the first table below the title. Stack each next table "
+            "below the preceding pivot's ACTUAL returned output_range using below_range and blank_rows=1; "
+            "do not guess occupied heights. Existing successful pivots already exist: create only the missing field. "
+            "Do not reread correct pivot output repeatedly before the final save."
+        )
+    last_change = max(e.step for e in events if e.proposed.get("action") in
+                      {"pivot.create", "range.format", "range.write", "range.merge", "sheet.create"})
+    saves = [e for e in events if e.proposed.get("action") == "workbook.save" and e.step > last_change]
+    if not saves:
+        return "PERSIST: all three pivots and title formatting have executed. Save the workbook now, then inspect the native pivot inventory and read the full destination once."
+    after_save = [e for e in events if e.step > saves[-1].step]
+    if not any(e.proposed.get("action") == "workbook.inspect" for e in after_save):
+        return "VERIFY INVENTORY: workbook.inspect after the final save confirms three native pivot definitions and their exact occupied output_range rectangles. Do not save or reformat again unless a concrete defect requires editing."
+    if not any(e.proposed.get("action") == "range.read" and e.proposed.get("arguments", {}).get("sheet") == "Sheet2" for e in after_save):
+        return "VERIFY CELLS: use ONE contiguous range.read of Sheet2 from A1 through column C and the FINAL pivot's bottom row. Include the title, ALL THREE pivot outputs and BOTH blank separator rows in that read. Checking one table alone leaves the others unverified. Do not change formatting or save again between these final observations."
+    return "FINISH: compare all three read-back percentage tables and the blank separators to the observed source, and verify blue fill/bold white title across A1:C1. If current completion state is satisfied, propose_done now; repeating saves invalidates final read-back and repeating reads does not fix a formatting defect. Repair only the exact reported issue."
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -180,4 +231,6 @@ def model_hint(profile, state, *, targets=None):
                 "not Jan. Do not proceed to charts while the growth cells contain errors or wrong references.")
     if (targets or {}).get(state.task_id) == "combined-data" and state.domain == "libreoffice_calc":
         return _combined_hint(state)
+    if (targets or {}).get(state.task_id) == "demographic-pivots" and state.domain == "libreoffice_calc":
+        return _demographic_hint(state)
     return None
