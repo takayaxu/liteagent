@@ -299,6 +299,77 @@ def _tabstop_hint(state):
     return "FINISH: if every sentence has its first three words left and remaining text after a real right tab, propose_done with the saved evidence. Do not split paragraphs or repeat reads."
 
 
+def _vowel_hint(state):
+    events = [e for e in state.events if e.executed and not e.error]
+    reads = [e for e in events if e.proposed.get("action") == "table.read"]
+    if not reads:
+        return "OBSERVE: document.inspect to get the actual table name, then table.read to see every word with its exact cell name. Do not classify by cell position or by whether a word contains a vowel."
+    body = result_payload(reads[-1])
+    fields = body.get("cell_fields", [])
+    groups = {"red": [], "blue": []}
+    for cell in body.get("cells", []):
+        data = dict(zip(fields, cell)) if isinstance(cell, list) else cell
+        text = str(data.get("text", "")).strip()
+        if not text:
+            continue
+        group = "red" if text[0].lower() in "aeiou" else "blue"
+        groups[group].append({"cell": data.get("name"), "word": text, "first_letter": text[0]})
+    mutations = [e for e in events if e.proposed.get("action") == "table.set_cell_text_color"]
+    if len(mutations) < 2:
+        return (
+            "CLASSIFY AND COLOR: compare ONLY each observed word's first letter, case-insensitive. "
+            "Words starting a/e/i/o/u are RED #FF0000; all other initial letters, including y, are BLUE #0000FF. "
+            "Containing a vowel later does not make a word vowel-initial. Use explicit cell-name lists in "
+            "table.set_cell_text_color, preferably one call for ALL red words and one for ALL blue words. "
+            "Skip truly empty cells and preserve body paragraphs. Observed first-letter groups: "
+            + json.dumps(groups, ensure_ascii=False)
+        )
+    last_change = max(e.step for e in mutations)
+    saves = [e for e in events if e.proposed.get("action") == "document.save" and e.step > last_change]
+    if not saves:
+        return "PERSIST: the word-color groups have been applied. Save the document once, then table.read all cells to verify each word's FIRST LETTER against its actual font_color."
+    if reads[-1].step <= saves[-1].step:
+        return "VERIFY: table.read the saved word table once. Do not redo the classification from memory. Compare each actual cell color with its observed first letter."
+    colors = {}
+    for group, items in groups.items():
+        for item in items:
+            colors[item["cell"]] = "#ff0000" if group == "red" else "#0000ff"
+    wrong = []
+    for cell in body.get("cells", []):
+        data = dict(zip(fields, cell)) if isinstance(cell, list) else cell
+        if data.get("name") in colors and str(data.get("font_color", "")).lower() != colors[data["name"]]:
+            wrong.append(data)
+    if wrong:
+        return "REPAIR ONLY MISMATCHES: the following saved cells have a color inconsistent with their first letter. Correct only these, save and read back again: " + json.dumps(wrong, ensure_ascii=False)
+    return "FINISH: all nonempty word cells now match the first-letter color rule and are saved. Call propose_done now. Do not recolor correct vowel cells blue or keep reclassifying words."
+
+
+def _comma_table_hint(state):
+    events = [e for e in state.events if e.executed and not e.error]
+    inspections = [e for e in events if e.proposed.get("action") == "document.inspect"]
+    if not inspections:
+        return "OBSERVE: document.inspect the native paragraph inventory and existing tables. Existing tables are already tables and must be preserved. Locate body paragraphs containing comma-delimited lists, not incidental commas in explanatory prose."
+    conversions = [e for e in events if e.proposed.get("action") == "table.convert_text"]
+    last_change = max((e.step for e in conversions), default=0)
+    recent = [e for e in inspections if e.step > last_change]
+    if not recent:
+        return "OBSERVE AFTER CONVERSION: the selected text is now a table. Do not convert its old paragraph indices again. document.inspect current paragraphs, using paragraph_start/paragraph_limit and next_paragraph_start to see remaining unconverted text; native inspection does not require GUI scrolling."
+    latest = result_payload(recent[-1])
+    candidates = [{"index": p.get("index"), "text": p.get("text"), "length": p.get("text_length")}
+                  for p in latest.get("paragraph_details", []) if "," in p.get("text", "")]
+    return (
+        "CONVERT ONLY LIVE DELIMITED TEXT: inspect native paragraphs in bounded pages, following "
+        "next_paragraph_start for omitted content. Do not scroll the GUI to discover text that document.inspect "
+        "can read. For the current comma-separated list, use table.convert_text with delimiter=',' and the "
+        "CURRENT observed start/end indices; consecutive comma-separated list lines belong in one table. "
+        "A conversion creates one new native table and saves it; do not convert the same old indices again. "
+        "Preserve existing tables and explanatory prose. Current comma-containing observations (decide which "
+        "are actual lists): " + json.dumps(candidates, ensure_ascii=False)
+        + ". If no unconverted list remains after complete native coverage, document.save, inspect once "
+        "and propose_done. Blank paragraphs and already-converted table content are not new list sources."
+    )
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -322,4 +393,8 @@ def model_hint(profile, state, *, targets=None):
         return _personal_cleanup_hint(state)
     if (targets or {}).get(state.task_id) == "sentence-tabstops" and state.domain == "libreoffice_writer":
         return _tabstop_hint(state)
+    if (targets or {}).get(state.task_id) == "initial-letter-colors" and state.domain == "libreoffice_writer":
+        return _vowel_hint(state)
+    if (targets or {}).get(state.task_id) == "comma-table" and state.domain == "libreoffice_writer":
+        return _comma_table_hint(state)
     return None

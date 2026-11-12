@@ -68,7 +68,9 @@
       "4de54231-e4b5-49e3-b2ba-61a0bec721c0": "combined-data",
       "30e3e107-1cfb-46ee-a755-2cd080d7ba6a": "demographic-pivots",
       "a53f80cd-4a90-4490-8310-097b011433f6": "personal-cleanup",
-      "0a0faba3-5580-44df-965d-f562a99b291c": "sentence-tabstops"
+      "0a0faba3-5580-44df-965d-f562a99b291c": "sentence-tabstops",
+      "8472fece-c7dd-4241-8d65-9b3cd1a0b568": "initial-letter-colors",
+      "936321ce-5236-426a-9a20-e0e3c5dc536f": "comma-table"
     }
   },
   "tasks": [
