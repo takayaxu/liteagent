@@ -2529,10 +2529,12 @@ def constrain_tool_schema(
             "required": [],
             "additionalProperties": False,
         }
-        function["description"] += (
-            " Execute the next instruction- and structural-observation-derived step. "
-            "Call with no arguments; the Runner injects and logs the exact generic action "
-            f"arguments {structured['arguments']!r}."
+        function["description"] = (
+            f"Execute the currently bound {structured['action']} operation. "
+            "Call with no arguments: {}. This tool has no editable fields on this turn. "
+            "The Runner injects and logs these exact instruction- and "
+            f"structural-observation-derived arguments: {structured['arguments']!r}. "
+            "These are bound arguments, not an example to re-enter or convert."
         )
         return
 

@@ -1,0 +1,186 @@
+{
+  "base_commit": "765ac8e27f7377e0894b2c54d4f4f5d17a22eea6",
+  "order": [
+    55,
+    90,
+    100,
+    101,
+    102,
+    105,
+    111,
+    113,
+    114,
+    115,
+    189
+  ],
+  "model": "local Qwen3.5-9B thinking",
+  "budget": {
+    "max_steps": 100,
+    "max_agent_seconds": 1800,
+    "max_output_tokens": 8192
+  },
+  "review": "primary agent",
+  "source_comparison": [
+    "src/adapter_versions/v2_expanded/integrations/lite_agent/adapter_results.py",
+    "src/adapter_versions/v2_expanded/tests/test_context_projection.py"
+  ],
+  "tasks": [
+    {
+      "order": 55,
+      "task_id": "7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "status": "passed",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z-remaining132/workers/worker-02/raw/run-1/55-libreoffice_impress-7ae48c60-f143-4119-b659-15b8f485eb9a",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z-remaining132/results.json",
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "9d98153",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-run001",
+          "status": "diagnostically_interrupted",
+          "reward": null,
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          }
+        },
+        {
+          "attempt": 2,
+          "commit": "e3051c4c94065ee2e5fa8668e2bc2f0c33196510",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-run002-checkout/configs/single-task-local9b-thinking.json",
+          "status": "diagnostically_interrupted",
+          "reward": null,
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          }
+        },
+        {
+          "attempt": 3,
+          "commit": "d8cdb38995787fa9210389dff1dfb2be892a7393",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-run003",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-v3-config.json",
+          "status": "diagnostically_interrupted",
+          "reward": null,
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          }
+        },
+        {
+          "attempt": 4,
+          "commit": "fb46f4f1ba398bc8ea03f5060b9860fbd409d7ff",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-run004",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order55-v4-config.json",
+          "status": "passed",
+          "reward": 1.0,
+          "duration_seconds": 324.502,
+          "protocol_errors": 0,
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          }
+        }
+      ],
+      "reward": 1.0,
+      "passing_attempt": 4
+    },
+    {
+      "order": 90,
+      "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/90-multi_apps-c867c42d-a52d-4a24-8ae3-f75d256b5618",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 100,
+      "task_id": "82e3c869-49f6-4305-a7ce-f3e64a0618e7",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-03/raw/run-1/100-multi_apps-82e3c869-49f6-4305-a7ce-f3e64a0618e7",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 101,
+      "task_id": "185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/101-multi_apps-185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 102,
+      "task_id": "869de13e-bef9-4b91-ba51-f6708c40b096",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/102-multi_apps-869de13e-bef9-4b91-ba51-f6708c40b096",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 105,
+      "task_id": "26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-01/raw/run-1/105-multi_apps-26150609-0da3-4a7d-8868-0faf9c5f01bb",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 111,
+      "task_id": "a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-02/raw/run-1/111-multi_apps-a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 113,
+      "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/113-multi_apps-81c425f5-78f3-4771-afd6-3d2973825947",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 114,
+      "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/114-multi_apps-bb83cab4-e5c7-42c7-a67b-e46068032b86",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 115,
+      "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-06/raw/run-1/115-multi_apps-227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
+      "attempts": []
+    },
+    {
+      "order": 189,
+      "task_id": "7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
+      "status": "pending",
+      "baseline_status": "model_protocol_failure",
+      "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-01/raw/run-1/189-vs_code-7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
+      "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/results.json",
+      "attempts": []
+    }
+  ],
+  "stage_prompt_policy": "Disabled by default. Configured per exact task ID, optionally restricted by visible tool and successful actions. Non-target model messages verified byte-for-byte equivalent in normal/protocol/execution recovery.",
+  "baseline_runtime_equivalent_to_base_commit": true
+}

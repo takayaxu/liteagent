@@ -1410,6 +1410,7 @@ def run_task(
             read_audit_gate=config.get("protocol", {}).get("read_audit_gate", False),
             task_stage_hints=config.get("protocol", {}).get("task_stage_hints"),
             task_stage_hint_targets=config.get("protocol", {}).get("task_stage_hint_targets"),
+            task_stage_prompts=config.get("task_stage_prompts"),
             request_timeout_seconds=args.request_timeout,
         )
         request_context = {"step_num": 0, "attempt": 0, "screenshot": ""}
