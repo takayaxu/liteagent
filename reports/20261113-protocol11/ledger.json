@@ -93,11 +93,47 @@
     {
       "order": 90,
       "task_id": "c867c42d-a52d-4a24-8ae3-f75d256b5618",
-      "status": "pending",
+      "status": "passed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/90-multi_apps-c867c42d-a52d-4a24-8ae3-f75d256b5618",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "30cbd16b23bc48125b9400f816ffb03c39d913d4",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order90-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order90-v1-config.json",
+          "status": "failed",
+          "reward": 0.0,
+          "duration_seconds": 898.053,
+          "steps": 24,
+          "protocol_errors": 0,
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "diagnosis": "Exported 30 contacts to CSV, but workbook.inspect showed empty Untitled 1; saved it as contacts.xlsx without loading the CSV."
+        },
+        {
+          "attempt": 2,
+          "commit": "4947774fe1c12ab37149039f537848c8edd4f122",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order90-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order90-v2-config.json",
+          "status": "passed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 1.0,
+          "duration_seconds": 239.696,
+          "steps": 4,
+          "protocol_errors": 0
+        }
+      ],
+      "reward": 1.0,
+      "passing_attempt": 2
     },
     {
       "order": 100,
