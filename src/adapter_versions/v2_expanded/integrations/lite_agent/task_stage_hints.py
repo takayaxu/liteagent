@@ -39,6 +39,8 @@ def gemini_gui_observations(screenshot):
         controls = []
         for words in lines.values():
             label = " ".join(w["text"] for w in words).strip()
+            if "selected:" in label.lower():
+                result["visible_selected_text_status"] = label
             if label.lower().replace(":", "") not in {"find", "find all", "close", "iliad", "find and replace"}:
                 continue
             left = min(int(w["left"]) for w in words) / 2

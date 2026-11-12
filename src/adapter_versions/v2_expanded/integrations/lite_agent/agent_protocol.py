@@ -1014,14 +1014,37 @@ class AgentProtocolMixin:
             if scoped_kind == "gemini-document" and scoped_hint.startswith("HIGHLIGHT USING WRITER GUI:"):
                 from .task_stage_hints import gemini_gui_observations
                 images = [item for item in message_content if item.get("type") == "image_url"]
+                observed_gui = gemini_gui_observations(screenshot)
+                controls = {c["visible_text"].lower().rstrip(":"): c for c in observed_gui.get("visible_control_text", [])}
+                selected = observed_gui.get("visible_selected_text_status")
+                dialog_open = "find and replace" in controls
+                marker = observed_gui.get("visible_yellow_toolbar_swatch_image_pixel_center")
+                last_gui = next((e for e in reversed(state.events) if e.executed and not e.error
+                    and e.proposed.get("kind") == "gui"), None)
+                last_args = last_gui.proposed.get("arguments", {}) if last_gui else {}
+                marker_clicked = bool(marker and last_args.get("action") == "click"
+                    and abs(last_args.get("x", -100) - marker[0]) <= 3
+                    and abs(last_args.get("y", -100) - marker[1]) <= 3)
+                next_step = "Continue from the actual screenshot and observed controls."
+                if dialog_open and selected and "close" in controls:
+                    next_step = "CURRENT STEP ONLY: the visible status already confirms selected text. CLOSE the dialog now using the observed Close coordinates. Do not click Find All again."
+                elif not dialog_open and selected and marker and not marker_clicked:
+                    next_step = "CURRENT STEP ONLY: the dialog is closed and text remains selected. CLICK the observed yellow toolbar swatch coordinates now to apply highlighting."
+                elif not dialog_open and marker_clicked:
+                    next_step = "CURRENT STEP ONLY: the marker input has been sent. Call document.inspect now to verify its actual highlighting effect. If missing, tools_search exact libreoffice_writer document.inspect, then call it."
+                elif dialog_open and "find all" in controls:
+                    next_step = "CURRENT STEP ONLY: Find All is enabled in the current dialog. Click its observed coordinates now; closing and highlighting are later stages."
                 message_content = [{"type": "text", "text": json.dumps({
                     "instruction": state.instruction, "current_stage": scoped_hint,
-                    "current_screenshot_observations": gemini_gui_observations(screenshot),
+                    "current_screenshot_observations": observed_gui, "next_step": next_step,
                     "recent_inputs": [{"step": e.step, "arguments": {
                         k: v for k, v in e.proposed.get("arguments", {}).items() if k != "fallback_reason"},
                         "executed": e.executed, "error": e.error} for e in state.events[-6:]],
                     "note": "An acknowledged click or hotkey confirms only that input was sent. Infer dialog/selection/highlighting from the CURRENT screenshot, never from an old action's intended effect. If no dialog is visible, click the document body to focus Writer, then Ctrl+H. If Find is empty, click its adjacent input and type Iliad BEFORE Find All. If the dialog remains open after Find All, use Close before the yellow toolbar swatch. Do not click a toolbar button through a modal dialog. The GUI coordinate frame is image pixels.",
                 }, ensure_ascii=False)}, *images]
+                scoped_hint = (next_step + "\nThis current screenshot step takes precedence over the general "
+                    "highlighting workflow. The response text is already complete. Preserve it and verify "
+                    "native highlighting after the marker input; do not restart extraction or selection.")
             if scoped_kind == "gemini-document" and scoped_hint.startswith("EXTRACT BEFORE WRITING:"):
                 from .completion_policy import effective_canonical_action
                 from .completion_outcomes import result_payload
