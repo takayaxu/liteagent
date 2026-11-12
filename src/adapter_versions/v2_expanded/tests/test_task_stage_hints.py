@@ -117,3 +117,24 @@ def test_gemini_extraction_moves_to_document_creation_only_after_success():
     command.executed = True
     command.error = None
     assert "create Desktop/gemini_results.docx once" in _cross_app_hint(state, "gemini-document")
+
+
+def test_gemini_extraction_example_keeps_all_responses_in_nested_source_order(tmp_path):
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    source = tmp_path / "source.json"
+    source.write_text(json.dumps({"1": {"first": {"Gemini": "No keyword\nstill retain"},
+        "second": [{"GPT3": "omit", "gemini": "Iliad response"}]}}))
+    state = RuntimeState("synthetic", "multi_apps", "Copy all Gemini responses into Word.")
+    state.events = [ExecutionEvent(1, "", {"tool": "adapter__adapter_call", "action": "adapter.call",
+        "arguments": {"adapter": "vs_code", "action": "file.read_text",
+            "payload": {"params": {"path": str(source)}}}}, executed=True,
+        result={"path": str(source)})]
+    hint = _cross_app_hint(state, "gemini-document")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    params = call["payload"]["params"]
+    assert len(params["argv"]) == 3
+    assert params["cwd_source"] == "home" and params["provenance"] == "shell_history"
+    output = tmp_path / "extracted.txt"
+    script = params["argv"][2].replace("/tmp/gemini-responses.txt", str(output))
+    exec(compile(script, "source-based-extraction-example", "exec"), {})
+    assert output.read_text() == "No keyword still retain\n\nIliad response"
