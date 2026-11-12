@@ -527,3 +527,28 @@ def check_classification(agent: Any, state: Any, arguments: dict[str, Any], scre
         "instruction": state.instruction,
         "checker_response": {key: value for key, value in proposal.items() if key != "_model_visible_tools"},
     }
+
+
+def bind_reader_source(tools: list[dict[str, Any]], route: tuple[str, str], path: str) -> None:
+    """Expose the same exact-source restriction already enforced at execution."""
+    if route not in {
+        ("os", "pdf.extract_text_batch"), ("os", "image.extract_text_batch"),
+        ("os", "desktop.open_path"), ("vs_code", "file.read_text"),
+        ("libreoffice_writer", "document.read_file"), ("libreoffice_calc", "workbook.read_file"),
+    }:
+        return
+    for tool in tools:
+        function = tool.get("function", {})
+        if function.get("name") != "adapter__adapter_call":
+            continue
+        schema = function.get("parameters", {})
+        routes = schema.get("x-allowed-routes", [])
+        if routes != [{"adapter": route[0], "action": route[1]}]:
+            continue
+        params = schema.get("properties", {}).get("payload", {}).get("properties", {}).get("params", {})
+        properties = params.get("properties", {})
+        key = next((key for key in ("input_pattern", "path", "file_path", "input_path") if key in properties), None)
+        if key:
+            properties[key]["enum"] = [path]
+            properties[key]["description"] = "Exact current source path; copy this enum value without changing or shortening it."
+            function["description"] += " This reader targets ONLY the current observed source path: " + path + "."

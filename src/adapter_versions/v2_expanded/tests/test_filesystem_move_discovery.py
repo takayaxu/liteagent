@@ -1389,7 +1389,8 @@ def test_checker_stage_is_isolated_by_exact_task_and_role(mode):
 
 
 @pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
-def test_scoped_native_classification_omits_only_unrelated_image(recovery):
+@pytest.mark.parametrize('mode', ['structured_observation', 'classification_call'])
+def test_scoped_native_classification_omits_only_unrelated_image(recovery, mode):
     state = _organization_state()
     state.events[0].result['context_hint']['downstream_context']['matches'] = [
         {'path': '/home/user/Desktop/project', 'kind': 'directory'}]
@@ -1402,7 +1403,7 @@ def test_scoped_native_classification_omits_only_unrelated_image(recovery):
             'downstream_context': {'matches': [{'path': path + '/main.c', 'kind': 'file'}],
                 'scan_complete': True, 'truncated': False}}}))
     stages = {state.task_id: [{'text': 'Use current native source evidence.',
-        'when_tool': VERIFY_TOOL, 'context_mode': 'structured_observation'}]}
+        'when_tool': VERIFY_TOOL, 'context_mode': mode}]}
     baseline = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
     candidate = LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=stages), _NoopExecutor())
     tools = baseline.tools(state)
@@ -1412,6 +1413,8 @@ def test_scoped_native_classification_omits_only_unrelated_image(recovery):
     assert any(item['type'] == 'image_url' for item in original[-1]['content'])
     assert all(item['type'] != 'image_url' for item in updated[-1]['content'])
     assert updated[-1]['content'][0]['text'] == original[-1]['content'][0]['text']
+    if mode == 'classification_call':
+        assert updated[0]['content'] == stages[state.task_id][0]['text']
     state.task_id = 'other-task'
     assert candidate._messages(state, b'synthetic', tools=tools, **recovery) == baseline._messages(state, b'synthetic', tools=tools, **recovery)
 
@@ -1431,3 +1434,22 @@ def test_scoped_native_context_preserves_visual_source_image():
     tools = [{'function': {'name': VERIFY_TOOL}}]
     assert state.filesystem_organization_evidence()['action'] == 'desktop.open_path'
     assert not omit_stage_image(stages, state, tools)
+
+
+@pytest.mark.parametrize('name,key', [('DOC_2480903712718068684.pdf', 'input_pattern'),
+    ('source.xlsx', 'path'), ('notes.docx', 'path'), ('image.png', 'input_pattern'), ('source.ppt', 'path')])
+def test_organization_reader_exposes_execution_exact_source_restriction(name, key):
+    state = _organization_state()
+    path = '/home/user/Desktop/' + name
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    state.instruction += ' Inspect content before classifying each file.'
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    tools = agent.tools(state)
+    assert len(tools) == 1
+    params = tools[0]['function']['parameters']['properties']['payload']['properties']['params']
+    assert params['properties'][key]['enum'] == [path]
+    from integrations.lite_agent.tool_validation import validate_model_visible_tool_arguments
+    owner, action = state.filesystem_organization_reader_route()
+    with pytest.raises(ValueError):
+        validate_model_visible_tool_arguments(tools, 'adapter__adapter_call', {
+            'adapter': owner, 'action': action, 'payload': {'params': {key: name}}})

@@ -32,12 +32,12 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         raise ValueError(f"unknown qualified stage action: {reference}")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
                 raise ValueError("review_call requires the classification verdict tool")
-            if (stage.get("context_mode") == "structured_observation"
+            if (stage.get("context_mode") in {"structured_observation", "classification_call"}
                     and stage.get("when_tool") != "organization__verify_current"):
                 raise ValueError("structured_observation requires the organization review tool")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
@@ -194,7 +194,7 @@ def _source_sheet_facts(sheet: dict[str, Any]) -> dict[str, Any]:
 
 def omit_stage_image(overrides: Any, state: Any, tools: Any) -> bool:
     """Only a scoped native source review can omit an unrelated desktop image."""
-    if not any(stage.get("context_mode") == "structured_observation"
+    if not any(stage.get("context_mode") in {"structured_observation", "classification_call"}
                for stage in selected_stages(overrides, state, tools)):
         return False
     current = state.filesystem_organization_current_entry()
@@ -206,3 +206,9 @@ def omit_stage_image(overrides: Any, state: Any, tools: Any) -> bool:
     action = observation.get("action")
     return bool(action and action != "desktop.open_path"
                 and action == state.filesystem_organization_reader_route(current)[1])
+
+
+def classification_stage_system(overrides: Any, state: Any, tools: Any) -> str | None:
+    stages = [stage for stage in selected_stages(overrides, state, tools)
+              if stage.get("context_mode") == "classification_call"]
+    return "\n".join(stage["text"] for stage in stages) if stages else None
