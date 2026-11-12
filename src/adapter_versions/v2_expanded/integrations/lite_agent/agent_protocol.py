@@ -1011,6 +1011,17 @@ class AgentProtocolMixin:
                 }, ensure_ascii=False)}]
             if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith("HIGHLIGHT USING WRITER GUI:"):
+                from .task_stage_hints import gemini_gui_observations
+                images = [item for item in message_content if item.get("type") == "image_url"]
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction, "current_stage": scoped_hint,
+                    "current_screenshot_observations": gemini_gui_observations(screenshot),
+                    "recent_inputs": [{"step": e.step, "arguments": {
+                        k: v for k, v in e.proposed.get("arguments", {}).items() if k != "fallback_reason"},
+                        "executed": e.executed, "error": e.error} for e in state.events[-6:]],
+                    "note": "An acknowledged click or hotkey confirms only that input was sent. Infer dialog/selection/highlighting from the CURRENT screenshot, never from an old action's intended effect. If no dialog is visible, click the document body to focus Writer, then Ctrl+H. If Find is empty, click its adjacent input and type Iliad BEFORE Find All. If the dialog remains open after Find All, use Close before the yellow toolbar swatch. Do not click a toolbar button through a modal dialog. The GUI coordinate frame is image pixels.",
+                }, ensure_ascii=False)}, *images]
             if scoped_kind == "gemini-document" and scoped_hint.startswith("EXTRACT BEFORE WRITING:"):
                 from .completion_policy import effective_canonical_action
                 from .completion_outcomes import result_payload

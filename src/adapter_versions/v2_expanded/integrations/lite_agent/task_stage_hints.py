@@ -13,6 +13,56 @@ from .completion_outcomes import completion_outcome_issues, result_payload
 PROFILE = "deadline-repair-20261113-v1"
 
 
+def gemini_gui_observations(screenshot):
+    """Read only the current screenshot; returned coordinates never execute actions."""
+    import csv
+    import io
+    import subprocess
+    from PIL import Image
+
+    result = {}
+    try:
+        with Image.open(io.BytesIO(screenshot)) as source:
+            image = source.convert("RGB")
+        width, height = image.size
+        scale = min(1, 1280 / width, 720 / height)
+        process = subprocess.run(["tesseract", "stdin", "stdout", "--psm", "11", "tsv"],
+            input=screenshot, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=5, check=True)
+        lines = {}
+        for word in csv.DictReader(io.StringIO(process.stdout.decode()), delimiter="\t"):
+            if not word.get("text", "").strip():
+                continue
+            key = tuple(word[k] for k in ("page_num", "block_num", "par_num", "line_num"))
+            lines.setdefault(key, []).append(word)
+        controls = []
+        for words in lines.values():
+            label = " ".join(w["text"] for w in words).strip()
+            if label.lower().replace(":", "") not in {"find", "find all", "close", "iliad", "find and replace"}:
+                continue
+            left = min(int(w["left"]) for w in words)
+            top = min(int(w["top"]) for w in words)
+            right = max(int(w["left"]) + int(w["width"]) for w in words)
+            bottom = max(int(w["top"]) + int(w["height"]) for w in words)
+            control = {"visible_text": label, "image_pixel_center": [round((left + right) * scale / 2), round((top + bottom) * scale / 2)]}
+            if label.lower().rstrip(":") == "find":
+                control["adjacent_find_input_point"] = [round((right + 70) * scale), round((top + bottom) * scale / 2)]
+            controls.append(control)
+        result["visible_control_text"] = controls
+        # Writer's current yellow marker swatch is visible in the formatting toolbar.
+        pixels = image.load()
+        yellow = [(x, y) for y in range(int(height * .07), int(height * .17))
+                  for x in range(int(width * .2), int(width * .8))
+                  if pixels[x, y][0] > 210 and pixels[x, y][1] > 200 and pixels[x, y][2] < 90]
+        if yellow:
+            result["visible_yellow_toolbar_swatch_image_pixel_center"] = [
+                round(sum(x for x, _ in yellow) / len(yellow) * scale),
+                round(sum(y for _, y in yellow) / len(yellow) * scale)]
+        result["coordinate_space"] = "pixels in the attached 1280x720-or-smaller image, not desktop pixels"
+    except (OSError, ValueError, subprocess.SubprocessError):
+        result["ocr_unavailable"] = True
+    return result
+
+
 def _sales_anchors(state):
     """Repeat observed addresses explicitly; never infer them from the task ID."""
     months = {}
