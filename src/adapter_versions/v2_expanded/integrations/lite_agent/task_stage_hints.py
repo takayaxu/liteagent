@@ -559,8 +559,14 @@ def _cross_app_hint(state, kind):
                 "guess a highlighting hotkey. Then document.inspect once to read the native highlighting "
                 "summary. Keep every response and never append again."
             )
-        if "document.save" not in actions:
+        last_edit = max((e.step for e, _, a, _ in facts
+                         if a in {"document.append_text", "document.append_text_file"}
+                         or e.proposed.get("kind") == "gui"), default=0)
+        saves = [e for e, _, a, _ in facts if a == "document.save" and e.step > last_edit]
+        if not saves:
             return "PERSIST: native inspection now reports highlighting. Save Desktop/gemini_results.docx with document.save, then inspect the saved paragraphs and highlighting once. Do not repeat GUI highlighting on already highlighted matches."
+        if reads[-1].step <= saves[-1].step:
+            return "VERIFY: inspect the saved Gemini document once to confirm the paragraphs and Iliad highlighting survived the final save. Do not edit or append again."
         return "FINISH: compare the saved Gemini paragraphs and Iliad highlighting with the instruction, then propose_done. Do not search, re-extract, append duplicates or repeat identical inspections."
     if kind in {"invoice-mail", "mail-wallpaper"}:
         folder = "Bills" if kind == "invoice-mail" else "Notes"
