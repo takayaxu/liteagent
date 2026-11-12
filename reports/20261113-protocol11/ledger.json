@@ -590,10 +590,33 @@
             "osworld_matches": true
           },
           "reward": null
+        },
+        {
+          "attempt": 3,
+          "commit": "63bd38c936f88d77279966a12b3b41db6594c396",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order111-run003",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order111-v1-config.json",
+          "status": "passed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 1.0,
+          "duration_seconds": 295.208,
+          "steps": 11,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 1,
+          "execution_contract_validation_rejections": 1,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 1
         }
       ],
       "reward": 1.0,
-      "passing_attempt": 1
+      "passing_attempt": 3
     },
     {
       "order": 113,

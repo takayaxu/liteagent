@@ -72,13 +72,14 @@ def _route_payload_schema(
     if adapter == "libreoffice_writer":
         properties["document"] = copy.deepcopy(WRITER_DOCUMENT_SELECTOR_SCHEMA)
     payload["required"] = ["params"]
-    if adapter == "chrome" and action in TARGET_REQUIRED_ACTIONS:
+    if adapter == "chrome":
         native_tool = build_tools(
-            adapter, [action], include_gui=False, include_control_tools=False,
+            adapter, ["page.read"], include_gui=False, include_control_tools=False,
             strict_generic=True,
         )[0]
         properties["target"] = copy.deepcopy(native_tool["function"]["parameters"]["properties"]["target"])
-        payload["required"].append("target")
+        if action in TARGET_REQUIRED_ACTIONS:
+            payload["required"].append("target")
     return payload
 
 

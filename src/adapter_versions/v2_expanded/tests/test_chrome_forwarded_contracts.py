@@ -58,6 +58,12 @@ def test_profile_inspection_does_not_acquire_a_page_target_requirement():
     )
     schema = next(t["function"]["parameters"] for t in tools
                   if t["function"]["name"] == "adapter__adapter_call")
-    assert not list(Draft202012Validator(schema).iter_errors({
+    call = {
         "adapter": "chrome", "action": "browser.inspect", "payload": {"params": {}},
-    }))
+    }
+    validator = Draft202012Validator(schema)
+    assert not list(validator.iter_errors(call))
+    call["payload"]["target"] = {"type": "page", "url_pattern": "chrome://extensions"}
+    assert list(validator.iter_errors(call))
+    call["payload"]["target"] = {"url": "chrome://extensions"}
+    assert not list(validator.iter_errors(call))

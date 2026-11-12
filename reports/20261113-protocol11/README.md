@@ -77,3 +77,5 @@ run007原生trace已确认17条完整记录，运行源计数14；配置不含�
 114路由修复：按同一分句中的动词和对象识别文件整理，排除文字、数据、幻灯片等内容搬运；支持text files等文件对象及被动搬运表达。原114指令不再进入filesystem organization状态，102真实整理指令保持启用。140项文件整理/阶段提示测试通过（排除已复现基线1项），bin/check.sh及git diff --check通过；114原题尚待按序运行。
 
 111 run001：30步660.872秒，原评测PASS1.0。GUI press误用click分支1次，Chrome page.read缺target或误将URL作为locator导致4次契约拒绝。GUI生成分支名加入真实操作名，真实失败请求回放通过原分支校验；转发Chrome页面路由保留原生必需target及精确selector约束，page.read显示合法locator字段及互斥规则，原执行校验未放宽。监督进程意外退出后原pilot继续完成；独立使用原源码seal、评测器digest和可确定重建的原运行config完成三项完整性核验，均true，方法和证据单独标为recovered-final-integrity.json。
+
+111 run003主协议0，但browser.inspect的可选target仍允许未声明type/url_pattern，触发1次原生契约拒绝；已恢复后完成，正式评分见ledger。修复同时向所有Chrome单路由暴露原生target字段约束（不要求原本可省略的target）；35项Chrome/阶段隔离检查通过。未引入111质量阶段提示。
