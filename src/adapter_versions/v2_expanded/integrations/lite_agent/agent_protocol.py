@@ -1143,12 +1143,16 @@ class AgentProtocolMixin:
                             "now with the complete observed array supplied below. All source reading and "
                             "document creation are complete. Copy every string exactly; do not shorten, "
                             "summarize, insert ellipses or restart filesystem discovery. "
+                            "Source-visible backslash+n is TWO literal characters, NOT a line break. "
+                            "In tool JSON write the Unicode escape \\u005c followed by n for each source "
+                            "backslash+n pair. The argument example below uses that exact spelling. "
+                            "Never emit \\n for an internal source escape: that would decode into a newline. "
                             "blank_paragraphs_between is 1 and is outside the paragraphs array.")
                         message_content = [{"type": "text", "text": json.dumps({
                             "instruction": state.instruction, "current_stage": scoped_hint,
                             "observed_response_count": len(call["payload"]["params"]["paragraphs"]),
                             "next_public_call": call,
-                        }, ensure_ascii=False)}]
+                        }, ensure_ascii=False).replace("\\\\n", "\\u005cn")}]
                 else:
                     message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
