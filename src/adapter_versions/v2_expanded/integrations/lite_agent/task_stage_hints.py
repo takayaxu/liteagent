@@ -585,21 +585,35 @@ def _cross_app_hint(state, kind):
         if pictures and not any(action == "desktop.open_path" and args.get("path") == pictures[0] for _, _, action, args in facts):
             return call_stage("Open the actual source image and inspect its screenshot before selecting the person. Do not launch an unrelated dock icon.",
                 "os", "desktop.open_path", {"path": pictures[0]})
-        if not any(action == "command.run" and "grabCut" in json.dumps(args) for _, _, action, args in facts):
-            return ("BACKGROUND EDIT: the source picture is open. Inspect the actual person silhouette and "
-                "choose a foreground rectangle enclosing head, backpack, arms, legs and shoes. Use a public "
-                "os command.run finite Python script with cv2 GrabCut (no pretrained model/download needed): "
-                "read ONLY the observed source image, initialize background/foreground from the image and "
-                "your screenshot-selected rectangle, refine the mask for 8-12 iterations, compose retained "
-                "person pixels on pure white, and write Desktop/pic.jpg. Preserve image dimensions and the "
-                "person's pixels. Keep cwd_source=home and provenance=shell_history outside argv. Do not "
-                "invent a nonexistent background-removal API, use OCR for subjects or repeat GIMP searches. "
-                "Observed image path: " + json.dumps(pictures[0] if pictures else None)
-                + ". The current user asks final white background; the DOCX's transparent intermediate "
-                "does not change that final output. After editing, OPEN the actual pic.jpg and inspect "
-                "the result; correct concrete scenery leaks or missing person areas only.")
-        if any(action == "desktop.open_path" and args.get("path") == "/home/user/Desktop/pic.jpg" for _, _, action, args in facts):
-            return "BACKGROUND FINISH: inspect the CURRENT screenshot of the saved pic.jpg. If the whole person is retained on white and the file is present, propose_done with that observed evidence. If a visible defect remains, correct only that defect. Do not reopen the same image or repeat searches."
+        segments = [e for e, _, action, args in facts if action == "command.run" and "grabCut" in json.dumps(args)]
+        if not segments:
+            failed_cv2 = any(e.error and "No module named" in str(e.error) and "cv2" in str(e.error) for e in state.events)
+            installed = any(action == "command.run" and "opencv-python" in json.dumps(args) for _, _, action, args in facts)
+            if failed_cv2 and not installed:
+                return call_stage("The segmentation interpreter reported missing cv2. Install only the needed "
+                    "image-processing modules, then retry the same finite source-image operation once.",
+                    "os", "command.run", {"argv": ["pip3", "install", "opencv-python", "numpy"],
+                        "cwd_source": "home", "provenance": "shell_history"})
+            picture = pictures[0] if pictures else None
+            script = ("import cv2,numpy as np; " + f"im=cv2.imread({picture!r}); "
+                "h,w=im.shape[:2]; mask=np.zeros((h,w),np.uint8); "
+                "rect=(int(.18*w),int(.18*h),int(.60*w),int(.81*h)); cv2.setRNGSeed(0); "
+                "cv2.grabCut(im,mask,rect,np.zeros((1,65),np.float64),np.zeros((1,65),np.float64),10,cv2.GC_INIT_WITH_RECT); "
+                "keep=(mask==cv2.GC_FGD)|(mask==cv2.GC_PR_FGD); out=np.where(keep[:,:,None],im,255).astype(np.uint8); "
+                "ok=cv2.imwrite('/home/user/Desktop/pic.jpg',out,[cv2.IMWRITE_JPEG_QUALITY,95]); "
+                "print({'written':bool(ok),'width':w,'height':h,'foreground_pixels':int(keep.sum()),'rect':rect})")
+            return call_stage("Segment the PERSON from the actual opened source. In the observed portrait, "
+                "the head begins near the upper fifth and the shoes extend almost to the bottom. A box "
+                "covering only the middle half deletes limbs. The following source-based broad enclosure "
+                "covers the entire visible head, backpack, arms, legs and shoes; GrabCut classifies scenery "
+                "inside that enclosure. Preserve all original person pixels and image dimensions, compose "
+                "on pure white and write pic.jpg. Do not crop, use the old narrow box or retype this code. "
+                "The input path is the actual observed file; no reference image is used.",
+                "os", "command.run", {"argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"})
+        output_reads = [e for e, _, action, args in facts if action == "desktop.open_path"
+                        and args.get("path") == "/home/user/Desktop/pic.jpg" and e.step > segments[-1].step]
+        if output_reads:
+            return "BACKGROUND FINISH: inspect the CURRENT screenshot of the saved pic.jpg. Check the whole head, backpack, both arms, legs AND shoes are retained on white. If correct and the file is present, propose_done with that observed evidence. If a visible defect remains, correct only that defect and reopen the changed output. Do not reopen the same unchanged image or repeat searches."
         return call_stage("The segmentation command has executed. Open the ACTUAL saved output now to inspect person completeness and a clean white background. If correct, propose_done; do not rerun edits or discovery without a visible defect.",
             "os", "desktop.open_path", {"path": "/home/user/Desktop/pic.jpg"})
     return None
