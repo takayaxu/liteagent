@@ -276,23 +276,28 @@ def _tabstop_hint(state):
         inserted = any(e.proposed.get("action") == "text.find_replace"
                        and e.proposed.get("arguments", {}).get("find", "").startswith(prefix)
                        and "\t" in e.proposed.get("arguments", {}).get("replacement", "") for e in events)
+        inserted = inserted or any(e.proposed.get("action") == "paragraph.replace_text"
+                                  and e.proposed.get("arguments", {}).get("index") == index
+                                  and any("\t" in t for t in e.proposed.get("arguments", {}).get("paragraphs", []))
+                                  for e in events)
         if not p.get("has_tab_character") and not inserted:
             anchor = p["text"][:words[3].start()] if len(words) > 3 else prefix
             replacement = prefix + "\t" if len(words) > 3 else prefix
             anchors.append({"paragraph_index": index, "first_three_words": prefix,
-                            "find": anchor, "replacement": replacement})
+                            "find": anchor, "replacement": replacement,
+                            "paragraphs": [prefix + "\t" + p["text"][words[3].start():]] if len(words) > 3 else [prefix]})
     if anchors:
         return (
             "INSERT REAL TABS: keep each sentence in its ORIGINAL paragraph. Do NOT paragraph.split after "
             "the first three words: a paragraph break cannot align two text runs on one line. "
-            "Use text.find_replace with a short unique observed first-three-word anchor, replacing only "
-            "the following separating space with ONE actual tab. In JSON use \\t (decoded TAB), not \\\\t "
+            "Use paragraph.replace_text for ONE observed paragraph, with its exact full text in a ONE-item paragraphs ARRAY. Change only "
+            "the separating space after the third word to ONE actual tab. In JSON use \\t (decoded TAB), not \\\\t "
             "(literal backslash plus t). Preserve all original words, punctuation, blank paragraphs and formatting. "
             "Do not re-read identical complete paragraphs or reconstruct document text. "
             "CURRENT OBSERVED ANCHOR ONLY: " + json.dumps(anchors[0], ensure_ascii=False)
             .replace('\\t', '\\u0009')
-            + ". Call text.find_replace NOW with this find/replacement and replace_all=false, "
-            "case_sensitive=true. This exact source is already observed; do not inspect it again. "
+            + ". Call paragraph.replace_text NOW with index=paragraph_index and paragraphs copied from the observed array. "
+            "Do not use the find/replacement fields; they are boundary notes. This exact full source is already observed. "
             "The replacement is a JSON string: use the Unicode escape \\u0009 for an actual tab; "
             "do not double the backslash. After all insertions apply the format to ALL sentence indices, "
             "not an index guessed from one-based numbering."
@@ -313,7 +318,7 @@ def _tabstop_hint(state):
                     "position": {"value": width, "unit": "mm"}, "alignment": "right"}]})
         )
     last_change = max((e.step for e in events if e.proposed.get("action") in
-                       {"text.find_replace", "paragraph.set_format"}), default=0)
+                       {"text.find_replace", "paragraph.replace_text", "paragraph.set_format"}), default=0)
     saves = [e for e in events if e.proposed.get("action") == "document.save" and e.step > last_change]
     if not saves:
         return "PERSIST: save the Writer document after all local tab insertions and the right-tab format."
