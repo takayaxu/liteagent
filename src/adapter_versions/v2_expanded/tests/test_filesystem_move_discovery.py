@@ -1386,3 +1386,48 @@ def test_checker_stage_is_isolated_by_exact_task_and_role(mode):
     state.task_id = "other-task"
     _, _, untouched, _ = _independent_check(state, "/home/user/Desktop/Code", stages=stages)
     assert untouched.propose.call_args.kwargs["messages"] == original
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_scoped_native_classification_omits_only_unrelated_image(recovery):
+    state = _organization_state()
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [
+        {'path': '/home/user/Desktop/project', 'kind': 'directory'}]
+    path = state.filesystem_organization_current_entry()['path']
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+            'adapter': 'os', 'action': 'filesystem.find', 'payload': {'params': {
+                'roots': [path], 'recursive': True, 'kind': 'any', 'name_patterns': ['*']}}}},
+        result={'context_hint': {'downstream_adapter': 'os', 'downstream_action': 'filesystem.find',
+            'downstream_context': {'matches': [{'path': path + '/main.c', 'kind': 'file'}],
+                'scan_complete': True, 'truncated': False}}}))
+    stages = {state.task_id: [{'text': 'Use current native source evidence.',
+        'when_tool': VERIFY_TOOL, 'context_mode': 'structured_observation'}]}
+    baseline = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    candidate = LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=stages), _NoopExecutor())
+    tools = baseline.tools(state)
+    assert [t['function']['name'] for t in tools] == [VERIFY_TOOL]
+    original = baseline._messages(state, b'synthetic', tools=tools, **recovery)
+    updated = candidate._messages(state, b'synthetic', tools=tools, **recovery)
+    assert any(item['type'] == 'image_url' for item in original[-1]['content'])
+    assert all(item['type'] != 'image_url' for item in updated[-1]['content'])
+    assert updated[-1]['content'][0]['text'] == original[-1]['content'][0]['text']
+    state.task_id = 'other-task'
+    assert candidate._messages(state, b'synthetic', tools=tools, **recovery) == baseline._messages(state, b'synthetic', tools=tools, **recovery)
+
+
+def test_scoped_native_context_preserves_visual_source_image():
+    from integrations.lite_agent.task_stage_prompts import omit_stage_image
+    state = _organization_state()
+    path = '/home/user/Desktop/lecture.ppt'
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+            'adapter': 'os', 'action': 'desktop.open_path', 'payload': {'params': {'path': path}}}},
+        result={'context_hint': {'downstream_adapter': 'os', 'downstream_action': 'desktop.open_path',
+            'downstream_context': {'path': path, 'opened': True}}}))
+    stages = {state.task_id: [{'text': 'Use actual evidence.', 'when_tool': VERIFY_TOOL,
+        'context_mode': 'structured_observation'}]}
+    tools = [{'function': {'name': VERIFY_TOOL}}]
+    assert state.filesystem_organization_evidence()['action'] == 'desktop.open_path'
+    assert not omit_stage_image(stages, state, tools)

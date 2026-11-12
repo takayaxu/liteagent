@@ -32,11 +32,14 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         raise ValueError(f"unknown qualified stage action: {reference}")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
                 raise ValueError("review_call requires the classification verdict tool")
+            if (stage.get("context_mode") == "structured_observation"
+                    and stage.get("when_tool") != "organization__verify_current"):
+                raise ValueError("structured_observation requires the organization review tool")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
                 raise ValueError("task stage prompt fields must be nonempty strings")
 
@@ -187,3 +190,19 @@ def _source_sheet_facts(sheet: dict[str, Any]) -> dict[str, Any]:
                 and all(isinstance(row, list) and len(row) == len(headers) for row in rows[1:])):
             facts["source_rows_by_header"] = [dict(zip(headers, row)) for row in rows[1:]]
     return facts
+
+
+def omit_stage_image(overrides: Any, state: Any, tools: Any) -> bool:
+    """Only a scoped native source review can omit an unrelated desktop image."""
+    if not any(stage.get("context_mode") == "structured_observation"
+               for stage in selected_stages(overrides, state, tools)):
+        return False
+    current = state.filesystem_organization_current_entry()
+    if not current:
+        return False
+    observation = state.filesystem_organization_evidence(current)
+    if not observation:
+        return False
+    action = observation.get("action")
+    return bool(action and action != "desktop.open_path"
+                and action == state.filesystem_organization_reader_route(current)[1])
