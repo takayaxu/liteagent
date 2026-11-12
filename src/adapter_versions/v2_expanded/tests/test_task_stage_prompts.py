@@ -45,6 +45,45 @@ def test_stage_follows_only_successful_actions_and_stops_after_success():
     assert stage_prompt_text(prompts, state, []) == ''
 
 
+def test_hotkey_stage_uses_only_successfully_executed_gui_evidence():
+    stages = {'target': [{'after_hotkey': 'ctrl+c', 'until_hotkey': 'ctrl+v', 'text': 'Paste now.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    def add(keys, executed=True, error=None, kind='gui'):
+        state.events.append(ExecutionEvent(step=len(state.events) + 1, timestamp_utc='test',
+            proposed={'kind': kind, 'arguments': {'action': 'hotkey', 'keys': keys}},
+            executed=executed, error=error))
+    add(['ctrl', 'c'], executed=False)
+    add(['ctrl', 'c'], error={'type': 'ExecutionFailed'})
+    add(['ctrl', 'c'], kind='adapter')
+    assert stage_prompt_text(stages, state, []) == ''
+    add(['c', 'ctrl'])
+    assert stage_prompt_text(stages, state, []) == 'Paste now.'
+    add(['ctrl', 'v'], executed=False)
+    assert stage_prompt_text(stages, state, []) == 'Paste now.'
+    add(['ctrl', 'v'])
+    assert stage_prompt_text(stages, state, []) == ''
+    state.task_id = 'other'
+    assert stage_prompt_text(stages, state, []) == ''
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_hotkey_stage_does_not_change_other_task_messages(recovery):
+    stages = {'target': [{'until_hotkey': 'ctrl+c', 'text': 'Copy current data.'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    state = RuntimeState(task_id='other', domain='multi_apps', instruction='Inspect the document.')
+    tools = build_tools('multi_apps', [], include_gui=True)
+    assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
+
+
+@pytest.mark.parametrize('shortcut', ['ctrl', 'ctrl+', '+c', ['ctrl', 'c']])
+def test_invalid_hotkey_stage_predicates_are_rejected(shortcut):
+    with pytest.raises(ValueError, match='hotkey stage predicates'):
+        LiteAgentConfig(base_url='http://unused', task_stage_prompts={
+            'target': [{'until_hotkey': shortcut, 'text': 'Copy.'}]})
+
+
 @pytest.mark.parametrize('invalid', [[], {'target': 'text'}, {'target': [{}]},
     {'target': [{'text': 'hint', 'match_instruction': 'keyword'}]},
     {'target': [{'text': 'hint', 'when_tool': []}]}])

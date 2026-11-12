@@ -14,7 +14,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
             raise ValueError("task_stage_prompts requires exact task IDs and stage lists")
         for stage in stages:
             if not isinstance(stage, dict) or set(stage) - {
-                "text", "when_tool", "after_action", "until_action", "context_mode", "facts",
+                "text", "when_tool", "after_action", "until_action", "after_hotkey", "until_hotkey", "context_mode", "facts",
             }:
                 raise ValueError("unknown task stage prompt fields")
             if not isinstance(stage.get("text"), str) or not stage["text"].strip():
@@ -30,6 +30,14 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         known = False
                     if not known:
                         raise ValueError(f"unknown qualified stage action: {reference}")
+            for key in ("after_hotkey", "until_hotkey"):
+                shortcut = stage.get(key)
+                if shortcut is not None and (
+                    not isinstance(shortcut, str)
+                    or not 2 <= len(shortcut.split("+")) <= 6
+                    or any(not part.strip() for part in shortcut.split("+"))
+                ):
+                    raise ValueError("hotkey stage predicates require 2 to 6 keys separated by +")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
             if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization"}:
@@ -57,6 +65,18 @@ def _succeeded(state: Any, action: str) -> bool:
                for event in state.successful_adapter_events())
 
 
+def _hotkey_succeeded(state: Any, shortcut: str) -> bool:
+    expected = sorted(key.strip().lower() for key in shortcut.split("+"))
+    for event in state.events:
+        if not event.executed or event.error or event.proposed.get("kind") != "gui":
+            continue
+        arguments = event.proposed.get("gui_arguments", event.proposed.get("arguments", {}))
+        if (isinstance(arguments, dict) and arguments.get("action") == "hotkey"
+                and sorted(str(key).lower() for key in arguments.get("keys", [])) == expected):
+            return True
+    return False
+
+
 def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, str]]:
     """Select only this exact task's stages from truthful execution/tool state."""
     if not overrides:
@@ -69,6 +89,10 @@ def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, st
         if stage.get("after_action") and not _succeeded(state, stage["after_action"]):
             continue
         if stage.get("until_action") and _succeeded(state, stage["until_action"]):
+            continue
+        if stage.get("after_hotkey") and not _hotkey_succeeded(state, stage["after_hotkey"]):
+            continue
+        if stage.get("until_hotkey") and _hotkey_succeeded(state, stage["until_hotkey"]):
             continue
         texts.append(stage)
     return texts
