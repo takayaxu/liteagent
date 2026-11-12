@@ -110,6 +110,66 @@ def _sales_hint(state):
     )
 
 
+def _combined_hint(state):
+    events = [e for e in state.events if e.executed and not e.error]
+    actions = [e.proposed.get("action") for e in events]
+    if "workbook.inspect" not in actions:
+        return "OBSERVE: inspect the open workbook and its actual used range."
+    if "range.read" not in actions:
+        return "OBSERVE: read the source table, including its headers, existing row-2 formulas and all populated input rows."
+    fills = [e for e in events if e.proposed.get("action") == "range.fill_down"]
+    filled_columns = {e.proposed.get("arguments", {}).get("range", "")[:1] for e in fills}
+    if not {"B", "D"} <= filled_columns:
+        return (
+            "FILL ACCELERATION: extend the existing row-2 formulas down each missing row in B and D "
+            "using range.fill_down mode=formula_pattern, source_rows=1. Choose the bottom row "
+            "from the observed input table. Preserve source columns A and C and the row-2 formulas. "
+            "Already successful fills need no repetition."
+        )
+    seeds = []
+    for event in events:
+        args = event.proposed.get("arguments", {})
+        if event.proposed.get("action") == "cells.set_formulas":
+            seeds.extend((event, w.get("formula", "")) for w in args.get("writes", [])
+                         if str(w.get("cell", "")).startswith("E"))
+        elif event.proposed.get("action") == "range.write" and str(args.get("range", "")).startswith("E"):
+            seeds.extend((event, v.get("value", "")) for row in args.get("values", [])
+                         for v in (row if isinstance(row, list) else [row]) if isinstance(v, dict))
+    seeds = [(e, f) for e, f in seeds if isinstance(f, str) and "TEXT(" in f.upper()
+             and all(f"${c}$1" in f for c in "ABCD")]
+    if not seeds:
+        return (
+            "COMBINE: write the plain text header Combined Data in the new column. Then write ONE COMPLETE "
+            "formula for its first data row, including all four header/value pairs, with comma-space between pairs. "
+            "A prefix such as 'Hanging mass (kilograms): ' alone is unfinished. Every numeric value must use "
+            "TEXT(source_cell;\"0.00\"). Header references must be ABSOLUTE ($A$1, $B$1, $C$1, $D$1) "
+            "while data references stay relative. For the observed header row 1 and first data row 2 the pattern is "
+            "=$A$1&\": \"&TEXT(A2;\"0.00\")&\", \"&$B$1&\": \"&TEXT(B2;\"0.00\")&\", \"&$C$1&\": \"&TEXT(C2;\"0.00\")&\", \"&$D$1&\": \"&TEXT(D2;\"0.00\"). "
+            "Submit it as a typed formula through the current public schema, not incomplete plain text. "
+            "Formatting a string as a number cannot round the numbers embedded in it."
+        )
+    seed = seeds[-1][0]
+    combined_fills = [e for e in fills if e.step > seed.step
+                      and e.proposed.get("arguments", {}).get("range", "").startswith("E")]
+    if not combined_fills:
+        return (
+            "EXTEND COMBINED FORMULA: fill the new column from its first formula through the last observed "
+            "data row, mode=formula_pattern, source_rows=1. If repairing an earlier incorrect fill, "
+            "set only_blank=false: the default true preserves old WRONG nonblank formulas. "
+            "Do not rewrite the seed after a correct fill. Check both the second and final output row "
+            "to confirm the headers stay fixed and data references advance."
+        )
+    mutations = [e for e in events if e.proposed.get("action") in
+                 {"range.write", "range.fill_down", "cells.set_formulas", "range.format"}]
+    last_mutation = max(e.step for e in mutations)
+    saves = [e for e in events if e.proposed.get("action") == "workbook.save" and e.step > last_mutation]
+    if not saves:
+        return "PERSIST: save the workbook after the final fill. Then read back the populated source/result table once. Do not apply numeric formats to text cells or rewrite correct seed formulas."
+    if not any(e.step > saves[-1].step and e.proposed.get("action") == "range.read" for e in events):
+        return "VERIFY: read back the saved table. Check every B/D row is filled and every Combined Data row includes the ORIGINAL four headers plus that row's four values, each with exactly two decimals. Numeric native values of string formulas may be 0; use display_text to check their text result."
+    return "FINISH: compare the saved read-back against all requirements. If correct, propose_done now; avoid repeated reads, fills, formatting or saves. Repair only a concrete defect."
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -118,4 +178,6 @@ def model_hint(profile, state, *, targets=None):
                 + "\nPrefer these concrete live row/column mappings over earlier reasoning. "
                 "The Growth chart category header range starts at the observed FEB column, "
                 "not Jan. Do not proceed to charts while the growth cells contain errors or wrong references.")
+    if (targets or {}).get(state.task_id) == "combined-data" and state.domain == "libreoffice_calc":
+        return _combined_hint(state)
     return None
