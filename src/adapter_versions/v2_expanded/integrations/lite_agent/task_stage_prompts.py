@@ -14,7 +14,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
             raise ValueError("task_stage_prompts requires exact task IDs and stage lists")
         for stage in stages:
             if not isinstance(stage, dict) or set(stage) - {
-                "text", "when_tool", "after_action", "until_action", "context_mode",
+                "text", "when_tool", "after_action", "until_action", "context_mode", "facts",
             }:
                 raise ValueError("unknown task stage prompt fields")
             if not isinstance(stage.get("text"), str) or not stage["text"].strip():
@@ -30,6 +30,8 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         known = False
                     if not known:
                         raise ValueError(f"unknown qualified stage action: {reference}")
+            if stage.get("facts", "file_copy_ledger") != "file_copy_ledger":
+                raise ValueError("unknown task stage facts projection")
             if stage.get("context_mode", "full") not in {"full", "bound_call"}:
                 raise ValueError("unknown task stage context_mode")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
@@ -86,3 +88,43 @@ def bound_call_context(overrides: Any, state: Any, tools: Any) -> str | None:
             "Emit one tool call with {}. Assess its returned execution result next. "
             "The full native observations remain in the execution ledger. "
             "Recent executed-tool facts: " + json.dumps(observations, ensure_ascii=False))
+
+
+def stage_fact_text(overrides: Any, state: Any, tools: Any) -> str:
+    if not any(stage.get("facts") == "file_copy_ledger"
+               for stage in selected_stages(overrides, state, tools)):
+        return ""
+    import json
+    from .adapter_results import has_passed_verification
+    from .completion_policy import effective_canonical_action
+    opened, copies, last_opened = [], [], None
+    for event in state.successful_adapter_events():
+        if not has_passed_verification(event.result):
+            continue
+        domain, action, arguments = effective_canonical_action(event, state.domain)
+        if domain != "os":
+            continue
+        if action == "desktop.open_path":
+            path = arguments.get("path")
+            if isinstance(path, str) and path.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".bmp")):
+                last_opened = path
+                if path not in opened:
+                    opened.append(path)
+        elif action == "filesystem.copy":
+            source, destination = arguments.get("source"), arguments.get("destination")
+            if isinstance(source, str) and isinstance(destination, str):
+                pair = {"source": source, "destination": destination}
+                if pair not in copies:
+                    copies.append(pair)
+    facts = {"last_opened_image": last_opened,
+             "opened_image_paths": opened, "verified_executed_copies": copies,
+             "verified_copy_count": len(copies)}
+    return ("\nCURRENT EXECUTED COPY FACTS: " + json.dumps(facts, ensure_ascii=False)
+            + "\nOpening an image is neither a copy nor a classification. "
+              "Only verified_executed_copies confirms a copy. These facts do not "
+              "decide which images should be included. If your current visual "
+              "decision is include, compare this exact path with the copy records "
+              "and execute its copy before marking it copied. Do not infer copied "
+              "files from the number of opened images or from a plan. This is "
+              "execution history, not a current directory listing; verify final "
+              "membership separately after any deletion or replacement.")

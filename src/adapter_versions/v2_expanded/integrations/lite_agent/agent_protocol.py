@@ -938,7 +938,7 @@ class AgentProtocolMixin:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
             system_message += "\nCurrent terminal default stage: " + json.dumps(terminal_defaults, ensure_ascii=False)
-        from .task_stage_prompts import stage_prompt_text, bound_call_context
+        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text
         scoped_stage = stage_prompt_text(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
@@ -949,6 +949,11 @@ class AgentProtocolMixin:
         )
         if scoped_context is not None:
             message_content = [{"type": "text", "text": scoped_context}]
+        scoped_facts = stage_fact_text(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if scoped_facts:
+            message_content[0]["text"] += scoped_facts
         return [
             {
                 "role": "system",

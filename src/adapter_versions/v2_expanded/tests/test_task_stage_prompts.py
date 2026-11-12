@@ -96,3 +96,42 @@ def test_unknown_qualified_action_is_rejected_before_prompt_selection():
     with pytest.raises(ValueError, match='unknown qualified stage action'):
         LiteAgentConfig(base_url='http://unused', task_stage_prompts={
             'target': [{'after_action': 'os:archive.create', 'text': 'Inspect output.'}]})
+
+
+def test_copy_facts_keep_opened_and_verified_copied_images_distinct():
+    from integrations.lite_agent.task_stage_prompts import stage_fact_text
+    stages = {'target': [{'text': 'Check current evidence.', 'facts': 'file_copy_ledger'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Select images.')
+    def add(action, params, executed=True, verified=True):
+        state.events.append(ExecutionEvent(step=len(state.events)+1, timestamp_utc='test',
+            proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+                'adapter': 'os', 'action': action, 'payload': {'params': params}}},
+            executed=executed, result={'verification_passed': verified}))
+    add('desktop.open_path', {'path': '/tmp/opened.jpg'})
+    add('filesystem.copy', {'source': '/tmp/opened.jpg', 'destination': '/tmp/dst/opened.jpg'}, executed=False)
+    add('filesystem.copy', {'source': '/tmp/unverified.jpg', 'destination': '/tmp/dst/unverified.jpg'}, verified=False)
+    add('filesystem.copy', {'source': '/tmp/copied.jpg', 'destination': '/tmp/dst/copied.jpg'})
+    text = stage_fact_text(stages, state, [])
+    import json
+    data = json.loads(text.split('CURRENT EXECUTED COPY FACTS: ', 1)[1].split('\n', 1)[0])
+    assert data['opened_image_paths'] == ['/tmp/opened.jpg']
+    assert data['verified_executed_copies'] == [{'source': '/tmp/copied.jpg', 'destination': '/tmp/dst/copied.jpg'}]
+    assert data['verified_copy_count'] == 1
+    assert 'unverified.jpg' not in text
+    state.task_id = 'different'
+    assert stage_fact_text(stages, state, []) == ''
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_copy_fact_projection_does_not_change_other_task_requests(recovery):
+    stages = {'target': [{'when_tool': 'gui_action', 'text': 'Check copies.', 'facts': 'file_copy_ledger'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    baseline, candidate = agent(None), agent(stages)
+    state = RuntimeState(task_id='different', domain='os', instruction='Inspect images.')
+    tools = build_tools('os', [], include_gui=True)
+    assert candidate._messages(state, b'synthetic', tools=tools, **recovery) == baseline._messages(state, b'synthetic', tools=tools, **recovery)
+    state.task_id = 'target'
+    messages = candidate._messages(state, b'synthetic', tools=tools, **recovery)
+    assert 'CURRENT EXECUTED COPY FACTS:' in messages[-1]['content'][0]['text']
