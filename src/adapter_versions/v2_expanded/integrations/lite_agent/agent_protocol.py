@@ -798,6 +798,12 @@ class AgentProtocolMixin:
         if sentence_spacing is not None:
             state_text += "\nCURRENT SENTENCE SPACING STEP:\n" + json.dumps(sentence_spacing, ensure_ascii=False)
 
+        from . import bibliography_append_progress
+
+        bibliography_append = bibliography_append_progress.model_progress(state)
+        if bibliography_append is not None:
+            state_text += "\nCURRENT BIBLIOGRAPHY STEP:\n" + json.dumps(bibliography_append, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -902,6 +908,8 @@ class AgentProtocolMixin:
                 "requirement instead. The existing completion gate still checks the execution ledger.")
         if sentence_spacing is not None:
             system_message += "\nCurrent sentence spacing stage: " + json.dumps(sentence_spacing, ensure_ascii=False)
+        if bibliography_append is not None:
+            system_message += "\nCurrent bibliography stage: " + json.dumps(bibliography_append, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
