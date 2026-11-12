@@ -644,7 +644,7 @@
     {
       "order": 113,
       "task_id": "81c425f5-78f3-4771-afd6-3d2973825947",
-      "status": "passed",
+      "status": "model_protocol_failure",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/113-multi_apps-81c425f5-78f3-4771-afd6-3d2973825947",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
@@ -801,9 +801,32 @@
           "execution_contract_validation_rejections": 0,
           "repeated_action_guard_rejections": 0,
           "total_protocol_or_contract_rejections": 1
+        },
+        {
+          "attempt": 8,
+          "commit": "52b5504c57337be57f88e71ee16cc13740a51bf6",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run008",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v8-config.json",
+          "status": "model_protocol_failure",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "duration_seconds": 410.161,
+          "steps": null,
+          "main_protocol_errors": 3,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 3,
+          "execution_validation_or_guard_rejections": 0,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 3
         }
       ],
-      "reward": 1.0,
+      "reward": null,
       "passing_attempt": 7
     },
     {

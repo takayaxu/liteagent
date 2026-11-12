@@ -14,12 +14,12 @@ def validate_task_stage_prompts(overrides: Any) -> None:
             raise ValueError("task_stage_prompts requires exact task IDs and stage lists")
         for stage in stages:
             if not isinstance(stage, dict) or set(stage) - {
-                "text", "when_tool", "after_action", "until_action", "after_hotkey", "until_hotkey", "context_mode", "facts",
+                "text", "when_tool", "after_action", "until_action", "unless_action", "after_hotkey", "until_hotkey", "context_mode", "facts",
             }:
                 raise ValueError("unknown task stage prompt fields")
             if not isinstance(stage.get("text"), str) or not stage["text"].strip():
                 raise ValueError("task stage prompt text must be nonempty")
-            for key in ("after_action", "until_action"):
+            for key in ("after_action", "until_action", "unless_action"):
                 reference = stage.get(key)
                 if isinstance(reference, str) and ":" in reference:
                     from integrations.openapa_osworld.tool_catalog import public_actions
@@ -90,6 +90,8 @@ def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, st
             continue
         if stage.get("until_action") and _succeeded(state, stage["until_action"]):
             continue
+        if stage.get("unless_action") and _succeeded(state, stage["unless_action"]):
+            continue
         if stage.get("after_hotkey") and not _hotkey_succeeded(state, stage["after_hotkey"]):
             continue
         if stage.get("until_hotkey") and _hotkey_succeeded(state, stage["until_hotkey"]):
@@ -116,6 +118,18 @@ def workflow_stage_projection(overrides: Any, state: Any, tools: Any) -> tuple[s
         "Completion still requires the original task and execution checks.\n"
         + "\n".join(stage["text"] for stage in stages)
     )
+    routes = []
+    for tool in tools or []:
+        allowed = tool.get("function", {}).get("parameters", {}).get("x-allowed-routes", [])
+        for route in allowed if isinstance(allowed, list) else []:
+            if (isinstance(route, dict) and isinstance(route.get("adapter"), str)
+                    and isinstance(route.get("action"), str) and route not in routes):
+                routes.append({"adapter": route["adapter"], "action": route["action"]})
+    if routes:
+        system += (
+            "\nBinding native routes exposed THIS turn: " + json.dumps(routes, ensure_ascii=False)
+            + "\nA remembered route absent from this list is not callable. Search it first."
+        )
     context = json.dumps({
         "recent_execution_facts": state.context_summary(limit=8, strict_generic=True),
         "executed_gui_hotkeys": [

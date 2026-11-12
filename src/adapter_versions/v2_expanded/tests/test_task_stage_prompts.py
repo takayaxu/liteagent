@@ -97,6 +97,22 @@ def test_workflow_projection_is_exact_task_only_and_keeps_instruction_and_execut
     assert '"keys": ["ctrl", "c"]' in messages[-1]['content'][0]['text']
 
 
+def test_workflow_exposes_only_the_current_binding_routes_not_remembered_actions():
+    from integrations.lite_agent.task_stage_prompts import workflow_stage_projection
+    from integrations.lite_agent.search_recovery_tools import constrain_adapter_call_routes
+    stages = {'target': [{'context_mode': 'workflow_call', 'text': 'Read the saved state.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    tools = constrain_adapter_call_routes(
+        build_tools('multi_apps', ['adapter.call'], include_gui=False),
+        [('libreoffice_writer', 'document.save')],
+    )
+    before = __import__('copy').deepcopy(tools)
+    system, _ = workflow_stage_projection(stages, state, tools)
+    assert '"action": "document.save"' in system
+    assert '"action": "table.read"' not in system
+    assert tools == before
+
+
 @pytest.mark.parametrize('shortcut', ['ctrl', 'ctrl+', '+c', ['ctrl', 'c']])
 def test_invalid_hotkey_stage_predicates_are_rejected(shortcut):
     with pytest.raises(ValueError, match='hotkey stage predicates'):
@@ -149,6 +165,22 @@ def test_stage_predicates_canonicalize_public_save_aliases():
         proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
             'adapter': 'libreoffice_calc', 'action': 'workbook.save_as', 'payload': {'params': {}}}}))
     assert stage_prompt_text(stages, state, []) == 'Read saved output.'
+
+
+@pytest.mark.parametrize('stop_action', ['table.delete_rows', 'document.save'])
+def test_workflow_stage_stops_after_either_deletion_or_save(stop_action):
+    stages = {'target': [{'text': 'Inspect rows.', 'until_action': 'libreoffice_writer:table.delete_rows',
+                          'unless_action': 'libreoffice_writer:document.save'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    assert stage_prompt_text(stages, state, []) == 'Inspect rows.'
+    def add(executed):
+        state.events.append(ExecutionEvent(step=len(state.events) + 1, timestamp_utc='test', executed=executed,
+            proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+                'adapter': 'libreoffice_writer', 'action': stop_action, 'payload': {'params': {}}}}))
+    add(False)
+    assert stage_prompt_text(stages, state, []) == 'Inspect rows.'
+    add(True)
+    assert stage_prompt_text(stages, state, []) == ''
 
 
 def test_unknown_qualified_action_is_rejected_before_prompt_selection():
