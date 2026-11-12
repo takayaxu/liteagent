@@ -654,6 +654,27 @@
           "commit": "02e334c5cf55ad7a7e358d8fa4ae41bdd86351cb",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run001",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v1-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 9,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 9,
+          "total_protocol_or_contract_rejections": 0
+        },
+        {
+          "attempt": 2,
+          "commit": "6be05c8e68460f596755298ea942c2569185f464",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order113-v2-config.json",
           "status": "running"
         }
       ]
