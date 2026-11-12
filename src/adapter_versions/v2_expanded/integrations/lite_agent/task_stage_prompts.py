@@ -25,6 +25,15 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                 raise ValueError("task stage prompt fields must be nonempty strings")
 
 
+def _succeeded(state: Any, action: str) -> bool:
+    if ":" not in action:
+        return bool(state.successful_action_events(action))
+    from .completion_policy import effective_canonical_action
+    domain, name = action.split(":", 1)
+    return any(effective_canonical_action(event, state.domain)[:2] == (domain, name)
+               for event in state.successful_adapter_events())
+
+
 def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, str]]:
     """Select only this exact task's stages from truthful execution/tool state."""
     if not overrides:
@@ -34,9 +43,9 @@ def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, st
     for stage in overrides.get(state.task_id, []):
         if stage.get("when_tool") and stage["when_tool"] not in names:
             continue
-        if stage.get("after_action") and not state.successful_action_events(stage["after_action"]):
+        if stage.get("after_action") and not _succeeded(state, stage["after_action"]):
             continue
-        if stage.get("until_action") and state.successful_action_events(stage["until_action"]):
+        if stage.get("until_action") and _succeeded(state, stage["until_action"]):
             continue
         texts.append(stage)
     return texts

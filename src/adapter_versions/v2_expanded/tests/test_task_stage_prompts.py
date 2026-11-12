@@ -66,3 +66,18 @@ def test_bound_context_requires_exact_task_and_single_empty_input_tool():
     assert bound_call_context(stages, state, [tool]) is None
     state.task_id = 'different'
     assert bound_call_context(stages, state, [tool]) is None
+
+
+def test_stage_recognizes_owner_qualified_actions_through_multi_apps_wrapper():
+    stages = {'target': [{'after_action': 'thunderbird:contacts.export_csv',
+                          'until_action': 'os:desktop.open_path', 'text': 'Open the observed CSV.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Convert the exported data.')
+    def add(owner, action):
+        state.events.append(ExecutionEvent(step=len(state.events)+1, timestamp_utc='test',
+            proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+                'adapter': owner, 'action': action, 'payload': {'params': {}}}}, executed=True))
+    assert stage_prompt_text(stages, state, []) == ''
+    add('thunderbird', 'contacts.export_csv')
+    assert stage_prompt_text(stages, state, []) == 'Open the observed CSV.'
+    add('os', 'desktop.open_path')
+    assert stage_prompt_text(stages, state, []) == ''
