@@ -74,3 +74,32 @@ def test_live_anchors_use_current_observation_and_flat_label_writes():
     anchors = json.loads(_sales_anchors(state))
     assert anchors["Jan_growth_cell_must_be_blank"] == "D21"
     assert anchors["Feb_formula_from_observed_Total_row"] == "=(E20-D20)/D20"
+
+
+def test_full_queue_configuration_cannot_activate_hints_for_other_173_tasks():
+    root = Path(__file__).resolve().parents[4]
+    config = json.loads((root / "configs/single-task-deadline-stage-hints.json").read_text())
+    targets = config["protocol"]["task_stage_hint_targets"]
+    assert len(targets) == 16
+    matched = []
+    for task in config["tasks"]:
+        state = RuntimeState(task["task_id"], task["domain"], "Calculate total sales and growth.")
+        assert scoped_model_hint(None, state, targets=targets) is None
+        if state.task_id in targets:
+            matched.append(state.task_id)
+        else:
+            assert scoped_model_hint(PROFILE, state, targets=targets) is None
+    assert set(matched) == set(targets)
+
+
+def test_vowel_grouping_reads_first_character_and_preserves_empty_cells():
+    from integrations.lite_agent.task_stage_hints import _vowel_hint
+    state = RuntimeState("synthetic", "libreoffice_writer", "Color vowel-initial words.")
+    state.events = [ExecutionEvent(1, "", {"action": "table.read"}, executed=True,
+        result={"cell_fields": ["name", "text", "font_color"],
+                "cells": [["A1", "eat", "automatic"], ["A2", "yes", "automatic"],
+                          ["B1", "white", "automatic"], ["B2", "", "automatic"]]})]
+    hint = _vowel_hint(state)
+    assert '"word": "eat", "first_letter": "e"' in hint
+    assert '"word": "yes", "first_letter": "y"' in hint
+    assert '"cell": "B2"' not in hint

@@ -962,6 +962,24 @@ class AgentProtocolMixin:
                     "calculate individual fractions in reasoning. Emit exactly one complete tool call."
                 )
                 message_content = [{"type": "text", "text": state.instruction}]
+            if scoped_kind in {"ecs-rates", "grf-records"} and len(tools or []) == 1 and (
+                tools[0].get("function", {}).get("name") == "propose_done"
+            ):
+                from .completion_outcomes import result_payload
+                from .completion_policy import effective_canonical_action
+                target_read = next((result_payload(e) for e in reversed(state.events)
+                    if e.executed and not e.error and effective_canonical_action(e, state.domain)[1] == "range.read"), {})
+                system_message = (
+                    "The model-selected output has been written, saved and checked by the existing execution "
+                    "gate. Review the full native target read-back below; it is not the shortened history "
+                    "preview. If it matches the requested years and universities, emit the provided "
+                    "propose_done call now with concise evidence. The gate still validates completion. "
+                    "Do not search, rewrite or request another identical read merely because an older "
+                    "history preview omitted rows. Call exactly one provided tool."
+                )
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction, "full_native_target_readback": target_read,
+                }, ensure_ascii=False)}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
         scoped_stage = stage_prompt_text(
