@@ -406,7 +406,14 @@ def check_classification(agent: Any, state: Any, arguments: dict[str, Any], scre
     if stages:
         guidance = "\n".join(stage["text"] for stage in stages)
         if any(stage.get("context_mode") == "review_call" for stage in stages):
-            messages[0]["content"] = guidance
+            messages[0]["content"] = guidance + "\nBinding verdict contract: " + json.dumps({
+                "destination_directory_enum": directory_schema.get("enum"),
+                "disposition_enum": verdict_tool["function"]["parameters"]["properties"]["disposition"]["enum"],
+                "incompatible_destinations": exclusions,
+                "reason_max_characters": 300,
+                "evidence_quote_max_characters": 240,
+                "observed_type_max_characters": 80,
+            }, ensure_ascii=False)
         else:
             messages[0]["content"] += "\nCurrent task stage guidance:\n" + guidance
     agent.assert_agent_surface_safe(state, messages, [verdict_tool])

@@ -1386,7 +1386,8 @@ def test_checker_stage_is_isolated_by_exact_task_and_role(mode):
     assert marker in updated[0]["content"]
     assert updated[1:] == original[1:]
     if mode == "review_call":
-        assert updated[0]["content"] == marker
+        assert updated[0]["content"].startswith(marker)
+        assert "Binding verdict contract" in updated[0]["content"]
     state.task_id = "other-task"
     _, _, untouched, _ = _independent_check(state, "/home/user/Desktop/Code", stages=stages)
     assert untouched.propose.call_args.kwargs["messages"] == original
@@ -1417,7 +1418,7 @@ def test_scoped_native_classification_omits_only_unrelated_image(recovery, mode)
     assert any(item['type'] == 'image_url' for item in original[-1]['content'])
     assert all(item['type'] != 'image_url' for item in updated[-1]['content'])
     if mode == 'classification_call':
-        assert updated[0]['content'] == stages[state.task_id][0]['text']
+        assert updated[0]['content'].startswith(stages[state.task_id][0]['text'])
         text = updated[-1]['content'][0]['text']
         facts = json.loads(text.split('Current source classification facts: ', 1)[1].split('\n')[0])
         assert facts['current_object']['path'] == path
@@ -1481,3 +1482,55 @@ def test_scoped_classification_facts_distinguish_permitted_and_excluded_director
     facts = json.loads(classification_stage_context(stages, state, tools).split(': ',1)[1].split('\n')[0])
     assert facts['permitted_destination_directories'] == ['/home/user/Desktop/Other', '/home/user/Desktop']
     assert {x['directory'] for x in facts['incompatible_destinations']} == {'/home/user/Desktop/Papers','/home/user/Desktop/Code'}
+
+
+def test_scoped_classification_feedback_keeps_verdict_without_repeating_checker_reasoning():
+    from integrations.lite_agent.task_stage_prompts import classification_stage_context
+    state = _classification_state()
+    current = state.filesystem_organization_current_entry()
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind':'organization', 'action':VERIFY_ACTION, 'arguments':{}},
+        result={'path':current['path'], 'passed':False, 'reason':'Need different observed evidence.',
+            'checker_response':{'reasoning_content':'PRIVATE_REPEATED_REASONING_MARKER'}}))
+    from integrations.lite_agent.organization_validation import current_review_tool
+    tools = [current_review_tool(state,current)]
+    stages = {state.task_id:[{'text':'Use current evidence.', 'when_tool':VERIFY_TOOL, 'context_mode':'classification_call'}]}
+    text = classification_stage_context(stages,state,tools)
+    facts = json.loads(text.split(': ',1)[1].split('\n')[0])
+    assert facts['latest_classification_feedback'] == {'path':current['path'], 'passed':False, 'reason':'Need different observed evidence.'}
+    assert 'PRIVATE_REPEATED_REASONING_MARKER' not in text
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+@pytest.mark.parametrize('extra_control', [False, True])
+def test_completed_organization_stage_requires_verified_disposition_and_is_task_scoped(recovery, extra_control):
+    from integrations.lite_agent.task_stage_prompts import organization_completion_context
+    state = _classification_state()
+    matches = state.events[0].result['context_hint']['downstream_context']['matches']
+    matches[:] = [entry for entry in matches if not entry['path'].endswith('notes.txt')]
+    path = state.filesystem_organization_current_entry()['path']
+    stages = {state.task_id:[{'text':'Use verified completion facts.', 'when_tool':'propose_done',
+        'context_mode':'completed_organization'}]}
+    tool = next(tool for tool in build_tools('multi_apps', [], include_gui=False) if tool['function']['name']=='propose_done')
+    tools = [tool]
+    if extra_control:
+        from integrations.lite_agent.completion_review import revision_tool
+        tools.append(revision_tool())
+    assert organization_completion_context(stages,state,tools) is None
+    _, check, _, _ = _independent_check(state,'/home/user/Desktop/Code')
+    assert check.result['passed']
+    state.events.append(ExecutionEvent(step=3,timestamp_utc='test',executed=True,
+        proposed={'kind':'adapter','action':'adapter.call','arguments':{'adapter':'os','action':'filesystem.rename',
+            'payload':{'params':{'source':path,'destination':'/home/user/Desktop/Code/main.py'}}}},
+        result={'verification_passed':False}))
+    assert organization_completion_context(stages,state,tools) is None
+    state.events[-1].result['verification_passed'] = True
+    text = organization_completion_context(stages,state,tools)
+    assert '"observed_source_count": 1' in text and '"pending_source_paths": []' in text
+    assert '"source": "/home/user/Desktop/main.py"' in text
+    baseline=LiteAgent(LiteAgentConfig(base_url='http://unused'),_NoopExecutor())
+    candidate=LiteAgent(LiteAgentConfig(base_url='http://unused',task_stage_prompts=stages),_NoopExecutor())
+    updated=candidate._messages(state,b'synthetic',tools=tools,**recovery)
+    assert updated[-1]['content'] == [{'type':'text','text':text}]
+    state.task_id='other-task'
+    assert candidate._messages(state,b'synthetic',tools=tools,**recovery) == baseline._messages(state,b'synthetic',tools=tools,**recovery)

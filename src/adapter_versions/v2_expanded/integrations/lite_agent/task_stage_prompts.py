@@ -32,7 +32,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         raise ValueError(f"unknown qualified stage action: {reference}")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
@@ -40,6 +40,9 @@ def validate_task_stage_prompts(overrides: Any) -> None:
             if (stage.get("context_mode") in {"structured_observation", "classification_call"}
                     and stage.get("when_tool") != "organization__verify_current"):
                 raise ValueError("structured_observation requires the organization review tool")
+            if (stage.get("context_mode") == "completed_organization"
+                    and stage.get("when_tool") != "propose_done"):
+                raise ValueError("completed_organization requires propose_done")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
                 raise ValueError("task stage prompt fields must be nonempty strings")
 
@@ -211,7 +214,17 @@ def omit_stage_image(overrides: Any, state: Any, tools: Any) -> bool:
 def classification_stage_system(overrides: Any, state: Any, tools: Any) -> str | None:
     stages = [stage for stage in selected_stages(overrides, state, tools)
               if stage.get("context_mode") == "classification_call"]
-    return "\n".join(stage["text"] for stage in stages) if stages else None
+    if not stages:
+        return None
+    import json
+    guidance = "\n".join(stage["text"] for stage in stages)
+    function = next((tool.get("function", {}) for tool in (tools or [])
+        if tool.get("function", {}).get("name") == "organization__verify_current"), {})
+    properties = function.get("parameters", {}).get("properties", {})
+    enum = properties.get("destination_directory", {}).get("enum")
+    if enum is not None:
+        guidance += "\nBinding destination_directory enum for this call: " + json.dumps(enum, ensure_ascii=False)
+    return guidance
 
 
 def classification_stage_context(overrides: Any, state: Any, tools: Any) -> str | None:
@@ -228,6 +241,11 @@ def classification_stage_context(overrides: Any, state: Any, tools: Any) -> str 
     latest_check = next((event.result for event in reversed(state.events)
         if isinstance(event.result, dict) and event.result.get("path") == current["path"]
         and isinstance(event.result.get("passed"), bool)), None)
+    if latest_check is not None:
+        latest_check = {key: latest_check[key] for key in (
+            "path", "passed", "disposition", "destination_directory", "evidence_sufficient",
+            "reason", "observed_type", "evidence_quote", "quotes_verified", "rule_violations",
+            "proposal_rule_violations", "next_step_guidance") if key in latest_check}
     return "Current source classification facts: " + json.dumps({
         "current_object": current,
         "permitted_destination_directories": properties.get("destination_directory", {}).get("enum"),
@@ -236,3 +254,38 @@ def classification_stage_context(overrides: Any, state: Any, tools: Any) -> str 
         "latest_classification_feedback": latest_check,
         "latest_execution_error": state.events[-1].error if state.events else None,
     }, ensure_ascii=False) + "\nEmit one current review call using the exact permitted directory enum."
+
+
+def organization_completion_context(overrides: Any, state: Any, tools: Any) -> str | None:
+    if not any(stage.get("context_mode") == "completed_organization"
+               for stage in selected_stages(overrides, state, tools)):
+        return None
+    names = {tool.get("function", {}).get("name") for tool in (tools or [])}
+    if not names.issubset({"propose_done", "completion_revise"}) or not state.filesystem_organization_complete():
+        return None
+    import json
+    from .adapter_results import has_passed_verification
+    from .completion_policy import effective_canonical_action
+    marker = state.filesystem_observation_state() or {}
+    sources = {entry["path"] for entry in marker.get("observed_entries", [])}
+    moves, retained = {}, []
+    for event in state.events:
+        if not event.executed or event.error:
+            continue
+        owner, action, arguments = effective_canonical_action(event, state.domain)
+        if (owner, action) == ("os", "filesystem.rename") and has_passed_verification(event.result):
+            source = arguments.get("source")
+            if source in sources:
+                moves[source] = {"step": event.step, "source": source, "destination": arguments.get("destination")}
+        elif event.proposed.get("action") == "organization.skip_current":
+            path = event.proposed.get("arguments", {}).get("path")
+            if path in sources and path not in retained:
+                retained.append(path)
+    return "Completed filesystem execution facts: " + json.dumps({
+        "filesystem_organization_complete": True,
+        "observed_source_count": len(sources),
+        "pending_source_paths": state.filesystem_organization_pending_entries(),
+        "verified_moves": list(moves.values()), "verified_retentions": retained,
+    }, ensure_ascii=False) + (
+        "\nThese are verified execution receipts, not planned operations. A desktop window left open "
+        "from content inspection does not undo these filesystem changes. Propose completion from this ledger.")
