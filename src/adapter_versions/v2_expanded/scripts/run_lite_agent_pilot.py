@@ -1411,8 +1411,11 @@ def run_task(
             task_stage_hints=config.get("protocol", {}).get("task_stage_hints"),
             task_stage_hint_targets=config.get("protocol", {}).get("task_stage_hint_targets"),
             task_stage_prompts=config.get("task_stage_prompts"),
+            gui_coordinate_space=config.get("task_protocol_overrides", {}).get(
+                task["task_id"], {}).get("gui_coordinate_space", "image_pixels"),
             request_timeout_seconds=args.request_timeout,
         )
+        record["gui_model"]["coordinate_space"] = lite_config.gui_coordinate_space
         request_context = {"step_num": 0, "attempt": 0, "screenshot": ""}
         request_count = 0
 

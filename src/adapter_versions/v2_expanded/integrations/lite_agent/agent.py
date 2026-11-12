@@ -39,10 +39,13 @@ class LiteAgentConfig:
     task_stage_hints: str | None = None
     task_stage_hint_targets: dict[str, str] | None = None
     task_stage_prompts: dict[str, list[dict[str, str]]] | None = None
+    gui_coordinate_space: str = "image_pixels"
 
     def __post_init__(self) -> None:
         from .task_stage_prompts import validate_task_stage_prompts
         validate_task_stage_prompts(self.task_stage_prompts)
+        if self.gui_coordinate_space not in {"image_pixels", "normalized_1000"}:
+            raise ValueError("unsupported GUI coordinate space")
         if self.allow_task_specific_or_golden:
             raise ValueError(
                 "task-specific or golden-enabled LiteAgent mode is not available"

@@ -936,7 +936,7 @@ def _classification_state():
     return state
 
 
-def _independent_check(state, selected, *, decided="/home/user/Desktop/Code", disposition="move", sufficient=True, screenshot=None, quote=""):
+def _independent_check(state, selected, *, thinking=False, budget=4096, stages=None, decided="/home/user/Desktop/Code", disposition="move", sufficient=True, screenshot=None, quote=""):
     client = Mock()
     client.propose.return_value = {
         "tool": "organization__classification_verdict",
@@ -948,7 +948,8 @@ def _independent_check(state, selected, *, decided="/home/user/Desktop/Code", di
     }
     executor = Mock()
     executor.execute.return_value = {"executed": True, "result": {"verification_passed": True}}
-    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False), executor, model_client=client)
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False,
+        enable_thinking=thinking, max_output_tokens=budget, task_stage_prompts=stages), executor, model_client=client)
     event = agent.execute_proposal(state, {
         "tool": VERIFY_TOOL,
         "arguments_raw": json.dumps({
@@ -989,6 +990,10 @@ def test_checked_move_advances_only_after_physical_verification(physical_passed)
     adapter = next(tool["function"] for tool in tools if tool["function"]["name"] == "adapter__adapter_call")
     params = adapter["parameters"]["properties"]["payload"]["properties"]["params"]
     assert params["properties"]["destination"]["enum"] == ["/home/user/Desktop/Code/main.py"]
+    from integrations.lite_agent.atomic_tool_surface import atomic_provider_surface
+    projected, bindings = atomic_provider_surface(tools)
+    assert bindings
+    assert "destination includes the original basename" in projected[0]["function"]["description"]
     executor.execute.return_value = {"executed": True, "result": {"verification_passed": physical_passed}}
     moved = agent.execute_proposal(state, {
         "tool": "adapter__adapter_call",
@@ -1356,3 +1361,235 @@ def test_checker_table_quote_correction_is_bounded_and_never_joins_cells(correct
     assert "bad-draft-marker" not in json.dumps(state.filesystem_organization_model_context())
     assert state.filesystem_organization_current_entry()["path"] == "/home/user/Desktop/data.xlsx"
     executor.execute.assert_not_called()
+
+
+@pytest.mark.parametrize("thinking,budget,expected", [(False, 8192, 512), (True, 8192, 8192), (True, 256, 256)])
+def test_classification_checker_respects_configured_thinking_output_budget(thinking, budget, expected):
+    state = _classification_state()
+    _, event, client, _ = _independent_check(state, "/home/user/Desktop/Code", thinking=thinking, budget=budget)
+    assert event.executed, event.error
+    assert client.propose.call_args.kwargs["output_token_budget"] == expected
+    assert client.propose.call_args.kwargs["enable_thinking"] is thinking
+
+
+@pytest.mark.parametrize("mode", ["full", "review_call"])
+def test_checker_stage_is_isolated_by_exact_task_and_role(mode):
+    from copy import deepcopy
+    state = _classification_state()
+    marker = "CURRENT_SCOPED_REVIEW_MARKER"
+    stages = {state.task_id: [{"when_tool": "organization__classification_verdict",
+        "text": marker, "context_mode": mode}]}
+    _, _, baseline, _ = _independent_check(deepcopy(state), "/home/user/Desktop/Code")
+    _, _, scoped, _ = _independent_check(deepcopy(state), "/home/user/Desktop/Code", stages=stages)
+    original = baseline.propose.call_args.kwargs["messages"]
+    updated = scoped.propose.call_args.kwargs["messages"]
+    assert marker in updated[0]["content"]
+    assert updated[1:] == original[1:]
+    if mode == "review_call":
+        assert updated[0]["content"].startswith(marker)
+        assert "Binding verdict contract" in updated[0]["content"]
+    state.task_id = "other-task"
+    _, _, untouched, _ = _independent_check(state, "/home/user/Desktop/Code", stages=stages)
+    assert untouched.propose.call_args.kwargs["messages"] == original
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+@pytest.mark.parametrize('mode', ['structured_observation', 'classification_call'])
+def test_scoped_native_classification_omits_only_unrelated_image(recovery, mode):
+    state = _organization_state()
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [
+        {'path': '/home/user/Desktop/project', 'kind': 'directory'}]
+    path = state.filesystem_organization_current_entry()['path']
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+            'adapter': 'os', 'action': 'filesystem.find', 'payload': {'params': {
+                'roots': [path], 'recursive': True, 'kind': 'any', 'name_patterns': ['*']}}}},
+        result={'context_hint': {'downstream_adapter': 'os', 'downstream_action': 'filesystem.find',
+            'downstream_context': {'matches': [{'path': path + '/main.c', 'kind': 'file'}],
+                'scan_complete': True, 'truncated': False}}}))
+    stages = {state.task_id: [{'text': 'Use current native source evidence.',
+        'when_tool': VERIFY_TOOL, 'context_mode': mode}]}
+    baseline = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    candidate = LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=stages), _NoopExecutor())
+    tools = baseline.tools(state)
+    assert [t['function']['name'] for t in tools] == [VERIFY_TOOL]
+    original = baseline._messages(state, b'synthetic', tools=tools, **recovery)
+    updated = candidate._messages(state, b'synthetic', tools=tools, **recovery)
+    assert any(item['type'] == 'image_url' for item in original[-1]['content'])
+    assert all(item['type'] != 'image_url' for item in updated[-1]['content'])
+    if mode == 'classification_call':
+        assert updated[0]['content'].startswith(stages[state.task_id][0]['text'])
+        text = updated[-1]['content'][0]['text']
+        facts = json.loads(text.split('Current source classification facts: ', 1)[1].split('\n')[0])
+        assert facts['current_object']['path'] == path
+        assert facts['current_object_observation'] == state.filesystem_organization_evidence()
+    else:
+        assert updated[-1]['content'][0]['text'] == original[-1]['content'][0]['text']
+    state.task_id = 'other-task'
+    assert candidate._messages(state, b'synthetic', tools=tools, **recovery) == baseline._messages(state, b'synthetic', tools=tools, **recovery)
+
+
+def test_scoped_native_context_preserves_visual_source_image():
+    from integrations.lite_agent.task_stage_prompts import omit_stage_image
+    state = _organization_state()
+    path = '/home/user/Desktop/lecture.ppt'
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+            'adapter': 'os', 'action': 'desktop.open_path', 'payload': {'params': {'path': path}}}},
+        result={'context_hint': {'downstream_adapter': 'os', 'downstream_action': 'desktop.open_path',
+            'downstream_context': {'path': path, 'opened': True}}}))
+    stages = {state.task_id: [{'text': 'Use actual evidence.', 'when_tool': VERIFY_TOOL,
+        'context_mode': 'structured_observation'}]}
+    tools = [{'function': {'name': VERIFY_TOOL}}]
+    assert state.filesystem_organization_evidence()['action'] == 'desktop.open_path'
+    assert not omit_stage_image(stages, state, tools)
+
+
+@pytest.mark.parametrize('name,key', [('DOC_2480903712718068684.pdf', 'input_pattern'),
+    ('source.xlsx', 'path'), ('notes.docx', 'path'), ('image.png', 'input_pattern'), ('source.ppt', 'path')])
+def test_organization_reader_exposes_execution_exact_source_restriction(name, key):
+    state = _organization_state()
+    path = '/home/user/Desktop/' + name
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    state.instruction += ' Inspect content before classifying each file.'
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    tools = agent.tools(state)
+    assert len(tools) == 1
+    params = tools[0]['function']['parameters']['properties']['payload']['properties']['params']
+    assert params['properties'][key]['enum'] == [path]
+    from integrations.lite_agent.atomic_tool_surface import atomic_provider_surface
+    projected, bindings = atomic_provider_surface(tools)
+    assert bindings
+    assert path in projected[0]['function']['description']
+    from integrations.lite_agent.tool_validation import validate_model_visible_tool_arguments
+    owner, action = state.filesystem_organization_reader_route()
+    with pytest.raises(ValueError):
+        validate_model_visible_tool_arguments(tools, 'adapter__adapter_call', {
+            'adapter': owner, 'action': action, 'payload': {'params': {key: name}}})
+
+
+def test_scoped_classification_facts_distinguish_permitted_and_excluded_directories():
+    from integrations.lite_agent.task_stage_prompts import classification_stage_context
+    state = _organization_state()
+    state.instruction = "Organize Desktop files. Place academic papers in 'Papers', coding projects in 'Code', and everything else under 'Other'."
+    path = '/home/user/Desktop/lecture.ppt'
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    from integrations.lite_agent.organization_validation import current_review_tool
+    tools = [current_review_tool(state, state.filesystem_organization_current_entry())]
+    stages = {state.task_id: [{'text': 'Classify the observed source.', 'when_tool': VERIFY_TOOL, 'context_mode': 'classification_call'}]}
+    facts = json.loads(classification_stage_context(stages, state, tools).split(': ',1)[1].split('\n')[0])
+    assert facts['permitted_destination_directories'] == ['/home/user/Desktop/Other', '/home/user/Desktop']
+    assert {x['directory'] for x in facts['incompatible_destinations']} == {'/home/user/Desktop/Papers','/home/user/Desktop/Code'}
+
+
+def test_scoped_classification_feedback_keeps_verdict_without_repeating_checker_reasoning():
+    from integrations.lite_agent.task_stage_prompts import classification_stage_context
+    state = _classification_state()
+    current = state.filesystem_organization_current_entry()
+    state.events.append(ExecutionEvent(step=2, timestamp_utc='test', executed=True,
+        proposed={'kind':'organization', 'action':VERIFY_ACTION, 'arguments':{}},
+        result={'path':current['path'], 'passed':False, 'reason':'Need different observed evidence.',
+            'checker_response':{'reasoning_content':'PRIVATE_REPEATED_REASONING_MARKER'}}))
+    from integrations.lite_agent.organization_validation import current_review_tool
+    tools = [current_review_tool(state,current)]
+    stages = {state.task_id:[{'text':'Use current evidence.', 'when_tool':VERIFY_TOOL, 'context_mode':'classification_call'}]}
+    text = classification_stage_context(stages,state,tools)
+    facts = json.loads(text.split(': ',1)[1].split('\n')[0])
+    assert facts['latest_classification_feedback'] == {'path':current['path'], 'passed':False, 'reason':'Need different observed evidence.'}
+    assert 'PRIVATE_REPEATED_REASONING_MARKER' not in text
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+@pytest.mark.parametrize('extra_control', [False, True])
+def test_completed_organization_stage_requires_verified_disposition_and_is_task_scoped(recovery, extra_control):
+    from integrations.lite_agent.task_stage_prompts import organization_completion_context
+    state = _classification_state()
+    matches = state.events[0].result['context_hint']['downstream_context']['matches']
+    matches[:] = [entry for entry in matches if not entry['path'].endswith('notes.txt')]
+    path = state.filesystem_organization_current_entry()['path']
+    stages = {state.task_id:[{'text':'Use verified completion facts.', 'when_tool':'propose_done',
+        'context_mode':'completed_organization'}]}
+    tool = next(tool for tool in build_tools('multi_apps', [], include_gui=False) if tool['function']['name']=='propose_done')
+    tools = [tool]
+    if extra_control:
+        from integrations.lite_agent.completion_review import revision_tool
+        tools.append(revision_tool())
+    assert organization_completion_context(stages,state,tools) is None
+    _, check, _, _ = _independent_check(state,'/home/user/Desktop/Code')
+    assert check.result['passed']
+    state.events.append(ExecutionEvent(step=3,timestamp_utc='test',executed=True,
+        proposed={'kind':'adapter','action':'adapter.call','arguments':{'adapter':'os','action':'filesystem.rename',
+            'payload':{'params':{'source':path,'destination':'/home/user/Desktop/Code/main.py'}}}},
+        result={'verification_passed':False}))
+    assert organization_completion_context(stages,state,tools) is None
+    state.events[-1].result['verification_passed'] = True
+    text = organization_completion_context(stages,state,tools)
+    assert '"observed_source_count": 1' in text and '"pending_source_paths": []' in text
+    assert '"source": "/home/user/Desktop/main.py"' in text
+    baseline=LiteAgent(LiteAgentConfig(base_url='http://unused'),_NoopExecutor())
+    candidate=LiteAgent(LiteAgentConfig(base_url='http://unused',task_stage_prompts=stages),_NoopExecutor())
+    updated=candidate._messages(state,b'synthetic',tools=tools,**recovery)
+    assert updated[-1]['content'] == [{'type':'text','text':text}]
+    state.task_id='other-task'
+    assert candidate._messages(state,b'synthetic',tools=tools,**recovery) == baseline._messages(state,b'synthetic',tools=tools,**recovery)
+
+
+def test_forwarded_inventory_survives_real_executor_and_compaction(monkeypatch):
+    from types import SimpleNamespace
+    from integrations.lite_agent.adapter_executor import AdapterExecutor
+    sources = [{'path':f'/home/user/Desktop/record_{i:02}.pdf','name':f'record_{i:02}.pdf','kind':'file'} for i in range(20)]
+    entries = sources + [{'path':'/home/user/Desktop/Papers','name':'Papers','kind':'directory'},
+                         {'path':'/home/user/Desktop/Other','name':'Other','kind':'directory'}]
+    native_entries = [dict(item,size_bytes=12345,mode='0644',mode_value=420,is_symlink=False,modified_at='2026-01-01T00:00:00Z') for item in entries]
+    native = {'matches':native_entries,'match_count':len(entries),'returned_count':len(entries),
+              'truncated':False,'scan_complete':True,'unused_transport_detail':'x'*20000}
+    body = {'status':'ok','adapter':'multi_apps','action':'adapter.call','result':{
+        'adapter':'os','action':'filesystem.find','response':{'status':'ok','result':native,'verification':{'passed':True}}}}
+    monkeypatch.setattr('integrations.lite_agent.adapter_executor.requests.post',
+        lambda *args,**kwargs:SimpleNamespace(ok=True,status_code=200,json=lambda:body))
+    state = RuntimeState(task_id='inventory-boundary-test',domain='multi_apps',
+        instruction="Organize Desktop files: put academic papers in 'Papers' and everything else under 'Other'.")
+    assert state.filesystem_organization_inventory is None
+    matches = search_actions('multi_apps','filesystem.find',strict_generic=True,limit=7)
+    state.events.append(ExecutionEvent(step=1,timestamp_utc='test',executed=True,
+        proposed={'kind':'catalog','tool':'tools_search','arguments':{'query':'filesystem.find'}},
+        result={'status':'ok','executed':True,'matches':matches}))
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'),AdapterExecutor({'multi_apps':'http://guest'}))
+    tools = agent.tools(state)
+    event = agent.execute_proposal(state,{'tool':'adapter__adapter_call','arguments_raw':json.dumps({
+        'adapter':'os','action':'filesystem.find','payload':{'params':{
+            'roots':['~/Desktop'],'name_patterns':['*'],'kind':'any','recursive':False,'max_results':100}}}),
+        '_model_visible_tools':tools})
+    assert event.executed,event.error
+    assert state.filesystem_organization_inventory == entries
+    hint = event.result['context_hint']['downstream_context']
+    assert len(hint['matches']) < len(entries) and hint['matches_omitted'] > 0
+    assert event.result['adapter_response']['truncated'] is True
+    assert set(state.filesystem_organization_pending_entries()) == {item['path'] for item in sources}
+    assert not state.filesystem_organization_complete()
+    assert 'organization_inventory' not in event.result
+
+
+def test_shortened_inventory_without_authoritative_records_cannot_mark_discovery_complete():
+    state = _organization_state()
+    hint = state.events[0].result['context_hint']['downstream_context']
+    hint['matches_omitted'] = 3
+    assert state.filesystem_observation_state() is None
+    assert not state.filesystem_organization_complete()
+
+
+@pytest.mark.parametrize('kind,truncated,scan_complete', [('file',False,True), ('any',True,True), ('any',False,False)])
+def test_filtered_or_incomplete_find_does_not_latch_authoritative_inventory(monkeypatch,kind,truncated,scan_complete):
+    from types import SimpleNamespace
+    from integrations.lite_agent.adapter_executor import AdapterExecutor
+    body={'status':'ok','result':{'adapter':'os','action':'filesystem.find','response':{'status':'ok',
+        'result':{'matches':[{'path':'/tmp/item','kind':'file'}],'truncated':truncated,'scan_complete':scan_complete}}}}
+    monkeypatch.setattr('integrations.lite_agent.adapter_executor.requests.post',
+        lambda *args,**kwargs:SimpleNamespace(ok=True,status_code=200,json=lambda:body))
+    result=AdapterExecutor({'multi_apps':'http://guest'}).execute('multi_apps','adapter.call',{
+        'adapter':'os','action':'filesystem.find','payload':{'params':{
+            'roots':['/tmp'],'kind':kind,'name_patterns':['*'],'recursive':False}}},{})
+    assert result['executed'],result
+    assert 'organization_inventory' not in result

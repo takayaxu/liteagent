@@ -78,3 +78,4 @@ class RuntimeState(RuntimeStateCoreMixin, CalcStateMixin, ImpressStateMixin):
         default_factory=dict
     )
     filesystem_organization_active_path: str | None = None
+    filesystem_organization_inventory: list[dict[str, Any]] | None = None

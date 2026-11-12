@@ -74,7 +74,7 @@ from .filesystem_contexts import (
     ORGANIZATION_SKIP_TOOL_NAME,
     organization_skip_tool,
 )
-from .organization_validation import current_review_tool
+from .organization_validation import current_review_tool, bind_reader_source
 
 
 def _filesystem_move_instruction(state: RuntimeState) -> bool:
@@ -320,7 +320,10 @@ class ToolSurfaceMixin:
                         # Insufficient evidence does not advance the object;
                         # allow a bounded new observation rather than a move.
                         reader = self._build_tools(state.domain, ["adapter.call"], include_gui=False, include_control_tools=False, strict_generic=True)
-                        tools.extend(constrain_adapter_call_routes(reader, [state.filesystem_organization_reader_route(current)]))
+                        reader_route = state.filesystem_organization_reader_route(current)
+                        bounded_reader = constrain_adapter_call_routes(reader, [reader_route])
+                        bind_reader_source(bounded_reader, reader_route, current["path"])
+                        tools.extend(bounded_reader)
                     return tools
                 else:
                     route = state.filesystem_organization_reader_route(current)
@@ -410,6 +413,10 @@ class ToolSurfaceMixin:
                     params["properties"]["max_depth"].update({"minimum": 1, "maximum": 4})
                     params["properties"]["max_results"].update({"minimum": 1, "maximum": 200})
                     params["required"] = list(dict.fromkeys([*params["required"], "kind", "recursive", "max_depth", "max_results"]))
+        if observation_complete and route is not None:
+            current = state.filesystem_organization_current_entry()
+            if current:
+                bind_reader_source(tools, route, current["path"])
         if route == ("os", "filesystem.rename"):
             current = state.filesystem_organization_current_entry()
             check = state.filesystem_organization_check(current)
@@ -422,6 +429,12 @@ class ToolSurfaceMixin:
                     params["properties"]["destination"]["enum"] = [
                         check["destination_directory"].rstrip("/") + "/" + current["path"].rsplit("/", 1)[-1]
                     ]
+                    params["description"] = (
+                        "Exact-path rename for the already checked current object. Copy the source enum and full destination enum exactly; "
+                        "destination includes the original basename and must not be only the category directory. "
+                        + str(params.get("description", ""))
+                    )
+                    params["properties"]["destination"]["description"] = "Exact full destination path from this enum, including the source basename; not just its parent directory."
         return self._append_organization_skip_tool(tools, state)
 
     @staticmethod

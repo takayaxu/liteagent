@@ -597,6 +597,13 @@ class AgentProtocolMixin:
         url = f"data:{media_type};base64," + base64.b64encode(encoded).decode("ascii")
         return url, coordinate_frame
 
+    def _prepare_agent_image(self, screenshot: bytes):
+        url, frame = self._prepare_model_image(screenshot)
+        space = getattr(getattr(self, "config", None), "gui_coordinate_space", "image_pixels")
+        if frame is not None and space == "normalized_1000":
+            frame["coordinate_space"] = space
+        return url, frame
+
     def _messages(
         self,
         state: RuntimeState,
@@ -798,6 +805,36 @@ class AgentProtocolMixin:
         if sentence_spacing is not None:
             state_text += "\nCURRENT SENTENCE SPACING STEP:\n" + json.dumps(sentence_spacing, ensure_ascii=False)
 
+        from . import bibliography_append_progress
+
+        bibliography_append = bibliography_append_progress.model_progress(state)
+        if bibliography_append is not None:
+            state_text += "\nCURRENT BIBLIOGRAPHY STEP:\n" + json.dumps(bibliography_append, ensure_ascii=False)
+
+        from . import italic_size_progress
+
+        italic_size = italic_size_progress.model_progress(state)
+        if italic_size is not None:
+            state_text += "\nCURRENT ITALIC SIZE STEP:\n" + json.dumps(italic_size, ensure_ascii=False)
+
+        from . import system_volume_progress
+
+        system_volume = system_volume_progress.model_progress(state)
+        if system_volume is not None:
+            state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(system_volume, ensure_ascii=False)
+
+        from . import relative_copy_progress
+
+        relative_copy = relative_copy_progress.model_progress(state)
+        if relative_copy is not None:
+            state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(relative_copy, ensure_ascii=False)
+
+        from . import literal_replace_progress
+
+        literal_replace = literal_replace_progress.model_progress(state)
+        if literal_replace is not None:
+            state_text += "\nCURRENT REQUEST STEP:\n" + json.dumps(literal_replace, ensure_ascii=False)
+
         from . import chapter_split_progress
 
         chapter_split = chapter_split_progress.model_progress(state)
@@ -831,18 +868,26 @@ class AgentProtocolMixin:
         if evidence and evidence.get("action") == "desktop.open_path":
             include_screenshot = True
         if include_screenshot:
-            image_url, coordinate_frame = self._prepare_model_image(screenshot)
+            image_url, coordinate_frame = self._prepare_agent_image(screenshot)
             if coordinate_frame is not None and (not tools or "gui_action" in tool_names):
                 self._latest_gui_coordinate_frame = coordinate_frame
                 width, height = coordinate_frame["model_size"]
+                normalized_coordinates = coordinate_frame.get("coordinate_space") == "normalized_1000"
+                coordinate_width, coordinate_height = (1001, 1001) if normalized_coordinates else (width, height)
                 if tools is not None:
                     for tool in tools:
                         function = tool.get("function", {})
                         if function.get("name") == "gui_action":
                             function["parameters"] = gui_action_schema_for_image(
-                                width, height
+                                coordinate_width, coordinate_height
                             )
                 message_content[0]["text"] += (
+                    f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
+                    "For gui_action use separate integer x/y (and to_x/to_y for drag) "
+                    "on a normalized 0..1000 grid on EACH axis, origin at top left. "
+                    "The right edge is x=1000 and bottom edge y=1000. "
+                    "The executor maps this grid to desktop pixels exactly once."
+                ) if normalized_coordinates else (
                     f"\nGUI coordinate frame: the attached image is {width}x{height} pixels. "
                     f"For gui_action use pixel coordinates in this image: x/to_x from 0 to {width - 1}, "
                     f"y/to_y from 0 to {height - 1}, origin at the top left. "
@@ -902,6 +947,20 @@ class AgentProtocolMixin:
                 "requirement instead. The existing completion gate still checks the execution ledger.")
         if sentence_spacing is not None:
             system_message += "\nCurrent sentence spacing stage: " + json.dumps(sentence_spacing, ensure_ascii=False)
+        if bibliography_append is not None:
+            system_message += "\nCurrent bibliography stage: " + json.dumps(bibliography_append, ensure_ascii=False)
+
+        if italic_size is not None:
+            system_message += "\nCurrent italic size stage: " + json.dumps(italic_size, ensure_ascii=False)
+
+        if system_volume is not None:
+            system_message += "\nCurrent request stage: " + json.dumps(system_volume, ensure_ascii=False)
+
+        if relative_copy is not None:
+            system_message += "\nCurrent request stage: " + json.dumps(relative_copy, ensure_ascii=False)
+
+        if literal_replace is not None:
+            system_message += "\nCurrent request stage: " + json.dumps(literal_replace, ensure_ascii=False)
         if chapter_split is not None:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
@@ -1000,17 +1059,45 @@ class AgentProtocolMixin:
                     "instruction": state.instruction, "full_native_target_readback": target_read,
                 }, ensure_ascii=False)}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
-        from .task_stage_prompts import stage_prompt_text, bound_call_context
+        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text, omit_stage_image, classification_stage_system, classification_stage_context, organization_completion_context
         scoped_stage = stage_prompt_text(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
         if scoped_stage:
             system_message += "\nCurrent task stage guidance:\n" + scoped_stage
+        scoped_system = classification_stage_system(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if scoped_system is not None:
+            system_message = scoped_system
+            if protocol_error:
+                system_message += "\nCurrent validation feedback: " + json.dumps({
+                    key: protocol_error[key] for key in ("reason", "tool_name", "schema_hints", "allowed_routes")
+                    if key in protocol_error}, ensure_ascii=False)
+        classification_context = classification_stage_context(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if classification_context is not None:
+            message_content[0]["text"] = classification_context
+        completion_context = organization_completion_context(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if completion_context is not None:
+            message_content = [{"type": "text", "text": completion_context}]
         scoped_context = bound_call_context(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
         if scoped_context is not None:
             message_content = [{"type": "text", "text": scoped_context}]
+        if omit_stage_image(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        ):
+            message_content = [item for item in message_content if item.get("type") != "image_url"]
+        scoped_facts = stage_fact_text(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if scoped_facts:
+            message_content[0]["text"] += scoped_facts
         return [
             {
                 "role": "system",

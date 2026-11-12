@@ -401,13 +401,31 @@ def check_classification(agent: Any, state: Any, arguments: dict[str, Any], scre
         )},
         {"role": "user", "content": content},
     ]
+    from .task_stage_prompts import selected_stages
+    stages = selected_stages(getattr(agent.config, "task_stage_prompts", None), state, [verdict_tool])
+    if stages:
+        guidance = "\n".join(stage["text"] for stage in stages)
+        if any(stage.get("context_mode") == "review_call" for stage in stages):
+            messages[0]["content"] = guidance + "\nBinding verdict contract: " + json.dumps({
+                "destination_directory_enum": directory_schema.get("enum"),
+                "disposition_enum": verdict_tool["function"]["parameters"]["properties"]["disposition"]["enum"],
+                "incompatible_destinations": exclusions,
+                "reason_max_characters": 300,
+                "evidence_quote_max_characters": 240,
+                "observed_type_max_characters": 80,
+            }, ensure_ascii=False)
+        else:
+            messages[0]["content"] += "\nCurrent task stage guidance:\n" + guidance
     agent.assert_agent_surface_safe(state, messages, [verdict_tool])
     diagnostics: list[dict[str, Any]] = []
     for attempt in range(2):
         try:
             proposal = agent.model_client.propose(
                 model=agent.config.model, messages=messages, tools=[verdict_tool],
-                temperature=0, output_token_budget=min(agent.config.max_output_tokens, 512),
+                temperature=0, output_token_budget=(
+                    agent.config.max_output_tokens if agent.config.enable_thinking
+                    else min(agent.config.max_output_tokens, 512)
+                ),
                 enable_thinking=agent.config.enable_thinking,
                 reasoning_effort=agent.config.reasoning_effort,
                 reasoning_mode=agent.config.reasoning_mode, expected_model=agent.config.model,
@@ -516,3 +534,31 @@ def check_classification(agent: Any, state: Any, arguments: dict[str, Any], scre
         "instruction": state.instruction,
         "checker_response": {key: value for key, value in proposal.items() if key != "_model_visible_tools"},
     }
+
+
+def bind_reader_source(tools: list[dict[str, Any]], route: tuple[str, str], path: str) -> None:
+    """Expose the same exact-source restriction already enforced at execution."""
+    if route not in {
+        ("os", "pdf.extract_text_batch"), ("os", "image.extract_text_batch"),
+        ("os", "desktop.open_path"), ("vs_code", "file.read_text"),
+        ("libreoffice_writer", "document.read_file"), ("libreoffice_calc", "workbook.read_file"),
+    }:
+        return
+    for tool in tools:
+        function = tool.get("function", {})
+        if function.get("name") != "adapter__adapter_call":
+            continue
+        schema = function.get("parameters", {})
+        routes = schema.get("x-allowed-routes", [])
+        if routes != [{"adapter": route[0], "action": route[1]}]:
+            continue
+        params = schema.get("properties", {}).get("payload", {}).get("properties", {}).get("params", {})
+        properties = params.get("properties", {})
+        key = next((key for key in ("input_pattern", "path", "file_path", "input_path") if key in properties), None)
+        if key:
+            properties[key]["enum"] = [path]
+            properties[key]["description"] = "Exact current source path; copy this enum value without changing or shortening it."
+            binding_description = "This reader targets ONLY the current observed source path: " + path + ". Copy that full absolute path; a basename is not valid for this lease. "
+            function["description"] += " " + binding_description
+            # The atomic provider surface takes its description from params.
+            params["description"] = binding_description + str(params.get("description", ""))

@@ -863,7 +863,7 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             fields = params.get("fields")
             spec = contract["properties"]["fields"]
             if not isinstance(fields, list) or not spec["minItems"] <= len(fields) <= spec["maxItems"]:
-                raise AdapterError("INVALID_REQUEST", "params.fields must contain 1 to 128 explicit field/value pairs")
+                raise AdapterError("INVALID_REQUEST", "params.fields must be an array of 1 to 128 objects, each with exactly field_name and value")
             for index, item in enumerate(fields):
                 prefix = f"params.fields[{index}]"
                 if not isinstance(item, Mapping) or set(item) != {"field_name", "value"}:

@@ -1508,7 +1508,7 @@ class ExecutionEngineMixin:
                     raise ValueError(gui_contract_errors[0])
                 coordinate_frame = proposal.get("_gui_coordinate_frame")
                 if screenshot is not None:
-                    _, screenshot_frame = self._prepare_model_image(screenshot)
+                    _, screenshot_frame = self._prepare_agent_image(screenshot)
                     if (
                         coordinate_frame is not None and screenshot_frame is not None
                         and coordinate_frame != screenshot_frame

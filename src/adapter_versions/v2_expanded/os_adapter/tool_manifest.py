@@ -1018,7 +1018,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             "output_path": {**_PDF_FORM_PATH, "description": "Exact new PDF filename selected by the model; must differ from input_path. Missing parent directories are created."},
             "fields": {
                 "type": "array", "minItems": 1, "maxItems": 128,
-                "description": "Explicit field/value pairs for this one output. Send each field_name once; omitted fields stay unchanged. Only writable /Tx fields are supported.",
+                'description': 'Array of objects: [{"field_name": "exact native field name", "value": "literal text"}]. Send each field_name once; omitted fields stay unchanged. Only writable /Tx fields are supported.',
                 "items": {
                     "type": "object",
                     "properties": {

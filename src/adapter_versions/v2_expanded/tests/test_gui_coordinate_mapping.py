@@ -244,3 +244,68 @@ def test_request_bounds_follow_latest_image_without_mutating_catalog():
     assert "_gui_coordinate_frame" not in proposal
     assert requests[-1]["tools"] == original
     assert catalog == original
+
+
+@pytest.mark.parametrize('action', ['click', 'double_click', 'drag'])
+def test_explicit_normalized_frame_maps_once_and_checks_current_screenshot(action):
+    requests, executions = [], []
+    raw = {**_click(x=674, y=813), 'action': action}
+    if action == 'drag':
+        raw.update(to_x=1000, to_y=1000)
+    def propose(**request):
+        requests.append(request)
+        return {'tool': 'gui_action', 'arguments_raw': json.dumps(raw)}
+    agent = LiteAgent(
+        LiteAgentConfig(base_url='http://unused', gui_coordinate_space='normalized_1000'),
+        SimpleNamespace(), gui_executor=lambda args: executions.append(args) or {'executed': True},
+        model_client=SimpleNamespace(client=None, propose=propose),
+    )
+    agent.tools = lambda state: build_tools('os', [], include_gui=True)
+    screenshot, state = _screenshot((1920, 1080)), _state()
+    proposal = agent.propose(state, screenshot)
+    content = requests[0]['messages'][-1]['content']
+    assert 'normalized 0..1000 grid on EACH axis' in content[0]['text']
+    assert proposal['_gui_coordinate_frame'] == {
+        'model_size': [1280, 720], 'desktop_size': [1920, 1080],
+        'coordinate_space': 'normalized_1000',
+    }
+    event = agent.execute_proposal(state, proposal, screenshot=screenshot)
+    assert event.executed, event.error
+    assert event.proposed['arguments'] == raw
+    assert (executions[0]['x'], executions[0]['y']) == (1294, 878)
+    if action == 'drag':
+        assert (executions[0]['to_x'], executions[0]['to_y']) == (1919, 1079)
+    # An unannounced pixel frame must not be silently treated as normalized.
+    proposal['_gui_coordinate_frame'].pop('coordinate_space')
+    event = agent.execute_proposal(_state(), proposal, screenshot=screenshot)
+    assert not event.executed
+    assert 'does not match' in event.error['detail']
+
+
+@pytest.mark.parametrize('coordinates', [{'x': 1001, 'y': 0}, {'x': 0, 'y': 1001}])
+def test_normalized_frame_rejects_outside_grid(coordinates):
+    with pytest.raises(ValueError, match='outside the normalized grid'):
+        map_gui_coordinates(_click(**coordinates), {
+            'model_size': [1280, 720], 'desktop_size': [1920, 1080],
+            'coordinate_space': 'normalized_1000',
+        })
+
+
+def test_qwen_gui_generation_uses_scalars_without_changing_public_or_other_tools():
+    from integrations.lite_agent.model_client import _qwen_schema_compatible_tools
+    from integrations.lite_agent.provider_union_surface import split_discriminated_tools
+    public = build_tools('os', [], include_gui=True)
+    public = copy.deepcopy(public)
+    before = copy.deepcopy(public)
+    provider, _ = split_discriminated_tools(public)
+    original = copy.deepcopy(provider)
+    generated = _qwen_schema_compatible_tools('Qwen3.5-9B', provider)
+    gui = next(t for t in generated if t['function']['name'] == 'gui_action__variant_0')
+    assert gui['function']['parameters']['properties']['x']['type'] == 'integer'
+    assert 'anyOf' not in gui['function']['parameters']['properties']['x']
+    assert public == before
+    assert provider == original
+    other_before = [t for t in provider if not t['function']['name'].startswith('gui_action__variant_')]
+    other_after = [t for t in generated if not t['function']['name'].startswith('gui_action__variant_')]
+    assert other_before == other_after
+    assert _qwen_schema_compatible_tools('other-model', provider) == original
