@@ -452,7 +452,7 @@ def _cross_app_hint(state, kind):
             )
         return "FINALIZE: format fractional Success Rate values as 0.00%, save_as the requested Desktop workbook, then read back all five numeric-year records and propose_done. Do not repeat source extraction or create another workbook."
     if kind == "gemini-document":
-        extracted = any(a == "command.run" and "Gemini" in json.dumps(args)
+        extracted = any(a == "command.run" and "gemini" in json.dumps(args).lower()
                         and ("write_text" in json.dumps(args) or "open(" in json.dumps(args))
                         and ("walk" in json.dumps(args) or "def " in json.dumps(args))
                         for _, _, a, args in facts)
@@ -471,7 +471,7 @@ def _cross_app_hint(state, kind):
                 "otherwise recurse into its value. Do not collect GPT3, origin_input or declare_input. "
                 "Preserve each full response, replacing internal line breaks with spaces if needed so "
                 "one response becomes one paragraph; separate responses with two newlines. "
-                "Write the extracted strings into a NEW plain text file such as /tmp/gemini-responses.txt, "
+                "Write the extracted strings into the NEW plain text file /tmp/gemini-responses.txt, "
                 "print the response count and verify the file contains extracted responses only. "
                 "Use actual newlines in Python before def/for/if; do not put compound statements after semicolons. "
                 "To avoid escape ambiguity, build paragraph separators with chr(10)*2 and normalize each response "

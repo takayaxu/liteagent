@@ -103,3 +103,17 @@ def test_vowel_grouping_reads_first_character_and_preserves_empty_cells():
     assert '"word": "eat", "first_letter": "e"' in hint
     assert '"word": "yes", "first_letter": "y"' in hint
     assert '"cell": "B2"' not in hint
+
+
+def test_gemini_extraction_moves_to_document_creation_only_after_success():
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    state = RuntimeState("synthetic", "multi_apps", "Copy all Gemini responses into Word.")
+    command = ExecutionEvent(1, "", {"tool": "adapter__adapter_call", "action": "adapter.call",
+        "arguments": {"adapter": "os", "action": "command.run", "payload": {"params": {
+            "argv": ["python3", "-c", "def walk(x): pass\nopen('/tmp/gemini-responses.txt','w')"],
+            "provenance": "shell_history"}}}}, executed=False, error={"message": "bad argv"})
+    state.events = [command]
+    assert "already SUCCEEDED" not in _cross_app_hint(state, "gemini-document")
+    command.executed = True
+    command.error = None
+    assert "create Desktop/gemini_results.docx once" in _cross_app_hint(state, "gemini-document")
