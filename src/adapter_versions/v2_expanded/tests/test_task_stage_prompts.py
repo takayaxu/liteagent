@@ -51,3 +51,18 @@ def test_stage_follows_only_successful_actions_and_stops_after_success():
 def test_invalid_stage_configuration_is_rejected(invalid):
     with pytest.raises(ValueError):
         LiteAgentConfig(base_url='http://unused', task_stage_prompts=invalid)
+
+
+def test_bound_context_requires_exact_task_and_single_empty_input_tool():
+    from integrations.lite_agent.task_stage_prompts import bound_call_context
+    stages = {'target': [{'when_tool': 'bound', 'text': 'Serialize the current call.',
+                          'context_mode': 'bound_call'}]}
+    tool = {'type': 'function', 'function': {'name': 'bound', 'parameters': {
+        'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False}}}
+    state = RuntimeState(task_id='target', domain='os', instruction='Edit the file.')
+    assert 'Emit one tool call with {}' in bound_call_context(stages, state, [tool])
+    assert bound_call_context(stages, state, [tool, tool]) is None
+    tool['function']['parameters']['properties'] = {'path': {'type': 'string'}}
+    assert bound_call_context(stages, state, [tool]) is None
+    state.task_id = 'different'
+    assert bound_call_context(stages, state, [tool]) is None
