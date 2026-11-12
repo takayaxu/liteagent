@@ -431,7 +431,7 @@ def _gemini_document_hint(state, facts):
             "if isinstance(x,dict) else [r for v in x for r in walk(v)] if isinstance(x,list) else []; "
             f"responses=walk(json.loads(Path({source!r}).expanduser().read_text())); "
             "values=[r.replace(chr(10),chr(92)+'n') for r in responses]; "
-            "head='<office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" "
+            "head='<?xml version=\"1.0\" encoding=\"UTF-8\"?><office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" "
             "xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" "
             "xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" "
             "xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" "
@@ -454,12 +454,16 @@ def _gemini_document_hint(state, facts):
             "values, never a reference artifact. Execute this finite model-visible script once; then "
             "open its returned draft in Writer for native verification and DOCX export.",
             "os", "command.run", {"argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"})
-    opened = [e for e, _, action, args in facts if action == "desktop.open_path"
-              and args.get("path") == "/tmp/gemini-responses.fodt"]
+    opened = [e for e, _, action, args in facts if action == "command.run"
+              and args.get("argv", [])[:1] == ["libreoffice"]]
     if not opened:
-        return stage("The source-derived draft was generated successfully. Open that NEW draft in "
-            "Writer now; do not rerun extraction, create a blank document or append text again.",
-            "os", "desktop.open_path", {"path": "/tmp/gemini-responses.fodt"})
+        return stage("The source-derived draft was generated successfully. Launch Writer with its "
+            "explicit OpenDocument Text Flat XML import filter; do not use plain-text import. "
+            "Do not rerun extraction, create a blank document or append text again. terminal=true "
+            "launches this GUI command without waiting for Writer to close.",
+            "os", "command.run", {"argv": ["libreoffice", "--writer",
+                "--infilter=OpenDocument Text Flat XML", "/tmp/gemini-responses.fodt"],
+                "cwd_source": "home", "provenance": "shell_history", "terminal": True})
     reads = [e for e, _, action, _ in facts if action == "document.inspect" and e.step > opened[-1].step]
     if not reads:
         return stage("Read the native draft paragraphs and highlighting once before saving. "

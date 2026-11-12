@@ -180,8 +180,9 @@ def test_gemini_source_draft_preserves_values_paragraphs_and_highlights(tmp_path
     assert [native_text(p) for p in paragraphs] == [values[0].replace("\n", "\\n"), "", values[1]]
     assert [s.text for s in root.findall(".//text:span", ns)] == ["Iliad", "Iliad"]
     state.events.append(event(2, "os", "command.run", params, {"returncode": 0}))
-    assert '"action": "desktop.open_path"' in _cross_app_hint(state, "gemini-document")
-    state.events.append(event(3, "os", "desktop.open_path", {"path": "/tmp/gemini-responses.fodt"}))
+    assert "--infilter=OpenDocument Text Flat XML" in _cross_app_hint(state, "gemini-document")
+    state.events.append(event(3, "os", "command.run", {"argv": ["libreoffice", "--writer",
+        "--infilter=OpenDocument Text Flat XML", "/tmp/gemini-responses.fodt"], "terminal": True}))
     state.events.append(event(4, "libreoffice_writer", "document.inspect", body={"paragraph_count": 3,
         "nonempty_paragraph_count": 2, "highlighting": {"highlighted_run_count": 2}}))
     save_hint = _cross_app_hint(state, "gemini-document")
