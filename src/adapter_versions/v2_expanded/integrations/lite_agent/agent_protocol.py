@@ -898,6 +898,11 @@ class AgentProtocolMixin:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
             system_message += "\nCurrent terminal default stage: " + json.dumps(terminal_defaults, ensure_ascii=False)
+        from .task_stage_hints import model_hint
+
+        scoped_hint = model_hint(self.config.task_stage_hints, state)
+        if scoped_hint is not None:
+            system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         return [
             {
                 "role": "system",

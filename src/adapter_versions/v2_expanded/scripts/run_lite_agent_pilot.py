@@ -1219,6 +1219,10 @@ def run_task(
         "order": task["order"],
         "task_id": task["task_id"],
         "domain": task["domain"],
+        "task_specific_stage_hints_exposed": bool(
+            __import__("integrations.lite_agent.task_stage_hints", fromlist=["model_hint"])
+            .model_hint(config.get("protocol", {}).get("task_stage_hints"), state)
+        ),
         "status": "environment_failure",
         "reward": None,
         "path_class": "environment_failure",
@@ -1403,6 +1407,7 @@ def run_task(
             thinking_token_budget=config.get("protocol", {}).get("thinking_token_budget"),
             tool_call_stop_sequence=config.get("protocol", {}).get("tool_call_stop_sequence"),
             read_audit_gate=config.get("protocol", {}).get("read_audit_gate", False),
+            task_stage_hints=config.get("protocol", {}).get("task_stage_hints"),
             request_timeout_seconds=args.request_timeout,
         )
         request_context = {"step_num": 0, "attempt": 0, "screenshot": ""}
@@ -2407,7 +2412,12 @@ def main() -> None:
         args.reasoning_effort = config.get("protocol", {}).get("reasoning_effort")
     if getattr(args, "reasoning_mode", None) is None:
         args.reasoning_mode = config.get("protocol", {}).get("reasoning_mode")
-    if config.get("protocol", {}).get("task_specific_or_golden_exposed", False):
+    from integrations.lite_agent.task_stage_hints import PROFILE as stage_hint_profile
+    configured_hints = config.get("protocol", {}).get("task_stage_hints")
+    if configured_hints is not None and configured_hints != stage_hint_profile:
+        raise ValueError("unknown opt-in stage hint profile")
+    if (config.get("protocol", {}).get("task_specific_or_golden_exposed", False)
+            and configured_hints != stage_hint_profile):
         raise ValueError(
             "LiteAgent strict Runner rejects task-specific or golden-enabled configs"
         )
@@ -2527,11 +2537,14 @@ def main() -> None:
         "max_output_tokens": args.max_output_tokens,
         "temperature": args.temperature,
         "gui_enabled": not args.no_gui,
-        "task_specific_or_golden_exposed": False,
+        "task_specific_or_golden_exposed": bool(config.get("protocol", {}).get("task_stage_hints")),
+        "task_specific_stage_hints": config.get("protocol", {}).get("task_stage_hints"),
+        "golden_exposed": False,
         "strict_process_boundary": strict_process_boundary,
         "frozen_condition": frozen_condition,
         "agent_task_id_visible": False,
-        "task_id_usage": "runner_internal_setup_evaluator_and_trace_only",
+        "task_id_usage": ("runner_internal_setup_evaluator_trace_and_opt_in_hint_selection"
+                          if configured_hints else "runner_internal_setup_evaluator_and_trace_only"),
         "evaluator_isolation": (
             "agent_fields_projected_in_short_lived_process; evaluator loaded only after episode"
         ),

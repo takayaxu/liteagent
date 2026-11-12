@@ -35,6 +35,8 @@ class LiteAgentConfig:
     thinking_token_budget: int | None = None
     tool_call_stop_sequence: str | None = None
     read_audit_gate: bool = False
+    # Explicit user-authorized prompt experiment. Disabled in normal runs.
+    task_stage_hints: str | None = None
 
     def __post_init__(self) -> None:
         if self.allow_task_specific_or_golden:
