@@ -19,6 +19,17 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                 raise ValueError("unknown task stage prompt fields")
             if not isinstance(stage.get("text"), str) or not stage["text"].strip():
                 raise ValueError("task stage prompt text must be nonempty")
+            for key in ("after_action", "until_action"):
+                reference = stage.get(key)
+                if isinstance(reference, str) and ":" in reference:
+                    from integrations.openapa_osworld.tool_catalog import public_actions
+                    domain, action = reference.split(":", 1)
+                    try:
+                        known = action in public_actions(domain)
+                    except (KeyError, ValueError):
+                        known = False
+                    if not known:
+                        raise ValueError(f"unknown qualified stage action: {reference}")
             if stage.get("context_mode", "full") not in {"full", "bound_call"}:
                 raise ValueError("unknown task stage context_mode")
             if any(not isinstance(value, str) or not value.strip() for value in stage.values()):
@@ -28,9 +39,10 @@ def validate_task_stage_prompts(overrides: Any) -> None:
 def _succeeded(state: Any, action: str) -> bool:
     if ":" not in action:
         return bool(state.successful_action_events(action))
-    from .completion_policy import effective_canonical_action
+    from .completion_policy import effective_canonical_action, canonical_action_identity
     domain, name = action.split(":", 1)
-    return any(effective_canonical_action(event, state.domain)[:2] == (domain, name)
+    identity = canonical_action_identity(domain, name)
+    return any(effective_canonical_action(event, state.domain)[:2] == identity
                for event in state.successful_adapter_events())
 
 

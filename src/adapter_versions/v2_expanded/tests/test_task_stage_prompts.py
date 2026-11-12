@@ -81,3 +81,18 @@ def test_stage_recognizes_owner_qualified_actions_through_multi_apps_wrapper():
     assert stage_prompt_text(stages, state, []) == 'Open the observed CSV.'
     add('os', 'desktop.open_path')
     assert stage_prompt_text(stages, state, []) == ''
+
+
+def test_stage_predicates_canonicalize_public_save_aliases():
+    stages = {'target': [{'after_action': 'libreoffice_calc:workbook.save_as', 'text': 'Read saved output.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Convert the data.')
+    state.events.append(ExecutionEvent(step=1, timestamp_utc='test', executed=True,
+        proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+            'adapter': 'libreoffice_calc', 'action': 'workbook.save_as', 'payload': {'params': {}}}}))
+    assert stage_prompt_text(stages, state, []) == 'Read saved output.'
+
+
+def test_unknown_qualified_action_is_rejected_before_prompt_selection():
+    with pytest.raises(ValueError, match='unknown qualified stage action'):
+        LiteAgentConfig(base_url='http://unused', task_stage_prompts={
+            'target': [{'after_action': 'os:archive.create', 'text': 'Inspect output.'}]})
