@@ -1285,6 +1285,61 @@
         "context_mode": "completed_organization",
         "text": "Completion stage: use the Completed filesystem execution facts, not a desktop window left open during inspection. When filesystem_organization_complete=true and pending_source_paths=[], every observed source has a verified disposition. Propose completion citing the actual verified moves/retentions and final category locations. Do not claim no inventory exists or restart classification after the native ledger confirms completion. Filesystem moves do not require saving the read-only application used to inspect a source."
       }
+    ],
+    "81c425f5-78f3-4771-afd6-3d2973825947": [
+      {
+        "until_hotkey": "ctrl+a",
+        "text": "CURRENT STAGE: the source Calc sheet is initially active. Select its data with the GUI hotkey Ctrl+A. Do not switch windows or create Writer yet.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_hotkey": "ctrl+a",
+        "until_hotkey": "ctrl+c",
+        "text": "CURRENT STAGE: Calc data has been selected. Copy it to the clipboard using the GUI hotkey Ctrl+C. Do not switch windows or create Writer yet.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_hotkey": "ctrl+c",
+        "until_action": "libreoffice_writer:document.create",
+        "text": "CURRENT STAGE: the Calc data is already copied. Search for native Writer document.create and create the destination at the path requested by the user. This creates and ACTIVATES the new Writer document. Keep the clipboard intact; do not copy anything else.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_action": "libreoffice_writer:document.create",
+        "until_hotkey": "ctrl+v",
+        "text": "CURRENT STAGE: the new Writer document is active and the Calc data is on the clipboard. Paste once with the GUI hotkey Ctrl+V, preserving formatting. Do not click the Dock, switch back to Calc, or create the document again.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_hotkey": "ctrl+v",
+        "until_action": "libreoffice_writer:document.inspect",
+        "text": "CURRENT STAGE: data has been pasted. Search for native Writer document.inspect and inspect the actual destination. Do not paste again or switch applications.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_action": "libreoffice_writer:document.inspect",
+        "until_action": "libreoffice_writer:table.read",
+        "text": "CURRENT STAGE: read the transferred table. Copy its exact name from the successful document.inspect result, search for libreoffice_writer table.read, and call it with that name. If tables is empty, complete the clipboard transfer first; do not guess a table name or claim an empty document is complete.",
+        "context_mode": "workflow_call"
+      },
+      {
+        "after_action": "libreoffice_writer:table.read",
+        "until_action": "libreoffice_writer:table.delete_rows",
+        "text": "CURRENT STAGE: inspect the actual table.read cells grouped by one-based row_index. If trailing rows contain only empty strings or spaces in EVERY cell, search for native Writer table.delete_rows and delete only those observed row indices using the exact observed table name. Retain all headings and non-whitespace data, including the final source record. Do not infer rows from the table size alone. If there is no blank trailing row, skip deletion and save the document. A successful deletion ends this stage; the tool already verifies the remaining text.",
+        "context_mode": "workflow_call",
+        "unless_action": "libreoffice_writer:document.save"
+      },
+      {
+        "after_action": "libreoffice_writer:table.delete_rows",
+        "until_action": "libreoffice_writer:document.save",
+        "context_mode": "workflow_call",
+        "text": "CURRENT STAGE: row deletion succeeded and the remaining text was verified. Now call native Writer document.save for the current destination, following its current exposed schema; this action needs no action arguments. If the route is not in the binding route list, search for it first. Do not read the table, inspect the document, delete rows, or switch applications in this stage."
+      },
+      {
+        "after_action": "libreoffice_writer:document.save",
+        "text": "CURRENT STAGE: confirm the saved document identity and table dimensions with native Writer document.inspect. If the latest successful document.inspect step is already later than the last document.save step and agrees with the verified table mutation, emit propose_done now. Otherwise call the currently exposed document.inspect for the current destination; search for it first only if absent from the binding route list. The row-deletion tool already verified all retained cell text. Do not call an old table.read route, repeat saving, or change the content.",
+        "context_mode": "workflow_call"
+      }
     ]
   },
   "task_protocol_overrides": {
@@ -1298,6 +1353,9 @@
       "gui_coordinate_space": "normalized_1000"
     },
     "a74b607e-6bb5-4ea8-8a7c-5d97c7bbcd2a": {
+      "gui_coordinate_space": "normalized_1000"
+    },
+    "81c425f5-78f3-4771-afd6-3d2973825947": {
       "gui_coordinate_space": "normalized_1000"
     }
   }
