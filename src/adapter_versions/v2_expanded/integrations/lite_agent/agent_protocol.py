@@ -950,6 +950,8 @@ class AgentProtocolMixin:
                         "executed": e.executed, "error": e.error}
                         for e in state.events[-4:]],
                 }, ensure_ascii=False)}]
+            if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
+                message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):

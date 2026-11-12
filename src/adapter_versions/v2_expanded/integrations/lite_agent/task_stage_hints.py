@@ -404,6 +404,22 @@ def _cross_app_hint(state, kind):
     actions = {a for _, _, a, _ in facts}
     if kind in {"ecs-rates", "grf-records"}:
         source_reads = [e for e, _, a, _ in facts if a == "pdf.tables.inspect"]
+        if kind == "grf-records":
+            paths = []
+            for e, _, a, _ in facts:
+                if a == "filesystem.find":
+                    body = (e.result or {}).get("context_hint", {})
+                    body = body.get("downstream_context", body)
+                    paths.extend(m.get("path") for m in body.get("matches", []) if str(m.get("path", "")).endswith(".pdf"))
+            seen = {args.get("input_path") for _, _, a, args in facts if a == "pdf.tables.inspect"}
+            pending = [p for p in dict.fromkeys(paths) if p not in seen]
+            if pending:
+                return ("CURRENT STEP ONLY: call os pdf.tables.inspect now for the next observed annual file "
+                        + pending[0] + ", page=1, table_index=0, max_rows=50. The previous tables remain in "
+                        "the execution ledger. Do NOT calculate, compare universities, reinterpret supported "
+                        "amounts or write output before all five sources have been read. After these reads the "
+                        "public table.records.compute tool can use exact header/row references. "
+                        "Remaining observed sources: " + json.dumps(pending))
         if kind == "ecs-rates" and len(source_reads) >= 9:
             if "workbook.inspect" not in actions:
                 return "CURRENT STEP ONLY: all nine annual source PDF tables have been read. Use tools_search query='libreoffice_calc workbook.inspect', then CALL workbook.inspect. Do not recalculate, reread PDFs, guess destinations or attempt writes yet."
