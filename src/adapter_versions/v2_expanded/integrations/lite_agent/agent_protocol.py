@@ -943,7 +943,7 @@ class AgentProtocolMixin:
                 message_content = [{"type": "text", "text": json.dumps({
                     "instruction": state.instruction,
                     "current_stage": scoped_hint,
-                    "latest_native_readback": latest_document_read,
+                    "latest_native_readback": latest_document_read if scoped_hint.startswith("FINISH:") else {},
                     "recent_execution_facts": [{"step": e.step,
                         "action": e.proposed.get("action", e.proposed.get("tool")),
                         "arguments": e.proposed.get("arguments"),
