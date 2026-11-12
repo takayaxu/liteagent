@@ -970,6 +970,23 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["name"],
     },
+    "table.delete_rows": {
+        "description": (
+            "Delete only explicitly selected one-based rows from one observed rectangular Writer table. "
+            "Copy the exact table name from document.inspect and row indices from table.read. "
+            "At least one row must remain. Does not infer blank rows or choose records. "
+            "Other rows retain their existing text and formatting; read back the table afterward."
+        ),
+        "properties": {
+            "name": {"type": "string", "minLength": 1, "description": "Exact observed Writer table name."},
+            "rows": {
+                "type": "array", "minItems": 1, "maxItems": 1024, "uniqueItems": True,
+                "items": {"type": "integer", "minimum": 1},
+                "description": "Explicit one-based row_index values from table.read, in any order; duplicates are rejected.",
+            },
+        },
+        "required": ["name", "rows"],
+    },
     "table.set_cell_text_color": {
         "description": (
             "Apply one model-selected font color to an explicit homogeneous batch of Writer "
