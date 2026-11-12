@@ -193,3 +193,30 @@ def test_gemini_source_draft_preserves_values_paragraphs_and_highlights(tmp_path
     state.events.append(event(6, "libreoffice_writer", "document.inspect", body={"paragraph_count": 3,
         "nonempty_paragraph_count": 2, "highlighting": {"highlighted_run_count": 2}}))
     assert _cross_app_hint(state, "gemini-document").startswith("NATIVE GEMINI FINISH:")
+
+
+def test_background_stage_uses_observed_paths_and_requires_post_edit_view():
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    def event(step, adapter, action, params=None, body=None):
+        return ExecutionEvent(step, "", {"action": "adapter.call", "arguments": {
+            "adapter": adapter, "action": action, "payload": {"params": params or {}}}}, executed=True,
+            result={"context_hint": {"downstream_context": body or {}}})
+    state = RuntimeState("synthetic", "multi_apps", "Keep the person on a white background.")
+    state.events = [event(1, "os", "filesystem.find", body={"matches": [
+        {"path": "/home/user/Desktop/observed.jpg", "kind": "file"},
+        {"path": "/home/user/Desktop/observed.docx", "kind": "file"}]})]
+    hint = _cross_app_hint(state, "person-background")
+    assert '"path": "/home/user/Desktop/observed.docx"' in hint
+    state.events += [event(2, "libreoffice_writer", "document.read_file"),
+        event(3, "os", "desktop.open_path", {"path": "/home/user/Desktop/observed.jpg"})]
+    hint = _cross_app_hint(state, "person-background")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    params = call["payload"]["params"]
+    compile(params["argv"][2], "observed-person-segmentation", "exec")
+    assert "/home/user/Desktop/observed.jpg" in params["argv"][2]
+    state.events += [event(4, "os", "command.run", params)]
+    assert '"action": "desktop.open_path"' in _cross_app_hint(state, "person-background")
+    state.events.append(event(5, "os", "desktop.open_path", {"path": "/home/user/Desktop/pic.jpg"}))
+    assert _cross_app_hint(state, "person-background").startswith("BACKGROUND FINISH:")
+    state.events.append(event(6, "os", "command.run", params))
+    assert _cross_app_hint(state, "person-background").startswith("BACKGROUND STEP:")
