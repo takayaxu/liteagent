@@ -1,0 +1,499 @@
+[
+  {
+    "order": 77,
+    "task_id": "88fe4b2d-3040-4c70-9a70-546a47764b48",
+    "domain": "libreoffice_writer",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-01/raw/run-1/77-libreoffice_writer-88fe4b2d-3040-4c70-9a70-546a47764b48/lite_agent_events.jsonl",
+    "attempts": [
+      {
+        "commit": "2310ec6",
+        "result": "failed",
+        "reward": 0,
+        "reason": "partial_sentence_separation",
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-attempt1"
+      },
+      {
+        "commit": "72458e5",
+        "result": "diagnostic_interrupted",
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-attempt2",
+        "reason": "observed_end_resplit_and_repeated_noop_blank_replacements"
+      },
+      {
+        "commit": "1207e6f",
+        "result": "passed",
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-attempt3",
+        "reward": 1.0
+      }
+    ],
+    "merged_commit": "93a42e1",
+    "integrity": {
+      "source_matches": true,
+      "config_matches": true,
+      "osworld_matches": true
+    },
+    "integrated_result": {
+      "commit": "93a42e1",
+      "status": "passed",
+      "reward": 1.0,
+      "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-integrated"
+    },
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-attempt1",
+        "status": "failed",
+        "reward": 0.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-attempt3",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order77-integrated",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 79,
+    "task_id": "adf5e2c3-64c7-4644-b7b6-d2f0167927e7",
+    "domain": "libreoffice_writer",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-03/raw/run-1/79-libreoffice_writer-adf5e2c3-64c7-4644-b7b6-d2f0167927e7/lite_agent_events.jsonl",
+    "candidate_commit": "051c411",
+    "attempts": [
+      {
+        "commit": "051c411",
+        "result": "diagnostic_interrupted",
+        "reason": "numbered_blank_paragraph_before_readback_of_actual_appended_citation",
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order79-attempt1"
+      },
+      {
+        "commit": "8c7344e",
+        "result": "passed",
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order79-attempt2",
+        "reward": 1.0
+      }
+    ],
+    "merged_commit": "ba3d068",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order79-attempt2",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 82,
+    "task_id": "e246f6d8-78d7-44ac-b668-fcf47946cb50",
+    "domain": "libreoffice_writer",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/82-libreoffice_writer-e246f6d8-78d7-44ac-b668-fcf47946cb50/lite_agent_events.jsonl",
+    "candidate_commit": "0527d0d",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order82-attempt1",
+    "merged_commit": "5c1d659",
+    "reward": 1.0,
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order82-attempt1",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 87,
+    "task_id": "2fe4b718-3bd7-46ec-bdce-b184f5653624",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-02/raw/run-1/87-multi_apps-2fe4b718-3bd7-46ec-bdce-b184f5653624/lite_agent_events.jsonl"
+  },
+  {
+    "order": 93,
+    "task_id": "f7dfbef3-7697-431c-883a-db8583a4e4f9",
+    "domain": "multi_apps",
+    "status": "skipped_gui_fallback",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-02/raw/run-1/93-multi_apps-f7dfbef3-7697-431c-883a-db8583a4e4f9/lite_agent_events.jsonl",
+    "candidate_commit": "cac7207",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-93-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order93-attempt1",
+    "reason": "candidate used GUI typing; diagnostic stopped to honor GUI skip"
+  },
+  {
+    "order": 97,
+    "task_id": "eb303e01-261e-4972-8c07-c9b4e7a4922a",
+    "domain": "multi_apps",
+    "status": "skipped_gui_fallback",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-06/raw/run-1/97-multi_apps-eb303e01-261e-4972-8c07-c9b4e7a4922a/lite_agent_events.jsonl",
+    "candidate_commit": "8313d26",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-97-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order97-attempt1",
+    "reason": "clicked View menu in candidate; diagnostic interrupted per GUI skip"
+  },
+  {
+    "order": 98,
+    "task_id": "8e116af7-7db7-4e35-a68b-b0939c066c78",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-01/raw/run-1/98-multi_apps-8e116af7-7db7-4e35-a68b-b0939c066c78/lite_agent_events.jsonl"
+  },
+  {
+    "order": 99,
+    "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
+    "domain": "multi_apps",
+    "status": "blocked_model_protocol",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-02/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
+    "candidate_commit": "d669eb9",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-99-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "attempts": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt1",
+        "result": "model_protocol_failure",
+        "reason": "three plain-content JSON pseudo-calls instead of native tool_calls"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt2",
+        "result": "diagnostic_interrupted",
+        "reason": "inventoried root and bin instead of invoice directory"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt3",
+        "result": "invalid_candidate",
+        "reason": "prompt Python literal quoting error; corrected before next formal attempt"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt4",
+        "commit": "57ed3b9",
+        "result": "model_protocol_failure"
+      }
+    ],
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt1",
+        "status": "model_protocol_failure",
+        "reward": null,
+        "termination_reason": "model_protocol_failure",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt4",
+        "status": "model_protocol_failure",
+        "reward": null,
+        "termination_reason": "model_protocol_failure",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 103,
+    "task_id": "3a93cae4-ad3e-403e-8c12-65303b271818",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-06/raw/run-1/103-multi_apps-3a93cae4-ad3e-403e-8c12-65303b271818/lite_agent_events.jsonl"
+  },
+  {
+    "order": 116,
+    "task_id": "20236825-b5df-46e7-89bf-62e1d640a897",
+    "domain": "multi_apps",
+    "status": "skipped_gui_fallback",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-01/raw/run-1/116-multi_apps-20236825-b5df-46e7-89bf-62e1d640a897/lite_agent_events.jsonl",
+    "candidate_commit": "8bdce7c",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-116-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "attempts": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order116-attempt1",
+        "result": "diagnostic_interrupted",
+        "reason": "repeated successful reader discovery without invoking it"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order116-attempt2",
+        "result": "diagnostic_interrupted",
+        "reason": "case-sensitive guessed tutorial path not found; repeated same failed read"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order116-attempt3",
+        "commit": "dc3fed2",
+        "result": "diagnostic_interrupted",
+        "reason": "used GUI scrolling to read tutorial; deferred per user GUI skip"
+      }
+    ]
+  },
+  {
+    "order": 123,
+    "task_id": "9f3bb592-209d-43bc-bb47-d77d9df56504",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-05/raw/run-1/123-multi_apps-9f3bb592-209d-43bc-bb47-d77d9df56504/lite_agent_events.jsonl"
+  },
+  {
+    "order": 125,
+    "task_id": "778efd0a-153f-4842-9214-f05fc176b877",
+    "domain": "multi_apps",
+    "status": "skipped_gui_fallback",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-06/raw/run-1/125-multi_apps-778efd0a-153f-4842-9214-f05fc176b877/lite_agent_events.jsonl",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order125-baseline",
+    "reason": "latest-source baseline clicked GUI; deferred per GUI skip"
+  },
+  {
+    "order": 126,
+    "task_id": "47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5",
+    "domain": "multi_apps",
+    "status": "unresolved_media_frame_difference",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/126-multi_apps-47f7c0ce-a5fb-4100-a5e6-65cd0e7429e5/lite_agent_events.jsonl",
+    "reward": 0.8042889575503187,
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order126-attempt1",
+    "note": "prompt corrected second-page-only operation, original image score unchanged; not promoted",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order126-attempt1",
+        "status": "failed",
+        "reward": 0.8042889575503187,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 128,
+    "task_id": "d68204bf-11c1-4b13-b48b-d303c73d4bf6",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-01/raw/run-1/128-multi_apps-d68204bf-11c1-4b13-b48b-d303c73d4bf6/lite_agent_events.jsonl"
+  },
+  {
+    "order": 130,
+    "task_id": "98e8e339-5f91-4ed2-b2b2-12647cb134f4",
+    "domain": "multi_apps",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-03/raw/run-1/130-multi_apps-98e8e339-5f91-4ed2-b2b2-12647cb134f4/lite_agent_events.jsonl"
+  },
+  {
+    "order": 131,
+    "task_id": "5df7b33a-9f77-4101-823e-02f863e1c1ae",
+    "domain": "multi_apps",
+    "status": "unresolved_pdf_content_difference",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-09/raw/run-1/131-multi_apps-5df7b33a-9f77-4101-823e-02f863e1c1ae/lite_agent_events.jsonl",
+    "candidate_commit": "3591dae",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-131-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "reward": 0.9957239064716509,
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order131-attempt1",
+    "note": "preserved chapter-one example; original score remains below PASS; not promoted",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order131-attempt1",
+        "status": "failed",
+        "reward": 0.9957239064716509,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 136,
+    "task_id": "28cc3b7e-b194-4bc9-8353-d04c0f4d56d2",
+    "domain": "os",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-03/raw/run-1/136-os-28cc3b7e-b194-4bc9-8353-d04c0f4d56d2/lite_agent_events.jsonl",
+    "candidate_commit": "7b6b27b",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-136-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "reward": 1.0,
+    "merged_commit": "b852322",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order136-attempt1",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order136-attempt1",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 143,
+    "task_id": "5c1075ca-bb34-46a3-a7a0-029bd7463e79",
+    "domain": "os",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-06/raw/run-1/143-os-5c1075ca-bb34-46a3-a7a0-029bd7463e79/lite_agent_events.jsonl",
+    "candidate_commit": "bd119ae",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-143-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "reward": 1.0,
+    "merged_commit": "604859b",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order143-attempt1",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order143-attempt1",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 151,
+    "task_id": "7b1e1ff9-bb85-49be-b01d-d6424be18cd0",
+    "domain": "thunderbird",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-01/raw/run-1/151-thunderbird-7b1e1ff9-bb85-49be-b01d-d6424be18cd0/lite_agent_events.jsonl"
+  },
+  {
+    "order": 155,
+    "task_id": "dd84e895-72fd-4023-a336-97689ded257c",
+    "domain": "thunderbird",
+    "status": "skipped_gui_trajectory",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-04/raw/run-1/155-thunderbird-dd84e895-72fd-4023-a336-97689ded257c/lite_agent_events.jsonl"
+  },
+  {
+    "order": 163,
+    "task_id": "8f080098-ddb1-424c-b438-4e96e5e4786e",
+    "domain": "vlc",
+    "status": "unresolved_audio_encoding_difference",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-11/raw/run-1/163-vlc-8f080098-ddb1-424c-b438-4e96e5e4786e/lite_agent_events.jsonl",
+    "reward": 0.9897855178879925,
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order163-baseline",
+    "note": "exactly reproduced old score, correct input/output, media API has no editable codec params; no prompt answer hacking",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order163-baseline",
+        "status": "failed",
+        "reward": 0.9897855178879925,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 164,
+    "task_id": "fba2c100-79e8-42df-ae74-b592418d54f4",
+    "domain": "vlc",
+    "status": "unresolved_current_frame_capture",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-12/raw/run-1/164-vlc-fba2c100-79e8-42df-ae74-b592418d54f4/lite_agent_events.jsonl",
+    "reward": 0.879553906659627,
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order164-baseline",
+    "note": "used actual fractional playback time; independent frame extraction still differs; no reference timestamp guessing",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order164-baseline",
+        "status": "failed",
+        "reward": 0.879553906659627,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  },
+  {
+    "order": 174,
+    "task_id": "0ed39f63-6049-43d4-ba4d-5fa2fe04a951",
+    "domain": "vs_code",
+    "status": "passed",
+    "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-10/raw/run-1/174-vs_code-0ed39f63-6049-43d4-ba4d-5fa2fe04a951/lite_agent_events.jsonl",
+    "candidate_commit": "3420b83",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-174-stages",
+    "scope_validation": "189 instructions: exact target only",
+    "original_prefix_replay": "passed",
+    "source_import_check": "passed",
+    "reward": 1.0,
+    "merged_commit": "e22f941",
+    "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order174-attempt1",
+    "run_results": [
+      {
+        "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order174-attempt1",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
+      }
+    ]
+  }
+]
