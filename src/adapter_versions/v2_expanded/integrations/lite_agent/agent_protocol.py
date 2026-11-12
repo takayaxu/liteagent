@@ -911,7 +911,8 @@ class AgentProtocolMixin:
         scoped_hint = model_hint(self.config.task_stage_hints, state,
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
-            if (self.config.task_stage_hint_targets or {}).get(state.task_id) == "demographic-pivots":
+            scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
+            if scoped_kind in {"demographic-pivots", "personal-cleanup"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "
                     "Call exactly ONE provided tool now. Use its current schema and actual observations. "
@@ -924,6 +925,17 @@ class AgentProtocolMixin:
                 )
                 message_content.append({"type": "text", "text":
                     "Current stage reminder, based on the actual execution ledger:\n" + scoped_hint})
+            if scoped_kind == "personal-cleanup" and state.title_range_personal_info_cleanup_plan():
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction,
+                    "current_stage": scoped_hint,
+                    "recent_execution_facts": [{"step": e.step,
+                        "action": e.proposed.get("action", e.proposed.get("tool")),
+                        "arguments": e.proposed.get("arguments"),
+                        "executed": e.executed, "error": e.error}
+                        for e in state.events[-8:]],
+                    "note": "The next operation comes from actual presentation inspection and the full immutable execution ledger; historical display-number aliases are omitted to avoid mixing them with native indices. The tool schema and completion checks are unchanged.",
+                }, ensure_ascii=False)}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
         scoped_stage = stage_prompt_text(
