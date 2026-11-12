@@ -233,5 +233,12 @@ def model_hint(profile, state, *, targets=None):
     if (targets or {}).get(state.task_id) == "combined-data" and state.domain == "libreoffice_calc":
         return _combined_hint(state)
     if (targets or {}).get(state.task_id) == "demographic-pivots" and state.domain == "libreoffice_calc":
-        return _demographic_hint(state)
+        return (_demographic_hint(state)
+                + '\nLayout constraint for every stage: first pivot destination is Sheet2!A2, '
+                'directly after merged A1:C1. There is NO blank row above the first pivot. '
+                'The one blank row belongs BETWEEN pivot tables only. '
+                'For the title submit range.format arguments '
+                '{"sheet":"Sheet2","range":"A1:C1","format":'
+                '{"background_color":"#0000ff","font_color":"#ffffff","bold":true}}. '
+                'Do not format only A1 or omit font_color.')
     return None

@@ -922,6 +922,8 @@ class AgentProtocolMixin:
                     "propose_done requests completion review; it does not bypass the existing checks. "
                     "Keep edits within the user's requested scope.\n"
                 )
+                message_content.append({"type": "text", "text":
+                    "Current stage reminder, based on the actual execution ledger:\n" + scoped_hint})
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
         from .task_stage_prompts import stage_prompt_text, bound_call_context
         scoped_stage = stage_prompt_text(
