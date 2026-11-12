@@ -551,4 +551,7 @@ def bind_reader_source(tools: list[dict[str, Any]], route: tuple[str, str], path
         if key:
             properties[key]["enum"] = [path]
             properties[key]["description"] = "Exact current source path; copy this enum value without changing or shortening it."
-            function["description"] += " This reader targets ONLY the current observed source path: " + path + "."
+            binding_description = "This reader targets ONLY the current observed source path: " + path + ". Copy that full absolute path; a basename is not valid for this lease. "
+            function["description"] += " " + binding_description
+            # The atomic provider surface takes its description from params.
+            params["description"] = binding_description + str(params.get("description", ""))

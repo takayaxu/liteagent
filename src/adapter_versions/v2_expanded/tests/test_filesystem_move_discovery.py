@@ -990,6 +990,10 @@ def test_checked_move_advances_only_after_physical_verification(physical_passed)
     adapter = next(tool["function"] for tool in tools if tool["function"]["name"] == "adapter__adapter_call")
     params = adapter["parameters"]["properties"]["payload"]["properties"]["params"]
     assert params["properties"]["destination"]["enum"] == ["/home/user/Desktop/Code/main.py"]
+    from integrations.lite_agent.atomic_tool_surface import atomic_provider_surface
+    projected, bindings = atomic_provider_surface(tools)
+    assert bindings
+    assert "destination includes the original basename" in projected[0]["function"]["description"]
     executor.execute.return_value = {"executed": True, "result": {"verification_passed": physical_passed}}
     moved = agent.execute_proposal(state, {
         "tool": "adapter__adapter_call",
@@ -1412,9 +1416,14 @@ def test_scoped_native_classification_omits_only_unrelated_image(recovery, mode)
     updated = candidate._messages(state, b'synthetic', tools=tools, **recovery)
     assert any(item['type'] == 'image_url' for item in original[-1]['content'])
     assert all(item['type'] != 'image_url' for item in updated[-1]['content'])
-    assert updated[-1]['content'][0]['text'] == original[-1]['content'][0]['text']
     if mode == 'classification_call':
         assert updated[0]['content'] == stages[state.task_id][0]['text']
+        text = updated[-1]['content'][0]['text']
+        facts = json.loads(text.split('Current source classification facts: ', 1)[1].split('\n')[0])
+        assert facts['current_object']['path'] == path
+        assert facts['current_object_observation'] == state.filesystem_organization_evidence()
+    else:
+        assert updated[-1]['content'][0]['text'] == original[-1]['content'][0]['text']
     state.task_id = 'other-task'
     assert candidate._messages(state, b'synthetic', tools=tools, **recovery) == baseline._messages(state, b'synthetic', tools=tools, **recovery)
 
@@ -1448,8 +1457,27 @@ def test_organization_reader_exposes_execution_exact_source_restriction(name, ke
     assert len(tools) == 1
     params = tools[0]['function']['parameters']['properties']['payload']['properties']['params']
     assert params['properties'][key]['enum'] == [path]
+    from integrations.lite_agent.atomic_tool_surface import atomic_provider_surface
+    projected, bindings = atomic_provider_surface(tools)
+    assert bindings
+    assert path in projected[0]['function']['description']
     from integrations.lite_agent.tool_validation import validate_model_visible_tool_arguments
     owner, action = state.filesystem_organization_reader_route()
     with pytest.raises(ValueError):
         validate_model_visible_tool_arguments(tools, 'adapter__adapter_call', {
             'adapter': owner, 'action': action, 'payload': {'params': {key: name}}})
+
+
+def test_scoped_classification_facts_distinguish_permitted_and_excluded_directories():
+    from integrations.lite_agent.task_stage_prompts import classification_stage_context
+    state = _organization_state()
+    state.instruction = "Organize Desktop files. Place academic papers in 'Papers', coding projects in 'Code', and everything else under 'Other'."
+    path = '/home/user/Desktop/lecture.ppt'
+    state.events[0].result['context_hint']['downstream_context']['matches'] = [{'path': path, 'kind': 'file'}]
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'), _NoopExecutor())
+    from integrations.lite_agent.organization_validation import current_review_tool
+    tools = [current_review_tool(state, state.filesystem_organization_current_entry())]
+    stages = {state.task_id: [{'text': 'Classify the observed source.', 'when_tool': VERIFY_TOOL, 'context_mode': 'classification_call'}]}
+    facts = json.loads(classification_stage_context(stages, state, tools).split(': ',1)[1].split('\n')[0])
+    assert facts['permitted_destination_directories'] == ['/home/user/Desktop/Other', '/home/user/Desktop']
+    assert {x['directory'] for x in facts['incompatible_destinations']} == {'/home/user/Desktop/Papers','/home/user/Desktop/Code'}

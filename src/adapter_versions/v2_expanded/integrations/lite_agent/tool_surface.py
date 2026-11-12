@@ -429,6 +429,12 @@ class ToolSurfaceMixin:
                     params["properties"]["destination"]["enum"] = [
                         check["destination_directory"].rstrip("/") + "/" + current["path"].rsplit("/", 1)[-1]
                     ]
+                    params["description"] = (
+                        "Exact-path rename for the already checked current object. Copy the source enum and full destination enum exactly; "
+                        "destination includes the original basename and must not be only the category directory. "
+                        + str(params.get("description", ""))
+                    )
+                    params["properties"]["destination"]["description"] = "Exact full destination path from this enum, including the source basename; not just its parent directory."
         return self._append_organization_skip_tool(tools, state)
 
     @staticmethod

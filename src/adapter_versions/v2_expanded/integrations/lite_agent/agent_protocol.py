@@ -965,7 +965,7 @@ class AgentProtocolMixin:
             system_message += "\nCurrent chapter split stage: " + json.dumps(chapter_split, ensure_ascii=False)
         if terminal_defaults is not None:
             system_message += "\nCurrent terminal default stage: " + json.dumps(terminal_defaults, ensure_ascii=False)
-        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text, omit_stage_image, classification_stage_system
+        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text, omit_stage_image, classification_stage_system, classification_stage_context
         scoped_stage = stage_prompt_text(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
@@ -980,6 +980,11 @@ class AgentProtocolMixin:
                 system_message += "\nCurrent validation feedback: " + json.dumps({
                     key: protocol_error[key] for key in ("reason", "tool_name", "schema_hints", "allowed_routes")
                     if key in protocol_error}, ensure_ascii=False)
+        classification_context = classification_stage_context(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if classification_context is not None:
+            message_content[0]["text"] = classification_context
         scoped_context = bound_call_context(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )

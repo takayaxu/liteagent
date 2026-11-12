@@ -212,3 +212,27 @@ def classification_stage_system(overrides: Any, state: Any, tools: Any) -> str |
     stages = [stage for stage in selected_stages(overrides, state, tools)
               if stage.get("context_mode") == "classification_call"]
     return "\n".join(stage["text"] for stage in stages) if stages else None
+
+
+def classification_stage_context(overrides: Any, state: Any, tools: Any) -> str | None:
+    if classification_stage_system(overrides, state, tools) is None:
+        return None
+    current = state.filesystem_organization_current_entry()
+    if not current:
+        return None
+    import json
+    from .organization_validation import classification_destinations
+    _, excluded = classification_destinations(state, current)
+    properties = next((tool.get("function", {}).get("parameters", {}).get("properties", {})
+        for tool in (tools or []) if tool.get("function", {}).get("name") == "organization__verify_current"), {})
+    latest_check = next((event.result for event in reversed(state.events)
+        if isinstance(event.result, dict) and event.result.get("path") == current["path"]
+        and isinstance(event.result.get("passed"), bool)), None)
+    return "Current source classification facts: " + json.dumps({
+        "current_object": current,
+        "permitted_destination_directories": properties.get("destination_directory", {}).get("enum"),
+        "incompatible_destinations": excluded,
+        "current_object_observation": state.filesystem_organization_evidence(current),
+        "latest_classification_feedback": latest_check,
+        "latest_execution_error": state.events[-1].error if state.events else None,
+    }, ensure_ascii=False) + "\nEmit one current review call using the exact permitted directory enum."
