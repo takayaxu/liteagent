@@ -258,6 +258,15 @@ def _tabstop_hint(state):
         for p in body.get("paragraph_details", []):
             if p.get("text_length", 0) == len(p.get("text", "")):
                 paragraphs[p["index"]] = p
+    escaped = [p["index"] for p in paragraphs.values() if p.get("literal_tab_escape_count", 0)]
+    if escaped:
+        return (
+            "REPAIR ESCAPED TAB: native inspection found literal backslash+t in paragraphs " + str(escaped)
+            + '. Replace the literal escape with a REAL tab. For text.find_replace use find="\\\\t", '
+            'replacement="\\u0009", replace_all=true, case_sensitive=true in raw JSON. '
+            'Unicode escape U+0009 is a Tab character. Do not insert a second backslash. '
+            'Then inspect the paragraphs once to confirm literal_tab_escape_count=0 and has_tab_character=true.'
+        )
     anchors = []
     for index, p in paragraphs.items():
         words = list(re.finditer(r"\S+", p.get("text", "")))
@@ -281,9 +290,10 @@ def _tabstop_hint(state):
             "(literal backslash plus t). Preserve all original words, punctuation, blank paragraphs and formatting. "
             "Do not re-read identical complete paragraphs or reconstruct document text. "
             "CURRENT OBSERVED ANCHOR ONLY: " + json.dumps(anchors[0], ensure_ascii=False)
+            .replace('\\t', '\\u0009')
             + ". Call text.find_replace NOW with this find/replacement and replace_all=false, "
             "case_sensitive=true. This exact source is already observed; do not inspect it again. "
-            "The replacement is a JSON string: preserve its single \\t escape exactly; "
+            "The replacement is a JSON string: use the Unicode escape \\u0009 for an actual tab; "
             "do not double the backslash. After all insertions apply the format to ALL sentence indices, "
             "not an index guessed from one-based numbering."
         )
