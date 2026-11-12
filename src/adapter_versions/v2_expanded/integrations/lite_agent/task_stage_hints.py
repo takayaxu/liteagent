@@ -23,60 +23,6 @@ def gemini_native_result(event):
     return body
 
 
-def gemini_gui_observations(screenshot):
-    """Read only the current screenshot; returned coordinates never execute actions."""
-    import csv
-    import io
-    import subprocess
-    from PIL import Image
-
-    result = {}
-    try:
-        with Image.open(io.BytesIO(screenshot)) as source:
-            image = source.convert("RGB")
-        width, height = image.size
-        scale = min(1, 1280 / width, 720 / height)
-        ocr_image = io.BytesIO()
-        image.resize((width * 2, height * 2)).save(ocr_image, format="PNG")
-        process = subprocess.run(["tesseract", "stdin", "stdout", "--psm", "11", "tsv"],
-            input=ocr_image.getvalue(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=8, check=True)
-        lines = {}
-        for word in csv.DictReader(io.StringIO(process.stdout.decode()), delimiter="\t", quoting=csv.QUOTE_NONE):
-            if not word.get("text", "").strip():
-                continue
-            key = tuple(word[k] for k in ("page_num", "block_num", "par_num", "line_num"))
-            lines.setdefault(key, []).append(word)
-        controls = []
-        for words in lines.values():
-            label = " ".join(w["text"] for w in words).strip()
-            if "selected:" in label.lower():
-                result["visible_selected_text_status"] = label
-            if label.lower().replace(":", "") not in {"find", "find all", "close", "iliad", "find and replace"}:
-                continue
-            left = min(int(w["left"]) for w in words) / 2
-            top = min(int(w["top"]) for w in words) / 2
-            right = max(int(w["left"]) + int(w["width"]) for w in words) / 2
-            bottom = max(int(w["top"]) + int(w["height"]) for w in words) / 2
-            control = {"visible_text": label, "image_pixel_center": [round((left + right) * scale / 2), round((top + bottom) * scale / 2)]}
-            if label.lower().rstrip(":") == "find":
-                control["adjacent_find_input_point"] = [round((right + 70) * scale), round((top + bottom) * scale / 2)]
-            controls.append(control)
-        result["visible_control_text"] = controls
-        # Writer's current yellow marker swatch is visible in the formatting toolbar.
-        pixels = image.load()
-        yellow = [(x, y) for y in range(int(height * .07), int(height * .17))
-                  for x in range(int(width * .2), int(width * .8))
-                  if pixels[x, y][0] > 210 and pixels[x, y][1] > 200 and pixels[x, y][2] < 90]
-        if yellow:
-            result["visible_yellow_toolbar_swatch_image_pixel_center"] = [
-                round(sum(x for x, _ in yellow) / len(yellow) * scale),
-                round(sum(y for _, y in yellow) / len(yellow) * scale)]
-        result["coordinate_space"] = "pixels in the attached 1280x720-or-smaller image, not desktop pixels"
-    except (OSError, ValueError, subprocess.SubprocessError):
-        result["ocr_unavailable"] = True
-    return result
-
-
 def _sales_anchors(state):
     """Repeat observed addresses explicitly; never infer them from the task ID."""
     months = {}
@@ -462,6 +408,80 @@ def _comma_table_hint(state):
     )
 
 
+def _gemini_document_hint(state, facts):
+    def stage(note, adapter, action, params, document=None):
+        payload = {"params": params}
+        if document:
+            payload["document"] = document
+        return "NATIVE GEMINI: " + note + "\n" + json.dumps({
+            "adapter": adapter, "action": action, "payload": payload}, ensure_ascii=False)
+
+    generated = [e for e, _, action, args in facts if action == "command.run"
+        and "/tmp/gemini-responses.fodt" in json.dumps(args)]
+    if not generated:
+        reads = [(e, args) for e, _, action, args in facts if action == "file.read_text"
+                 and "gemini-responses" not in str(args.get("path", ""))]
+        if not reads:
+            return "EXTRACT: identify and read the open source JSON file using its actual guest path. Copy ALL Gemini response values; Iliad is a highlighting criterion only."
+        source = reads[0][1]["path"]
+        script = (
+            "import json,re; from pathlib import Path; from xml.sax.saxutils import escape; "
+            "walk=lambda x: [r for k,v in x.items() for r in "
+            "([v] if k.lower()=='gemini' and isinstance(v,str) else walk(v))] "
+            "if isinstance(x,dict) else [r for v in x for r in walk(v)] if isinstance(x,list) else []; "
+            f"responses=walk(json.loads(Path({source!r}).expanduser().read_text())); "
+            "values=[r.replace(chr(10),chr(92)+'n') for r in responses]; "
+            "head='<office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\" "
+            "xmlns:text=\"urn:oasis:names:tc:opendocument:xmlns:text:1.0\" "
+            "xmlns:style=\"urn:oasis:names:tc:opendocument:xmlns:style:1.0\" "
+            "xmlns:fo=\"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0\" "
+            "office:version=\"1.2\" office:mimetype=\"application/vnd.oasis.opendocument.text\">'"
+            "; styles='<office:automatic-styles><style:style style:name=\"Highlight\" "
+            "style:family=\"text\"><style:text-properties fo:background-color=\"#ffff00\"/>"
+            "</style:style></office:automatic-styles>'; "
+            "render=lambda v: ''.join('<text:span text:style-name=\"Highlight\">Iliad</text:span>' "
+            "if part=='Iliad' else escape(part) for part in re.split('(Iliad)',v)); "
+            "body='<text:p/>'.join('<text:p>'+render(v)+'</text:p>' for v in values); "
+            "Path('/tmp/gemini-responses.fodt').write_text(head+styles+'<office:body><office:text>'"
+            "+body+'</office:text></office:body></office:document>',encoding='utf-8'); "
+            "print(json.dumps({'draft_path':'/tmp/gemini-responses.fodt','responses':len(values),"
+            "'iliad_occurrences':sum(v.count('Iliad') for v in values)}))"
+        )
+        return stage("Generate a NEW flat OpenDocument from the actual JSON source. This preserves "
+            "source-visible backslash+n notation, gives each complete Gemini value its own paragraph, "
+            "adds one blank paragraph between responses and marks every Iliad yellow. Use only source "
+            "values, never a reference artifact. Execute this finite model-visible script once; then "
+            "open its returned draft in Writer for native verification and DOCX export.",
+            "os", "command.run", {"argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"})
+    opened = [e for e, _, action, args in facts if action == "desktop.open_path"
+              and args.get("path") == "/tmp/gemini-responses.fodt"]
+    if not opened:
+        return stage("The source-derived draft was generated successfully. Open that NEW draft in "
+            "Writer now; do not rerun extraction, create a blank document or append text again.",
+            "os", "desktop.open_path", {"path": "/tmp/gemini-responses.fodt"})
+    reads = [e for e, _, action, _ in facts if action == "document.inspect" and e.step > opened[-1].step]
+    if not reads:
+        return stage("Read the native draft paragraphs and highlighting once before saving. "
+            "No GUI selection or manual text copying is needed.", "libreoffice_writer", "document.inspect",
+            {"paragraph_start": 0, "paragraph_limit": 12}, {"url": "/tmp/gemini-responses.fodt"})
+    body = gemini_native_result(reads[-1])
+    saves = [e for e, _, action, args in facts if action == "document.save"
+             and str(args.get("url", "")).endswith("/gemini_results.docx") and e.step > opened[-1].step]
+    if not saves:
+        return stage("Native draft inspection is available. Save it as the requested Desktop DOCX "
+            "using the explicit Word filter. Keep source values, response paragraphs and highlighting.",
+            "libreoffice_writer", "document.save", {"url": "/home/user/Desktop/gemini_results.docx",
+                "filter_name": "Office Open XML Text"}, {"url": "/tmp/gemini-responses.fodt"})
+    if reads[-1].step <= saves[-1].step:
+        return stage("Read the saved DOCX native paragraphs and highlighting once. Do not re-extract, "
+            "rewrite, highlight again or save repeatedly.", "libreoffice_writer", "document.inspect",
+            {"paragraph_start": 0, "paragraph_limit": 12}, {"url": "/home/user/Desktop/gemini_results.docx"})
+    return "NATIVE GEMINI FINISH: review the saved native facts and propose_done now if they meet " \
+        "all requirements. Do not repeat tools. Existing completion checks still apply. Saved facts: " + json.dumps({
+            "identity": body.get("identity"), "paragraph_count": body.get("paragraph_count"),
+            "nonempty_paragraph_count": body.get("nonempty_paragraph_count"), "highlighting": body.get("highlighting")}, ensure_ascii=False)
+
+
 def _cross_app_hint(state, kind):
     from .completion_policy import effective_canonical_action
     facts = [(e, *effective_canonical_action(e, state.domain)) for e in state.events if e.executed and not e.error]
@@ -516,124 +536,7 @@ def _cross_app_hint(state, kind):
             )
         return "FINALIZE: format fractional Success Rate values as 0.00%, save_as the requested Desktop workbook, then read back all five numeric-year records and propose_done. Do not repeat source extraction or create another workbook."
     if kind == "gemini-document":
-        extracted = any(a == "command.run" and "gemini" in json.dumps(args).lower()
-                        and ("write_text" in json.dumps(args) or "open(" in json.dumps(args))
-                        and ("walk" in json.dumps(args) or "def " in json.dumps(args))
-                        for _, _, a, args in facts)
-        if extracted and "document.create" not in actions:
-            return "CURRENT STEP ONLY: Gemini response extraction already SUCCEEDED and wrote /tmp/gemini-responses.txt. Do not rerun Python or reread the source JSON. Search libreoffice_writer document.create if needed, then create Desktop/gemini_results.docx once. The next stage appends the extracted TEXT file."
-        if "file.read_text" in actions and not extracted:
-            source_event, source_args = next((e, args) for e, _, a, args in facts if a == "file.read_text")
-            source_path = result_payload(source_event).get("path") or source_args.get("path")
-            script = (
-                "import json; from pathlib import Path; "
-                "walk=lambda x: [r for k,v in x.items() for r in "
-                "([v] if k.lower()=='gemini' and isinstance(v,str) else walk(v))] "
-                "if isinstance(x,dict) else [r for v in x for r in walk(v)] "
-                "if isinstance(x,list) else []; "
-                f"responses=walk(json.loads(Path({source_path!r}).expanduser().read_text())); "
-                "Path('/tmp/gemini-responses.txt').write_text((chr(10)*2).join(r.replace(chr(10),chr(92)+'n') "
-                "for r in responses)); print(len(responses))"
-            )
-            call = {"adapter": "os", "action": "command.run", "payload": {"params": {
-                "argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"}}}
-            return (
-                "EXTRACT BEFORE WRITING: copy all nested Gemini string values, preserving source order. "
-                "Iliad is a highlighting criterion only. Preserve JSON's visible backslash+n line-break "
-                "notation inside each value so the full response stays one paragraph; never replace "
-                "source line-break notation with spaces. The source path below comes from the successful "
-                "public read. This one-line script avoids multiline and separator escaping errors. "
-                "Call the public adapter tool with exactly this JSON argument object; keep cwd_source and "
-                "provenance OUTSIDE argv. Do not add optional fields or reread the source. "
-                + json.dumps(call, ensure_ascii=False)
-            )
-        if "document.create" not in actions:
-            return (
-                "EXTRACT: inspect the open JSON path and read its complete structure. Use only observed guest "
-                "paths under its actual home, not the host user's home. If using command.run to parse JSON, "
-                "set provenance=shell_history and use valid Python with actual newlines before compound for/if "
-                "statements; a compound for cannot follow a semicolon. Select all Gemini RESPONSE VALUES, "
-                "preserving each complete response as one paragraph in source order. The user asks to copy all "
-                "responses and highlight Iliad, not discard sentences without that word. Read/parse once, retain "
-                "the extracted complete content, then create the requested Writer document. No repeated searches."
-            )
-        if not {"document.append_text", "document.append_text_file", "document.append_paragraphs"} & actions:
-            response_text = None
-            for event, _, action, args in facts:
-                if action != "file.read_text" or args.get("path") != "/tmp/gemini-responses.txt":
-                    continue
-                body = gemini_native_result(event)
-                if isinstance(body.get("content"), str) and not body.get("truncated"):
-                    response_text = body["content"]
-                for file in body.get("files", []):
-                    chunks = sorted(file.get("chunks", []), key=lambda c: c.get("start_char", 0))
-                    cursor = 0
-                    pieces = []
-                    for chunk in chunks:
-                        if chunk.get("start_char") != cursor or not isinstance(chunk.get("text"), str):
-                            break
-                        pieces.append(chunk["text"])
-                        cursor += len(chunk["text"])
-                    if pieces and cursor == file.get("source_total_chars"):
-                        response_text = "".join(pieces)
-            if response_text is None:
-                return "READ RESPONSES: call vs_code file.read_text with path=/tmp/gemini-responses.txt and max_chars=100000 once. Read the NEW extracted file only, not the source JSON. Its complete observed strings will supply native paragraphs. Do not cat, sed, convert, re-extract or append yet."
-            call = {"adapter": "libreoffice_writer", "action": "document.append_paragraphs",
-                "payload": {"params": {"paragraphs": response_text.split("\n\n"),
-                    "blank_paragraphs_between": 1}}}
-            return ("WRITE PARAGRAPHS: use the exact complete observed response strings below, one array "
-                "item per native paragraph, with one blank separator paragraph. Copy ALL strings in full; "
-                "do not shorten, summarize or insert ellipses. document.append_text_file would insert manual "
-                "line breaks inside one paragraph, so use document.append_paragraphs. If missing, search "
-                "exact libreoffice_writer document.append_paragraphs once, then call this public action: "
-                + json.dumps(call, ensure_ascii=False))
-        reads = [e for e, _, a, _ in facts if a == "document.inspect"]
-        if not reads:
-            return "PARAGRAPH OBSERVE: inspect the new Writer document with paragraph_start=0, paragraph_limit=1 now. Text-file insertion preserves manual line breaks; each response still needs a native paragraph. Do not highlight until the native paragraph structure is verified."
-        document = gemini_native_result(reads[-1])
-        structured = [e for e, _, a, _ in facts if a == "paragraph.replace_text"]
-        if structured and reads[-1].step <= structured[-1].step:
-            return "PARAGRAPH VERIFY: document.inspect with paragraph_start=0, paragraph_limit=12 once. Confirm each response occupies its own native paragraph and the blank separator paragraphs remain. Do not replace the text again."
-        if document.get("nonempty_paragraph_count") == 1:
-            paragraphs = document.get("paragraph_details", [])
-            paragraph = paragraphs[0] if paragraphs else {}
-            text = paragraph.get("text", "")
-            if not text or len(text) != paragraph.get("text_length"):
-                return "PARAGRAPH OBSERVE: read the COMPLETE live paragraph using document.inspect paragraph_start=0, paragraph_limit=1. The overview is truncated and cannot supply replacement text."
-            responses = text.split("\n\n")
-            if len(responses) > 1 and all(r.strip() for r in responses):
-                call = {"adapter": "libreoffice_writer", "action": "paragraph.replace_text",
-                    "payload": {"params": {"index": paragraph["index"], "paragraphs": responses,
-                        "blank_paragraphs_between": 1}}}
-                return ("PARAGRAPH REPAIR: the complete native read contains all responses in one paragraph "
-                    "with manual newlines. Convert them to separate native paragraphs without changing ANY "
-                    "response text. The exact array below comes only from the complete public read, split at "
-                    "the existing double-newline response boundaries. Copy the entire call, all strings in "
-                    "full, blank_paragraphs_between=1. Do not summarize, omit text or append duplicates. "
-                    "If needed search exact libreoffice_writer paragraph.replace_text once. "
-                    + json.dumps(call, ensure_ascii=False))
-        highlighting = document.get("highlighting", {})
-        if not highlighting.get("highlighted_run_count"):
-            return (
-                "HIGHLIGHT USING WRITER GUI: all Gemini responses are already appended. The public "
-                "text.set_format accepts bold/italic/font_size/script only; it CANNOT set highlighting. "
-                "Do not invent highlight/background parameters or repeat tools_search. text.find locates "
-                "matches but does not select them in the GUI. Use GUI Ctrl+H to open Find and Replace, "
-                "search the literal Iliad, click the visible Find All button, then close the dialog while "
-                "keeping all occurrences selected. Apply yellow Character Highlighting using Writer's "
-                "visible marker toolbar control; use the current screenshot to identify it. Do not "
-                "guess a highlighting hotkey. Then document.inspect once to read the native highlighting "
-                "summary. Keep every response and never append again."
-            )
-        last_edit = max((e.step for e, _, a, _ in facts
-                         if a in {"document.append_text", "document.append_text_file", "document.append_paragraphs", "paragraph.replace_text"}
-                         or e.proposed.get("kind") == "gui"), default=0)
-        saves = [e for e, _, a, _ in facts if a == "document.save" and e.step > last_edit]
-        if not saves:
-            return "PERSIST: native inspection now reports highlighting. Save Desktop/gemini_results.docx with document.save, then inspect the saved paragraphs and highlighting once. Do not repeat GUI highlighting on already highlighted matches."
-        if reads[-1].step <= saves[-1].step:
-            return "VERIFY: inspect the saved Gemini document once to confirm the paragraphs and Iliad highlighting survived the final save. Do not edit or append again."
-        return "FINISH: compare the saved Gemini paragraphs and Iliad highlighting with the instruction, then propose_done. Do not search, re-extract, append duplicates or repeat identical inspections."
+        return _gemini_document_hint(state, facts)
     if kind in {"invoice-mail", "mail-wallpaper"}:
         folder = "Bills" if kind == "invoice-mail" else "Notes"
         if "messages.query" not in actions:

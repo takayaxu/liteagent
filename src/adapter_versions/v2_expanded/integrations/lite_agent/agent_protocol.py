@@ -1011,150 +1011,29 @@ class AgentProtocolMixin:
                 }, ensure_ascii=False)}]
             if scoped_kind == "grf-records" and scoped_hint.startswith("CURRENT STEP ONLY:"):
                 message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
-            if scoped_kind == "gemini-document" and scoped_hint.startswith("PARAGRAPH "):
-                message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
-            if scoped_kind == "gemini-document" and scoped_hint.startswith(("PARAGRAPH ", "PERSIST:", "VERIFY:", "FINISH:")):
-                from .task_stage_hints import gemini_native_result
-                from .completion_policy import effective_canonical_action
-                native_reads = [e for e in state.events if e.executed and not e.error
-                    and effective_canonical_action(e, state.domain)[1] == "document.inspect"]
-                native = gemini_native_result(native_reads[-1]) if native_reads else {}
-                written = [args for e in state.events if e.executed and not e.error
-                    for _, action, args in [effective_canonical_action(e, state.domain)]
-                    if action == "document.append_paragraphs"]
-                facts = {"new_document_already_created": True,
-                    "observed_responses_already_written": len(written[-1].get("paragraphs", [])) if written else None,
-                    "native_identity": native.get("identity"),
-                    "native_paragraph_count": native.get("paragraph_count"),
-                    "native_nonempty_paragraph_count": native.get("nonempty_paragraph_count"),
-                    "native_highlighting": native.get("highlighting")}
-                if scoped_hint.startswith("FINISH:"):
-                    scoped_hint = ("CURRENT STEP ONLY: review the saved native read-back facts below and "
-                        "call propose_done now with truthful evidence. Extraction, native paragraphs, "
-                        "highlighting and final-save read-back have completed. Do not search or inspect "
-                        "again merely because an older preview was abbreviated. Existing completion "
-                        "checks still review this claim.")
-                    message_content = [{"type": "text", "text": json.dumps({
-                        "instruction": state.instruction, "current_stage": scoped_hint, "observed_facts": facts,
-                    }, ensure_ascii=False)}]
+            if scoped_kind == "gemini-document" and scoped_hint.startswith("NATIVE GEMINI"):
+                if scoped_hint.startswith("NATIVE GEMINI FINISH:"):
+                    message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
                 else:
-                    if scoped_hint.startswith("PARAGRAPH REPAIR:"):
-                        call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
-                    else:
-                        save = scoped_hint.startswith("PERSIST:")
-                        full = scoped_hint.startswith(("VERIFY:", "PARAGRAPH VERIFY:"))
-                        call = {"adapter": "libreoffice_writer", "action": "document.save" if save else "document.inspect",
-                            "payload": {"params": {} if save else {"paragraph_start": 0, "paragraph_limit": 12 if full else 1}}}
+                    call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
                     wanted = call["action"]
+                    query = call["adapter"] + " " + wanted
                     exposed = any(wanted in t.get("function", {}).get("parameters", {})
                         .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                    note = scoped_hint[:scoped_hint.index('{"adapter"')].strip()
                     if exposed:
-                        scoped_hint = ("CURRENT STEP ONLY: CALL libreoffice_writer " + wanted
-                            + " now with next_public_call below. Source extraction, reading and response "
-                            "writing are already complete. Do not find JSON files, rerun commands, "
-                            "append again or return to an earlier stage.")
+                        scoped_hint = ("CURRENT STEP ONLY: CALL " + query + " now with next_public_call. "
+                            "Use the complete argument object; keep named params outside argv. "
+                            "Do not restart discovery, repeat an earlier stage or alter source text. " + note)
                         context = {"next_public_call": call}
                     else:
-                        scoped_hint = ("CURRENT STEP ONLY: CALL tools_search now with exact query "
-                            "libreoffice_writer " + wanted + ". Source extraction, reading and response "
-                            "writing are already complete. This step discovers the next native API; "
-                            "do not find files, run commands, append again or repeat old reads.")
-                        context = {"required_discovery_query": "libreoffice_writer " + wanted}
+                        scoped_hint = ("CURRENT STEP ONLY: CALL tools_search with exact query " + query
+                            + ". This only discovers the next required API; do not find files, "
+                            "repeat source reads or execute an earlier action. " + note)
+                        context = {"required_discovery_query": query}
                     message_content = [{"type": "text", "text": json.dumps({
-                        "instruction": state.instruction, "current_stage": scoped_hint,
-                        "observed_facts": facts, **context,
+                        "instruction": state.instruction, "current_stage": scoped_hint, **context,
                     }, ensure_ascii=False)}]
-            if scoped_kind == "gemini-document" and scoped_hint.startswith("HIGHLIGHT USING WRITER GUI:"):
-                from .task_stage_hints import gemini_gui_observations
-                images = [item for item in message_content if item.get("type") == "image_url"]
-                observed_gui = gemini_gui_observations(screenshot)
-                controls = {c["visible_text"].lower().rstrip(":"): c for c in observed_gui.get("visible_control_text", [])}
-                selected = observed_gui.get("visible_selected_text_status")
-                dialog_open = "find and replace" in controls
-                marker = observed_gui.get("visible_yellow_toolbar_swatch_image_pixel_center")
-                last_gui = next((e for e in reversed(state.events) if e.executed and not e.error
-                    and e.proposed.get("kind") == "gui"), None)
-                last_args = last_gui.proposed.get("arguments", {}) if last_gui else {}
-                marker_clicked = bool(marker and last_args.get("action") == "click"
-                    and abs(last_args.get("x", -100) - marker[0]) <= 3
-                    and abs(last_args.get("y", -100) - marker[1]) <= 3)
-                next_step = "Continue from the actual screenshot and observed controls."
-                if dialog_open and selected and "close" in controls:
-                    next_step = "CURRENT STEP ONLY: the visible status already confirms selected text. CLOSE the dialog now using the observed Close coordinates. Do not click Find All again."
-                elif not dialog_open and selected and marker and not marker_clicked:
-                    next_step = "CURRENT STEP ONLY: the dialog is closed and text remains selected. CLICK the observed yellow toolbar swatch coordinates now to apply highlighting."
-                elif not dialog_open and marker_clicked:
-                    next_step = "CURRENT STEP ONLY: the marker input has been sent. Call document.inspect now to verify its actual highlighting effect. If missing, tools_search exact libreoffice_writer document.inspect, then call it."
-                elif dialog_open and "find all" in controls:
-                    next_step = "CURRENT STEP ONLY: Find All is enabled in the current dialog. Click its observed coordinates now; closing and highlighting are later stages."
-                elif dialog_open and "find" in controls:
-                    point = controls["find"].get("adjacent_find_input_point")
-                    input_focused = bool(point and last_args.get("action") == "click"
-                        and abs(last_args.get("x", -100) - point[0]) <= 3
-                        and abs(last_args.get("y", -100) - point[1]) <= 3)
-                    next_step = ("CURRENT STEP ONLY: the Find input was focused. TYPE Iliad now; do not click Find All until it becomes enabled."
-                        if input_focused else "CURRENT STEP ONLY: CLICK the observed adjacent_find_input_point to focus the empty Find field. Entering Iliad is the next turn; do not click Find All yet.")
-                elif not dialog_open and not selected and not marker_clicked:
-                    next_step = ("CURRENT STEP ONLY: a click has brought focus to Writer. Send Ctrl+H once now to open Find and Replace, then inspect the next screenshot."
-                        if last_args.get("action") == "click" else
-                        "CURRENT STEP ONLY: no Find and Replace dialog is visible. CLICK inside the visible Writer text body to give it keyboard focus. Do not send another Ctrl+H before this focus click.")
-                message_content = [{"type": "text", "text": json.dumps({
-                    "instruction": state.instruction, "current_stage": scoped_hint,
-                    "current_screenshot_observations": observed_gui, "next_step": next_step,
-                    "recent_inputs": [{"step": e.step, "arguments": {
-                        k: v for k, v in e.proposed.get("arguments", {}).items() if k != "fallback_reason"},
-                        "executed": e.executed, "error": e.error} for e in state.events[-6:]],
-                    "note": "An acknowledged click or hotkey confirms only that input was sent. Infer dialog/selection/highlighting from the CURRENT screenshot, never from an old action's intended effect. If no dialog is visible, click the document body to focus Writer, then Ctrl+H. If Find is empty, click its adjacent input and type Iliad BEFORE Find All. If the dialog remains open after Find All, use Close before the yellow toolbar swatch. Do not click a toolbar button through a modal dialog. The GUI coordinate frame is image pixels.",
-                }, ensure_ascii=False)}, *images]
-                scoped_hint = (next_step + "\nThis current screenshot step takes precedence over the general "
-                    "highlighting workflow. The response text is already complete. Preserve it and verify "
-                    "native highlighting after the marker input; do not restart extraction or selection.")
-            if scoped_kind == "gemini-document" and scoped_hint.startswith("EXTRACT BEFORE WRITING:"):
-                from .completion_policy import effective_canonical_action
-                from .completion_outcomes import result_payload
-                reads = []
-                for event in state.events:
-                    _, action, args = effective_canonical_action(event, state.domain)
-                    if action == "file.read_text" and event.executed and not event.error:
-                        reads.append({"arguments": args, "source_preview": str(result_payload(event))[:2000]})
-                message_content = [{"type": "text", "text": json.dumps({
-                    "instruction": state.instruction, "current_stage": scoped_hint,
-                    "observed_source_reads": reads,
-                    "command_call_shape": {"adapter": "os", "action": "command.run",
-                        "payload": {"params": {"argv": ["python3", "-c", "<your extraction script>"],
-                            "cwd_source": "home", "provenance": "shell_history"}}},
-                    "note": "Replace only the script placeholder with your source-based extraction code. Close argv immediately after its third string. Copy ALL Gemini values; Iliad is a highlighting criterion, never an extraction filter. No additional source reads are needed.",
-                    "recent_errors": [e.error for e in state.events[-3:] if e.error],
-                }, ensure_ascii=False)}]
-            if scoped_kind == "gemini-document" and scoped_hint.startswith(("READ RESPONSES:", "WRITE PARAGRAPHS:")):
-                if scoped_hint.startswith("WRITE PARAGRAPHS:"):
-                    exposed = any("document.append_paragraphs" in t.get("function", {}).get("parameters", {})
-                        .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
-                    if not exposed:
-                        scoped_hint = ("CURRENT STEP ONLY: call tools_search now with exact query "
-                            "libreoffice_writer document.append_paragraphs. Extraction and the complete "
-                            "response read have already succeeded; the new Writer document exists. "
-                            "Do not find files, reread JSON, run commands or append anything yet. "
-                            "The next stage will provide the exact observed paragraph array.")
-                        message_content = [{"type": "text", "text": scoped_hint}]
-                    else:
-                        call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
-                        scoped_hint = ("CURRENT STEP ONLY: CALL libreoffice_writer document.append_paragraphs "
-                            "now with the complete observed array supplied below. All source reading and "
-                            "document creation are complete. Copy every string exactly; do not shorten, "
-                            "summarize, insert ellipses or restart filesystem discovery. "
-                            "Source-visible backslash+n is TWO literal characters, NOT a line break. "
-                            "In tool JSON write the Unicode escape \\u005c followed by n for each source "
-                            "backslash+n pair. The argument example below uses that exact spelling. "
-                            "Never emit \\n for an internal source escape: that would decode into a newline. "
-                            "blank_paragraphs_between is 1 and is outside the paragraphs array.")
-                        message_content = [{"type": "text", "text": json.dumps({
-                            "instruction": state.instruction, "current_stage": scoped_hint,
-                            "observed_response_count": len(call["payload"]["params"]["paragraphs"]),
-                            "next_public_call": call,
-                        }, ensure_ascii=False).replace("\\\\n", "\\u005cn")}]
-                else:
-                    message_content = [{"type": "text", "text": state.instruction + "\n" + scoped_hint}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):
