@@ -1256,6 +1256,35 @@
         "facts": "pdf_source_ledger",
         "text": "Current stage: transfer the observed workbook rows to individual PDFs. CURRENT PDF SOURCE FACTS retains the complete executed source read, including rows omitted from the generic preview. Use these rows; do not reread merely because the earlier preview was shorter. Only call routes in the currently exposed tool schema. If another source window is actually needed, first tools_search for workbook.read_file; never replay an expired route. For each employee, use the original observed PDF template as input_path, a distinct output_path named exactly as requested, and one pdf.form.fill call. Copy exact field_name strings from the native index, never the human label with inserted underscores. Transfer the employee information and put the literal √ in the rating field matching each source value; omit blank/unselected fields. Do not enumerate every template field in reasoning. Fill the next employee whose output is not recorded in verified_executed_fills. After all source employees have outputs, inspect saved PDFs and verify names and values before propose_done. fields must be an array of objects, for example [{\"field_name\":\"exact native field name\",\"value\":\"literal text\"}]. Never send a field-name-to-value dictionary. Align each rating with its source column header; keep every criterion attached to its own value."
       }
+    ],
+    "869de13e-bef9-4b91-ba51-f6708c40b096": [
+      {
+        "when_tool": "organization__verify_current",
+        "text": "Call the one currently provided organization__verify_current tool. Its destination_directory enum is authoritative: choose only an exact listed directory, never an excluded destination even if its name seems related to the topic. Classify ONLY the exact current_object from current_object_observation. Determine the actual document genre or directory purpose, not just its topic. Statistics, citations or educational content do not by themselves make an original scholarly paper. A native structured read or recursive listing is evidence; an old desktop window does not change the current object. For move choose the permitted category satisfying the user criteria; retain only if the current location already satisfies them, including any catch-all. Use one concise factual evidence sentence. If uncertain, state the actual evidence limitation in the proposal; the independent checker can request further observation. This call checks your proposal and does not move the object. Emit one call now; do not repeat category debates or attempt an unavailable reader.",
+        "context_mode": "classification_call"
+      },
+      {
+        "when_tool": "organization__classification_verdict",
+        "context_mode": "review_call",
+        "text": "Use only destination_directory values in the current binding tool enum. The supplied incompatible_destinations are binding type/criterion constraints, not optional suggestions; never discard them because a topic seems related to an excluded category. Return one independent verdict for the exact source using native contents and observed source metadata. Identify document genre or directory purpose. A public-information summary or policy leaflet is not an original scholarly article merely because it contains statistics, citations or formal language. Apply the user catch-all when the observed genre does not meet a named category. If neither established source type nor observed contents supports classification, return insufficient_evidence with the exact source parent. Respect retention_allowed. For screenshots evidence_quote=\"\"; for structured readers copy one short exact substring from one native string. Keep reason to one factual sentence and emit one verdict call. Keep reason under 150 characters, evidence_quote under 100 characters, and observed_type under 60 characters. One short reason sentence is enough; do not add a second sentence or explain every rejected category."
+      },
+      {
+        "when_tool": "adapter__adapter_call",
+        "after_action": "os:filesystem.find",
+        "until_action": "os:desktop.open_path",
+        "text": "For the first desktop.open_path in this task, use wait_seconds=10 so a cold-start application can render before the next classification observation. Copy the exact current source path from its enum; do not shorten it."
+      },
+      {
+        "when_tool": "adapter__adapter_call",
+        "text": "If the current tool is a content reader, its source selector is bound to the exact full absolute path in the field enum and tool description. Copy that entire path exactly into input_pattern/path/file_path as documented, even when cwd_source is home or active_terminal. A basename or shortened filename violates this current-source lease. Do not reconstruct long names from memory. If cwd_source=explicit, also provide the observed containing directory in cwd_path. For filesystem.rename, copy the full destination enum value including the source basename; the category directory alone is not a rename destination.",
+        "after_action": "os:filesystem.find"
+      },
+      {
+        "when_tool": "propose_done",
+        "after_action": "os:filesystem.rename",
+        "context_mode": "completed_organization",
+        "text": "Completion stage: use the Completed filesystem execution facts, not a desktop window left open during inspection. When filesystem_organization_complete=true and pending_source_paths=[], every observed source has a verified disposition. Propose completion citing the actual verified moves/retentions and final category locations. Do not claim no inventory exists or restart classification after the native ledger confirms completion. Filesystem moves do not require saving the read-only application used to inspect a source."
+      }
     ]
   },
   "task_protocol_overrides": {
