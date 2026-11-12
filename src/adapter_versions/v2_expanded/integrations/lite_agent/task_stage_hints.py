@@ -280,13 +280,17 @@ def _tabstop_hint(state):
             "the following separating space with ONE actual tab. In JSON use \\t (decoded TAB), not \\\\t "
             "(literal backslash plus t). Preserve all original words, punctuation, blank paragraphs and formatting. "
             "Do not re-read identical complete paragraphs or reconstruct document text. "
-            "Pending observed anchors: " + json.dumps(anchors, ensure_ascii=False)
-            + ". Choose the next anchor yourself and execute its one local replacement. "
+            "CURRENT OBSERVED ANCHOR ONLY: " + json.dumps(anchors[0], ensure_ascii=False)
+            + ". Call text.find_replace NOW with this find/replacement and replace_all=false, "
+            "case_sensitive=true. This exact source is already observed; do not inspect it again. "
             "The replacement is a JSON string: preserve its single \\t escape exactly; "
             "do not double the backslash. After all insertions apply the format to ALL sentence indices, "
             "not an index guessed from one-based numbering."
         )
-    formats = [e for e in events if e.proposed.get("action") == "paragraph.set_format"]
+    indices = sorted(index for index, p in paragraphs.items() if len(p.get("text", "").split()) >= 3)
+    formats = [e for e in events if e.proposed.get("action") == "paragraph.set_format"
+               and e.proposed.get("arguments", {}).get("alignment") == "left"
+               and set(e.proposed.get("arguments", {}).get("indices", [])) >= set(indices)]
     if not formats:
         return (
             "TAB FORMAT: keep paragraph alignment=left for the first three words; set a RIGHT-aligned "
@@ -294,6 +298,9 @@ def _tabstop_hint(state):
             "Apply the same tab format to all relevant sentence paragraphs in one call; no extra left "
             "tab stop at an arbitrary middle position is needed. The gap comes from a real tab plus its "
             "right-aligned stop, not paragraph splitting or adding spaces. Observed body_width_mm=" + str(width)
+            + ". Current format arguments from observed indices/layout: " + json.dumps({
+                "indices": indices, "alignment": "left", "tab_stops": [{
+                    "position": {"value": width, "unit": "mm"}, "alignment": "right"}]})
         )
     last_change = max((e.step for e in events if e.proposed.get("action") in
                        {"text.find_replace", "paragraph.set_format"}), default=0)
