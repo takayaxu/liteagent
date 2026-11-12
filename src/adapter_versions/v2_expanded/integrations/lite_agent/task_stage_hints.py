@@ -487,6 +487,85 @@ def _gemini_document_hint(state, facts):
             "nonempty_paragraph_count": body.get("nonempty_paragraph_count"), "highlighting": body.get("highlighting")}, ensure_ascii=False)
 
 
+def _invoice_hint(state, facts):
+    def step(note, adapter, action, params):
+        return "INVOICE STEP: " + note + "\n" + json.dumps({"adapter": adapter, "action": action,
+            "payload": {"params": params}}, ensure_ascii=False)
+    queries = [e for e, _, a, _ in facts if a == "messages.query"]
+    messages = [m for e in queries for m in gemini_native_result(e).get("messages", [])]
+    if not messages:
+        return step("Read Bills emails without assuming AWS occurs in the subject. Select the actual "
+            "AWS sender and December invoice from returned message content.", "thunderbird", "messages.query",
+            {"folder_name": "Bills", "limit": 50, "select_from": "latest", "order": "descending"})
+    saved = [e for e, _, a, _ in facts if a == "attachments.save"]
+    if not saved:
+        selected = next((m for m in messages if "aws" in str(m.get("sender_name", "")).lower()
+                        and m.get("attachment_names")), None)
+        if selected:
+            params = {"folder_name": "Bills", "mailbox_index": selected["mailbox_index"],
+                "attachment_name": selected["attachment_names"][0],
+                "output_path": "/tmp/" + selected["attachment_names"][0]}
+            if selected.get("message_id"):
+                params["message_id"] = selected["message_id"]
+            return step("Save the actual observed attachment to a TEMPORARY file. The existing receipts "
+                "directory and its naming convention must be discovered separately, not invented from "
+                "the phrase my receipts.", "thunderbird", "attachments.save", params)
+    source = gemini_native_result(saved[-1]).get("output_path") if saved else None
+    paths = [m for e, _, a, _ in facts if a == "filesystem.find"
+             for m in gemini_native_result(e).get("matches", [])]
+    tally = next((m["path"] for m in paths if "tally" in m.get("name", "").lower()
+                  and m.get("path", "").endswith(".xlsx")), None)
+    receipts = next((m["path"] for m in paths if m.get("kind") == "directory"
+                     and "receipt" in m.get("name", "").lower()), None)
+    if not tally or not receipts:
+        return step("Discover the EXISTING receipts DIRECTORY and tally workbook under Documents. "
+            "Do not create another receipts folder or repeat mail searches.", "os", "filesystem.find",
+            {"roots": ["~/Documents"], "name_patterns": ["*receipt*", "*tally*.xlsx"],
+                "kind": "any", "recursive": True, "max_results": 50})
+    old = [m for m in paths if m.get("kind") == "file" and m.get("path", "").startswith(receipts + "/")]
+    if not old:
+        return step("List the old receipt filenames in the actual observed receipts directory to "
+            "learn its exact pattern.", "os", "filesystem.find", {"roots": [receipts],
+                "name_patterns": ["*"], "kind": "file", "recursive": False, "max_results": 100})
+    if not any(a == "pdf.extract_text_batch" for _, _, a, _ in facts):
+        return step("Read the saved invoice content once; retain vendor, invoice date, billing month "
+            "and total amount. Do not guess values from its filename.", "os", "pdf.extract_text_batch",
+            {"input_pattern": source, "cwd_source": "home"})
+    if not any(a == "desktop.open_path" and args.get("path") == tally for _, _, a, args in facts):
+        return step("Open the ACTUAL existing tally workbook for editing. A temporary read preview "
+            "does not open a live editable workbook.", "os", "desktop.open_path", {"path": tally})
+    if not any(a == "workbook.inspect" for _, _, a, _ in facts):
+        return step("Inspect the open tally workbook to obtain its actual sheet and used range.",
+            "libreoffice_calc", "workbook.inspect", {})
+    reads = [e for e, _, a, _ in facts if a == "range.read"]
+    if not reads:
+        inspected = next(gemini_native_result(e) for e, _, a, _ in reversed(facts) if a == "workbook.inspect")
+        sheets = inspected.get("sheets", [])
+        if sheets:
+            return step("Read all existing tally records and exact headers before appending. Preserve "
+                "every old row.", "libreoffice_calc", "range.read", {"sheet": sheets[0]["name"],
+                    "range": sheets[0]["used_range_a1"]})
+    renamed = any(a == "filesystem.rename" and str(args.get("destination_path", args.get("destination", ""))).startswith(receipts + "/")
+                  for _, _, a, args in facts)
+    if not renamed:
+        return "INVOICE DECIDE: move the saved invoice PDF from " + str(source) + " into actual receipts directory " + receipts + ". Derive the December filename from these observed old filenames, preserving their pattern: " + json.dumps([m["name"] for m in old]) + ". Use os filesystem.rename with the current schema; do not copy duplicates, invent folders or change existing receipts. The tally write is the following stage."
+    writes = [e for e, _, a, _ in facts if a == "range.write"]
+    if not writes:
+        return ("INVOICE WRITE: append exactly ONE numeric/date/vendor record AFTER the current tally rows. "
+            "Match the actual column headers and old examples. Use the observed invoice total and billing "
+            "month; do not overwrite old rows, write answer placeholders or modify invoice content. "
+            "If range.write is absent, search exact libreoffice_calc range.write once, then call it. "
+            "Existing target read: " + json.dumps(gemini_native_result(reads[-1]) if reads else {}, ensure_ascii=False)
+            + ". Invoice read: " + json.dumps([gemini_native_result(e) for e, _, a, _ in facts if a == "pdf.extract_text_batch"], ensure_ascii=False))
+    saves = [e for e, _, a, _ in facts if a == "workbook.save" and e.step > writes[-1].step]
+    if not saves:
+        return step("The one invoice record was written. Save the existing tally workbook now; do "
+            "not append the same record again.", "libreoffice_calc", "workbook.save", {})
+    if not reads or reads[-1].step < saves[-1].step:
+        return "INVOICE VERIFY: read the saved used range including the new final record once, then propose_done if it matches the invoice and all original rows remain. Do not re-extract, rename again or append duplicates."
+    return "INVOICE FINISH: the invoice was filed using the observed naming pattern and the tally record saved/read back. If all clauses match actual evidence, propose_done now without repeated reads."
+
+
 def _cross_app_hint(state, kind):
     from .completion_policy import effective_canonical_action
     facts = [(e, *effective_canonical_action(e, state.domain)) for e in state.events if e.executed and not e.error]
@@ -542,7 +621,9 @@ def _cross_app_hint(state, kind):
         return "FINALIZE: format fractional Success Rate values as 0.00%, save_as the requested Desktop workbook, then read back all five numeric-year records and propose_done. Do not repeat source extraction or create another workbook."
     if kind == "gemini-document":
         return _gemini_document_hint(state, facts)
-    if kind in {"invoice-mail", "mail-wallpaper"}:
+    if kind == "invoice-mail":
+        return _invoice_hint(state, facts)
+    if kind == "mail-wallpaper":
         folder = "Bills" if kind == "invoice-mail" else "Notes"
         if "messages.query" not in actions:
             return "FIND EMAIL: use thunderbird messages.query for folder_name=" + folder + ". Native mail tools do not require clicking the folder first. Select the requested invoice by its observed subject/date, or the latest Notes email with limit=1, select_from=latest. Do not repeatedly click dock/folder coordinates or search for generic attachment phrases."

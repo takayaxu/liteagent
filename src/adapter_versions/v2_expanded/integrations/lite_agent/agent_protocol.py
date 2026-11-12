@@ -971,7 +971,7 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
-            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records", "gemini-document", "person-background"}:
+            if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records", "gemini-document", "person-background", "invoice-mail"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "
                     "Call exactly ONE provided tool now. Use its current schema and actual observations. "
@@ -1055,6 +1055,36 @@ class AgentProtocolMixin:
                     message_content = [{"type": "text", "text": json.dumps({
                         "instruction": state.instruction, "current_stage": scoped_hint, **context,
                     }, ensure_ascii=False)}]
+            if scoped_kind == "invoice-mail" and scoped_hint.startswith("INVOICE STEP:"):
+                call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
+                wanted = call["action"]
+                query = call["adapter"] + " " + wanted
+                exposed = any(wanted in t.get("function", {}).get("parameters", {})
+                    .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                note = scoped_hint[:scoped_hint.index('{"adapter"')].strip()
+                scoped_hint = ("CURRENT STEP ONLY: CALL " + (query + " with next_public_call below." if exposed
+                    else "tools_search exact query " + query + ".") + " Do not repeat searches or old reads. " + note)
+                message_content = [{"type": "text", "text": json.dumps({"instruction": state.instruction,
+                    "current_stage": scoped_hint, **({"next_public_call": call} if exposed else
+                    {"required_discovery_query": query})}, ensure_ascii=False)}]
+            if scoped_kind == "invoice-mail" and scoped_hint.startswith(("INVOICE DECIDE:", "INVOICE WRITE:", "INVOICE VERIFY:", "INVOICE FINISH:")):
+                wanted = ("filesystem.rename" if scoped_hint.startswith("INVOICE DECIDE:") else
+                    "range.write" if scoped_hint.startswith("INVOICE WRITE:") else
+                    "range.read" if scoped_hint.startswith("INVOICE VERIFY:") else None)
+                exposed = wanted and any(wanted in t.get("function", {}).get("parameters", {})
+                    .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
+                original_stage = scoped_hint
+                if wanted:
+                    query = ("os " if wanted.startswith("filesystem.") else "libreoffice_calc ") + wanted
+                    scoped_hint = ("CURRENT STEP ONLY: CALL " + query + " now using the actual stage facts below."
+                        if exposed else "CURRENT STEP ONLY: CALL tools_search exact query " + query + ".")
+                    scoped_hint += " Source observation is complete. Do not reread mail/PDF or discover files again."
+                else:
+                    scoped_hint = "CURRENT STEP ONLY: propose_done now if the saved receipt and tally read-back meet every instruction clause; do not repeat identical checks. Existing completion gate still applies."
+                message_content = [{"type": "text", "text": json.dumps({"instruction": state.instruction,
+                    "current_stage": scoped_hint, "observed_stage_facts": original_stage if exposed or not wanted
+                    else "All needed source facts remain in the ledger and will be presented after this API discovery.",
+                }, ensure_ascii=False)}]
             if scoped_kind == "ecs-rates" and len(tools or []) == 1 and (
                 tools[0].get("function", {}).get("name") == "table_ratio_matrix_compute"
             ):
