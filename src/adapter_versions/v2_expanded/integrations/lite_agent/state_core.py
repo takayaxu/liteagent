@@ -750,7 +750,10 @@ class RuntimeStateCoreMixin:
                     inventory = candidate.get("matches")
                 if not isinstance(inventory, list):
                     continue
-                if not isinstance(getattr(self, "filesystem_organization_inventory", None), list) and candidate.get("truncated") is True:
+                if (not isinstance(getattr(self, "filesystem_organization_inventory", None), list)
+                        and (candidate.get("truncated") is True or candidate.get("matches_omitted", 0) > 0
+                             or candidate.get("scan_complete") is False)):
+                    # A shortened model preview is not a complete source inventory.
                     continue
                 matches = [
                     {

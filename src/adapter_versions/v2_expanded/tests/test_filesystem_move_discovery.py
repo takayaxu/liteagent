@@ -1534,3 +1534,62 @@ def test_completed_organization_stage_requires_verified_disposition_and_is_task_
     assert updated[-1]['content'] == [{'type':'text','text':text}]
     state.task_id='other-task'
     assert candidate._messages(state,b'synthetic',tools=tools,**recovery) == baseline._messages(state,b'synthetic',tools=tools,**recovery)
+
+
+def test_forwarded_inventory_survives_real_executor_and_compaction(monkeypatch):
+    from types import SimpleNamespace
+    from integrations.lite_agent.adapter_executor import AdapterExecutor
+    sources = [{'path':f'/home/user/Desktop/record_{i:02}.pdf','name':f'record_{i:02}.pdf','kind':'file'} for i in range(20)]
+    entries = sources + [{'path':'/home/user/Desktop/Papers','name':'Papers','kind':'directory'},
+                         {'path':'/home/user/Desktop/Other','name':'Other','kind':'directory'}]
+    native_entries = [dict(item,size_bytes=12345,mode='0644',mode_value=420,is_symlink=False,modified_at='2026-01-01T00:00:00Z') for item in entries]
+    native = {'matches':native_entries,'match_count':len(entries),'returned_count':len(entries),
+              'truncated':False,'scan_complete':True,'unused_transport_detail':'x'*20000}
+    body = {'status':'ok','adapter':'multi_apps','action':'adapter.call','result':{
+        'adapter':'os','action':'filesystem.find','response':{'status':'ok','result':native,'verification':{'passed':True}}}}
+    monkeypatch.setattr('integrations.lite_agent.adapter_executor.requests.post',
+        lambda *args,**kwargs:SimpleNamespace(ok=True,status_code=200,json=lambda:body))
+    state = RuntimeState(task_id='inventory-boundary-test',domain='multi_apps',
+        instruction="Organize Desktop files: put academic papers in 'Papers' and everything else under 'Other'.")
+    assert state.filesystem_organization_inventory is None
+    matches = search_actions('multi_apps','filesystem.find',strict_generic=True,limit=7)
+    state.events.append(ExecutionEvent(step=1,timestamp_utc='test',executed=True,
+        proposed={'kind':'catalog','tool':'tools_search','arguments':{'query':'filesystem.find'}},
+        result={'status':'ok','executed':True,'matches':matches}))
+    agent = LiteAgent(LiteAgentConfig(base_url='http://unused'),AdapterExecutor({'multi_apps':'http://guest'}))
+    tools = agent.tools(state)
+    event = agent.execute_proposal(state,{'tool':'adapter__adapter_call','arguments_raw':json.dumps({
+        'adapter':'os','action':'filesystem.find','payload':{'params':{
+            'roots':['~/Desktop'],'name_patterns':['*'],'kind':'any','recursive':False,'max_results':100}}}),
+        '_model_visible_tools':tools})
+    assert event.executed,event.error
+    assert state.filesystem_organization_inventory == entries
+    hint = event.result['context_hint']['downstream_context']
+    assert len(hint['matches']) < len(entries) and hint['matches_omitted'] > 0
+    assert event.result['adapter_response']['truncated'] is True
+    assert set(state.filesystem_organization_pending_entries()) == {item['path'] for item in sources}
+    assert not state.filesystem_organization_complete()
+    assert 'organization_inventory' not in event.result
+
+
+def test_shortened_inventory_without_authoritative_records_cannot_mark_discovery_complete():
+    state = _organization_state()
+    hint = state.events[0].result['context_hint']['downstream_context']
+    hint['matches_omitted'] = 3
+    assert state.filesystem_observation_state() is None
+    assert not state.filesystem_organization_complete()
+
+
+@pytest.mark.parametrize('kind,truncated,scan_complete', [('file',False,True), ('any',True,True), ('any',False,False)])
+def test_filtered_or_incomplete_find_does_not_latch_authoritative_inventory(monkeypatch,kind,truncated,scan_complete):
+    from types import SimpleNamespace
+    from integrations.lite_agent.adapter_executor import AdapterExecutor
+    body={'status':'ok','result':{'adapter':'os','action':'filesystem.find','response':{'status':'ok',
+        'result':{'matches':[{'path':'/tmp/item','kind':'file'}],'truncated':truncated,'scan_complete':scan_complete}}}}
+    monkeypatch.setattr('integrations.lite_agent.adapter_executor.requests.post',
+        lambda *args,**kwargs:SimpleNamespace(ok=True,status_code=200,json=lambda:body))
+    result=AdapterExecutor({'multi_apps':'http://guest'}).execute('multi_apps','adapter.call',{
+        'adapter':'os','action':'filesystem.find','payload':{'params':{
+            'roots':['/tmp'],'kind':kind,'name_patterns':['*'],'recursive':False}}},{})
+    assert result['executed'],result
+    assert 'organization_inventory' not in result

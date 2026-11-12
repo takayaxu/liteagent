@@ -315,21 +315,23 @@ class AdapterExecutor:
             # model-facing result.  The context projection may omit entries
             # from ``filesystem.find`` to fit the prompt, but the organization
             # state machine still needs every exact source path.
-            if executed and domain == "multi_apps" and action == "adapter.call":
-                downstream = feedback_body.get("response") if isinstance(feedback_body, dict) else None
-                downstream_action = feedback_body.get("action") if isinstance(feedback_body, dict) else None
-                if isinstance(downstream, dict) and downstream_action == "filesystem.find":
-                    raw_result = downstream.get("result")
-                    if isinstance(raw_result, dict) and isinstance(raw_result.get("matches"), list):
-                        result["organization_inventory"] = [
-                            {
-                                key: item.get(key)
-                                for key in ("path", "name", "kind")
-                                if key in item
-                            }
-                            for item in raw_result["matches"]
-                            if isinstance(item, dict) and isinstance(item.get("path"), str)
-                        ]
+            if (executed and domain == "multi_apps" and action == "adapter.call"
+                    and arguments.get("adapter") == "os" and arguments.get("action") == "filesystem.find"):
+                source_params = (arguments.get("payload") or {}).get("params") or {}
+                if (source_params.get("kind") == "any" and source_params.get("name_patterns") == ["*"]
+                        and source_params.get("recursive") is False):
+                    from .result_envelopes import iter_result_mappings
+                    for raw_result in iter_result_mappings(feedback_body):
+                        matches = raw_result.get("matches")
+                        if (isinstance(matches, list) and raw_result.get("truncated") is not True
+                                and raw_result.get("scan_complete") is not False
+                                and not raw_result.get("matches_omitted")):
+                            result["organization_inventory"] = [
+                                {key: item[key] for key in ("path", "name", "kind") if key in item}
+                                for item in matches
+                                if isinstance(item, dict) and isinstance(item.get("path"), str)
+                            ]
+                            break
             if not executed:
                 # Keep native causes structured until the model-context sanitizer
                 # and error-priority fitter apply their existing bounded projection.
