@@ -244,6 +244,61 @@ def _personal_cleanup_hint(state):
     return "FINISH: inspect the saved slides once to confirm both titles are bold black and all requested personal text/icons are absent. If the current completion check is satisfied, call propose_done immediately; preserve all other content."
 
 
+def _tabstop_hint(state):
+    events = [e for e in state.events if e.executed and not e.error]
+    inspections = [e for e in events if e.proposed.get("action") == "document.inspect"]
+    if not inspections:
+        return "OBSERVE: document.inspect once to read sentence paragraphs, their native indices and page_layouts.body_width_mm."
+    paragraphs = {}
+    width = None
+    for event in inspections:
+        body = result_payload(event)
+        for layout in body.get("page_layouts", []):
+            width = layout.get("body_width_mm") or width
+        for p in body.get("paragraph_details", []):
+            if p.get("text_length", 0) == len(p.get("text", "")):
+                paragraphs[p["index"]] = p
+    anchors = []
+    for index, p in paragraphs.items():
+        words = list(re.finditer(r"\S+", p.get("text", "")))
+        if len(words) < 3:
+            continue
+        prefix = p["text"][:words[2].end()]
+        inserted = any(e.proposed.get("action") == "text.find_replace"
+                       and e.proposed.get("arguments", {}).get("find", "").startswith(prefix)
+                       and "\t" in e.proposed.get("arguments", {}).get("replacement", "") for e in events)
+        if not p.get("has_tab_character") and not inserted:
+            anchors.append({"paragraph_index": index, "first_three_words": prefix})
+    if anchors:
+        return (
+            "INSERT REAL TABS: keep each sentence in its ORIGINAL paragraph. Do NOT paragraph.split after "
+            "the first three words: a paragraph break cannot align two text runs on one line. "
+            "Use text.find_replace with a short unique observed first-three-word anchor, replacing only "
+            "the following separating space with ONE actual tab. In JSON use \\t (decoded TAB), not \\\\t "
+            "(literal backslash plus t). Preserve all original words, punctuation, blank paragraphs and formatting. "
+            "Do not re-read identical complete paragraphs or reconstruct document text. "
+            "Pending observed anchors: " + json.dumps(anchors, ensure_ascii=False)
+            + ". Choose the next anchor yourself and execute its one local replacement."
+        )
+    formats = [e for e in events if e.proposed.get("action") == "paragraph.set_format"]
+    if not formats:
+        return (
+            "TAB FORMAT: keep paragraph alignment=left for the first three words; set a RIGHT-aligned "
+            "tab stop at the observed usable right edge so the text following the tab ends at that edge. "
+            "Apply the same tab format to all relevant sentence paragraphs in one call; no extra left "
+            "tab stop at an arbitrary middle position is needed. The gap comes from a real tab plus its "
+            "right-aligned stop, not paragraph splitting or adding spaces. Observed body_width_mm=" + str(width)
+        )
+    last_change = max((e.step for e in events if e.proposed.get("action") in
+                       {"text.find_replace", "paragraph.set_format"}), default=0)
+    saves = [e for e in events if e.proposed.get("action") == "document.save" and e.step > last_change]
+    if not saves:
+        return "PERSIST: save the Writer document after all local tab insertions and the right-tab format."
+    if not any(e.step > saves[-1].step for e in inspections):
+        return "VERIFY: inspect all saved sentence paragraphs once. Check native has_tab_character, tab_character_offsets and right-aligned tab_stops. Ensure each sentence stayed in one paragraph and all text is preserved."
+    return "FINISH: if every sentence has its first three words left and remaining text after a real right tab, propose_done with the saved evidence. Do not split paragraphs or repeat reads."
+
+
 def model_hint(profile, state, *, targets=None):
     if profile != PROFILE:
         return None
@@ -265,4 +320,6 @@ def model_hint(profile, state, *, targets=None):
                 'Do not format only A1 or omit font_color.')
     if (targets or {}).get(state.task_id) == "personal-cleanup" and state.domain == "libreoffice_impress":
         return _personal_cleanup_hint(state)
+    if (targets or {}).get(state.task_id) == "sentence-tabstops" and state.domain == "libreoffice_writer":
+        return _tabstop_hint(state)
     return None
