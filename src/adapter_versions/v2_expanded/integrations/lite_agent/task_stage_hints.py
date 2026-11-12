@@ -452,6 +452,25 @@ def _cross_app_hint(state, kind):
             )
         return "FINALIZE: format fractional Success Rate values as 0.00%, save_as the requested Desktop workbook, then read back all five numeric-year records and propose_done. Do not repeat source extraction or create another workbook."
     if kind == "gemini-document":
+        extracted = any(a == "command.run" and "Gemini" in json.dumps(args)
+                        and ("write_text" in json.dumps(args) or "open(" in json.dumps(args))
+                        and ("walk" in json.dumps(args) or "def " in json.dumps(args))
+                        for _, _, a, args in facts)
+        if "file.read_text" in actions and not extracted:
+            return (
+                "EXTRACT BEFORE WRITING: the JSON is a NESTED object. Gemini response values are under "
+                "nested keys, not the top-level question ID. Do not append the raw JSON to Word. "
+                "Use os command.run with provenance=shell_history to parse the observed JSON path using "
+                "a valid multiline Python script. Recursively walk dictionaries/lists in source order: "
+                "whenever a dictionary key equals Gemini (case-insensitive), collect that string VALUE; "
+                "otherwise recurse into its value. Do not collect GPT3, origin_input or declare_input. "
+                "Preserve each full response, replacing internal line breaks with spaces if needed so "
+                "one response becomes one paragraph; separate responses with two newlines. "
+                "Write the extracted strings into a NEW plain text file such as /tmp/gemini-responses.txt, "
+                "print the response count and verify the file contains extracted responses only. "
+                "Use actual newlines in Python before def/for/if; do not put compound statements after semicolons. "
+                "Only after this extraction create the requested Word document and append that NEW TEXT file."
+            )
         if "document.create" not in actions:
             return (
                 "EXTRACT: inspect the open JSON path and read its complete structure. Use only observed guest "
@@ -463,7 +482,7 @@ def _cross_app_hint(state, kind):
                 "the extracted complete content, then create the requested Writer document. No repeated searches."
             )
         if not {"document.append_text", "document.append_text_file"} & actions:
-            return "WRITE: append the complete extracted Gemini response values to the new Writer document, one response per paragraph with a blank line between responses. Reuse extracted content; do not rerun source extraction or append an empty temporary file."
+            return "WRITE: append ONLY the NEW extracted Gemini plain text file to the new Writer document, one response per paragraph with a blank line between responses. NEVER append llm_answers.json itself. Reuse extracted content; do not rerun source extraction or append an empty temporary file."
         return "FINISH: highlight every exact Iliad occurrence with Writer text formatting/highlighting, save gemini_results.docx on Desktop, read back paragraphs and highlighting once, and propose_done. Preserve all Gemini response text and do not append duplicates."
     if kind in {"invoice-mail", "mail-wallpaper"}:
         folder = "Bills" if kind == "invoice-mail" else "Notes"
