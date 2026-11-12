@@ -532,14 +532,16 @@ def _cross_app_hint(state, kind):
                 "if isinstance(x,dict) else [r for v in x for r in walk(v)] "
                 "if isinstance(x,list) else []; "
                 f"responses=walk(json.loads(Path({source_path!r}).expanduser().read_text())); "
-                "Path('/tmp/gemini-responses.txt').write_text((chr(10)*2).join(' '.join(r.splitlines()) "
+                "Path('/tmp/gemini-responses.txt').write_text((chr(10)*2).join(r.replace(chr(10),chr(92)+'n') "
                 "for r in responses)); print(len(responses))"
             )
             call = {"adapter": "os", "action": "command.run", "payload": {"params": {
                 "argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"}}}
             return (
                 "EXTRACT BEFORE WRITING: copy all nested Gemini string values, preserving source order. "
-                "Iliad is a highlighting criterion only. The source path below comes from the successful "
+                "Iliad is a highlighting criterion only. Preserve JSON's visible backslash+n line-break "
+                "notation inside each value so the full response stays one paragraph; never replace "
+                "source line-break notation with spaces. The source path below comes from the successful "
                 "public read. This one-line script avoids multiline and separator escaping errors. "
                 "Call the public adapter tool with exactly this JSON argument object; keep cwd_source and "
                 "provenance OUTSIDE argv. Do not add optional fields or reread the source. "

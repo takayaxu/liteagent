@@ -137,7 +137,7 @@ def test_gemini_extraction_example_keeps_all_responses_in_nested_source_order(tm
     output = tmp_path / "extracted.txt"
     script = params["argv"][2].replace("/tmp/gemini-responses.txt", str(output))
     exec(compile(script, "source-based-extraction-example", "exec"), {})
-    assert output.read_text() == "No keyword still retain\n\nIliad response"
+    assert output.read_text() == "No keyword\\nstill retain\n\nIliad response"
 
 
 def test_full_queue_other_173_actual_messages_are_unchanged(monkeypatch):
