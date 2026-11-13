@@ -767,6 +767,21 @@ def _vlc_hint(state, kind):
         in {"['ctrl', 'o']", "['control', 'o']"} for e in events)
     if "playback.open" not in actions and not open_dialog:
         return "CURRENT VLC INPUT: focus the visible VLC window if needed, then use gui_action hotkey keys=[ctrl,o] to open its file chooser. Do not call playback.open with a guessed path, search files or click empty desktop coordinates. The next screenshot will show the chooser; navigate it in the following stage."
+    if "playback.open" not in actions and open_dialog:
+        opened = max(e.step for e in events if e.proposed.get("kind") == "gui"
+            and e.proposed.get("arguments", {}).get("keys") in (["ctrl", "o"], ["control", "o"]))
+        inputs = [(e, e.proposed.get("arguments", {})) for e in events if e.step > opened
+                  and e.proposed.get("kind") == "gui"]
+        selected = any(a.get("action") == "hotkey" and a.get("keys") == ["ctrl", "a"] for _, a in inputs)
+        typed = [e for e, a in inputs if a.get("action") in {"type", "write"}
+                 and a.get("text") in {"/home/user/Desktop/", "~/Desktop/"}]
+        if not selected:
+            return "CURRENT VLC INPUT: the file chooser is open and its File name field has focus. Call gui_action hotkey keys=[ctrl,a] ONLY to select its current filename text. Do not click sidebar coordinates, call playback.open or type a truncated video label."
+        if not typed:
+            return "CURRENT VLC INPUT: filename text is selected. Call gui_action type text=/home/user/Desktop/ ONLY, replacing it with the requested Desktop directory. Do not invent the video basename."
+        if not any(e.step > typed[-1].step and a.get("action") == "press" and a.get("key") == "enter" for e, a in inputs):
+            return "CURRENT VLC INPUT: Desktop directory is typed into the chooser File name box. Call gui_action press key=enter ONLY to list the actual Desktop files."
+        return "CURRENT VLC SELECT: inspect the CURRENT Desktop file chooser list. Select and open its actual music video using the FULL filename shown there, never the truncated desktop icon label. If a native playback.open call is convenient, copy the complete observed chooser basename and extension exactly. If the video is already showing, call playback.status. Do not restart Ctrl+O, search files, or navigate to the home folder again."
     if "playback.open" not in actions:
         return (
             "OPEN OBSERVED MEDIA: discover the exact Desktop video path instead of guessing from its truncated "

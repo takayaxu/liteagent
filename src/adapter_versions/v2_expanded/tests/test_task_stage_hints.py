@@ -148,6 +148,23 @@ def test_vlc_gui_playback_and_persisted_preference_use_actual_readback():
     assert _vlc_hint(state, "vlc-instances").startswith("FINISH:")
 
 
+def test_vlc_file_chooser_stage_uses_observed_inputs_without_guessing_filename():
+    from integrations.lite_agent.task_stage_hints import _vlc_hint
+    state = RuntimeState("synthetic", "vlc", "Play my Desktop music video.")
+    def gui(action, **args):
+        state.events.append(ExecutionEvent(len(state.events)+1, "", {"kind": "gui",
+            "arguments": {"action": action, **args}}, executed=True))
+    assert "keys=[ctrl,o]" in _vlc_hint(state, "vlc-play")
+    gui("hotkey", keys=["ctrl", "o"])
+    assert "keys=[ctrl,a]" in _vlc_hint(state, "vlc-play")
+    gui("hotkey", keys=["ctrl", "a"])
+    assert "type text=/home/user/Desktop/" in _vlc_hint(state, "vlc-play")
+    gui("type", text="/home/user/Desktop/")
+    assert "press key=enter" in _vlc_hint(state, "vlc-play")
+    gui("press", key="enter")
+    assert _vlc_hint(state, "vlc-play").startswith("CURRENT VLC SELECT:")
+
+
 def test_gemini_source_draft_preserves_values_paragraphs_and_highlights(tmp_path):
     from xml.etree import ElementTree as ET
     from integrations.lite_agent.task_stage_hints import _cross_app_hint
