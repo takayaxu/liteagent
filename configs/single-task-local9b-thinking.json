@@ -1429,6 +1429,11 @@
         "when_tool": "organization__skip_current",
         "context_mode": "workflow_call",
         "text": "Current operation is the retain transition for ONE exact object. The current skip tool path enum identifies that already-read, independently verified matching object. Emit organization__skip_current using that exact current path and an observed factual reason. Do not reconsider an earlier invoice or ask for a move tool: successful prior moves remain executed. This retain transition does not move any file; after it, the tool surface advances to the next object or completion. Use the actual current schema rather than old screenshot file positions."
+      },
+      {
+        "when_tool": "organization__verify_current",
+        "context_mode": "structured_observation",
+        "text": "Current operation is independent classification of ONE object, identified by the current review path enum. Use the extracted current PDF text and the observed bank statement facts to select move or retain with truthful evidence. Review this current object only. Previously verified filesystem moves remain executed; absence of an already-moved file from the source folder is expected, not a reason to restart or question the current inventory. The PDF extraction and execution receipts are the evidence here; old desktop icon positions are not invoice contents. Emit the current organization__verify_current call using the live schema. Do not infer a classification from this guidance; determine it from the actual source facts."
       }
     ]
   },
