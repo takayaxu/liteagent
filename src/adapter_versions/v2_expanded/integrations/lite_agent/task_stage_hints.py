@@ -763,6 +763,10 @@ def _vlc_hint(state, kind):
                 + str(statuses[-1]["source"]) + ". If this is the requested observed music video, "
                 "propose_done now and leave it playing. Opening through the GUI does not create a "
                 "playback.open event; no extra native open is required. Do not reopen the chooser or poll again.")
+    open_dialog = any(e.proposed.get("kind") == "gui" and str(e.proposed.get("arguments", {}).get("keys", [])).lower()
+        in {"['ctrl', 'o']", "['control', 'o']"} for e in events)
+    if "playback.open" not in actions and not open_dialog:
+        return "CURRENT VLC INPUT: focus the visible VLC window if needed, then use gui_action hotkey keys=[ctrl,o] to open its file chooser. Do not call playback.open with a guessed path, search files or click empty desktop coordinates. The next screenshot will show the chooser; navigate it in the following stage."
     if "playback.open" not in actions:
         return (
             "OPEN OBSERVED MEDIA: discover the exact Desktop video path instead of guessing from its truncated "

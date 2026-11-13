@@ -971,6 +971,20 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
+            if scoped_kind in {"vlc-play", "vlc-instances"}:
+                system_message = (
+                    "Complete the user's VLC request with exactly ONE public tool now. "
+                    "Follow the current stage, actual screenshot and tool schema. "
+                    "Do not guess a filename or search unavailable filesystem tools in the VLC domain. "
+                    "Read the current stage before choosing an action. Successful GUI input is "
+                    "recorded; do not restart a completed dialog stage. Completion checks still apply."
+                )
+                message_content = [{"type": "text", "text": json.dumps({
+                    "instruction": state.instruction, "current_stage": scoped_hint,
+                    "recent_execution_facts": [{"action": e.proposed.get("action", e.proposed.get("tool")),
+                        "arguments": e.proposed.get("arguments"), "executed": e.executed,
+                        "error": e.error} for e in state.events[-3:]],
+                }, ensure_ascii=False)}, {"type": "image_url", "image_url": {"url": self._image_url(screenshot)}}]
             if scoped_kind == "grading":
                 # Keep the existing public grading contract and checks. Only
                 # shorten this opted-in task's presentation of their facts.
