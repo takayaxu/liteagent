@@ -109,5 +109,13 @@
     "screenshot_omitted": true,
     "statement_and_invoice_source_facts_preserved": true
   },
-  "completion_limitation": "Step15 stale completion rejected; step16 inaccurate completion narrative accepted by unchanged gate. Original evaluator independently scores final filesystem state 1.0. No gate changes in this patch."
+  "completion_limitation": "Step15 stale completion rejected; step16 inaccurate completion narrative accepted by unchanged gate. Original evaluator independently scores final filesystem state 1.0. No gate changes in this patch.",
+  "integration": {
+    "commit": "7b99fb0",
+    "base": "a72de90",
+    "runtime_src_bin_identical_to_pass_candidate": true,
+    "config_delta_from_active_base": "only order99 stages added; all existing stages preserved",
+    "integrated_focused_tests_passed": 59,
+    "full_merged_suite_rerun": false
+  }
 }
