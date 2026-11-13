@@ -1382,6 +1382,42 @@
         "after_action": "libreoffice_writer:document.save",
         "text": "CURRENT STAGE: native Writer creation, insertion and save have succeeded. Do not edit, append, create or convert anything further. NEXT CALL MUST be tools_search query=\"libreoffice_writer document.inspect\" if that exact route is absent. Then call document.inspect on the actual saved script.docx Writer identity, using paragraph_start=0 and paragraph_limit=100 to read its body. Check the observed saved identity, paragraph count and literal text against the actual extracted TXT facts. When confirmed, your next call is propose_done with that real evidence. Do not use VS Code file.read_text or file.replace_literal on DOCX: DOCX is a binary ZIP, not a UTF-8 plain-text file. Do not use workspace.find_files, filesystem.find or Python to replace native Writer read-back. Preserve the actual source strings; the user will handle reformatting. Missing spaces in source runs or source placeholders are not permission to invent edits. This is READ-BACK AND FINISH ONLY."
       }
+    ],
+    "227d2f97-562b-4ccb-ae47-a5ec9e142fbb": [
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: discover the actual Desktop XCF source. NEXT call must be tools_search query=\"os filesystem.find\" if that route is absent. Then search the Desktop for *.xcf using filesystem.find, kind=file. Use the exact observed source path; do not guess GUI coordinates or try to copy from an unknown active window.",
+        "until_action": "os:filesystem.find"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: export the actual saved XCF image to a distinct temporary PNG using the public gimp image.export operation. NEXT call must be tools_search query=\"gimp image.export\" if absent. Once exposed, pass the exact observed XCF path as params.input_path and /tmp/source-image.png as params.output_path. The output suffix selects PNG; there is no file_type or format field. This reads the actual source image; do not use clipboard guesses, invent image contents, or pass XCF directly to Writer.",
+        "after_action": "os:filesystem.find",
+        "until_action": "gimp:image.export"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: create and activate the empty Writer target. NEXT call must be tools_search query=\"libreoffice_writer document.create\" if absent; then call that native operation with params.path=\"/home/user/Desktop/image.docx\". Do not handcraft a DOCX ZIP, call unrelated os commands, insert before creation, or propose completion.",
+        "after_action": "gimp:image.export",
+        "until_action": "libreoffice_writer:document.create"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: insert the actual exported PNG into the newly created Writer document. NEXT call must be tools_search query=\"libreoffice_writer image.insert_at_cursor\" if absent, then invoke that route with params.path set to the exact PNG from the successful GIMP export and the actual target document identity. Do not use the XCF source as the insert path or invent a new image.",
+        "after_action": "libreoffice_writer:document.create",
+        "until_action": "libreoffice_writer:image.insert_at_cursor"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: image insertion has already succeeded. Do not insert again. NEXT call must be tools_search query=\"libreoffice_writer document.save\" if absent; then save the actual Desktop image.docx with that native route and empty params. Do not recreate the document or repeat insertion.",
+        "after_action": "libreoffice_writer:image.insert_at_cursor",
+        "until_action": "libreoffice_writer:document.save"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: insertion and save have succeeded. Do not edit or insert anything again. NEXT call must be tools_search query=\"libreoffice_writer document.inspect\" if absent. Read the real saved Writer identity and inserted image metadata with document.inspect. When the image and saved image.docx are confirmed, propose_done with actual execution evidence. Do not use text-file readers on binary DOCX.",
+        "after_action": "libreoffice_writer:document.save"
+      }
     ]
   },
   "task_protocol_overrides": {
@@ -1398,6 +1434,9 @@
       "gui_coordinate_space": "normalized_1000"
     },
     "81c425f5-78f3-4771-afd6-3d2973825947": {
+      "gui_coordinate_space": "normalized_1000"
+    },
+    "227d2f97-562b-4ccb-ae47-a5ec9e142fbb": {
       "gui_coordinate_space": "normalized_1000"
     }
   }

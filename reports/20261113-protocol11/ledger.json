@@ -1088,7 +1088,7 @@
     {
       "order": 115,
       "task_id": "227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
-      "status": "pending",
+      "status": "passed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-06/raw/run-1/115-multi_apps-227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
@@ -1119,9 +1119,27 @@
           "commit": "7b3d15e74d9a65154ab602376c09134b7353cb9d",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order115-run002",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order115-v2-config.json",
-          "status": "running"
+          "status": "passed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 1.0,
+          "duration_seconds": 685.344,
+          "steps": 13,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
-      ]
+      ],
+      "reward": 1.0,
+      "passing_attempt": 2
     },
     {
       "order": 189,
@@ -1130,7 +1148,15 @@
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/workers/worker-01/raw/run-1/189-vs_code-7aeae0e2-70ee-4705-821d-1bba5d5b2ddd",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue12-20261112T154052Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "c71b11f68186b706f499092009226ff375351a3e",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order189-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order189-v1-config.json",
+          "status": "running"
+        }
+      ]
     }
   ],
   "stage_prompt_policy": "Disabled by default. Configured per exact task ID, optionally restricted by visible tool and successful actions. Non-target model messages verified byte-for-byte equivalent in normal/protocol/execution recovery.",
