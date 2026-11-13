@@ -957,6 +957,12 @@ class StructuredToolModelClient:
                 "Do not supply adapter/action/payload/params wrappers. Put optional request "
                 "metadata in request_options. Each call executes one discovered operation."
             )
+            if any(binding.get("payload_boxed") is True for binding in atomic_bindings.values()):
+                guidance += (
+                    " Discovered route__ tools instead keep action arguments inside params, "
+                    "with optional request metadata beside params. Follow each tool's schema; "
+                    "do not add adapter/action/payload wrappers."
+                )
             first_system = next((m for m in request_messages if m.get("role") == "system"), None)
             if first_system is None:
                 request_messages.insert(0, {"role": "system", "content": guidance})

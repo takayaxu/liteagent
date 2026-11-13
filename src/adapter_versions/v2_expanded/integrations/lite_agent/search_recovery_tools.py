@@ -84,6 +84,66 @@ def _route_payload_schema(
     return payload
 
 
+def typed_adapter_route_surface(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Opt-in lossless branches when every route can become a typed provider tool.
+
+    Leave ambiguous or live-constrained params unchanged. The existing atomic
+    projector must accept every branch before this surface is used.
+    """
+    from .atomic_tool_surface import atomic_provider_surface
+    for index, tool in enumerate(tools):
+        function = tool.get("function", {})
+        if function.get("name") != tool_name("adapter.call"):
+            continue
+        schema = function.get("parameters", {})
+        routes = schema.get("x-allowed-routes")
+        payload = schema.get("properties", {}).get("payload", {})
+        params = payload.get("properties", {}).get("params", {})
+        if (not isinstance(routes, list) or len(routes) < 2
+                or params.get("type") != "object"
+                or set(params) - {"type", "description"}
+                or set(schema) - {"type", "properties", "required", "additionalProperties", "description", "x-allowed-routes"}
+                or set(schema.get("properties", {})) - {"adapter", "action", "payload"}
+                or schema.get("oneOf") or schema.get("anyOf")):
+            return tools
+        branches, identities = [], set()
+        for route in routes:
+            if (not isinstance(route, dict)
+                    or not all(isinstance(route.get(key), str) for key in ("adapter", "action"))
+                    or not _is_public_route(route["adapter"], route["action"])):
+                return tools
+            adapter, action = route["adapter"], route["action"]
+            for key, value in (("adapter", adapter), ("action", action)):
+                field = schema["properties"].get(key, {})
+                if set(field) - {"type", "enum", "description"} or (
+                    isinstance(field.get("enum"), list) and value not in field["enum"]
+                ):
+                    return tools
+            if (adapter, action) in identities:
+                return tools
+            identities.add((adapter, action))
+            branches.append({
+                "type": "object",
+                "properties": {
+                    "adapter": {"type": "string", "enum": [adapter]},
+                    "action": {"type": "string", "enum": [action]},
+                    "payload": _route_payload_schema(payload, adapter, action),
+                },
+                "required": ["adapter", "action", "payload"],
+                "additionalProperties": False,
+            })
+        candidate = copy.deepcopy(tools)
+        candidate[index]["function"]["parameters"] = {
+            "oneOf": branches, "x-allowed-routes": copy.deepcopy(routes),
+            "x-typed-route-surface": True,
+        }
+        _, bindings = atomic_provider_surface(candidate)
+        if {(binding["adapter"], binding["action"]) for binding in bindings.values()} != identities:
+            return tools
+        return candidate
+    return tools
+
+
 def _flat_route_description(adapter: str, action: str) -> str:
     """Summarize a route without embedding a branch-heavy union schema."""
     schema = _downstream_params_schema(adapter, action)

@@ -880,6 +880,27 @@
           "execution_contract_validation_rejections": 1,
           "repeated_action_guard_rejections": 0,
           "total_protocol_or_contract_rejections": 1
+        },
+        {
+          "attempt": 2,
+          "commit": "34b39dd5265b425d8cfd28b7d88a421d6f1ad950",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-run002",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-v1-config.json",
+          "status": "diagnostically_interrupted",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": null,
+          "main_protocol_errors": 3,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 3,
+          "execution_validation_or_guard_rejections": 2,
+          "execution_contract_validation_rejections": 2,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 5
         }
       ]
     },

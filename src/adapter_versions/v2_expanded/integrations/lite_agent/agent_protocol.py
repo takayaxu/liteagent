@@ -1059,6 +1059,12 @@ class AgentProtocolMixin:
                     ("os", "filesystem.rename"),
                 ],
             )
+        from .task_stage_prompts import selected_stages
+        if any(stage.get("context_mode") == "typed_workflow_call" for stage in selected_stages(
+            getattr(self.config, "task_stage_prompts", None), state, tools,
+        )):
+            from .search_recovery_tools import typed_adapter_route_surface
+            tools = typed_adapter_route_surface(tools)
         messages = self._messages(
             state,
             screenshot,

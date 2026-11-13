@@ -40,7 +40,7 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                     raise ValueError("hotkey stage predicates require 2 to 6 keys separated by +")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization", "workflow_call"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization", "workflow_call", "typed_workflow_call"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
@@ -106,7 +106,7 @@ def stage_prompt_text(overrides: Any, state: Any, tools: Any) -> str:
 
 def workflow_stage_projection(overrides: Any, state: Any, tools: Any) -> tuple[str, str] | None:
     stages = [stage for stage in selected_stages(overrides, state, tools)
-              if stage.get("context_mode") == "workflow_call"]
+              if stage.get("context_mode") in {"workflow_call", "typed_workflow_call"}]
     if not stages:
         return None
     import json
