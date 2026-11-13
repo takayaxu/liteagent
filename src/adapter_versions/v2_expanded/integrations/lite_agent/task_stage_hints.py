@@ -523,7 +523,9 @@ def _invoice_hint(state, facts):
             {"roots": ["~/Documents"], "name_patterns": ["*receipt*", "*tally*.xlsx"],
                 "kind": "any", "recursive": True, "max_results": 50})
     old = [m for m in paths if m.get("kind") == "file" and m.get("path", "").startswith(receipts + "/")]
-    if not old:
+    listed_receipts = any(a == "filesystem.find" and args.get("roots") == [receipts]
+                          and args.get("name_patterns") == ["*"] for _, _, a, args in facts)
+    if not listed_receipts:
         return step("List the old receipt filenames in the actual observed receipts directory to "
             "learn its exact pattern.", "os", "filesystem.find", {"roots": [receipts],
                 "name_patterns": ["*"], "kind": "file", "recursive": False, "max_results": 100})
@@ -568,6 +570,21 @@ def _invoice_hint(state, facts):
             "not append the same record again.", "libreoffice_calc", "workbook.save", {})
     if not reads or reads[-1].step < saves[-1].step:
         return "INVOICE VERIFY: read the saved used range including the new final record once, then propose_done if it matches the invoice and all original rows remain. Do not re-extract, rename again or append duplicates."
+    receipt_checks = [e for e, _, a, args in facts if a == "command.run"
+                      and "invoice-file-verification" in json.dumps(args) and e.step > saves[-1].step]
+    if not receipt_checks:
+        destination = next(args.get("destination_path", args.get("destination"))
+                           for _, _, a, args in reversed(facts) if a == "filesystem.rename")
+        expected_sha = gemini_native_result(saved[-1]).get("sha256")
+        script = ("from pathlib import Path; import hashlib,json; "
+            + f"p=Path({destination!r}); assert p.is_file(), 'filed invoice missing'; "
+            + "digest=hashlib.sha256(p.read_bytes()).hexdigest(); "
+            + (f"assert digest=={expected_sha!r}, 'invoice bytes changed'; " if expected_sha else "")
+            + "print(json.dumps({'check':'invoice-file-verification','path':str(p),"
+              "'bytes':p.stat().st_size,'sha256':digest}))")
+        return step("The saved tally has been read back. Verify the actual filed invoice bytes against "
+            "the saved mail attachment hash before finishing; do not edit or copy it again.", "os", "command.run",
+            {"argv": ["python3", "-c", script], "cwd_source": "home", "provenance": "shell_history"})
     return "INVOICE FINISH: the invoice was filed using the observed naming pattern and the tally record saved/read back. If all clauses match actual evidence, propose_done now without repeated reads."
 
 

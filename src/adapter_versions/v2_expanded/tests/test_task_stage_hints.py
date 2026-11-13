@@ -254,7 +254,7 @@ def test_invoice_uses_public_a1_projection_with_raw_native_coordinate_result():
     state = RuntimeState("synthetic", "multi_apps", "File the AWS invoice and append the tally.")
     state.events = [event(1, "messages.query", body={"messages": [{"sender_name": "AWS"}]}),
         event(2, "attachments.save", body={"output_path": "/tmp/observed.pdf"}),
-        event(3, "filesystem.find", body={"matches": [
+        event(3, "filesystem.find", {"roots": ["/actual/receipts"], "name_patterns": ["*"]}, body={"matches": [
             {"name": "receipts", "path": "/actual/receipts", "kind": "directory"},
             {"name": "old.pdf", "path": "/actual/receipts/old.pdf", "kind": "file"},
             {"name": "tally.xlsx", "path": "/actual/tally.xlsx", "kind": "file"}]}),
@@ -267,3 +267,21 @@ def test_invoice_uses_public_a1_projection_with_raw_native_coordinate_result():
     call = json.loads(hint[hint.index('{"adapter"'):])
     assert call["action"] == "range.read"
     assert call["payload"]["params"] == {"sheet": "Actual", "range": "A1:C6"}
+    state.events += [event(7, "range.read"), event(8, "filesystem.rename", {
+        "source": "/tmp/observed.pdf", "destination": "/actual/receipts/new.pdf"}),
+        event(9, "range.write"), event(10, "workbook.save"), event(11, "range.read")]
+    hint = _cross_app_hint(state, "invoice-mail")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    assert call["action"] == "command.run"
+    assert "/actual/receipts/new.pdf" in call["payload"]["params"]["argv"][2]
+    compile(call["payload"]["params"]["argv"][2], "receipt-check", "exec")
+    state.events.append(event(12, "command.run", call["payload"]["params"]))
+    assert _cross_app_hint(state, "invoice-mail").startswith("INVOICE FINISH:")
+
+
+def test_invoice_combined_discovery_contains_reader_and_append_route():
+    from integrations.lite_agent.tool_catalog import search_actions
+    matches = search_actions("multi_apps", "libreoffice_calc range.read range.write",
+                             limit=7, strict_generic=True)
+    routes = {(m.get("adapter"), m.get("downstream_action")) for m in matches}
+    assert {("libreoffice_calc", "range.read"), ("libreoffice_calc", "range.write")} <= routes

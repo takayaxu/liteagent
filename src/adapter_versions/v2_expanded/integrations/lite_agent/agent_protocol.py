@@ -1059,6 +1059,8 @@ class AgentProtocolMixin:
                 call = json.loads(scoped_hint[scoped_hint.index('{"adapter"'):])
                 wanted = call["action"]
                 query = call["adapter"] + " " + wanted
+                if wanted == "range.read":
+                    query = "libreoffice_calc range.read range.write"
                 exposed = any(wanted in t.get("function", {}).get("parameters", {})
                     .get("properties", {}).get("action", {}).get("enum", []) for t in (tools or []))
                 note = scoped_hint[:scoped_hint.index('{"adapter"')].strip()
