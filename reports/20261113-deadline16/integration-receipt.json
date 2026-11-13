@@ -1,0 +1,47 @@
+{
+  "integrated_at": "2026-11-13T11:03:47.326487+08:00",
+  "branch": "codex/v4",
+  "method": "fast-forward",
+  "before_main_head": "11f3af758f3e934a59c996c9707608eaa36066e9",
+  "integrated_source_commit": "ef4b9d58292046a439249a6aaf1f7c0aba371505",
+  "source_branch": "codex/deadline-stage-repair-20261113",
+  "formal_passes": 13,
+  "unresolved_orders": [
+    107,
+    120,
+    127
+  ],
+  "tests_passed": 91,
+  "other176_messages_and_tools_identical": true,
+  "all_existing_configuration_fields_preserved": true,
+  "unrelated_work_preserved": {
+    "repair_skill.md": {
+      "sha256": "34ca820cfa27ce41db97a67f97f55ebfc71465c8ac6cc7ded4d081f7f609b648",
+      "unchanged": true
+    },
+    "docs/model-protocol-root-cause-20261022.md": {
+      "sha256": "7a12b8a235aad3ea8be1cf3bd415abab2a9af296a655776d2933a22878efc7d3",
+      "unchanged": true
+    },
+    "docs/stage-evidence-feasibility-20261022.md": {
+      "sha256": "a5f37485fa0aede4bdbe9524aa3c2f99c2ce58b14777bc40282ec5354acc8cf2",
+      "unchanged": true
+    }
+  },
+  "evaluator_host_caches": [
+    {
+      "host_cache": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/5bc63fb9-276a-4439-a7c1-9dc76401737f/gemini_results_Gold.docx",
+      "sha256": "01e3ad9bebaee3c028f7fd8635e9c6de69b4e57fd4fa5ae53447a73fd42dc0f8",
+      "scope": "evaluator only; no agent/guest input"
+    },
+    {
+      "host_cache": "/home/liuxv/liteagent/src/third_party/OSWorld/cache/aceb0368-56b8-4073-b70e-3dc9aee184e0/gold_grades.xlsx",
+      "sha256": "7e6b3a6dae808cef87b2847933db04eb2138d82cf1d7b354ff1bbc88bb86f842",
+      "scope": "evaluator only; no agent/guest input"
+    }
+  ],
+  "push_performed": false,
+  "pull_request_created": false,
+  "remaining_jobs": 0,
+  "scope_note": "Scores are preserved individual runs; not one complete189 evaluation. No unresolved hint profiles enabled in main configuration."
+}
