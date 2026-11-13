@@ -243,3 +243,27 @@ def test_invoice_selects_observed_attachment_then_discovers_real_receipts_direct
     call = json.loads(hint[hint.index('{"adapter"'):])
     assert call["action"] == "filesystem.find" and call["payload"]["params"]["kind"] == "any"
     assert "~/my receipts" not in hint
+
+
+def test_invoice_uses_public_a1_projection_with_raw_native_coordinate_result():
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    def event(step, action, params=None, body=None):
+        return ExecutionEvent(step, "", {"kind": "adapter", "action": "adapter.call", "arguments": {
+            "adapter": "os", "action": action, "payload": {"params": params or {}}}}, executed=True,
+            result={"context_hint": {"downstream_context": body or {}}})
+    state = RuntimeState("synthetic", "multi_apps", "File the AWS invoice and append the tally.")
+    state.events = [event(1, "messages.query", body={"messages": [{"sender_name": "AWS"}]}),
+        event(2, "attachments.save", body={"output_path": "/tmp/observed.pdf"}),
+        event(3, "filesystem.find", body={"matches": [
+            {"name": "receipts", "path": "/actual/receipts", "kind": "directory"},
+            {"name": "old.pdf", "path": "/actual/receipts/old.pdf", "kind": "file"},
+            {"name": "tally.xlsx", "path": "/actual/tally.xlsx", "kind": "file"}]}),
+        event(4, "pdf.extract_text_batch"),
+        event(5, "desktop.open_path", {"path": "/actual/tally.xlsx"}),
+        event(6, "workbook.inspect", body={"sheets": [{"name": "Actual", "used_range_a1": "A1:C6"}]})]
+    state.events[-1].result["adapter_response"] = {"result": {"response": {"result": {
+        "sheets": [{"name": "Actual", "used_range": {"end_column": 2, "end_row": 5}}]}}}}
+    hint = _cross_app_hint(state, "invoice-mail")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    assert call["action"] == "range.read"
+    assert call["payload"]["params"] == {"sheet": "Actual", "range": "A1:C6"}

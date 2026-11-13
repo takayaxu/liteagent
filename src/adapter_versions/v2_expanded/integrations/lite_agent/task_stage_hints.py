@@ -539,12 +539,17 @@ def _invoice_hint(state, facts):
             "libreoffice_calc", "workbook.inspect", {})
     reads = [e for e, _, a, _ in facts if a == "range.read"]
     if not reads:
-        inspected = next(gemini_native_result(e) for e, _, a, _ in reversed(facts) if a == "workbook.inspect")
+        inspection = next(e for e, _, a, _ in reversed(facts) if a == "workbook.inspect")
+        # The public projection adds A1 notation to the native coordinate
+        # rectangle. Use that observed field, not a nonexistent raw property.
+        hint = (inspection.result or {}).get("context_hint", {})
+        inspected = hint.get("downstream_context", hint) if hint else gemini_native_result(inspection)
         sheets = inspected.get("sheets", [])
-        if sheets:
+        if sheets and sheets[0].get("used_range_a1"):
             return step("Read all existing tally records and exact headers before appending. Preserve "
                 "every old row.", "libreoffice_calc", "range.read", {"sheet": sheets[0]["name"],
                     "range": sheets[0]["used_range_a1"]})
+        return "INVOICE OBSERVE: read the current tally cells using the actual workbook inspection's sheet and used-range coordinates. Do not append before observing its headers and old records."
     renamed = any(a == "filesystem.rename" and str(args.get("destination_path", args.get("destination", ""))).startswith(receipts + "/")
                   for _, _, a, args in facts)
     if not renamed:
