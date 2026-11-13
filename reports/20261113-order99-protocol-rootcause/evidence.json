@@ -1,0 +1,113 @@
+{
+  "scope": [
+    99
+  ],
+  "checked": 189,
+  "original_rejections": [
+    {
+      "path": [
+        "kind"
+      ],
+      "validator": "enum",
+      "allowed": [
+        "any"
+      ]
+    },
+    {
+      "path": [
+        "kind"
+      ],
+      "validator": "enum",
+      "allowed": [
+        "any"
+      ]
+    },
+    {
+      "path": [
+        "kind"
+      ],
+      "validator": "enum",
+      "allowed": [
+        "any"
+      ]
+    }
+  ],
+  "actual_model_prefix_replay": {
+    "model": "Qwen3.5-9B",
+    "reasoning": "thinking",
+    "provider_tool": "atomic__os_filesystem_find_8a29b208",
+    "params": {
+      "roots": [
+        "~/Desktop"
+      ],
+      "name_patterns": [
+        "*"
+      ],
+      "kind": "any",
+      "recursive": false
+    },
+    "native_function_call_validated": true,
+    "adapter_execution": false,
+    "evidence": "/home/liuxv/liteagent-local-runs/repair99-rootcause-evidence"
+  },
+  "regression_checks": {
+    "passed": 194,
+    "preexisting_failed": 1,
+    "preexisting_test": "test_exhaustive_organization_cannot_retain_unplaced_source_even_if_checker_agrees",
+    "baseline_reproduced": true
+  },
+  "retain_model_replay": {
+    "response": "/home/liuxv/liteagent-local-runs/repair99-rootcause-evidence/retain-prefix-model-response.json",
+    "validated": true,
+    "executed": false
+  },
+  "runs": [
+    {
+      "attempt": 1,
+      "status": "agent_failure",
+      "error": "KeyError: 'properties'"
+    },
+    {
+      "attempt": 2,
+      "status": "diagnostic_interrupted",
+      "executed_steps": 13,
+      "reason": "late retain-stage regression"
+    },
+    {
+      "attempt": 3,
+      "status": "diagnostic_interrupted",
+      "candidate": "51595ac",
+      "executed_steps": 9,
+      "reason": "repetitive reasoning about absent already-moved desktop file",
+      "integrity": {
+        "source_matches": true,
+        "config_matches": true,
+        "osworld_matches": true
+      }
+    },
+    {
+      "attempt": 4,
+      "status": "passed",
+      "candidate": "518244d",
+      "reward": 1.0,
+      "steps": 16,
+      "duration_seconds": 670.898,
+      "termination_reason": "agent_done",
+      "model_request_errors": 0,
+      "integrity": {
+        "source_matches": true,
+        "config_matches": true,
+        "osworld_matches": true
+      },
+      "run": "/home/liuxv/liteagent-local-runs/repair99-rootcause-20261113-attempt4"
+    }
+  ],
+  "classification_model_replay": {
+    "response": "/home/liuxv/liteagent-local-runs/repair99-rootcause-evidence/classification-prefix-model-response.json",
+    "validated": true,
+    "executed": false,
+    "screenshot_omitted": true,
+    "statement_and_invoice_source_facts_preserved": true
+  },
+  "completion_limitation": "Step15 stale completion rejected; step16 inaccurate completion narrative accepted by unchanged gate. Original evaluator independently scores final filesystem state 1.0. No gate changes in this patch."
+}

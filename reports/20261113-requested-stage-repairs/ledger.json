@@ -180,10 +180,10 @@
     "order": 99,
     "task_id": "337d318b-aa07-4f4f-b763-89d9a2dd013f",
     "domain": "multi_apps",
-    "status": "blocked_model_protocol",
+    "status": "passed",
     "original_event_log": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-02/raw/run-1/99-multi_apps-337d318b-aa07-4f4f-b763-89d9a2dd013f/lite_agent_events.jsonl",
-    "candidate_commit": "d669eb9",
-    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair-99-stages",
+    "candidate_commit": "518244d",
+    "candidate_worktree": "/home/liuxv/liteagent-worktrees/repair99-protocol-root",
     "scope_validation": "189 instructions: exact target only",
     "original_prefix_replay": "passed",
     "source_import_check": "passed",
@@ -206,7 +206,14 @@
       {
         "run": "/home/liuxv/liteagent-local-runs/stage-repairs-20261113/order99-attempt4",
         "commit": "57ed3b9",
-        "result": "model_protocol_failure"
+        "result": "model_protocol_failure",
+        "reason": "three real native filesystem.find tool_calls rejected because kind=file conflicts with live schema enum [any]; corrected attribution from raw requests"
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/repair99-rootcause-20261113-attempt4",
+        "commit": "518244d",
+        "result": "passed",
+        "root_cause_report": "reports/20261113-order99-protocol-rootcause/README.md"
       }
     ],
     "run_results": [
@@ -231,8 +238,25 @@
           "config_matches": true,
           "osworld_matches": true
         }
+      },
+      {
+        "run": "/home/liuxv/liteagent-local-runs/repair99-rootcause-20261113-attempt4",
+        "status": "passed",
+        "reward": 1.0,
+        "termination_reason": "agent_done",
+        "steps": 16,
+        "duration_seconds": 670.898,
+        "model_request_errors": 0,
+        "integrity": {
+          "source_matches": true,
+          "config_matches": true,
+          "osworld_matches": true
+        }
       }
-    ]
+    ],
+    "root_cause_followup": "reports/20261113-order99-protocol-rootcause/README.md",
+    "historical_status": "blocked_model_protocol",
+    "reward": 1.0
   },
   {
     "order": 103,
