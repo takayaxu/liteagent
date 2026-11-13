@@ -982,6 +982,20 @@ class AgentProtocolMixin:
                               "source_readback_checks", "original_graded_rows_to_preserve",
                               "remaining_rows_with_blank_scores", "target", "source_protection")
                     stage_facts = {k: current_grading[k] for k in fields if k in current_grading}
+                    key_sources = current_grading.get("answer_key_source", [])
+                    if key_sources:
+                        stage_facts["reference_heading"] = [
+                            {"path": item.get("path"), "heading": "\n".join(str(item.get("text", "")).splitlines()[:3])}
+                            for item in key_sources]
+                    pairs = current_grading.get("raw_answer_pairs", [])
+                    convention = current_grading.get("write_contract", {}).get("marker_convention_from_original_example") or {}
+                    if pairs and convention:
+                        first = pairs[0]
+                        stage_facts["first_question_formula_syntax"] = (
+                            '=IF(' + json.dumps(first["reference_answer"]) + '='
+                            + json.dumps(first["student_answer"]) + ';'
+                            + str(convention["equal_letters"]) + ';'
+                            + str(convention["unequal_letters"]) + ')')
                     scoped_hint = "CURRENT GRADING STAGE: follow the exact current_stage object. Do not plan or execute later stages on this turn."
                     system_message = (
                         "You are completing the user's grading task with the public tools. "
@@ -997,6 +1011,10 @@ class AgentProtocolMixin:
                         "Use typed formula objects in ONE row array "
                         "inside values, including the SUM total formula. A formula must compare "
                         "the exact current question's two letters. Preserve original graded rows. "
+                        "Use first_question_formula_syntax as the exact semicolon/numeric-branch "
+                        "pattern; change only the two letters for each following question. "
+                        "The SUM multiplier is points PER QUESTION from reference_heading, "
+                        "not the number of correct answers in an example student. "
                         "After writing follow the live-read step, repair reported concrete errors, "
                         "then save/read/finish when the existing checks are satisfied. "
                         "The stage facts below replace old reasoning and earlier students' pairs."

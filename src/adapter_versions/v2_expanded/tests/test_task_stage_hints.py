@@ -315,5 +315,6 @@ def test_grading_stage_projects_current_pairs_and_keeps_existing_write_contract(
     context = json.loads(messages[-1]["content"][0]["text"])
     assert context["current_stage"]["raw_answer_pairs"] == facts["raw_answer_pairs"]
     assert context["current_stage"]["write_contract"] == facts["write_contract"]
+    assert context["current_stage"]["first_question_formula_syntax"] == '=IF("B"="D";1;0)'
     assert "answer_key_source" not in context["current_stage"]
     assert "SAME branch order" in messages[0]["content"]
