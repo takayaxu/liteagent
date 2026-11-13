@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import logging
 from typing import Any, Iterable
 
@@ -93,12 +94,15 @@ def _flat_route_description(adapter: str, action: str) -> str:
             continue
         detail = field.get("description")
         if not isinstance(detail, str) or not detail:
-            if isinstance(field.get("enum"), list):
-                detail = "choose one of " + ", ".join(map(str, field["enum"]))
-            elif field.get("type"):
+            if field.get("type"):
                 detail = str(field["type"])
+        detail = detail[:240] if isinstance(detail, str) else ""
+        if isinstance(field.get("enum"), list):
+            # Do not hide a binding enum behind a more general description or
+            # truncate its members when several routes share one wrapper.
+            detail = "allowed values " + json.dumps(field["enum"], ensure_ascii=False) + ("; " + detail if detail else "")
         if isinstance(detail, str) and detail:
-            fields.append(f"{name}: {detail[:240]}")
+            fields.append(f"{name}: {detail}")
     required_text = ", ".join(map(str, required)) or "none"
     overview = schema.get("description")
     overview_text = f" {overview[:1000]}" if isinstance(overview, str) else ""
