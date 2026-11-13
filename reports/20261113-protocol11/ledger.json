@@ -264,7 +264,7 @@
     {
       "order": 101,
       "task_id": "185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
-      "status": "input_reference_mismatch",
+      "status": "skipped_by_user",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-04/raw/run-1/101-multi_apps-185f29bd-5da0-40a6-b69c-ba7f4e0324ef",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
@@ -355,7 +355,8 @@
       "source_faithful_score_upper_bound": 0.506,
       "input_reference_audit": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-input-reference-audit.json",
       "official_source_provenance": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order101-official-source-mirror-provenance.json",
-      "official_source_same_bytes_as_cache": true
+      "official_source_same_bytes_as_cache": true,
+      "skip_reason": "User explicitly replied 跳过 to the input/reference mismatch question on 2026-11-13. Preserve original input, evaluator, reference and actual scores."
     },
     {
       "order": 102,
@@ -1039,10 +1040,33 @@
           "commit": "60f6de44b6c1a01f2f9e744cad8913d0a64bc68b",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-run009",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-v13-config.json",
+          "status": "failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 0.9996001599360256,
+          "duration_seconds": 558.274,
+          "steps": 16,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
+        },
+        {
+          "attempt": 10,
+          "commit": "9acde215642faf167eeff64a7c2be5e065b1099b",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-run010",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-v14-config.json",
           "status": "running"
         }
       ],
-      "reward": 0.9615384615384616
+      "reward": 0.9996001599360256
     },
     {
       "order": 115,
