@@ -220,3 +220,33 @@ def test_live_inventory_constraints_survive_atomic_description_projection():
         client_call(tools, function["name"], {**valid, "kind": "file"})
     assert any('kind' in hint and 'any' in hint for hint in error.value.schema_hints)
     assert tools == before
+
+
+def test_organization_inventory_stays_typed_after_precise_broad_catalog_search():
+    from types import SimpleNamespace
+    from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
+    from integrations.lite_agent.state_model import RuntimeState, ExecutionEvent
+    state = RuntimeState(task_id="synthetic-invoice-task", domain="multi_apps",
+                         instruction='Cross-check the invoices with the bank statements and identify any discrepancies. Then pull out the invoices that don\'t match the statements and put them in the "problematic" folder.')
+    routes = ["filesystem.find", "filesystem.rename", "filesystem.copy",
+              "filesystem.copy_to_directories", "filesystem.set_permissions",
+              "filesystem.create_directory"]
+    state.events.append(ExecutionEvent(step=1, timestamp_utc="test", executed=True,
+        proposed={"kind": "catalog", "tool": "tools_search", "arguments": {"query": "os.filesystem.find"}},
+        result={"status": "ok", "executed": True, "matches": [
+            {"adapter": "os", "action": "adapter.call", "tool_name": "adapter__adapter_call", "downstream_action": action,
+             "downstream": {"adapter": "os", "action": action}}
+            for action in routes]}))
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused"), SimpleNamespace(),
+                      model_client=SimpleNamespace(client=None))
+    tools = agent.tools(state)
+    surface, bindings = atomic_provider_surface(tools)
+    assert len(bindings) == 1
+    binding = next(iter(bindings.values()))
+    assert (binding["adapter"], binding["action"]) == ("os", "filesystem.find")
+    params = binding["schema"]
+    assert params["properties"]["kind"]["enum"] == ["any"]
+    assert params["properties"]["name_patterns"]["items"]["enum"] == ["*"]
+    assert params["properties"]["recursive"]["enum"] == [False]
+    assert Draft202012Validator(params).is_valid({
+        "roots": ["~/Desktop"], "name_patterns": ["*"], "kind": "any", "recursive": False})
