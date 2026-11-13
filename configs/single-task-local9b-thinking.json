@@ -1424,6 +1424,11 @@
         "until_action": "os:filesystem.find",
         "context_mode": "workflow_call",
         "text": "First observe the source folder containing the invoice and statement files visible on the Desktop. Search os.filesystem.find once if needed, then call its actual provided native function. The live inventory schema requires kind=any, name_patterns=[\"*\"], recursive=false. Those are inventory coverage requirements; do not replace them with file-only or filtered patterns. Use the current provided function name and top-level parameters; catalog adapter.call names describe the route, not the provider function. The current schema takes precedence over earlier search summaries. Select the source root from current desktop evidence."
+      },
+      {
+        "when_tool": "organization__skip_current",
+        "context_mode": "workflow_call",
+        "text": "Current operation is the retain transition for ONE exact object. The current skip tool path enum identifies that already-read, independently verified matching object. Emit organization__skip_current using that exact current path and an observed factual reason. Do not reconsider an earlier invoice or ask for a move tool: successful prior moves remain executed. This retain transition does not move any file; after it, the tool surface advances to the next object or completion. Use the actual current schema rather than old screenshot file positions."
       }
     ]
   },
