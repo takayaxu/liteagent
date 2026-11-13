@@ -511,6 +511,11 @@ def _invoice_hint(state, facts):
                 "directory and its naming convention must be discovered separately, not invented from "
                 "the phrase my receipts.", "thunderbird", "attachments.save", params)
     source = gemini_native_result(saved[-1]).get("output_path") if saved else None
+    if source and not any(a == "pdf.extract_text_batch" for _, _, a, _ in facts):
+        return step("Read the one saved mail attachment before discovering old receipts. Retain "
+            "vendor, invoice date, billing month and total amount; old receipts are naming examples, "
+            "not the invoice source.", "os", "pdf.extract_text_batch",
+            {"input_pattern": source, "cwd_source": "home"})
     paths = [m for e, _, a, _ in facts if a == "filesystem.find"
              for m in gemini_native_result(e).get("matches", [])]
     tally = next((m["path"] for m in paths if "tally" in m.get("name", "").lower()
@@ -522,17 +527,22 @@ def _invoice_hint(state, facts):
             "Do not create another receipts folder or repeat mail searches.", "os", "filesystem.find",
             {"roots": ["~/Documents"], "name_patterns": ["*receipt*", "*tally*.xlsx"],
                 "kind": "any", "recursive": True, "max_results": 50})
-    old = [m for m in paths if m.get("kind") == "file" and m.get("path", "").startswith(receipts + "/")]
-    listed_receipts = any(a == "filesystem.find" and args.get("roots") == [receipts]
-                          and args.get("name_patterns") == ["*"] for _, _, a, args in facts)
-    if not listed_receipts:
-        return step("List the old receipt filenames in the actual observed receipts directory to "
-            "learn its exact pattern.", "os", "filesystem.find", {"roots": [receipts],
-                "name_patterns": ["*"], "kind": "file", "recursive": False, "max_results": 100})
-    if not any(a == "pdf.extract_text_batch" for _, _, a, _ in facts):
-        return step("Read the saved invoice content once; retain vendor, invoice date, billing month "
-            "and total amount. Do not guess values from its filename.", "os", "pdf.extract_text_batch",
-            {"input_pattern": source, "cwd_source": "home"})
+    old = []
+    for e, _, action, args in facts:
+        if action == "command.run" and "receipt-name-examples" in json.dumps(args):
+            try:
+                listing = json.loads(gemini_native_result(e).get("stdout", ""))
+            except (TypeError, ValueError):
+                continue
+            old = listing.get("files", [])
+    if not old:
+        script = ("from pathlib import Path; import json; " + f"root=Path({receipts!r}); "
+            "print(json.dumps({'check':'receipt-name-examples','files':[{'path':str(p),"
+            "'name':p.name,'kind':'file'} for p in sorted(root.iterdir()) if p.is_file()]}))")
+        return step("List only the OLD FILENAMES in the actual receipts directory to learn their "
+            "pattern. These are naming examples; do not read their contents or treat them as "
+            "new invoices to append.", "os", "command.run", {"argv": ["python3", "-c", script],
+                "cwd_source": "home", "provenance": "shell_history"})
     if not any(a == "desktop.open_path" and args.get("path") == tally for _, _, a, args in facts):
         return step("Open the ACTUAL existing tally workbook for editing. A temporary read preview "
             "does not open a live editable workbook.", "os", "desktop.open_path", {"path": tally})
@@ -569,7 +579,12 @@ def _invoice_hint(state, facts):
         return step("The one invoice record was written. Save the existing tally workbook now; do "
             "not append the same record again.", "libreoffice_calc", "workbook.save", {})
     if not reads or reads[-1].step < saves[-1].step:
-        return "INVOICE VERIFY: read the saved used range including the new final record once, then propose_done if it matches the invoice and all original rows remain. Do not re-extract, rename again or append duplicates."
+        return ("INVOICE VERIFY: read the saved table once, including all old rows and the new final "
+            "record. Extend the previous read rectangle to cover the observed append rectangle below. "
+            "Do not re-extract, rename again or append duplicates. Previous read: "
+            + json.dumps(gemini_native_result(reads[-1]) if reads else {}, ensure_ascii=False)
+            + ". Appended arguments: " + json.dumps(next(args for e, _, a, args in reversed(facts)
+                if a == "range.write"), ensure_ascii=False))
     receipt_checks = [e for e, _, a, args in facts if a == "command.run"
                       and "invoice-file-verification" in json.dumps(args) and e.step > saves[-1].step]
     if not receipt_checks:

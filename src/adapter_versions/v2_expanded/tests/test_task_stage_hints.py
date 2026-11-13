@@ -241,6 +241,11 @@ def test_invoice_selects_observed_attachment_then_discovers_real_receipts_direct
     state.events.append(event(3, "attachments.save", {"output_path": "/tmp/observed.pdf"}))
     hint = _cross_app_hint(state, "invoice-mail")
     call = json.loads(hint[hint.index('{"adapter"'):])
+    assert call["action"] == "pdf.extract_text_batch"
+    assert call["payload"]["params"]["input_pattern"] == "/tmp/observed.pdf"
+    state.events.append(event(4, "pdf.extract_text_batch", {"files": []}))
+    hint = _cross_app_hint(state, "invoice-mail")
+    call = json.loads(hint[hint.index('{"adapter"'):])
     assert call["action"] == "filesystem.find" and call["payload"]["params"]["kind"] == "any"
     assert "~/my receipts" not in hint
 
@@ -261,6 +266,12 @@ def test_invoice_uses_public_a1_projection_with_raw_native_coordinate_result():
         event(4, "pdf.extract_text_batch"),
         event(5, "desktop.open_path", {"path": "/actual/tally.xlsx"}),
         event(6, "workbook.inspect", body={"sheets": [{"name": "Actual", "used_range_a1": "A1:C6"}]})]
+    listing_hint = _cross_app_hint(state, "invoice-mail")
+    assert "receipt-name-examples" in listing_hint
+    listing_call = json.loads(listing_hint[listing_hint.index('{"adapter"'):])
+    compile(listing_call["payload"]["params"]["argv"][2], "receipt-list", "exec")
+    state.events.insert(4, event(4, "command.run", {"argv": ["python3", "-c", "receipt-name-examples"]},
+        {"stdout": json.dumps({"files": [{"path": "/actual/receipts/old.pdf", "name": "old.pdf", "kind": "file"}]})}))
     state.events[-1].result["adapter_response"] = {"result": {"response": {"result": {
         "sheets": [{"name": "Actual", "used_range": {"end_column": 2, "end_row": 5}}]}}}}
     hint = _cross_app_hint(state, "invoice-mail")
