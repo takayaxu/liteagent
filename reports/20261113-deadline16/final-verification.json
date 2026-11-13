@@ -1,0 +1,102 @@
+{
+  "checked_tasks": [
+    {
+      "order": 13,
+      "sha256": "e5d6ba86094773b8a295916fe8b815928207b8df5f3269e0c33690ebd4223fa6",
+      "identical": true
+    },
+    {
+      "order": 23,
+      "sha256": "9c0ee133ecd121efda206f98ff023b7e92c8d8884bfec07c138dd80da91e4186",
+      "identical": true
+    },
+    {
+      "order": 24,
+      "sha256": "c11adf741c2ea6b980fa5f34c3e32e4994279294b37f9c0670e21674881024b2",
+      "identical": true
+    },
+    {
+      "order": 54,
+      "sha256": "0044fa4603be297c90b60c48243fa07c9c3ba5eeebb5b0f8ccd2c09008edafee",
+      "identical": true
+    },
+    {
+      "order": 65,
+      "sha256": "8a6dba40b4279df2bcad960c9d2918ff13996185572ee2b6c985a3d9f643bfe8",
+      "identical": true
+    },
+    {
+      "order": 76,
+      "sha256": "a90b691658f28daa6a04a43721d2f5b3c8f5997fe7cb4177335e408c1c4606fc",
+      "identical": true
+    },
+    {
+      "order": 78,
+      "sha256": "31a7eea1d9b457dc478b5c43d15cd294cfe7e6dcedd64d0d7aa41bcdbcaad53e",
+      "identical": true
+    },
+    {
+      "order": 107,
+      "sha256": "afd7ddd19d7889083fabe117da228fc3fcc6ea6a2847c586c2624644e1f41dd7",
+      "identical": true
+    },
+    {
+      "order": 108,
+      "sha256": "51889a730d879d0ea99427e6723d6b0270bbcdfd1ae9bb96c02a1b41fb5f50f4",
+      "identical": true
+    },
+    {
+      "order": 109,
+      "sha256": "ee3f35a58f218a9d14552ee168348a463c8f55cef01ac8ccdc51981543bcae23",
+      "identical": true
+    },
+    {
+      "order": 120,
+      "sha256": "47f51d759674a58a29c923fbf4d7d16438edd5a67792c62d7d42e161c3360e5f",
+      "identical": true
+    },
+    {
+      "order": 122,
+      "sha256": "45996df46ecce886b7f979ad0410f7e53c051c48b6301a9f2877b546ce21e9c8",
+      "identical": true
+    },
+    {
+      "order": 127,
+      "sha256": "92785dcbee2be4c1c54b8d5362642226b8c36c809eecb6f6d4e14674840fc455",
+      "identical": true
+    },
+    {
+      "order": 132,
+      "sha256": "23a65a50a93b1971fbe1b2308e936117415218171132be3e53165e85950692e7",
+      "identical": true
+    },
+    {
+      "order": 161,
+      "sha256": "96f49b4d177c39a3511adb72f840d3bdd21d34c2effad66f616cff169b659b84",
+      "identical": true
+    },
+    {
+      "order": 172,
+      "sha256": "c1e6fd4ea914262c5d3c2eae55293be98ed5e352c94857df7a62e23d52078495",
+      "identical": true
+    }
+  ],
+  "original_evaluator_files_identical": 28,
+  "all_existing_configuration_fields_preserved": true,
+  "passed_profile_count": 13,
+  "tests": {
+    "passed": 91,
+    "other176_messages_and_tools_identical": true,
+    "runtime_defaults_off": true,
+    "test_groups": [
+      "task_stage_hints",
+      "task_stage_prompts",
+      "workflow_progress_handoff",
+      "typed_workflow_surface",
+      "forwarded_enum_descriptions",
+      "atomic_provider_surface"
+    ]
+  },
+  "remaining_jobs": 0,
+  "note": "Exact task profiles enabled only for original-evaluator13PASS. No full189 rerun."
+}

@@ -1,0 +1,11 @@
+{
+  "reason": "Restore original order127 instruction/setup from the user report source before any new episode. Inherited task revision supplied the expected wallpaper as input; never execute it as this repair. Evaluator identical and unchanged.",
+  "source": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/src/third_party/OSWorld/evaluation_examples/examples/multi_apps/c2751594-0cd5-4088-be1b-b5f2f9ec97c4.json",
+  "destination": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/worktree/src/third_party/OSWorld/evaluation_examples/examples/multi_apps/c2751594-0cd5-4088-be1b-b5f2f9ec97c4.json",
+  "before_sha256": "51cc89e86e2ac0a36a93e35e1334edef4f69cf16fa8d344bc6ba84a0a4409214",
+  "restored_sha256": "92785dcbee2be4c1c54b8d5362642226b8c36c809eecb6f6d4e14674840fc455",
+  "not_run": [
+    "sequential-rest-run008 order127",
+    "sequential-rest-run009 order127"
+  ]
+}

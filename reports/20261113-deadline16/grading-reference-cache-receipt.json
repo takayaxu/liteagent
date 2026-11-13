@@ -1,0 +1,10 @@
+{
+  "source": "hf-mirror.com same repository e28460ae734cb1b33901d232cef8747c20ccd677",
+  "original_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/multi_apps/aceb0368-56b8-4073-b70e-3dc9aee184e0/grades.xlsx",
+  "size": 9614,
+  "git_blob_sha1": "97a84d585e2af2f5f59552c4cbd4098e26d687c9",
+  "sha256": "7e6b3a6dae808cef87b2847933db04eb2138d82cf1d7b354ff1bbc88bb86f842",
+  "destination": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/worktree/src/third_party/OSWorld/cache/aceb0368-56b8-4073-b70e-3dc9aee184e0/gold_grades.xlsx",
+  "scope": "Evaluator-only host cache for FUTURE snapshot. Never sent to agent or guest. Running snapshot unchanged.",
+  "preserved_actual_sha256": "e333f05c35db7f4b60a1f34d37a6c96eb341dd057f9b7a1e5f8166ccecd03390"
+}

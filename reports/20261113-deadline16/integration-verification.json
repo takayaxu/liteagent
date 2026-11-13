@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-11-12T21:43:16.535495+00:00",
+  "source_commit": "6d381e9",
+  "checks": {
+    "expanded_tests": {
+      "passed": 168,
+      "failed": 1,
+      "failure": "test_exhaustive_organization_cannot_retain_unplaced_source_even_if_checker_agrees",
+      "baseline_reproduced": true,
+      "baseline_workspace": "/home/liuxv/liteagent",
+      "baseline_commit": "69a42ad",
+      "reason": "Current model-visible classification schema rejects disposition=retain before the test expected execution. Same failure occurs on the activity branch without these deadline hints."
+    },
+    "integrated_prompt_replay": {
+      "orders": [
+        13,
+        23
+      ],
+      "states": [
+        18,
+        15
+      ],
+      "all_messages_and_tools_identical": true
+    },
+    "targeted_tests": {
+      "passed": 32,
+      "failed": 0,
+      "all_173_unrelated_actual_messages_equal": true
+    }
+  },
+  "note": "Expanded pre-existing test failure is not changed as part of this single-task prompt repair."
+}

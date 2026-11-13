@@ -1,0 +1,15 @@
+{
+  "original_input_cache": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/src/third_party/OSWorld/cache/c2751594-0cd5-4088-be1b-b5f2f9ec97c4/db74bc8e-c106-59ae-a08c-0b44534ee922_thunderbird-profile.tar.gz",
+  "current_input_cache": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/worktree/src/third_party/OSWorld/cache/c2751594-0cd5-4088-be1b-b5f2f9ec97c4/db74bc8e-c106-59ae-a08c-0b44534ee922_thunderbird-profile.tar.gz",
+  "current_sha256": "002ad7e00d2ce361ca770f5c246c03850018ec4e94e5e9c4e12198b66e81b99c",
+  "original_sha256": "002ad7e00d2ce361ca770f5c246c03850018ec4e94e5e9c4e12198b66e81b99c",
+  "source_attachment_sha256": "4c9a185bc89de330d1a736efe83315e2d2ab3305277c6126ee57056decdd41b4",
+  "source_reference_order": [
+    "word/media/image1.png",
+    "word/media/image2.png",
+    "word/media/image3.png"
+  ],
+  "source_first_image": "free sample stamp, inline in first drawing; not a watermark/header",
+  "formal_score": 0.0,
+  "result": "Original first body-image workflow completed. Expected wallpaper is a landscape absent from all three source images. No reference-driven selection or task/evaluator change."
+}

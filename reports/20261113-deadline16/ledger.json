@@ -1,0 +1,1305 @@
+{
+  "source_report": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/delivery-continue12-20261112T154052Z/deadline-errors-report/deadline-tasks.md",
+  "base_commit": "765ac8e27f7377e0894b2c54d4f4f5d17a22eea6",
+  "authorization": "User explicitly requests sequential single-task stage hints with no effects on other tasks. No new approval gate.",
+  "model": "local Qwen3.5-9B thinking",
+  "max_steps": 100,
+  "max_agent_seconds": 1800,
+  "tasks": [
+    {
+      "order": 13,
+      "task_id": "0326d92d-d218-48a8-9ca1-981cd6d064c7",
+      "status": "passed",
+      "candidate_commit": "1460b286cc65113cce201857dd8aa5ab00cec1c4",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/order013-run004",
+      "attempts": [
+        {
+          "run": "order013-run001",
+          "source_commit": "bbcd004fed36339ce63f257d4ec380f54d9e81eb",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "order013-run002",
+          "source_commit": "bbcd004fed36339ce63f257d4ec380f54d9e81eb",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "terminal_without_score",
+          "result": {
+            "status": "environment_failure",
+            "reward": null,
+            "steps": null,
+            "duration_seconds": 57.003,
+            "termination_reason": "environment_failure"
+          },
+          "event_count": 0
+        },
+        {
+          "run": "order013-run003",
+          "source_commit": "e7909274aef66adc6bed19ad7b4a6ca8b6be33a2",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Reproduced row/column confusion and Jan chart-header inclusion despite v1 guidance. No score claimed.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 13
+        },
+        {
+          "run": "order013-run004",
+          "source_commit": "1460b286cc65113cce201857dd8aa5ab00cec1c4",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 17,
+            "duration_seconds": 675.501,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 17
+        }
+      ],
+      "reward": 1.0,
+      "steps": 17,
+      "duration_seconds": 675.501,
+      "integrity": true,
+      "integration": "pending: activity branch advanced independently; preserve other work and combine before integration"
+    },
+    {
+      "order": 23,
+      "task_id": "4de54231-e4b5-49e3-b2ba-61a0bec721c0",
+      "status": "passed",
+      "candidate_commit": "885bc718e3c495aafdce983555ec9824289e22e5",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/order023-run001",
+      "reward": 1.0,
+      "steps": 14,
+      "duration_seconds": 546.325,
+      "integrity": true,
+      "attempts": [
+        {
+          "run": "order023-run001",
+          "source_commit": "885bc718e3c495aafdce983555ec9824289e22e5",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 14,
+            "duration_seconds": 546.325,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 14
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "task_id": "30e3e107-1cfb-46ee-a755-2cd080d7ba6a",
+      "status": "passed",
+      "candidate_commit": "20003e26aaf3393272032dd3ef10f1f49ab4d4ae",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/order024-run004",
+      "attempts": [
+        {
+          "run": "order024-run001",
+          "source_commit": "1ff9eb6defcdd630daa85c2989590d613e29e146",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Model ignored pending title font-color guidance and advanced to pivots; next candidate focuses scoped system guidance.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 9
+        },
+        {
+          "run": "order024-run002",
+          "source_commit": "17314e2da20ddc9cd11c511f91cf284b07a9fdf5",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Extra blank row after title; percentage data and title formatting correct. Original cell-position comparison failed.",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 15,
+            "duration_seconds": 473.008,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 15
+        },
+        {
+          "run": "order024-run003",
+          "source_commit": "a6f2301448b5f2c64482472e165463135516614e",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "First pivot selected A3 while title-format stage hint hid future layout constraint.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 8
+        },
+        {
+          "run": "order024-run004",
+          "source_commit": "20003e26aaf3393272032dd3ef10f1f49ab4d4ae",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 13,
+            "duration_seconds": 395.781,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 13
+        }
+      ],
+      "reward": 1.0,
+      "steps": 13,
+      "duration_seconds": 395.781,
+      "integrity": true
+    },
+    {
+      "order": 54,
+      "task_id": "a53f80cd-4a90-4490-8310-097b011433f6",
+      "status": "passed",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/order054-run002",
+      "candidate_commit": "63db1c864afed295087d465e923bbcfc08f11b00",
+      "attempts": [
+        {
+          "run": "order054-run001",
+          "source_commit": "271d8419f422fe4ea7e7c4b32b52891e49cfd7d9",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Raw stream repeated contradictory display/native slide-number reasoning despite correct observed plan.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 8
+        },
+        {
+          "run": "order054-run002",
+          "source_commit": "63db1c864afed295087d465e923bbcfc08f11b00",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 16,
+            "duration_seconds": 312.374,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 16
+        }
+      ],
+      "reward": 1.0,
+      "steps": 16,
+      "duration_seconds": 312.374
+    },
+    {
+      "order": 65,
+      "task_id": "0a0faba3-5580-44df-965d-f562a99b291c",
+      "status": "passed",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/order065-run010",
+      "candidate_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+      "attempts": [
+        {
+          "run": "order065-run001",
+          "source_commit": "63db1c864afed295087d465e923bbcfc08f11b00",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Literal escape and wrong paragraph formatting selection.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 10
+        },
+        {
+          "run": "order065-run002",
+          "source_commit": "8f3a87bb255319273c0598457f8ae0e241135037",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "stalled_no_progress",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 26,
+            "duration_seconds": 589.116,
+            "termination_reason": "stalled_no_progress"
+          },
+          "event_count": 26
+        },
+        {
+          "run": "order065-run003",
+          "source_commit": "4fc231fa0d6ac285462e99f38c0b490017bc887f",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Replacement truncated source word.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 13
+        },
+        {
+          "run": "order065-run004",
+          "source_commit": "ab517eb524f3e6078acbd4c8c51c326700669194",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Literal tab escape.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 6
+        },
+        {
+          "run": "order065-run005",
+          "source_commit": "5bc10a9255e16e83e2bba4822dc3209e6217ff76",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Replacement truncated source word.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 8
+        },
+        {
+          "run": "order065-run006",
+          "source_commit": "74e95b96a26e2cc7d8347a27f60a37fac09d9f65",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Tool XML markup included in root string parameter.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 9
+        },
+        {
+          "run": "order065-run007",
+          "source_commit": "c423674b79d4890c9932c3811cf0c82efd4c9c41",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "All tab edits and format executed, but native readback was omitted from scoped model context causing repeated inspection.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 35
+        },
+        {
+          "run": "order065-run008",
+          "source_commit": "feeba3d0f4a46b346f34e5ebacd53c4f1aa38c7a",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 3
+        },
+        {
+          "run": "order065-run009",
+          "source_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 33
+        },
+        {
+          "run": "order065-run010",
+          "source_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 34,
+            "duration_seconds": 808.537,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 34
+        }
+      ],
+      "reason": "Tab insertions can complete, but model repeatedly inspects instead of applying final format or finishing; preserve failed/diagnostic attempts for revisit.",
+      "reward": 1.0,
+      "steps": 34,
+      "duration_seconds": 808.537
+    },
+    {
+      "order": 76,
+      "task_id": "8472fece-c7dd-4241-8d65-9b3cd1a0b568",
+      "status": "passed",
+      "reward": 1.0,
+      "steps": 11,
+      "duration_seconds": 608.519,
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run001",
+      "attempts": [
+        {
+          "run": "sequential-rest-run001",
+          "source_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 11,
+            "duration_seconds": 608.519,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 11
+        }
+      ],
+      "candidate_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d"
+    },
+    {
+      "order": 78,
+      "task_id": "936321ce-5236-426a-9a20-e0e3c5dc536f",
+      "status": "passed",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run001",
+      "reward": 1.0,
+      "steps": 4,
+      "duration_seconds": 142.421,
+      "attempts": [
+        {
+          "run": "sequential-rest-run001",
+          "source_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 4,
+            "duration_seconds": 142.421,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 4
+        }
+      ],
+      "candidate_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d"
+    },
+    {
+      "order": 107,
+      "task_id": "881deb30-9549-4583-a841-8270c65f2a17",
+      "status": "unresolved",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run004",
+      "candidate_commit": "e7696303a67d1798f8c728ff10d64e73ff3215ec",
+      "attempts": [
+        {
+          "run": "sequential-rest-run001",
+          "source_commit": "e1615c229c69d7af52bfc3caa78cf7759a41523d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Repeated reasoning at source-to-target observation handoff.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 12
+        },
+        {
+          "run": "sequential-rest-run002",
+          "source_commit": "a971e725052bc6ce324fa2e31ee114843afcecba",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Repeated reasoning before ratio computation over university alias mapping.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 15
+        },
+        {
+          "run": "sequential-rest-run003",
+          "source_commit": "909134f72bf090b7172c34a3210712e5f1d88537",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "All nine rows written and saved, but shortened preview caused repeated completion reasoning; full native readback added to scoped final stage.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 36
+        },
+        {
+          "run": "sequential-rest-run004",
+          "source_commit": "e7696303a67d1798f8c728ff10d64e73ff3215ec",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 30,
+            "duration_seconds": 968.566,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 30
+        }
+      ],
+      "reward": 0.0,
+      "steps": 30,
+      "duration_seconds": 968.566,
+      "reason": "Deadline resolved, evaluator mismatch: aggregate Total ratios differ from reference discipline-row ratios. Needs source-semantic diagnosis."
+    },
+    {
+      "order": 108,
+      "task_id": "7e287123-70ca-47b9-8521-47db09b69b14",
+      "status": "passed",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run005",
+      "candidate_commit": "951a311503dba95ed94489a5f26982460b2ff884",
+      "attempts": [
+        {
+          "run": "sequential-rest-run004",
+          "source_commit": "e7696303a67d1798f8c728ff10d64e73ff3215ec",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Repeated reasoning interpreting university quantity/amount columns after first PDF; next-source-only reading guidance added.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 5
+        },
+        {
+          "run": "sequential-rest-run005",
+          "source_commit": "951a311503dba95ed94489a5f26982460b2ff884",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 18,
+            "duration_seconds": 713.919,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 18
+        }
+      ],
+      "reward": 1.0,
+      "steps": 18,
+      "duration_seconds": 713.919
+    },
+    {
+      "order": 109,
+      "task_id": "5bc63fb9-276a-4439-a7c1-9dc76401737f",
+      "status": "passed",
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run022",
+      "attempts": [
+        {
+          "run": "sequential-rest-run005",
+          "source_commit": "951a311503dba95ed94489a5f26982460b2ff884",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "诊断提取到文档写入的阶段交接。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run006",
+          "source_commit": "951a311503dba95ed94489a5f26982460b2ff884",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "未提取 Gemini 值就追加原始 JSON。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 9
+        },
+        {
+          "run": "sequential-rest-run007",
+          "source_commit": "face1bd01d6274de6cc63e1d0a2a22d2c7d54809",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "成功提取后仍反复提取，未进入建文档阶段。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 12
+        },
+        {
+          "run": "sequential-rest-run008",
+          "source_commit": "dc989387ba059f38c9f87361c9ac5dd55e1c383c",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "command.run 把必填字段塞入 argv，随后出现重复参数输出。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 5
+        },
+        {
+          "run": "sequential-rest-run009",
+          "source_commit": "6b55b71a6b9a913fbaa02ba5bae791494f68241d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "command.run 参数结构仍错误，未完成提取。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 5
+        },
+        {
+          "run": "sequential-rest-run010",
+          "source_commit": "4859fa178dd2bf7187ff81598684b5cdf0f926da",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "提取、创建和追加成功；text.set_format 不支持 highlight，随后重复搜索。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 11
+        },
+        {
+          "run": "sequential-rest-run011",
+          "source_commit": "0c8cd0954530bb6370aac893d3897d7caca45303",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "GUI 未先聚焦，随后点击位置错误并重复；原生响应内容已写入。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 26
+        },
+        {
+          "run": "sequential-rest-run012",
+          "source_commit": "e407e6fdae3f2bca5ba8625181f99080abfca102",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "准备期间停止，修正截图 TSV 引号解析；未记录模型动作或评分。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run013",
+          "source_commit": "c0653f0061d712bb75ba67432e5c0e5b9108515f",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "已按真实截图正确 Find All，选中33词/165字符；随后重复 Find All，未进入关闭阶段。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 24
+        },
+        {
+          "run": "sequential-rest-run014",
+          "source_commit": "e199ebac2715989efa321f5dbe6323b54c673598",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "提取与追加阶段顺利；首次聚焦前反复 Ctrl+H，停下加入单步聚焦提示。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 14
+        },
+        {
+          "run": "sequential-rest-run015",
+          "source_commit": "41ead747aea8422a8cd03568a064a9fd94466a87",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "GUI 高亮成功，原生33处黄色。发现多应用结果未解封装导致重复检查，以及 append_text_file 只有1原生段落；后续候选改为原生6响应段落并修正封装。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 32
+        },
+        {
+          "run": "sequential-rest-run016",
+          "source_commit": "9b6a05cfabe7a2d6e0fb783c064defe21e8dd8c1",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "完整提取文本读成功；原生段落API尚未发现时长正文提示导致源文件搜索循环。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 25
+        },
+        {
+          "run": "sequential-rest-run017",
+          "source_commit": "fb4a86d140ead73c95aa6af3f5299335c66807cc",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "原生追加6响应全部逐字一致，空段落设置1；下一检查API未发现时再次源文件搜索循环。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 28
+        },
+        {
+          "run": "sequential-rest-run018",
+          "source_commit": "4905b5dca8b1d76c6d896632cafa7053d400ce7c",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Agent23步正常完成，6响应11段落33黄色高亮保存读回成功；评测网络参考下载DNS/连接阻塞。只读保留DOCX，镜像参考仓库blob校验通过，尚无原postepisode评分；离线原文本比较发现内部换行转空格与源JSON可见记法不符。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 23
+        },
+        {
+          "run": "sequential-rest-run019",
+          "source_commit": "802b4b2cd0e254492fccd8760b4addfeaaae74ff",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "准备期诊断中止，防止复制响应时将内部换行错误改成空格；未评分。",
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run020",
+          "source_commit": "1ff8f93fde4c7d1fc9f8bf733363c850d9620b6a",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "正式原评测0.0，23步618.665秒正常agent_done。段落、高亮、保存正确，模型转抄时把字面backslash+n解码为实际换行，导致原文本比较失败。新候选改用源数据生成FODT中间文档再Writer导出DOCX。",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 23,
+            "duration_seconds": 618.665,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 23
+        },
+        {
+          "run": "sequential-rest-run021",
+          "source_commit": "c409e0425195043a8aa26f27ea30dc5e74ca9c11",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 15
+        },
+        {
+          "run": "sequential-rest-run022",
+          "source_commit": "d70b0b203cf7cf177c964a23299484032ab5dfe4",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 12,
+            "duration_seconds": 334.86,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 12
+        }
+      ],
+      "candidate_commit": "d70b0b203cf7cf177c964a23299484032ab5dfe4",
+      "reward": 1.0,
+      "steps": 12,
+      "duration_seconds": 334.86
+    },
+    {
+      "order": 120,
+      "task_id": "09a37c51-e625-49f4-a514-20a773797a8a",
+      "status": "unresolved",
+      "attempts": [
+        {
+          "run": "sequential-rest-run020",
+          "source_commit": "1ff8f93fde4c7d1fc9f8bf733363c850d9620b6a",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run022",
+          "source_commit": "d70b0b203cf7cf177c964a23299484032ab5dfe4",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 11
+        },
+        {
+          "run": "sequential-rest-run023",
+          "source_commit": "5dfe41a4e7591a7e94d0f02d4a94ac47507b5b4d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.8753016315720157,
+            "steps": 15,
+            "duration_seconds": 407.763,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 15
+        },
+        {
+          "run": "sequential-rest-run024",
+          "source_commit": "7cccaa57e65a6739324127caca62a71acc812aab",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.9072938828227207,
+            "steps": 12,
+            "duration_seconds": 297.637,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 12
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run024",
+      "candidate_commit": "7cccaa57e65a6739324127caca62a71acc812aab",
+      "reward": 0.9072938828227207,
+      "steps": 12,
+      "duration_seconds": 297.637
+    },
+    {
+      "order": 122,
+      "task_id": "415ef462-bed3-493a-ac36-ca8c6d23bf1b",
+      "status": "passed",
+      "attempts": [
+        {
+          "run": "order122-run026",
+          "source_commit": "a6ab30fa405c10444324d18a2e097f52453d057f",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "No score. Local hint construction KeyError used_range_a1 after raw workbook.inspect; runner labels model_transport_failure, not a provider outage. Fixed by reading actual public projection, commit049838c.",
+          "outcome": "terminal_without_score",
+          "result": {
+            "status": "model_transport_failure",
+            "reward": null,
+            "steps": null,
+            "duration_seconds": 265.768,
+            "termination_reason": "model_transport_failure"
+          },
+          "event_count": 12
+        },
+        {
+          "run": "order122-run027",
+          "source_commit": "049838c1a1d607bee97a09010a71e03a10a9a14c",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Formal0,28steps585.211seconds, stalled_no_progress: source handoff rejects isolated range.read catalog even after target open. Combined read+append discovery now scoped in invoice hint.",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 28,
+            "duration_seconds": 585.211,
+            "termination_reason": "stalled_no_progress"
+          },
+          "event_count": 28
+        },
+        {
+          "run": "order122-run028",
+          "source_commit": "dff36fe76d647124a72d6734bb5c31dcaefe705e",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Diagnostic interruption11events; newly complete old-filename discovery falsely treated old receipt PDFs as extraction inputs by generic batch gate. Candidate reads actual attachment first and lists old names with public command.run, no batch source reads. All integrity true.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 11
+        },
+        {
+          "run": "order122-run029",
+          "source_commit": "096f47c51341e4f4108803b14d4dc4dc5721ddca",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Formal0,26steps478.719sec agent_done. PDF bytes match original expected exactly (diff.out empty), correctfilename. Appended Month and Amount incorrectly strings although original rows native numbers. Candidate60af622 focuses nativevalues/kinds, excludes displayformatstrings; readonlyproposal correct JSONnumbers, not a formal result.",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 26,
+            "duration_seconds": 478.719,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 26
+        },
+        {
+          "run": "sequential-rest-run023",
+          "source_commit": "5dfe41a4e7591a7e94d0f02d4a94ac47507b5b4d",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run024",
+          "source_commit": "7cccaa57e65a6739324127caca62a71acc812aab",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 26,
+            "duration_seconds": 438.241,
+            "termination_reason": "stalled_no_progress"
+          },
+          "event_count": 26
+        },
+        {
+          "run": "sequential-rest-run025",
+          "source_commit": "aa8210a11c3e6ec3d369383a2d922b87fde919f3",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 24,
+            "duration_seconds": 367.372,
+            "termination_reason": "stalled_no_progress"
+          },
+          "event_count": 24
+        },
+        {
+          "run": "sequential-rest-run030",
+          "source_commit": "60af6223721acd33be3da67fb67021e9fa3fdabd",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 26,
+            "duration_seconds": 389.261,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 26
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run030",
+      "candidate_commit": "60af6223721acd33be3da67fb67021e9fa3fdabd",
+      "reward": 1.0,
+      "steps": 26,
+      "duration_seconds": 389.261
+    },
+    {
+      "order": 127,
+      "task_id": "c2751594-0cd5-4088-be1b-b5f2f9ec97c4",
+      "status": "unresolved",
+      "attempts": [
+        {
+          "run": "sequential-rest-run024",
+          "source_commit": "7cccaa57e65a6739324127caca62a71acc812aab",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run025",
+          "source_commit": "aa8210a11c3e6ec3d369383a2d922b87fde919f3",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Formal0: original first-inline-image stamp correctly extracted and set; expected landscape absent from all three original attachment images. Source input tar byte-identical original delivery cache.",
+          "outcome": "scored",
+          "result": {
+            "status": "failed",
+            "reward": 0.0,
+            "steps": 9,
+            "duration_seconds": 230.546,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 9
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run025",
+      "candidate_commit": "aa8210a11c3e6ec3d369383a2d922b87fde919f3",
+      "reward": 0.0,
+      "steps": 9,
+      "duration_seconds": 230.546
+    },
+    {
+      "order": 132,
+      "task_id": "aceb0368-56b8-4073-b70e-3dc9aee184e0",
+      "status": "passed",
+      "attempts": [
+        {
+          "run": "sequential-rest-run025",
+          "source_commit": "aa8210a11c3e6ec3d369383a2d922b87fde919f3",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 26
+        },
+        {
+          "run": "sequential-rest-run030",
+          "source_commit": "60af6223721acd33be3da67fb67021e9fa3fdabd",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Order132 diagnostic interruption after wrong IF branches in current model row; order122 formalPASS1.0 preserved.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 34
+        },
+        {
+          "run": "sequential-rest-run031",
+          "source_commit": "03416967a9567b91a41a53ba9197d00b3ac94a82",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Diagnostic interruption during setup; readonly current-state probe showed source points heading omitted by compact context. No task actions or score.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 0
+        },
+        {
+          "run": "sequential-rest-run032",
+          "source_commit": "be64acb1e70c51cfc0d7d61725f68298e9a57f4c",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reason": "Order13261stepsnormalagent_done and all nine source checks clean. Original evaluator blocked missing gold_grades.xlsx network download. Preserved own guest output; offline original compare_table1.0 is diagnostic only, no formal score. Cache fetched same repo commit/blob verified for FUTUREsnapshot, neverAgent/guest. Fullrerun033 pending.",
+          "outcome": "diagnostic_interruption",
+          "event_count": 61
+        },
+        {
+          "run": "sequential-rest-run033",
+          "source_commit": "be64acb1e70c51cfc0d7d61725f68298e9a57f4c",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 61,
+            "duration_seconds": 1240.608,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 61
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run033",
+      "candidate_commit": "be64acb1e70c51cfc0d7d61725f68298e9a57f4c",
+      "reward": 1.0,
+      "steps": 61,
+      "duration_seconds": 1240.608
+    },
+    {
+      "order": 161,
+      "task_id": "59f21cfb-0120-4326-b255-a5b827b38967",
+      "status": "passed",
+      "attempts": [
+        {
+          "run": "sequential-rest-run033",
+          "source_commit": "be64acb1e70c51cfc0d7d61725f68298e9a57f4c",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 8,
+          "reason": "Diagnostic interruption8events: guessed wrong media paths and unavailable filesystem search loop. 132 formalPASS retained."
+        },
+        {
+          "run": "sequential-rest-run034",
+          "source_commit": "454b0fa549db2523a95f5346f58fb949aaf636ae",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 8,
+          "reason": "Diagnostic interruption: chooser open, model substituted truncated desktop label for fullpath. No formal score."
+        },
+        {
+          "run": "sequential-rest-run035",
+          "source_commit": "40e5fc097ba862c0e632c6ebb36c13c9dc33c1c2",
+          "run_status": "interrupted_or_failed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "diagnostic_interruption",
+          "event_count": 6,
+          "reason": "Diagnostic interruption: GUI absent from initial exposed tools, prompt still asked GUI. Fixed scope-aware API discovery. No formal score."
+        },
+        {
+          "run": "sequential-rest-run036",
+          "source_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 13,
+            "duration_seconds": 307.872,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 13
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run036",
+      "candidate_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+      "reward": 1.0,
+      "steps": 13,
+      "duration_seconds": 307.872
+    },
+    {
+      "order": 172,
+      "task_id": "f3977615-2b45-4ac5-8bba-80c17dbe2a37",
+      "status": "passed",
+      "attempts": [
+        {
+          "run": "sequential-rest-run036",
+          "source_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+          "run_status": "runner_exited",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "outcome": "scored",
+          "result": {
+            "status": "passed",
+            "reward": 1.0,
+            "steps": 2,
+            "duration_seconds": 95.718,
+            "termination_reason": "agent_done"
+          },
+          "event_count": 2
+        }
+      ],
+      "run": "/home/liuxv/liteagent-local-runs/deadline-stage-repair-20261113/sequential-rest-run036",
+      "candidate_commit": "0522a3cd7ee7a8d4f7b86c0f01cb06bcb3c41c2d",
+      "reward": 1.0,
+      "steps": 2,
+      "duration_seconds": 95.718
+    }
+  ],
+  "updated_at": "2026-11-13T10:54:25.016043+08:00",
+  "summary": {
+    "passed": 13,
+    "unresolved": 3,
+    "running": 0,
+    "pending": 0
+  },
+  "delivery": {
+    "status": "13 validated original-evaluator passes; 3 unresolved",
+    "active_profiles": 13,
+    "unresolved_orders": [
+      107,
+      120,
+      127
+    ],
+    "remaining_jobs": 0,
+    "default_hint_config": "configs/single-task-local9b-thinking.json",
+    "all_16_experimental_config": "configs/single-task-deadline-stage-hints.json",
+    "note": "Task-specific user-authorized condition; not a single full189 run, not a generic benchmark result. No push or PR."
+  }
+}

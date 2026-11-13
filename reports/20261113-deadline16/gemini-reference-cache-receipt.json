@@ -1,0 +1,9 @@
+{
+  "source": "hf-mirror.com same repository e28460ae734cb1b33901d232cef8747c20ccd677",
+  "original_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/multi_apps/5bc63fb9-276a-4439-a7c1-9dc76401737f/gemini_results_Gold.docx",
+  "size": 15841,
+  "git_blob_sha1": "dacc9495a59920e76d48db9bdfa10d55930e9ca4",
+  "sha256": "01e3ad9bebaee3c028f7fd8635e9c6de69b4e57fd4fa5ae53447a73fd42dc0f8",
+  "destination": "worktree/src/third_party/OSWorld/cache/5bc63fb9-276a-4439-a7c1-9dc76401737f/gemini_results_Gold.docx",
+  "scope": "evaluator-only host cache for FUTURE snapshot. Never sent to agent or copied to guest. Current running snapshot unchanged."
+}
