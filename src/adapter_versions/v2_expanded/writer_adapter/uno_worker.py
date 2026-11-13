@@ -2709,6 +2709,28 @@ def _read_table(session: WriterSession, params: dict[str, Any]) -> dict[str, Any
     }
 
 
+def _delete_table_rows(session: WriterSession, params: dict[str, Any]) -> dict[str, Any]:
+    table = _named_table(session.doc, params["name"])
+    before = _uno_table_values(table)
+    selected = set(params["rows"])
+    if any(row > len(before) for row in selected):
+        raise AdapterError("ROW_NOT_FOUND", "selected row does not exist", {"rows": params["rows"], "row_count": len(before)}, 404)
+    if len(selected) >= len(before):
+        raise AdapterError("INVALID_REQUEST", "table.delete_rows must leave at least one row")
+    expected = [row for index, row in enumerate(before, 1) if index not in selected]
+    # Remove from bottom to top so every index refers to the observed table.
+    for index in sorted(selected, reverse=True):
+        table.Rows.removeByIndex(index - 1, 1)
+    actual = _uno_table_values(table)
+    if actual != expected:
+        raise AdapterError("VERIFICATION_FAILED", "remaining table text does not match the selected row deletion", http_status=422)
+    return {
+        "name": str(table.Name), "removed_rows": sorted(selected),
+        "rows_before": len(before), "rows": len(actual),
+        "columns": int(table.Columns.Count), "remaining_text_verified": True,
+    }
+
+
 def _set_table_cell_text_color(
     session: WriterSession, params: dict[str, Any]
 ) -> dict[str, Any]:
@@ -3113,6 +3135,7 @@ GENERIC_ACTIONS = {
     "text.find_replace": _find_replace,
     "text.set_format": set_text_format,
     "table.read": _read_table,
+    "table.delete_rows": _delete_table_rows,
     "table.convert_text": _convert_text_to_table,
     "table.insert_at_cursor": _insert_table_at_cursor,
     "table.insert_after_text": _insert_table_after_text,
@@ -3208,6 +3231,16 @@ def _implicit_action_verification(
                     "exists": True, "valid": True}
         passed = all(result.get(key) == value for key, value in expected.items())
         return _verification(passed, [{"type": "new_blank_document", "passed": passed}], result, expected)
+    if action == "table.delete_rows":
+        table = _named_table(session.doc, result["name"])
+        saved = _saved_file_state(session.path)
+        passed = (
+            result.get("remaining_text_verified") is True
+            and int(table.Rows.Count) == result["rows"]
+            and int(table.Columns.Count) == result["columns"]
+            and saved["exists"] and saved["valid"]
+        )
+        return _verification(passed, [{"type": "selected_table_rows_deleted", "passed": passed}], {**result, "file_saved": saved}, {"remaining_text_verified": True})
     if action == "settings.set_default_font":
         return _verify_requested(
             session, [{"type": "default_font", "expected": result["font_name"]}]

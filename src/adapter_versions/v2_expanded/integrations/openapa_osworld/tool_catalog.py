@@ -741,6 +741,10 @@ DOMAIN_SIGNATURES = {
             'params={"name": exact table name from document.inspect}; returns every '
             "Writer cell name and exact text without modifying the document"
         ),
+        "table.delete_rows": (
+            'params={"name": exact observed table name, "rows": [explicit distinct one-based row indices]}; '
+            'deletes only those rows, leaves at least one row, and verifies remaining text'
+        ),
         "table.set_cell_text_color": (
             'params={"name": exact table name, "cells": [explicit unique cell names], '
             '"color": "#RRGGBB"|named color}; applies one color only to the selected cells'

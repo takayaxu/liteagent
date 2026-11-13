@@ -14,12 +14,12 @@ def validate_task_stage_prompts(overrides: Any) -> None:
             raise ValueError("task_stage_prompts requires exact task IDs and stage lists")
         for stage in stages:
             if not isinstance(stage, dict) or set(stage) - {
-                "text", "when_tool", "after_action", "until_action", "context_mode", "facts",
+                "text", "when_tool", "after_action", "until_action", "unless_action", "after_hotkey", "until_hotkey", "context_mode", "facts",
             }:
                 raise ValueError("unknown task stage prompt fields")
             if not isinstance(stage.get("text"), str) or not stage["text"].strip():
                 raise ValueError("task stage prompt text must be nonempty")
-            for key in ("after_action", "until_action"):
+            for key in ("after_action", "until_action", "unless_action"):
                 reference = stage.get(key)
                 if isinstance(reference, str) and ":" in reference:
                     from integrations.openapa_osworld.tool_catalog import public_actions
@@ -30,9 +30,17 @@ def validate_task_stage_prompts(overrides: Any) -> None:
                         known = False
                     if not known:
                         raise ValueError(f"unknown qualified stage action: {reference}")
+            for key in ("after_hotkey", "until_hotkey"):
+                shortcut = stage.get(key)
+                if shortcut is not None and (
+                    not isinstance(shortcut, str)
+                    or not 2 <= len(shortcut.split("+")) <= 6
+                    or any(not part.strip() for part in shortcut.split("+"))
+                ):
+                    raise ValueError("hotkey stage predicates require 2 to 6 keys separated by +")
             if stage.get("facts", "file_copy_ledger") not in {"file_copy_ledger", "pdf_source_ledger"}:
                 raise ValueError("unknown task stage facts projection")
-            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization"}:
+            if stage.get("context_mode", "full") not in {"full", "bound_call", "review_call", "structured_observation", "classification_call", "completed_organization", "workflow_call", "typed_workflow_call"}:
                 raise ValueError("unknown task stage context_mode")
             if (stage.get("context_mode") == "review_call"
                     and stage.get("when_tool") != "organization__classification_verdict"):
@@ -57,6 +65,18 @@ def _succeeded(state: Any, action: str) -> bool:
                for event in state.successful_adapter_events())
 
 
+def _hotkey_succeeded(state: Any, shortcut: str) -> bool:
+    expected = sorted(key.strip().lower() for key in shortcut.split("+"))
+    for event in state.events:
+        if not event.executed or event.error or event.proposed.get("kind") != "gui":
+            continue
+        arguments = event.proposed.get("gui_arguments", event.proposed.get("arguments", {}))
+        if (isinstance(arguments, dict) and arguments.get("action") == "hotkey"
+                and sorted(str(key).lower() for key in arguments.get("keys", [])) == expected):
+            return True
+    return False
+
+
 def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, str]]:
     """Select only this exact task's stages from truthful execution/tool state."""
     if not overrides:
@@ -70,12 +90,57 @@ def selected_stages(overrides: Any, state: Any, tools: Any) -> list[dict[str, st
             continue
         if stage.get("until_action") and _succeeded(state, stage["until_action"]):
             continue
+        if stage.get("unless_action") and _succeeded(state, stage["unless_action"]):
+            continue
+        if stage.get("after_hotkey") and not _hotkey_succeeded(state, stage["after_hotkey"]):
+            continue
+        if stage.get("until_hotkey") and _hotkey_succeeded(state, stage["until_hotkey"]):
+            continue
         texts.append(stage)
     return texts
 
 
 def stage_prompt_text(overrides: Any, state: Any, tools: Any) -> str:
     return "\n".join(stage["text"] for stage in selected_stages(overrides, state, tools))
+
+
+def workflow_stage_projection(overrides: Any, state: Any, tools: Any) -> tuple[str, str] | None:
+    stages = [stage for stage in selected_stages(overrides, state, tools)
+              if stage.get("context_mode") in {"workflow_call", "typed_workflow_call"}]
+    if not stages:
+        return None
+    import json
+    system = (
+        "Execute the CURRENT STAGE before later workflow actions. Return one structured tool call. "
+        "If its native operation is not currently exposed, use tools_search for that exact public route. "
+        "Use the current schema and observed arguments; never substitute an unrelated operation. "
+        "Use only actually executed facts, and inspect partial effects after a failed action. "
+        "Completion still requires the original task and execution checks.\n"
+        + "\n".join(stage["text"] for stage in stages)
+    )
+    routes = []
+    for tool in tools or []:
+        allowed = tool.get("function", {}).get("parameters", {}).get("x-allowed-routes", [])
+        for route in allowed if isinstance(allowed, list) else []:
+            if (isinstance(route, dict) and isinstance(route.get("adapter"), str)
+                    and isinstance(route.get("action"), str) and route not in routes):
+                routes.append({"adapter": route["adapter"], "action": route["action"]})
+    if routes:
+        system += (
+            "\nBinding native routes exposed THIS turn: " + json.dumps(routes, ensure_ascii=False)
+            + "\nA remembered route absent from this list is not callable. Search it first."
+        )
+    context = json.dumps({
+        "recent_execution_facts": state.context_summary(limit=8, strict_generic=True),
+        "executed_gui_hotkeys": [
+            {"step": event.step, "keys": event.proposed["arguments"]["keys"]}
+            for event in state.events
+            if event.executed and not event.error and event.proposed.get("kind") == "gui"
+            and isinstance(event.proposed.get("arguments"), dict)
+            and event.proposed["arguments"].get("action") == "hotkey"
+        ],
+    }, ensure_ascii=False)
+    return system, context
 
 
 def bound_call_context(overrides: Any, state: Any, tools: Any) -> str | None:

@@ -111,6 +111,7 @@ ACTIONS = frozenset(
         "text.find_replace",
         "text.set_format",
         "table.read",
+        "table.delete_rows",
         "table.convert_text",
         "table.insert_at_cursor",
         "table.insert_after_text",
@@ -1134,6 +1135,15 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             )
     elif action == "table.read":
         _string(params, "name")
+    elif action == "table.delete_rows":
+        _string(params, "name")
+        rows = params.get("rows")
+        if (
+            not isinstance(rows, list) or not rows or len(rows) > 1024
+            or any(type(row) is not int or row < 1 for row in rows)
+            or len(set(rows)) != len(rows)
+        ):
+            raise AdapterError("INVALID_REQUEST", "params.rows must contain 1 to 1024 distinct positive one-based row indices")
     elif action == "table.set_cell_text_color":
         _string(params, "name")
         cells = params.get("cells")

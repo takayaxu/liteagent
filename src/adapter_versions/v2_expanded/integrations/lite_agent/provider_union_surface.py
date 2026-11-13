@@ -24,6 +24,10 @@ def split_discriminated_tools(tools):
                     variants = []
                     break
                 name = f"{function['name']}__variant_{i}"
+                if function['name'] == 'gui_action':
+                    # Keep the operation visible at tool selection time. An
+                    # opaque index made keyboard calls select the click branch.
+                    name += f"_{discriminator[0]}"
                 if name in names or len(name) > 64:
                     variants = []
                     break

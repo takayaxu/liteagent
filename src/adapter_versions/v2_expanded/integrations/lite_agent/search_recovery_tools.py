@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import copy
+import json
 import logging
 from typing import Any, Iterable
 
 from integrations.openapa_osworld.tool_catalog import action_signature, public_actions
 from writer_adapter.schema import DOCUMENT_SELECTOR_SCHEMA as WRITER_DOCUMENT_SELECTOR_SCHEMA
+from chrome_adapter.schema import LOCATOR_KEYS, TARGET_REQUIRED_ACTIONS
 
 from .tool_catalog import DIRECT_ACTION_SCHEMAS, build_tools, tool_name
 
@@ -38,7 +40,7 @@ def _downstream_params_schema(adapter: str, action: str) -> dict[str, Any]:
         if isinstance(description, str) and description:
             params["description"] = description
         return params
-    return {
+    schema = {
         "type": "object",
         "properties": {},
         "required": [],
@@ -47,6 +49,19 @@ def _downstream_params_schema(adapter: str, action: str) -> dict[str, Any]:
             f"{action_signature(adapter, action)}"
         ),
     }
+    if adapter == "chrome" and action == "page.read":
+        schema["properties"]["locator"] = {
+            "type": "object",
+            "description": "Optional element locator; omit to read the entire page. A tab URL belongs in payload.target, never in locator.",
+            "properties": {
+                **{key: {"type": "string", "minLength": 1} for key in sorted(LOCATOR_KEYS)},
+                "name": {"type": "string"},
+                "index": {"type": "integer", "minimum": 0},
+                "exact": {"type": "boolean"},
+            },
+            "oneOf": [{"required": [key]} for key in sorted(LOCATOR_KEYS)],
+        }
+    return schema
 
 
 def _route_payload_schema(
@@ -58,7 +73,75 @@ def _route_payload_schema(
     if adapter == "libreoffice_writer":
         properties["document"] = copy.deepcopy(WRITER_DOCUMENT_SELECTOR_SCHEMA)
     payload["required"] = ["params"]
+    if adapter == "chrome":
+        native_tool = build_tools(
+            adapter, ["page.read"], include_gui=False, include_control_tools=False,
+            strict_generic=True,
+        )[0]
+        properties["target"] = copy.deepcopy(native_tool["function"]["parameters"]["properties"]["target"])
+        if action in TARGET_REQUIRED_ACTIONS:
+            payload["required"].append("target")
     return payload
+
+
+def typed_adapter_route_surface(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Opt-in lossless branches when every route can become a typed provider tool.
+
+    Leave ambiguous or live-constrained params unchanged. The existing atomic
+    projector must accept every branch before this surface is used.
+    """
+    from .atomic_tool_surface import atomic_provider_surface
+    for index, tool in enumerate(tools):
+        function = tool.get("function", {})
+        if function.get("name") != tool_name("adapter.call"):
+            continue
+        schema = function.get("parameters", {})
+        routes = schema.get("x-allowed-routes")
+        payload = schema.get("properties", {}).get("payload", {})
+        params = payload.get("properties", {}).get("params", {})
+        if (not isinstance(routes, list) or len(routes) < 2
+                or params.get("type") != "object"
+                or set(params) - {"type", "description"}
+                or set(schema) - {"type", "properties", "required", "additionalProperties", "description", "x-allowed-routes"}
+                or set(schema.get("properties", {})) - {"adapter", "action", "payload"}
+                or schema.get("oneOf") or schema.get("anyOf")):
+            return tools
+        branches, identities = [], set()
+        for route in routes:
+            if (not isinstance(route, dict)
+                    or not all(isinstance(route.get(key), str) for key in ("adapter", "action"))
+                    or not _is_public_route(route["adapter"], route["action"])):
+                return tools
+            adapter, action = route["adapter"], route["action"]
+            for key, value in (("adapter", adapter), ("action", action)):
+                field = schema["properties"].get(key, {})
+                if set(field) - {"type", "enum", "description"} or (
+                    isinstance(field.get("enum"), list) and value not in field["enum"]
+                ):
+                    return tools
+            if (adapter, action) in identities:
+                return tools
+            identities.add((adapter, action))
+            branches.append({
+                "type": "object",
+                "properties": {
+                    "adapter": {"type": "string", "enum": [adapter]},
+                    "action": {"type": "string", "enum": [action]},
+                    "payload": _route_payload_schema(payload, adapter, action),
+                },
+                "required": ["adapter", "action", "payload"],
+                "additionalProperties": False,
+            })
+        candidate = copy.deepcopy(tools)
+        candidate[index]["function"]["parameters"] = {
+            "oneOf": branches, "x-allowed-routes": copy.deepcopy(routes),
+            "x-typed-route-surface": True,
+        }
+        _, bindings = atomic_provider_surface(candidate)
+        if {(binding["adapter"], binding["action"]) for binding in bindings.values()} != identities:
+            return tools
+        return candidate
+    return tools
 
 
 def _flat_route_description(adapter: str, action: str) -> str:
@@ -71,12 +154,15 @@ def _flat_route_description(adapter: str, action: str) -> str:
             continue
         detail = field.get("description")
         if not isinstance(detail, str) or not detail:
-            if isinstance(field.get("enum"), list):
-                detail = "choose one of " + ", ".join(map(str, field["enum"]))
-            elif field.get("type"):
+            if field.get("type"):
                 detail = str(field["type"])
+        detail = detail[:240] if isinstance(detail, str) else ""
+        if isinstance(field.get("enum"), list):
+            # Do not hide a binding enum behind a more general description or
+            # truncate its members when several routes share one wrapper.
+            detail = "allowed values " + json.dumps(field["enum"], ensure_ascii=False) + ("; " + detail if detail else "")
         if isinstance(detail, str) and detail:
-            fields.append(f"{name}: {detail[:240]}")
+            fields.append(f"{name}: {detail}")
     required_text = ", ".join(map(str, required)) or "none"
     overview = schema.get("description")
     overview_text = f" {overview[:1000]}" if isinstance(overview, str) else ""

@@ -45,6 +45,81 @@ def test_stage_follows_only_successful_actions_and_stops_after_success():
     assert stage_prompt_text(prompts, state, []) == ''
 
 
+def test_hotkey_stage_uses_only_successfully_executed_gui_evidence():
+    stages = {'target': [{'after_hotkey': 'ctrl+c', 'until_hotkey': 'ctrl+v', 'text': 'Paste now.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    def add(keys, executed=True, error=None, kind='gui'):
+        state.events.append(ExecutionEvent(step=len(state.events) + 1, timestamp_utc='test',
+            proposed={'kind': kind, 'arguments': {'action': 'hotkey', 'keys': keys}},
+            executed=executed, error=error))
+    add(['ctrl', 'c'], executed=False)
+    add(['ctrl', 'c'], error={'type': 'ExecutionFailed'})
+    add(['ctrl', 'c'], kind='adapter')
+    assert stage_prompt_text(stages, state, []) == ''
+    add(['c', 'ctrl'])
+    assert stage_prompt_text(stages, state, []) == 'Paste now.'
+    add(['ctrl', 'v'], executed=False)
+    assert stage_prompt_text(stages, state, []) == 'Paste now.'
+    add(['ctrl', 'v'])
+    assert stage_prompt_text(stages, state, []) == ''
+    state.task_id = 'other'
+    assert stage_prompt_text(stages, state, []) == ''
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_hotkey_stage_does_not_change_other_task_messages(recovery):
+    stages = {'target': [{'until_hotkey': 'ctrl+c', 'text': 'Copy current data.'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    state = RuntimeState(task_id='other', domain='multi_apps', instruction='Inspect the document.')
+    tools = build_tools('multi_apps', [], include_gui=True)
+    assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
+
+
+@pytest.mark.parametrize('recovery', [{}, {'protocol_recovery': True}, {'execution_recovery': True}])
+def test_workflow_projection_is_exact_task_only_and_keeps_instruction_and_execution_facts(recovery):
+    stages = {'target': [{'context_mode': 'workflow_call', 'text': 'CURRENT STAGE: inspect observed state.'}]}
+    def agent(prompts):
+        return LiteAgent(LiteAgentConfig(base_url='http://unused', task_stage_prompts=prompts),
+                         SimpleNamespace(), model_client=SimpleNamespace(client=None))
+    state = RuntimeState(task_id='other', domain='multi_apps', instruction='Original request stays verbatim.')
+    tools = build_tools('multi_apps', [], include_gui=True)
+    assert agent(stages)._messages(state, b'synthetic', tools=tools, **recovery) == agent(None)._messages(state, b'synthetic', tools=tools, **recovery)
+    state.task_id = 'target'
+    state.events.append(ExecutionEvent(step=1, timestamp_utc='test',
+        proposed={'kind': 'gui', 'arguments': {'action': 'hotkey', 'keys': ['ctrl', 'c']}}, executed=True))
+    messages = agent(stages)._messages(state, b'synthetic', tools=tools, **recovery)
+    assert messages[1] == {'role': 'user', 'content': state.instruction}
+    assert 'CURRENT STAGE: inspect observed state.' in messages[0]['content']
+    assert len(messages[0]['content']) < 1000
+    assert [item['type'] for item in messages[-1]['content']] == ['text']
+    assert '"keys": ["ctrl", "c"]' in messages[-1]['content'][0]['text']
+
+
+def test_workflow_exposes_only_the_current_binding_routes_not_remembered_actions():
+    from integrations.lite_agent.task_stage_prompts import workflow_stage_projection
+    from integrations.lite_agent.search_recovery_tools import constrain_adapter_call_routes
+    stages = {'target': [{'context_mode': 'workflow_call', 'text': 'Read the saved state.'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    tools = constrain_adapter_call_routes(
+        build_tools('multi_apps', ['adapter.call'], include_gui=False),
+        [('libreoffice_writer', 'document.save')],
+    )
+    before = __import__('copy').deepcopy(tools)
+    system, _ = workflow_stage_projection(stages, state, tools)
+    assert '"action": "document.save"' in system
+    assert '"action": "table.read"' not in system
+    assert tools == before
+
+
+@pytest.mark.parametrize('shortcut', ['ctrl', 'ctrl+', '+c', ['ctrl', 'c']])
+def test_invalid_hotkey_stage_predicates_are_rejected(shortcut):
+    with pytest.raises(ValueError, match='hotkey stage predicates'):
+        LiteAgentConfig(base_url='http://unused', task_stage_prompts={
+            'target': [{'until_hotkey': shortcut, 'text': 'Copy.'}]})
+
+
 @pytest.mark.parametrize('invalid', [[], {'target': 'text'}, {'target': [{}]},
     {'target': [{'text': 'hint', 'match_instruction': 'keyword'}]},
     {'target': [{'text': 'hint', 'when_tool': []}]}])
@@ -90,6 +165,22 @@ def test_stage_predicates_canonicalize_public_save_aliases():
         proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
             'adapter': 'libreoffice_calc', 'action': 'workbook.save_as', 'payload': {'params': {}}}}))
     assert stage_prompt_text(stages, state, []) == 'Read saved output.'
+
+
+@pytest.mark.parametrize('stop_action', ['table.delete_rows', 'document.save'])
+def test_workflow_stage_stops_after_either_deletion_or_save(stop_action):
+    stages = {'target': [{'text': 'Inspect rows.', 'until_action': 'libreoffice_writer:table.delete_rows',
+                          'unless_action': 'libreoffice_writer:document.save'}]}
+    state = RuntimeState(task_id='target', domain='multi_apps', instruction='Transfer the table.')
+    assert stage_prompt_text(stages, state, []) == 'Inspect rows.'
+    def add(executed):
+        state.events.append(ExecutionEvent(step=len(state.events) + 1, timestamp_utc='test', executed=executed,
+            proposed={'kind': 'adapter', 'action': 'adapter.call', 'arguments': {
+                'adapter': 'libreoffice_writer', 'action': stop_action, 'payload': {'params': {}}}}))
+    add(False)
+    assert stage_prompt_text(stages, state, []) == 'Inspect rows.'
+    add(True)
+    assert stage_prompt_text(stages, state, []) == ''
 
 
 def test_unknown_qualified_action_is_rejected_before_prompt_selection():

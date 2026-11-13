@@ -16,6 +16,21 @@ def tools():
          'required': ['action', 'text'], 'additionalProperties': False}]}}}]
 
 
+def test_gui_provider_names_identify_operations_without_changing_contracts():
+    from integrations.lite_agent.gui_actions import GUI_ACTION_SCHEMA
+    original = [{'type': 'function', 'function': {
+        'name': 'gui_action', 'parameters': deepcopy(GUI_ACTION_SCHEMA)}}]
+    before = deepcopy(original)
+    surface, bindings = split_discriminated_tools(original)
+    for index, branch in enumerate(GUI_ACTION_SCHEMA['oneOf']):
+        action = branch['properties']['action']['enum'][0]
+        name = f'gui_action__variant_{index}_{action}'
+        assert surface[index]['function']['name'] == name
+        assert surface[index]['function']['parameters'] == branch
+        assert bindings[name] == {'original_name': 'gui_action', 'schema': branch}
+    assert original == before
+
+
 @pytest.mark.parametrize('args,valid', [({'action': 'click', 'x': 4}, True), ({}, False),
     ({'action': 'click', 'x': -1}, False), ({'action': 'type', 'text': 'hello'}, False),
     ({'action': 'click', 'x': 4, 'text': 'extra'}, False)])

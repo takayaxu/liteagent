@@ -92,6 +92,29 @@ def _atomic_route_function(
     }
 
 
+def _boxed_route_function(source_function, adapter, action, payload, used_names):
+    """Keep params boxed when flattening would alter property-count constraints."""
+    params = payload.get("properties", {}).get("params", {})
+    if (payload.get("additionalProperties") is not False
+            or params.get("type") != "object"
+            or params.get("additionalProperties") is not False
+            or not isinstance(params.get("properties"), dict)
+            or _has_reference(payload)):
+        return None
+    identity = f"{adapter}.{action}"
+    digest = hashlib.sha256(identity.encode()).hexdigest()[:8]
+    name = "route__" + re.sub(r"[^a-zA-Z0-9_]", "_", identity)[:45] + "_" + digest
+    if name in used_names:
+        return None
+    function = copy.deepcopy(source_function)
+    function.update(name=name, parameters=copy.deepcopy(payload), description=(
+        f"Execute exactly one {identity} operation. Supply action arguments inside params; "
+        "document/target/verification/timeout fields stay beside params. "
+        "Do not supply adapter, action, or payload wrappers. " + str(params.get("description", ""))
+    ))
+    return function, {"adapter": adapter, "action": action, "schema": copy.deepcopy(payload), "payload_boxed": True}
+
+
 def atomic_provider_surface(
     tools: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
@@ -162,6 +185,10 @@ def atomic_provider_surface(
                     payload,
                     candidate_names,
                 )
+                if projected_route is None and schema.get("x-typed-route-surface") is True:
+                    projected_route = _boxed_route_function(
+                        function, identity["adapter"], identity["action"], payload, candidate_names,
+                    )
                 if projected_route is None:
                     atomic_tools = []
                     break
@@ -197,6 +224,8 @@ def atomic_provider_surface(
 
 def restore_adapter_arguments(arguments: dict[str, Any], binding: dict[str, Any]) -> dict[str, Any]:
     """Restore a validated atomic call without changing any model-selected value."""
+    if binding.get("payload_boxed") is True:
+        return {"adapter": binding["adapter"], "action": binding["action"], "payload": copy.deepcopy(arguments)}
     params = copy.deepcopy(arguments)
     payload = params.pop(OPTIONS_FIELD, {})
     payload["params"] = params

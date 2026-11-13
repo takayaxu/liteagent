@@ -1118,7 +1118,7 @@ class AgentProtocolMixin:
                     "instruction": state.instruction, "full_native_target_readback": target_read,
                 }, ensure_ascii=False)}]
             system_message += "\nCurrent user-authorized stage guidance:\n" + scoped_hint
-        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text, omit_stage_image, classification_stage_system, classification_stage_context, organization_completion_context
+        from .task_stage_prompts import stage_prompt_text, bound_call_context, stage_fact_text, omit_stage_image, classification_stage_system, classification_stage_context, organization_completion_context, workflow_stage_projection
         scoped_stage = stage_prompt_text(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
@@ -1152,6 +1152,16 @@ class AgentProtocolMixin:
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         ):
             message_content = [item for item in message_content if item.get("type") != "image_url"]
+        workflow = workflow_stage_projection(
+            getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
+        )
+        if workflow is not None:
+            system_message, context = workflow
+            if protocol_error:
+                system_message += "\nCurrent validation feedback: " + json.dumps({
+                    key: protocol_error[key] for key in ("reason", "tool_name", "schema_hints", "allowed_routes")
+                    if key in protocol_error}, ensure_ascii=False)
+            message_content = [{"type": "text", "text": context}]
         scoped_facts = stage_fact_text(
             getattr(getattr(self, "config", None), "task_stage_prompts", None), state, tools,
         )
@@ -1202,6 +1212,12 @@ class AgentProtocolMixin:
                     ("os", "filesystem.rename"),
                 ],
             )
+        from .task_stage_prompts import selected_stages
+        if any(stage.get("context_mode") == "typed_workflow_call" for stage in selected_stages(
+            getattr(self.config, "task_stage_prompts", None), state, tools,
+        )):
+            from .search_recovery_tools import typed_adapter_route_surface
+            tools = typed_adapter_route_surface(tools)
         messages = self._messages(
             state,
             screenshot,

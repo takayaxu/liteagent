@@ -300,7 +300,7 @@ def test_qwen_gui_generation_uses_scalars_without_changing_public_or_other_tools
     provider, _ = split_discriminated_tools(public)
     original = copy.deepcopy(provider)
     generated = _qwen_schema_compatible_tools('Qwen3.5-9B', provider)
-    gui = next(t for t in generated if t['function']['name'] == 'gui_action__variant_0')
+    gui = next(t for t in generated if t['function']['name'] == 'gui_action__variant_0_click')
     assert gui['function']['parameters']['properties']['x']['type'] == 'integer'
     assert 'anyOf' not in gui['function']['parameters']['properties']['x']
     assert public == before
