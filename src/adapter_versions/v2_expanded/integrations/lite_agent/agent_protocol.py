@@ -972,6 +972,11 @@ class AgentProtocolMixin:
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
             if scoped_kind in {"vlc-play", "vlc-instances"}:
+                gui_exposed = any(t.get("function", {}).get("name") in {"gui_action", "gui_request"}
+                    or t.get("function", {}).get("name", "").startswith("gui_action__variant_")
+                    for t in (tools or []))
+                if scoped_kind == "vlc-play" and scoped_hint.startswith("CURRENT VLC") and not gui_exposed:
+                    scoped_hint = "CURRENT STEP ONLY: call tools_search query=gui_action hotkey ctrl o to expose GUI input. Do not call playback.open with a guessed filename. File discovery is not needed for this API discovery."
                 system_message = (
                     "Complete the user's VLC request with exactly ONE public tool now. "
                     "Follow the current stage, actual screenshot and tool schema. "
