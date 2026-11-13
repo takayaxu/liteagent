@@ -220,3 +220,26 @@ def test_background_stage_uses_observed_paths_and_requires_post_edit_view():
     assert _cross_app_hint(state, "person-background").startswith("BACKGROUND FINISH:")
     state.events.append(event(6, "os", "command.run", params))
     assert _cross_app_hint(state, "person-background").startswith("BACKGROUND STEP:")
+
+
+def test_invoice_selects_observed_attachment_then_discovers_real_receipts_directory():
+    from integrations.lite_agent.task_stage_hints import _cross_app_hint
+    state = RuntimeState("synthetic", "multi_apps", "File the AWS invoice and append the tally.")
+    def event(step, action, body):
+        return ExecutionEvent(step, "", {"action": "adapter.call", "arguments": {
+            "adapter": "thunderbird", "action": action, "payload": {"params": {}}}}, executed=True,
+            result={"context_hint": {"downstream_context": body}})
+    state.events = [event(1, "messages.query", {"messages": []})]
+    assert '"action": "messages.query"' in _cross_app_hint(state, "invoice-mail")
+    state.events.append(event(2, "messages.query", {"messages": [{"sender_name": "AWS",
+        "mailbox_index": 7, "attachment_names": ["observed.pdf"]}]}))
+    hint = _cross_app_hint(state, "invoice-mail")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    params = call["payload"]["params"]
+    assert params == {"folder_name": "Bills", "mailbox_index": 7,
+        "attachment_name": "observed.pdf", "output_path": "/tmp/observed.pdf"}
+    state.events.append(event(3, "attachments.save", {"output_path": "/tmp/observed.pdf"}))
+    hint = _cross_app_hint(state, "invoice-mail")
+    call = json.loads(hint[hint.index('{"adapter"'):])
+    assert call["action"] == "filesystem.find" and call["payload"]["params"]["kind"] == "any"
+    assert "~/my receipts" not in hint
