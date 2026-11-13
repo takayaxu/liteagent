@@ -568,11 +568,19 @@ def _invoice_hint(state, facts):
         return "INVOICE DECIDE: move the saved invoice PDF from " + str(source) + " into actual receipts directory " + receipts + ". Derive the December filename from these observed old filenames, preserving their pattern: " + json.dumps([m["name"] for m in old]) + ". Use os filesystem.rename with the current schema; do not copy duplicates, invent folders or change existing receipts. The tally write is the following stage."
     writes = [e for e, _, a, _ in facts if a == "range.write"]
     if not writes:
+        target = gemini_native_result(reads[-1]) if reads else {}
+        target = {k: target[k] for k in ("sheet", "range", "values", "kinds", "cell_addresses") if k in target}
         return ("INVOICE WRITE: append exactly ONE numeric/date/vendor record AFTER the current tally rows. "
             "Match the actual column headers and old examples. Use the observed invoice total and billing "
             "month; do not overwrite old rows, write answer placeholders or modify invoice content. "
+            "Preserve native cell TYPES: a column whose existing kinds are number must receive a JSON "
+            "NUMBER, not a quoted string. Copy the numeric convention from values, not display_text. "
+            "Currency symbols and digit formatting are presentation, never part of a numeric amount. "
+            "A month stored as a decimal number in the old rows must remain numeric in the new row. "
+            "Submit only sheet, range and values as write parameters. kinds describes prior cells; "
+            "it is observation evidence, not a range.write argument. "
             "If range.write is absent, search exact libreoffice_calc range.write once, then call it. "
-            "Existing target read: " + json.dumps(gemini_native_result(reads[-1]) if reads else {}, ensure_ascii=False)
+            "Existing native target values and kinds: " + json.dumps(target, ensure_ascii=False)
             + ". Invoice read: " + json.dumps([gemini_native_result(e) for e, _, a, _ in facts if a == "pdf.extract_text_batch"], ensure_ascii=False))
     saves = [e for e, _, a, _ in facts if a == "workbook.save" and e.step > writes[-1].step]
     if not saves:
