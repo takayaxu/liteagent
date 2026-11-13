@@ -971,6 +971,39 @@ class AgentProtocolMixin:
                                  targets=self.config.task_stage_hint_targets)
         if scoped_hint is not None:
             scoped_kind = (self.config.task_stage_hint_targets or {}).get(state.task_id)
+            if scoped_kind == "grading":
+                # Keep the existing public grading contract and checks. Only
+                # shorten this opted-in task's presentation of their facts.
+                from .grading_progress import model_progress
+                current_grading = model_progress(state, tools=tools)
+                if current_grading:
+                    fields = ("stage", "next_step", "suggested_tool_call", "required_operation",
+                              "write_contract", "raw_answer_pairs", "current_row",
+                              "source_readback_checks", "original_graded_rows_to_preserve",
+                              "remaining_rows_with_blank_scores", "target", "source_protection")
+                    stage_facts = {k: current_grading[k] for k in fields if k in current_grading}
+                    scoped_hint = "CURRENT GRADING STAGE: follow the exact current_stage object. Do not plan or execute later stages on this turn."
+                    system_message = (
+                        "You are completing the user's grading task with the public tools. "
+                        "Call exactly ONE current-stage tool. Follow next_step and the current "
+                        "schema. Successful earlier source reads remain valid; do not reread them. "
+                        "For a score row, copy each raw_answer_pairs letter exactly as a quoted "
+                        "constant. EVERY IF uses the SAME branch order: equality true gives the "
+                        "observed equal_letters marker, false gives unequal_letters. Do not reverse "
+                        "branches for unequal operands. The observed numeric markers MUST be bare "
+                        "numbers inside formulas, NOT quoted strings: quoted \"1\" produces text "
+                        "and SUM ignores it. Quote ONLY the two answer-letter operands. Separate "
+                        "all IF arguments with SEMICOLONS, never commas. "
+                        "Use typed formula objects in ONE row array "
+                        "inside values, including the SUM total formula. A formula must compare "
+                        "the exact current question's two letters. Preserve original graded rows. "
+                        "After writing follow the live-read step, repair reported concrete errors, "
+                        "then save/read/finish when the existing checks are satisfied. "
+                        "The stage facts below replace old reasoning and earlier students' pairs."
+                    )
+                    message_content = [{"type": "text", "text": json.dumps({
+                        "instruction": state.instruction, "current_stage": stage_facts,
+                    }, ensure_ascii=False)}]
             if scoped_kind in {"demographic-pivots", "personal-cleanup", "sentence-tabstops", "ecs-rates", "grf-records", "gemini-document", "person-background", "invoice-mail"}:
                 system_message = (
                     "You are a desktop agent completing the user's instruction using the public tools. "

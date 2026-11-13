@@ -296,3 +296,24 @@ def test_invoice_combined_discovery_contains_reader_and_append_route():
                              limit=7, strict_generic=True)
     routes = {(m.get("adapter"), m.get("downstream_action")) for m in matches}
     assert {("libreoffice_calc", "range.read"), ("libreoffice_calc", "range.write")} <= routes
+
+
+def test_grading_stage_projects_current_pairs_and_keeps_existing_write_contract(monkeypatch):
+    import integrations.lite_agent.grading_progress as progress
+    facts = {"stage": "compare_one_student_and_write", "next_step": "WRITE ONE ROW",
+        "raw_answer_pairs": [{"reference_answer": "B", "student_answer": "D", "target_cell": "C3"}],
+        "write_contract": {"marker_convention_from_original_example": {"equal_letters": "1", "unequal_letters": "0"}},
+        "answer_key_source": [{"text": "long earlier source omitted"}]}
+    monkeypatch.setattr(progress, "model_progress", lambda *_args, **_kw: facts)
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused", include_gui=False,
+        task_stage_hints=PROFILE, task_stage_hint_targets={"test-grading": "grading"}),
+        object(), model_client=SimpleNamespace(client=object()))
+    state = RuntimeState("test-grading", "multi_apps", "Grade remaining students from their answers into the spreadsheet.")
+    output = io.BytesIO()
+    Image.new("RGB", (20, 20)).save(output, format="PNG")
+    messages = agent._messages(state, output.getvalue(), tools=[])
+    context = json.loads(messages[-1]["content"][0]["text"])
+    assert context["current_stage"]["raw_answer_pairs"] == facts["raw_answer_pairs"]
+    assert context["current_stage"]["write_contract"] == facts["write_contract"]
+    assert "answer_key_source" not in context["current_stage"]
+    assert "SAME branch order" in messages[0]["content"]
