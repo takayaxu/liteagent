@@ -1418,6 +1418,13 @@
         "text": "CURRENT STAGE: insertion and save have succeeded. Do not edit or insert anything again. NEXT call must be tools_search query=\"libreoffice_writer document.inspect\" if absent. Read the real saved Writer identity and inserted image metadata with document.inspect. When the image and saved image.docx are confirmed, propose_done with actual execution evidence. Do not use text-file readers on binary DOCX.",
         "after_action": "libreoffice_writer:document.save"
       }
+    ],
+    "337d318b-aa07-4f4f-b763-89d9a2dd013f": [
+      {
+        "until_action": "os:filesystem.find",
+        "context_mode": "workflow_call",
+        "text": "First observe the source folder containing the invoice and statement files visible on the Desktop. Search os.filesystem.find once if needed, then call its actual provided native function. The live inventory schema requires kind=any, name_patterns=[\"*\"], recursive=false. Those are inventory coverage requirements; do not replace them with file-only or filtered patterns. Use the current provided function name and top-level parameters; catalog adapter.call names describe the route, not the provider function. The current schema takes precedence over earlier search summaries. Select the source root from current desktop evidence."
+      }
     ]
   },
   "task_protocol_overrides": {

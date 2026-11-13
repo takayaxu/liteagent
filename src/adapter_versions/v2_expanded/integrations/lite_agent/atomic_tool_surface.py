@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import re
 from typing import Any
 
@@ -20,6 +21,27 @@ def _has_reference(value: Any) -> bool:
             _has_reference(child) for child in value.values()
         )
     return isinstance(value, list) and any(_has_reference(child) for child in value)
+
+
+def _operation_description(source_function: dict[str, Any], params: dict[str, Any]) -> str:
+    """Retain live stage constraints when replacing a wrapper with a native tool."""
+    descriptions = []
+    for value in (params.get("description"), source_function.get("description")):
+        if isinstance(value, str) and value and value not in descriptions:
+            descriptions.append(value)
+    constraints = []
+    for name, field in params.get("properties", {}).items():
+        if not isinstance(field, dict):
+            continue
+        if "const" in field:
+            constraints.append(f"{name} must equal {json.dumps(field['const'], ensure_ascii=False)}")
+        elif isinstance(field.get("enum"), list):
+            constraints.append(f"{name} allowed values: {json.dumps(field['enum'], ensure_ascii=False)}")
+        items = field.get("items", {})
+        if isinstance(items, dict) and isinstance(items.get("enum"), list):
+            constraints.append(f"{name} item allowed values: {json.dumps(items['enum'], ensure_ascii=False)}")
+    return " ".join([*descriptions, "Current parameter constraints: " + "; ".join(constraints)]
+                    if constraints else descriptions)
 
 
 def _atomic_route_function(
@@ -82,7 +104,7 @@ def _atomic_route_function(
         f"Execute exactly one {identity} operation. Supply its action arguments directly; "
         f"put document/target/verification/timeout metadata in {OPTIONS_FIELD} if needed. "
         "Do not supply adapter, action, payload, or params wrappers. "
-        + str(params.get("description", ""))
+        + _operation_description(source_function, params)
     )
     function["parameters"] = atomic_schema
     return function, {
@@ -110,7 +132,7 @@ def _boxed_route_function(source_function, adapter, action, payload, used_names)
     function.update(name=name, parameters=copy.deepcopy(payload), description=(
         f"Execute exactly one {identity} operation. Supply action arguments inside params; "
         "document/target/verification/timeout fields stay beside params. "
-        "Do not supply adapter, action, or payload wrappers. " + str(params.get("description", ""))
+        "Do not supply adapter, action, or payload wrappers. " + _operation_description(source_function, params)
     ))
     return function, {"adapter": adapter, "action": action, "schema": copy.deepcopy(payload), "payload_boxed": True}
 

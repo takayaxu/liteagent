@@ -193,3 +193,30 @@ def test_provider_schema_conversion_preserves_keyword_named_properties_and_liter
     valid = {"const": literal, "type": 2, "x-route": "value", "object": literal}
     assert Draft202012Validator(converted).is_valid(valid)
     assert Draft202012Validator(schema).is_valid(valid)
+
+
+def test_live_inventory_constraints_survive_atomic_description_projection():
+    tools = wrapper()
+    function = tools[0]["function"]
+    function["description"] += " Inventory all direct entries; select the source folder, not its parent."
+    params = function["parameters"]["properties"]["payload"]["properties"]["params"]
+    params["properties"]["kind"]["enum"] = ["any"]
+    params["properties"]["name_patterns"] = {
+        "type": "array", "items": {"type": "string", "enum": ["*"]},
+        "minItems": 1, "maxItems": 1,
+    }
+    params["properties"]["recursive"] = {"type": "boolean", "enum": [False]}
+    before = copy.deepcopy(tools)
+    surface, _ = atomic_provider_surface(tools)
+    function = surface[0]["function"]
+    assert "select the source folder, not its parent" in function["description"]
+    assert 'kind allowed values: ["any"]' in function["description"]
+    assert 'name_patterns item allowed values: ["*"]' in function["description"]
+    assert "recursive allowed values: [false]" in function["description"]
+    valid = {"roots": ["~/Desktop"], "name_patterns": ["*"], "kind": "any", "recursive": False}
+    result, _ = client_call(tools, function["name"], valid)
+    assert json.loads(result["arguments_raw"])["payload"]["params"] == valid
+    with pytest.raises(StructuredToolProtocolError) as error:
+        client_call(tools, function["name"], {**valid, "kind": "file"})
+    assert any('kind' in hint and 'any' in hint for hint in error.value.schema_hints)
+    assert tools == before
