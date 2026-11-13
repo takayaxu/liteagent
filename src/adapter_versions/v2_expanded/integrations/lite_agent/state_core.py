@@ -149,10 +149,19 @@ class RuntimeStateCoreMixin:
         has_mail = bool(tokens.intersection(mail_terms)) or bool(
             re.search(r"\be-?mail(?:s|ing)?\b", text)
         )
+        # A mail attachment can be the source of an accounting append.  In
+        # that instruction, the preposition "to" names a filesystem target,
+        # not a recipient.  Keep explicit recipient/address requests intact.
+        accounting_append = (
+            not tokens.intersection(recipient_terms - {"to"})
+            and re.search(r"\bappend\s+(?:a|an|the|one)\s+record\b", text)
+            and re.search(r"\b(?:tally\s+book|ledger|accounting\s+workbook)\b", text)
+        )
         return bool(
             has_mail
             and tokens.intersection(recipient_terms)
             and tokens.intersection(write_terms)
+            and not accounting_append
         )
 
     @classmethod

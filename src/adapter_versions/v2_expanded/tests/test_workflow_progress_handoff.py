@@ -210,6 +210,21 @@ def test_calc_write_instruction_does_not_trigger_mail_target_lease():
     assert state.requested_mail_recipient_target() is False
 
 
+def test_invoice_record_append_leases_observed_file_route_after_source_read():
+    state = _state('Extract the invoice PDF from e-mail to my receipts folder and '
+                   'append a record at the end of my tally book.')
+    state.events.append(_event(1, "workbook.read_file", {"path": "/tmp/invoice.xlsx"},
+                              {"context_hint": {"downstream_context": {"truncated": False}}}))
+    assert not state.requested_mail_recipient_target()
+    assert state.source_read_handoff_pending()
+    state.events.append(ExecutionEvent(2, "", {"kind": "catalog", "action": "tools_search"},
+        executed=True, result={"matches": [{"action": "adapter.call", "adapter": "os",
+                                           "downstream_action": "desktop.open_path"}]}))
+    assert not state.source_read_handoff_pending()
+    state.instruction += ' Also add the recipient to the e-mail.'
+    assert state.requested_mail_recipient_target()
+
+
 def test_successful_catalog_search_advances_past_source_handoff():
     state = _state("Read the record and add the matching recipients to the draft.")
     state.events.append(
