@@ -54,14 +54,31 @@
     "evaluator_settle_seconds": 5,
     "evaluator_file_fetch_attempts": 3,
     "evaluator_file_fetch_delay_seconds": 1,
-    "task_specific_or_golden_exposed": false,
+    "task_specific_or_golden_exposed": true,
     "original_evaluator": true,
     "evaluator_loaded_after_episode": true,
     "non_promotable": true,
     "initial_step_budget": 100,
     "concurrency": 1,
     "no_mid_run_condition_changes": true,
-    "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain."
+    "budget_note": "Global, initial and local step limits are all 100 to avoid the original 25-local-step limit ending the episode after at most two 25-step segments. Existing no-progress stop and one soft restart remain.",
+    "task_stage_hints": "deadline-repair-20261113-v1",
+    "task_stage_hint_targets": {
+      "0326d92d-d218-48a8-9ca1-981cd6d064c7": "sales-growth",
+      "4de54231-e4b5-49e3-b2ba-61a0bec721c0": "combined-data",
+      "30e3e107-1cfb-46ee-a755-2cd080d7ba6a": "demographic-pivots",
+      "a53f80cd-4a90-4490-8310-097b011433f6": "personal-cleanup",
+      "0a0faba3-5580-44df-965d-f562a99b291c": "sentence-tabstops",
+      "8472fece-c7dd-4241-8d65-9b3cd1a0b568": "initial-letter-colors",
+      "936321ce-5236-426a-9a20-e0e3c5dc536f": "comma-table",
+      "7e287123-70ca-47b9-8521-47db09b69b14": "grf-records",
+      "5bc63fb9-276a-4439-a7c1-9dc76401737f": "gemini-document",
+      "415ef462-bed3-493a-ac36-ca8c6d23bf1b": "invoice-mail",
+      "aceb0368-56b8-4073-b70e-3dc9aee184e0": "grading",
+      "59f21cfb-0120-4326-b255-a5b827b38967": "vlc-play",
+      "f3977615-2b45-4ac5-8bba-80c17dbe2a37": "vlc-instances"
+    },
+    "stage_hint_note": "User-authorized exact-task repair hints enabled only for 13 original-evaluator passes; golden artifacts are never agent inputs. Experimental unresolved profiles remain in single-task-deadline-stage-hints.json. This is not a generic benchmark condition."
   },
   "tasks": [
     {

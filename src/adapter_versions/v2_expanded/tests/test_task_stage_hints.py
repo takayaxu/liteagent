@@ -131,6 +131,34 @@ def test_full_queue_other_173_actual_messages_are_unchanged(monkeypatch):
     assert checked == 173
 
 
+def test_delivery_activation_preserves_all_other_176_messages_and_tools():
+    root = Path(__file__).resolve().parents[4]
+    config = json.loads((root / "configs/single-task-local9b-thinking.json").read_text())
+    targets = config["protocol"]["task_stage_hint_targets"]
+    assert len(targets) == 13
+    excluded = {t["task_id"] for t in config["tasks"] if t["order"] in {107, 120, 127}}
+    assert not excluded.intersection(targets)
+    base = LiteAgentConfig(base_url="http://unused", include_gui=False,
+                          task_stage_prompts=config.get("task_stage_prompts"))
+    agent = LiteAgent(base, object(), model_client=SimpleNamespace(client=object()))
+    screenshot = io.BytesIO()
+    Image.new("RGB", (20, 20)).save(screenshot, format="PNG")
+    checked = 0
+    for task in config["tasks"]:
+        if task["task_id"] in targets:
+            continue
+        path = root / "src/third_party/OSWorld/evaluation_examples/examples" / task["domain"] / (task["task_id"] + ".json")
+        state = RuntimeState(task["task_id"], task["domain"], json.loads(path.read_text())["instruction"])
+        agent.config = base
+        tools = agent.tools(state)
+        messages = agent._messages(state, screenshot.getvalue(), tools=tools)
+        agent.config = replace(base, task_stage_hints=PROFILE, task_stage_hint_targets=targets)
+        assert agent.tools(state) == tools
+        assert agent._messages(state, screenshot.getvalue(), tools=tools) == messages
+        checked += 1
+    assert checked == 176
+
+
 def test_vlc_gui_playback_and_persisted_preference_use_actual_readback():
     from integrations.lite_agent.task_stage_hints import _vlc_hint
     state = RuntimeState("synthetic", "vlc", "Play the Desktop music video.")
