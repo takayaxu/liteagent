@@ -1441,3 +1441,6 @@ flowchart TD
 - Order28 v3/126b354 run004确认新诊断不足后精确SIGTERM自有controller657335，三完整性true、owner1f0459c6容器空，无正式原评分不计0/PASS。初始24数值对，模型中途误将C18/C19绿又修正；prefix45唯一缺项是41inventory早于42save，而合并column_unverified提示observedNone，模型43–46读cells/47–48重复done均无效。current_completion_status已实际送达，不能声称仍完全缺反馈。v4自审通过，仅拆清inventory/header两诊断并公开真实步骤：workbook.inspect必须晚于最新mutation/save、range.read不能刷新inventory；不改原谓词/code/actions，保留所有合法操作。121focused、5真实prefix同拒绝/41对42证据回放、Ruff/diff/bincheck过。候选7b6b3e3，新干净run005同字节配置原模型/100步1800秒/任务evaluator，结果待定，未集成。
 
 - Order28 v4/7b6b3e3 run005正式PASS1.0，21事件681.173秒，三完整性true；24利率值与来源年率/期数一致，仅最大C20绿色，原输入单元格逐值保留。修复及回执6d87af9已快进集成，运行源码与通过候选完全一致。主agent自审、无人工/子agent；6/15确认通过，下一题65。证据reports/20261103-deadline15/order028-receipt.json。
+
+
+2026-11-13 Order99协议专项修复：更正旧记录，历史attempt4不是普通JSON伪调用，而是三次真实原生filesystem.find的kind=file违反当时仅允许any的schema；attempt1才是普通JSON无tool_calls。当前另复现投影丢失实时阶段说明、目录恢复覆盖已限定的类型路由导致KeyError properties；已保留实时说明/枚举并恢复整理路由。只为99增加发现、核验、保留阶段提示，核验去除无关桌面截图且保留真实PDF/银行文本，不注入分类答案。独立518244d attempt4原始OSWorld PASS1.0/agent_done，16步670.898秒，模型请求错误0、三完整性true，59相关测试通过。此前3次新诊断失败/中止全部保留。完成说明仍有与执行事实不符的局限，如实记录，未修改gate或evaluator。集成7b99fb0，运行源码与PASS候选相同；配置仅新增99，其他题配置原样保留。已修复题单更新77、79、82、99、136、143、174；不改变旧全量分数。专项回执reports/20261113-order99-protocol-rootcause/README.md。

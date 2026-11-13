@@ -351,6 +351,11 @@ class ToolSurfaceMixin:
         if route is not None:
             tools = constrain_adapter_call_routes(tools, [route])
         tools = self._apply_common_tool_constraints(tools, state)
+        if route is not None:
+            # Precise catalog recovery may rebuild a broader wrapper. The
+            # organization's current route remains authoritative: restore its
+            # typed params before attaching live inventory/reader constraints.
+            tools = constrain_adapter_call_routes(tools, [route])
         if not observation_complete:
             if route is None:
                 # Readers cannot be leased until the source inventory exists.

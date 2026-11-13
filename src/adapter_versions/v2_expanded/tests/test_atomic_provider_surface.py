@@ -193,3 +193,60 @@ def test_provider_schema_conversion_preserves_keyword_named_properties_and_liter
     valid = {"const": literal, "type": 2, "x-route": "value", "object": literal}
     assert Draft202012Validator(converted).is_valid(valid)
     assert Draft202012Validator(schema).is_valid(valid)
+
+
+def test_live_inventory_constraints_survive_atomic_description_projection():
+    tools = wrapper()
+    function = tools[0]["function"]
+    function["description"] += " Inventory all direct entries; select the source folder, not its parent."
+    params = function["parameters"]["properties"]["payload"]["properties"]["params"]
+    params["properties"]["kind"]["enum"] = ["any"]
+    params["properties"]["name_patterns"] = {
+        "type": "array", "items": {"type": "string", "enum": ["*"]},
+        "minItems": 1, "maxItems": 1,
+    }
+    params["properties"]["recursive"] = {"type": "boolean", "enum": [False]}
+    before = copy.deepcopy(tools)
+    surface, _ = atomic_provider_surface(tools)
+    function = surface[0]["function"]
+    assert "select the source folder, not its parent" in function["description"]
+    assert 'kind allowed values: ["any"]' in function["description"]
+    assert 'name_patterns item allowed values: ["*"]' in function["description"]
+    assert "recursive allowed values: [false]" in function["description"]
+    valid = {"roots": ["~/Desktop"], "name_patterns": ["*"], "kind": "any", "recursive": False}
+    result, _ = client_call(tools, function["name"], valid)
+    assert json.loads(result["arguments_raw"])["payload"]["params"] == valid
+    with pytest.raises(StructuredToolProtocolError) as error:
+        client_call(tools, function["name"], {**valid, "kind": "file"})
+    assert any('kind' in hint and 'any' in hint for hint in error.value.schema_hints)
+    assert tools == before
+
+
+def test_organization_inventory_stays_typed_after_precise_broad_catalog_search():
+    from types import SimpleNamespace
+    from integrations.lite_agent.agent import LiteAgent, LiteAgentConfig
+    from integrations.lite_agent.state_model import RuntimeState, ExecutionEvent
+    state = RuntimeState(task_id="synthetic-invoice-task", domain="multi_apps",
+                         instruction='Cross-check the invoices with the bank statements and identify any discrepancies. Then pull out the invoices that don\'t match the statements and put them in the "problematic" folder.')
+    routes = ["filesystem.find", "filesystem.rename", "filesystem.copy",
+              "filesystem.copy_to_directories", "filesystem.set_permissions",
+              "filesystem.create_directory"]
+    state.events.append(ExecutionEvent(step=1, timestamp_utc="test", executed=True,
+        proposed={"kind": "catalog", "tool": "tools_search", "arguments": {"query": "os.filesystem.find"}},
+        result={"status": "ok", "executed": True, "matches": [
+            {"adapter": "os", "action": "adapter.call", "tool_name": "adapter__adapter_call", "downstream_action": action,
+             "downstream": {"adapter": "os", "action": action}}
+            for action in routes]}))
+    agent = LiteAgent(LiteAgentConfig(base_url="http://unused"), SimpleNamespace(),
+                      model_client=SimpleNamespace(client=None))
+    tools = agent.tools(state)
+    surface, bindings = atomic_provider_surface(tools)
+    assert len(bindings) == 1
+    binding = next(iter(bindings.values()))
+    assert (binding["adapter"], binding["action"]) == ("os", "filesystem.find")
+    params = binding["schema"]
+    assert params["properties"]["kind"]["enum"] == ["any"]
+    assert params["properties"]["name_patterns"]["items"]["enum"] == ["*"]
+    assert params["properties"]["recursive"]["enum"] == [False]
+    assert Draft202012Validator(params).is_valid({
+        "roots": ["~/Desktop"], "name_patterns": ["*"], "kind": "any", "recursive": False})
