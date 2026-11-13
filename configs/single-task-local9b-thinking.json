@@ -1340,6 +1340,48 @@
         "text": "CURRENT STAGE: confirm the saved document identity and table dimensions with native Writer document.inspect. If the latest successful document.inspect step is already later than the last document.save step and agrees with the verified table mutation, emit propose_done now. Otherwise call the currently exposed document.inspect for the current destination; search for it first only if absent from the binding route list. The row-deletion tool already verified all retained cell text. Do not call an old table.read route, repeat saving, or change the content.",
         "context_mode": "workflow_call"
       }
+    ],
+    "bb83cab4-e5c7-42c7-a67b-e46068032b86": [
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "Use public native schemas exactly. Search the required route when absent from the current binding list. Use only observed source data, never invented content or reference answers. An execution with content_verified=false is NOT successful writing: inspect it, do not repeat an identical append. CURRENT STAGE: discover the actual presentation source on the Desktop using os filesystem.find. Search for the PPTX file; do not write anything into Writer yet.",
+        "until_action": "os:filesystem.find"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: use os command.run with argv=[\"python3\", \"-c\", one complete extraction script], cwd_source=\"home\", provenance=\"none\". Set source to the exact PPTX path returned by filesystem.find; set the temporary TXT output exactly to /tmp/presentation-source.txt. The final script.docx must NEVER be written as plain text; it will be created separately by Writer in a later stage. Use this standard-library algorithm, filling those two paths from actual facts. It reads the source, never reference data:\nfrom pathlib import Path\nimport re, zipfile, xml.etree.ElementTree as ET\noutput = \"/tmp/presentation-source.txt\"\nwith zipfile.ZipFile(source) as z:\n    names = [n for n in z.namelist() if re.fullmatch(r\"ppt/slides/slide[0-9]+[.]xml\", n)]\n    names.sort(key=lambda n: int(n.rsplit(\"/\", 1)[-1][5:-4]))\n    lines = []\n    for name in names:\n        root = ET.fromstring(z.read(name))\n        for paragraph in root.iter(\"{http://schemas.openxmlformats.org/drawingml/2006/main}p\"):\n            parts = []\n            for child in paragraph:\n                if child.tag == \"{http://schemas.openxmlformats.org/drawingml/2006/main}fld\" and child.get(\"type\") == \"slidenum\":\n                    continue\n                for node in child.iter():\n                    if node.tag == \"{http://schemas.openxmlformats.org/drawingml/2006/main}t\":\n                        parts.append(node.text or \"\")\n                    elif node.tag == \"{http://schemas.openxmlformats.org/drawingml/2006/main}br\":\n                        parts.append(\" \")\n            text = \"\".join(parts)\n            if text.strip():\n                lines.append(text)\ncontent = chr(10).join(lines)\nassert names and lines and content.strip(), \"No actual slide text extracted\"\nassert Path(output).suffix == \".txt\", \"Extraction output must be plain TXT, never DOCX\"\nPath(output).write_text(content, encoding=\"utf-8\")\nprint({\"source\": source, \"slides\": len(names), \"paragraphs\": len(lines), \"characters\": len(content), \"output\": output, \"bytes\": Path(output).stat().st_size})\nDo not split the whole path on 'slide': the directory 'slides' contains that substring. Use the basename numeric slice above. chr(10) means a real newline, avoiding literal backslash-n. Do not export a PDF, read notes, invent text or continue with empty extraction. Search the exact public command.run route if absent.\nBefore zipfile.ZipFile(source), explicitly assign source to the observed filesystem.find PPTX path. source is a script variable and is not inherited from earlier tool calls.\nCopy authored slide body text. Automatic slide-number fields are presentation navigation metadata, not authored script paragraphs; skip only DrawingML fld elements whose native type attribute is slidenum as shown above. Preserve literal numbers in actual text runs. Never filter strings by their spelling, use reference text, or infer a fixed number of fields.\nPreserve authored word boundaries: a DrawingML br element is an inline soft line break within the same paragraph. In this one-line-per-paragraph TXT serialization, normalize that break to one space, as shown. Never concatenate runs across an explicit break without whitespace, and do not split the original paragraph into separate paragraphs. This rule comes from actual XML markup, not a fixed phrase or reference value.",
+        "after_action": "os:filesystem.find",
+        "until_action": "os:command.run"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "text": "CURRENT STAGE: create the EMPTY Writer target. Your next call MUST be tools_search with query=\"libreoffice_writer document.create\" if that exact native route is not currently exposed. When exposed, call it with params.path=\"/home/user/Desktop/script.docx\". This native operation creates and activates the valid Writer document; it does not insert text yet. os command.run is not document.create: do not use Python, zipfile, shell, filesystem operations or a handcrafted DOCX archive in this stage. Do not propose_done or append content before the actual native document.create succeeds. The extraction TXT already exists and will be appended in the NEXT stage. Follow only the CURRENT STAGE, not a shortcut to the final goal.",
+        "after_action": "os:command.run",
+        "until_action": "libreoffice_writer:document.create"
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "after_action": "libreoffice_writer:document.create",
+        "until_action": "vs_code:file.read_text",
+        "text": "CURRENT STAGE: read the actual extracted TXT so its literal source paragraphs are available for native insertion. Search vs_code file.read_text, then call it with path=\"/tmp/presentation-source.txt\", start_char=0, max_chars=6000. This is a plain-text file reader, not a GUI operation. Do not write or save yet. Do not read the DOCX as the text source."
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "after_action": "vs_code:file.read_text",
+        "until_action": "libreoffice_writer:document.append_paragraphs",
+        "text": "CURRENT STAGE: if the actual TXT read has source_truncated=true, read its remaining windows first using next_start_char. Otherwise search libreoffice_writer document.append_paragraphs and append ALL actual nonempty TXT lines in their original order as the paragraphs string array. Use the complete literal observed source values, preserving punctuation and case. Do not summarize, invent headings, write notes, or insert a request for information. Use the actual target Writer document identity. Do not use document.append_text_file in this stage; its earlier bulk insertion was not verified. Do not generate a DOCX ZIP or call os command.run to create the document. The next writing operation is native document.append_paragraphs, after searching if absent."
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "after_action": "libreoffice_writer:document.append_paragraphs",
+        "until_action": "libreoffice_writer:document.save",
+        "text": "CURRENT STAGE: the actual document.append_paragraphs operation has ALREADY succeeded. Do not call any append operation again. NEXT CALL MUST be tools_search with query=\"libreoffice_writer document.save\" if that exact route is not in the current binding list. Then call native libreoffice_writer document.save with the actual Desktop script.docx identity and empty params to save. The current stage is SAVE ONLY, never insertion, conversion, document creation or Python. Reusing the previous append would duplicate the entire document and is rejected. After the save succeeds, proceed to the separately supplied read-back stage."
+      },
+      {
+        "context_mode": "typed_workflow_call",
+        "after_action": "libreoffice_writer:document.save",
+        "text": "CURRENT STAGE: native Writer creation, insertion and save have succeeded. Do not edit, append, create or convert anything further. NEXT CALL MUST be tools_search query=\"libreoffice_writer document.inspect\" if that exact route is absent. Then call document.inspect on the actual saved script.docx Writer identity, using paragraph_start=0 and paragraph_limit=100 to read its body. Check the observed saved identity, paragraph count and literal text against the actual extracted TXT facts. When confirmed, your next call is propose_done with that real evidence. Do not use VS Code file.read_text or file.replace_literal on DOCX: DOCX is a binary ZIP, not a UTF-8 plain-text file. Do not use workspace.find_files, filesystem.find or Python to replace native Writer read-back. Preserve the actual source strings; the user will handle reformatting. Missing spaces in source runs or source placeholders are not permission to invent edits. This is READ-BACK AND FINISH ONLY."
+      }
     ]
   },
   "task_protocol_overrides": {

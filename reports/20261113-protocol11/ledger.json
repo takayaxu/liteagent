@@ -856,7 +856,7 @@
     {
       "order": 114,
       "task_id": "bb83cab4-e5c7-42c7-a67b-e46068032b86",
-      "status": "failed",
+      "status": "passed",
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-05/raw/run-1/114-multi_apps-bb83cab4-e5c7-42c7-a67b-e46068032b86",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
@@ -1063,10 +1063,27 @@
           "commit": "9acde215642faf167eeff64a7c2be5e065b1099b",
           "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-run010",
           "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order114-v14-config.json",
-          "status": "running"
+          "status": "passed",
+          "integrity": {
+            "source_matches": true,
+            "config_matches": true,
+            "osworld_matches": true
+          },
+          "reward": 1.0,
+          "duration_seconds": 454.082,
+          "steps": 17,
+          "main_protocol_errors": 0,
+          "nested_execution_protocol_errors": 0,
+          "recovered_checker_protocol_errors": 0,
+          "protocol_errors": 0,
+          "execution_validation_or_guard_rejections": 0,
+          "execution_contract_validation_rejections": 0,
+          "repeated_action_guard_rejections": 0,
+          "total_protocol_or_contract_rejections": 0
         }
       ],
-      "reward": 0.9996001599360256
+      "reward": 1.0,
+      "passing_attempt": 10
     },
     {
       "order": 115,
@@ -1075,7 +1092,15 @@
       "baseline_status": "model_protocol_failure",
       "baseline_trajectory": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/workers/worker-06/raw/run-1/115-multi_apps-227d2f97-562b-4ccb-ae47-a5ec9e142fbb",
       "baseline_results": "/home/liuxv/liteagent-local-runs/delivery-retain57-remainder132-3workers-relaxed-20261112T115608Z/source/runs/delivery-continue6-20261112T130651Z/results.json",
-      "attempts": []
+      "attempts": [
+        {
+          "attempt": 1,
+          "commit": "ae99d38f6887827747a7dbbabb64413d5e609eb1",
+          "result": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order115-run001",
+          "config": "/home/liuxv/liteagent-local-runs/repair-protocol11-20261113/order115-v1-config.json",
+          "status": "running"
+        }
+      ]
     },
     {
       "order": 189,
