@@ -106,3 +106,7 @@ run007原生trace已确认17条完整记录，运行源计数14；配置不含�
 114 run002：补齐终止后审计，主协议3、执行契约2，总拒绝5，诊断中止无正式评分。完整enum文字提示仍不足以阻止原生不支持的DOCX导出和params.url。新增仅显式typed_workflow_call阶段启用的原生typed路由展示，所有允许分支可无损投影才启用；属性计数约束保留params盒形，未知或实时params约束保守回退，不改写模型参数。默认工具展示不变。两处真实非法请求只读回放分别生成合法tools_search及presentation.inspect，通过原schema/路由校验；回放不执行、不算PASS。60项typed/atomic/阶段检查通过，bin/check.sh、git diff --check通过，其他10题三模式30组消息等价。下一次正式尝试使用仅绑定114 ID的v2协议提示，未加入源文本、参考内容或固定页数。
 
 114 run003：10步后诊断中止，无正式评分，三完整性true；主协议0、执行契约1（将输出DOCX交给append_text_file作为UTF-8源），其余拒绝0。只在114 v3提示澄清二进制输出不是纯文本输入，并要求搜索append_paragraphs后按原schema写入实际文字。真实step9回放生成合法Writer append paragraphs搜索；回放不计PASS。v3配置携带当前默认配置全部非目标覆盖项，其他10题三模式30组消息等价。初次对比发现早期v2配置没有后来合入的113覆盖项；这不改变只调度114的历史运行，但已在未启动的v3草稿中同步，未重写v2冻结配置或旧证据。
+
+114 run004：18步736.608秒，原评分0.3330329789，协议/契约/重复保护全0、三完整性true，不能计PASS。原生source与保存产物只读审计显示58个源非空段落中仅24个原字符串在输出中出现（字符串包含计数，不是评分器），证据order114-run004-source-coverage-audit.json。v4仅114使用成功动作分隔阶段：实际Impress导出PDF、模型提交pdftotext将真实PDF转成独立TXT、Writer创建、原样追加实际TXT、保存、回读。没有提供源文本、固定页数、参考数据或答案。其他10题三模式30组消息等价；真实漏页上下文回放生成合法PDF导出，正式run005正在运行。
+
+114 run005：诊断中止，无正式评分，三完整性true；主协议0，执行保护ValueError 2次（重复相同未验证追加），按既有审计口径总协议/契约拒绝2。实际PDF→TXT包含form-feed，append_text_file报告content_verified=false、document_chars=0；尚未证明控制字符是UNO无插入的唯一原因。PDF渲染还裁切部分原始文字，不能依赖该路径完整保留源字符串。v5仅114改为模型通过公开command.run提交标准库PPTX XML读取脚本，按实际slideN.xml数字顺序读取a:p/a:t到独立TXT，再原生Writer创建/追加/保存/回读；脚本由被测模型生成，不向其提供源值、参考、固定页数或固定basename。30组其他题消息等价通过。run006已启动。
