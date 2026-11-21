@@ -3877,7 +3877,7 @@ def adapter_context_hint(domain: str, action: str, body: Any) -> dict[str, Any] 
             ),
         }
     if domain == "os" and action in {
-        "archive.create_extract", "archive.create_zip", "archive.extract_zip",
+        "archive.create_zip", "archive.extract_zip",
     }:
         context = archive_context(result)
         verification = body.get("verification")

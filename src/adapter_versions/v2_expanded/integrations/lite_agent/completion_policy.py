@@ -8,6 +8,8 @@ from urllib.parse import unquote, urlparse
 
 from jsonschema import Draft202012Validator
 
+from integrations.openapa_osworld.tool_catalog import public_actions
+
 from .adapter_results import has_passed_verification
 from .result_envelopes import iter_result_mappings
 
@@ -68,6 +70,7 @@ SAVE_ACTION_SUFFIXES = (".save", ".save_as", ".export")
 READ_ONLY_ACTIONS = frozenset(
     {
         "clipboard.get",
+        "image.inspect_session",
         "mail.query_latest_messages",
         "mail.query_messages",
         "workspace.find_files",
@@ -116,9 +119,13 @@ def required_mutation_actions(
     )
     if replacements:
         return replacements
+    recommended = set(state.recommended_actions)
+    if recommended and state.domain in {"chrome", "gimp", "os", "vlc", "vs_code"}:
+        # Older runs may still recommend compound actions the adapter retired.
+        recommended.intersection_update(public_actions(state.domain))
     return {
         action
-        for action in [*state.recommended_actions, *required]
+        for action in recommended | required
         if not is_read_only_action(action) and not is_save_action(action)
     }
 

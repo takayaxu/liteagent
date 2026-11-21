@@ -70,12 +70,12 @@ def test_flat_single_route_without_metadata_is_not_widened():
 
 
 def test_exact_pair_metadata_does_not_authorize_cross_product():
-    routes = [("chrome", "settings.set"), ("libreoffice_impress", "presentation.inspect")]
+    routes = [("chrome", "settings.set_font_size"), ("libreoffice_impress", "presentation.inspect")]
     tools = _tools(routes)
     constrained = constrain_adapter_call_routes(
-        tools, [*routes, ("libreoffice_impress", "settings.set")]
+        tools, [*routes, ("libreoffice_impress", "settings.set_font_size")]
     )
-    assert constrained == tools
+    assert _parameters(constrained) == _parameters(tools)
     assert _parameters(constrained)["x-allowed-routes"] == [
         {"adapter": adapter, "action": action} for adapter, action in routes
     ]

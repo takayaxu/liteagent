@@ -18,22 +18,11 @@ _PDF_FORM_PATH = {
     "pattern": "^(?:/|~/|file://(?:localhost)?/).+\\.[pP][dD][fF]$",
 }
 
-_ARCHIVE_PROPERTIES = {
-    "mode": {
-        "type": "string",
-        "enum": ["create", "extract"],
-        "description": (
-            "Use create to build a ZIP and send input_paths (not destination_directory), or use extract "
-            "to unpack an existing ZIP and send destination_directory (not input_paths)."
-        ),
-    },
+_ARCHIVE_CREATE_PROPERTIES = {
     "archive_path": {
         **NONEMPTY_STRING,
-        "pattern": "^(?:/|~/).+\\.[zZ][iI][pP]$",
-        "description": (
-            "Absolute or ~/ ZIP path selected by the model. In create mode this is the output; "
-            "in extract mode it must already exist."
-        ),
+        "pattern": r"^(?:/|~/).+\.[zZ][iI][pP]$",
+        "description": "Absolute or ~/ ZIP output path selected by the model.",
     },
     "input_paths": {
         "type": "array",
@@ -42,31 +31,40 @@ _ARCHIVE_PROPERTIES = {
         "uniqueItems": True,
         "items": {**NONEMPTY_STRING, "pattern": "^(?:/|~/).*"},
         "description": (
-            "Create mode only: exact existing files or directories to include. Direct files use "
-            "their basenames unless base_directory is supplied. Do not send this field in extract mode."
+            "Exact existing files or directories to include. Direct files use their basenames "
+            "unless base_directory is supplied."
         ),
     },
     "base_directory": {
         **NONEMPTY_STRING,
         "pattern": "^(?:/|~/).*",
         "description": (
-            "Create mode only: optional existing directory used to derive relative member paths. "
-            "Every input_path must be inside it."
+            "Optional existing directory used to derive relative ZIP member paths; every "
+            "input_path must be inside it."
         ),
+    },
+    "overwrite": {
+        "type": "boolean",
+        "description": "Replace an existing output ZIP only when true; defaults to false.",
+    },
+}
+_ARCHIVE_EXTRACT_PROPERTIES = {
+    "archive_path": {
+        **NONEMPTY_STRING,
+        "pattern": r"^(?:/|~/).+\.[zZ][iI][pP]$",
+        "description": "Absolute or ~/ path to an existing ZIP selected by the model.",
     },
     "destination_directory": {
         **NONEMPTY_STRING,
         "pattern": "^(?:/|~/).*",
         "description": (
-            "Extract mode only: destination directory. Unsafe paths and symbolic-link ZIP members "
-            "are rejected before extraction. Do not send this field in create mode."
+            "Directory selected by the model where the ZIP is extracted. Unsafe members and "
+            "symbolic links are rejected before writing."
         ),
     },
     "overwrite": {
         "type": "boolean",
-        "description": (
-            "Replace an existing output ZIP or extracted member only when true; defaults to false."
-        ),
+        "description": "Replace existing extracted members only when true; defaults to false.",
     },
 }
 
@@ -400,7 +398,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "desktop.set_setting": {
         "description": (
-            "Set one scalar GSettings value and read it back. For read-only discovery, use "
+            "Set exactly one scalar GSettings key and read it back; other keys are unchanged. Text scaling, magnifier enablement, magnifier zoom, idle dimming and idle delay are independent settings requiring separate calls. Changing text size never enables a magnifier. For read-only discovery, use "
             "command.run with gsettings list-schemas or gsettings list-relocatable-schemas. "
             "Read a value with gsettings get SCHEMA[:PATH] KEY, or its accepted type/range "
             "with gsettings range SCHEMA[:PATH] KEY. For a relocatable schema, first obtain "
@@ -441,6 +439,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             },
         },
         "required": ["schema", "key", "value"],
+        "additionalProperties": False,
     },
     "desktop.set_wallpaper": {
         "properties": {
@@ -893,54 +892,21 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     },
     "archive.create_zip": {
         "description": (
-            "Create one ZIP archive from the existing files or directories in input_paths. "
-            "archive_path is the output ZIP file. The model chooses every input and output "
-            "path. This action only creates a ZIP; it does not extract or convert files."
+            "Create exactly one ZIP from the model-selected input_paths. This action only creates "
+            "archives; use archive.extract_zip to unpack one."
         ),
-        "properties": {name: _ARCHIVE_PROPERTIES[name] for name in (
-            "archive_path", "input_paths", "base_directory", "overwrite",
-        )},
+        "properties": _ARCHIVE_CREATE_PROPERTIES,
         "required": ["archive_path", "input_paths"],
         "additionalProperties": False,
     },
     "archive.extract_zip": {
         "description": (
-            "Extract one existing ZIP archive into the model-selected destination_directory. "
-            "archive_path is the input ZIP file. Rejects unsafe member paths and symbolic "
-            "links. This action only extracts a ZIP; it does not create an archive."
+            "Extract exactly one existing ZIP into the model-selected destination_directory. "
+            "This action only extracts archives; use archive.create_zip to create one."
         ),
-        "properties": {name: _ARCHIVE_PROPERTIES[name] for name in (
-            "archive_path", "destination_directory", "overwrite",
-        )},
+        "properties": _ARCHIVE_EXTRACT_PROPERTIES,
         "required": ["archive_path", "destination_directory"],
         "additionalProperties": False,
-    },
-    "archive.create_extract": {
-        "description": (
-            "Create a new ZIP archive or extract an existing ZIP archive. "
-            "For mode='create', input_paths lists the existing files/directories selected "
-            "by the model and archive_path is the output ZIP file. For mode='extract', "
-            "archive_path is the existing input ZIP and destination_directory is the "
-            "output folder. The model chooses the inputs, output path and mode."
-        ),
-        "properties": _ARCHIVE_PROPERTIES,
-        "required": ["mode", "archive_path"],
-        # Keep branches self-contained for native tool grammar compilation.
-        "oneOf": [
-            {
-                "type": "object",
-                "properties": {
-                    **_ARCHIVE_PROPERTIES,
-                    "mode": {**_ARCHIVE_PROPERTIES["mode"], "const": mode},
-                },
-                "required": ["mode", "archive_path", mode_field],
-                "additionalProperties": False,
-            }
-            for mode, mode_field in (
-                ("create", "input_paths"),
-                ("extract", "destination_directory"),
-            )
-        ],
     },
     "archive.compress_file": {
         "description": (
@@ -1404,46 +1370,6 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
             },
         },
         "required": ["argv", "cwd_source", "provenance"],
-    },
-    "desktop.set_dim_inactive": {
-        "properties": {
-            "idle_dim": {
-                "type": "boolean",
-                "description": "Whether GNOME dims the screen while the desktop is inactive.",
-            },
-            "idle_delay": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 4294967295,
-                "description": (
-                    "Optional blank-screen delay in seconds. Omit when the instruction only changes dimming."
-                ),
-            },
-        },
-        "required": ["idle_dim"],
-    },
-    "desktop.set_accessibility_scale": {
-        "properties": {
-            "text_factor": {
-                "type": "number",
-                "minimum": 0.5,
-                "maximum": 3.0,
-                "description": (
-                    "GNOME desktop text scaling factor selected by the model. 1.0 is normal size; choose a "
-                    "value greater than 1.0 when the user requests larger on-screen text."
-                ),
-            },
-            "magnifier_factor": {
-                "type": "number",
-                "minimum": 0.1,
-                "maximum": 32.0,
-                "description": (
-                    "GNOME screen magnifier zoom factor selected by the model. A value greater than 1.0 "
-                    "enlarges the visible desktop; this action enables the magnifier and verifies the factor."
-                ),
-            },
-        },
-        "required": ["text_factor", "magnifier_factor"],
     },
     "system.set_timezone": {
         "properties": {

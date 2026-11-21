@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import re
+
+from .atomic_preferences import validate_atomic_params, ATOMIC_PREFERENCES
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -16,10 +17,9 @@ DEFAULT_TIMEOUT_MS = 60_000
 
 ACTIONS = frozenset(
     {
+        *ATOMIC_PREFERENCES,
         "media.flip_video",
 
-        "config.update",
-        "preferences.configure",
         "playback.open",
         "playback.status",
         "window.set_fullscreen",
@@ -140,7 +140,27 @@ def _verification(value: Any) -> list[dict[str, Any]]:
     return checks
 
 
+RETIRED_ACTION_REPLACEMENTS = {
+    'preferences.configure': [name for name in ACTIONS if name.startswith('preferences.set_')],
+    'config.update': [name for name in ACTIONS if name.startswith('preferences.set_')],
+}
+
+
+def _reject_retired_action(action: str) -> None:
+    replacements = RETIRED_ACTION_REPLACEMENTS.get(action)
+    if replacements is not None:
+        raise AdapterError('UNSUPPORTED_ACTION', f"{action} has been retired; call one registered single-operation replacement at a time: {', '.join(replacements)}",
+            {"conflicting_action": action, "replacement_actions": replacements,
+             "correct_usage": "Use tools_search to obtain the replacement schema, then provide only its documented fields in a separate call."})
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    _reject_retired_action(action)
+    if action not in ACTIONS:
+        raise AdapterError("UNSUPPORTED_ACTION", "action is not supported", {"action": action}, 404)
+    if action in ATOMIC_PREFERENCES:
+        validate_atomic_params(action, params)
+        return
     if action == "media.flip_video":
         allowed = {"input_path", "output_path", "axis"}
         unknown = sorted(set(params) - allowed)
@@ -164,83 +184,6 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             raise AdapterError(
                 "INVALID_REQUEST",
                 "media.flip_video requires a separate output_path; keep input_path unchanged",
-            )
-    elif action == "config.update":
-        values = params.get("values")
-        if not isinstance(values, Mapping) or not values:
-            raise AdapterError(
-                "INVALID_REQUEST", "params.values must be a non-empty object"
-            )
-        for key, value in values.items():
-            if not isinstance(key, str) or not key.strip():
-                raise AdapterError(
-                    "INVALID_REQUEST", "params.values keys must be non-empty strings"
-                )
-            if not isinstance(value, (str, int, bool)):
-                raise AdapterError(
-                    "INVALID_REQUEST", f"params.values.{key} must be scalar"
-                )
-    elif action == "preferences.configure":
-        allowed = {
-            "global_play_pause_hotkey",
-            "maximum_volume_percent",
-            "volume_slider_color",
-            "minimal_interface",
-            "exit_after_playback",
-            "allow_multiple_instances",
-            "show_background_cone",
-            "recording_directory",
-            "recording_location",
-        }
-        unknown = sorted(set(params) - allowed)
-        if unknown:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "preferences.configure contains unsupported fields",
-                {"unsupported_fields": unknown},
-            )
-        if not params:
-            raise AdapterError(
-                "INVALID_REQUEST", "preferences.configure requires at least one setting"
-            )
-        if "global_play_pause_hotkey" in params:
-            _string(params, "global_play_pause_hotkey")
-        if "maximum_volume_percent" in params:
-            _integer(params, "maximum_volume_percent", 0, 300)
-        if "volume_slider_color" in params:
-            color = _string(params, "volume_slider_color")
-            if not re.fullmatch(r"#[0-9A-Fa-f]{6}", color):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.volume_slider_color must be a #RRGGBB color",
-                )
-        if "minimal_interface" in params:
-            _boolean(params, "minimal_interface")
-        if "exit_after_playback" in params:
-            _boolean(params, "exit_after_playback")
-        if "allow_multiple_instances" in params:
-            _boolean(params, "allow_multiple_instances")
-        if "show_background_cone" in params:
-            _boolean(params, "show_background_cone")
-        if "recording_directory" in params:
-            path = _string(params, "recording_directory")
-            if not path.startswith("/"):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.recording_directory must be an absolute path",
-                )
-        if "recording_location" in params:
-            location = _string(params, "recording_location")
-            if location not in {"desktop", "downloads", "videos", "music", "home"}:
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.recording_location must name a standard user directory",
-                )
-        if "recording_directory" in params and "recording_location" in params:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "preferences.configure accepts either recording_directory or "
-                "recording_location, not both",
             )
     elif action == "playback.open":
         allowed = {"source", "loop"}
@@ -314,6 +257,7 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
 def parse_action_request(raw: Any) -> ActionRequest:
     data = _mapping(raw, "request")
     action = data.get("action")
+    _reject_retired_action(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_ACTION", "unsupported VLC action", {"action": action}

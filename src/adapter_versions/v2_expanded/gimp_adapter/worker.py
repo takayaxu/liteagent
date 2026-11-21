@@ -5,6 +5,8 @@ import sys
 import time
 from typing import Any
 
+from .edit_session import SCHEMAS as SESSION_SCHEMAS, execute_session
+from .schema import validate_action_params
 from .config_store import update_typed_config
 from .crop import crop_image
 from .errors import AdapterError, error_payload
@@ -20,20 +22,6 @@ def _default_specs(
         return [{"type": "image"}]
     if action == "image.convert_indexed":
         return [{"type": "palette"}]
-    if action == "image.adjust":
-        if float(params.get("brightness", 0)) < 0:
-            return [
-                {"type": "brightness_decreased", "reference_path": params["input_path"]}
-            ]
-        if float(params.get("saturation", 0)) > 0:
-            return [
-                {"type": "saturation_increased", "reference_path": params["input_path"]}
-            ]
-        if float(params.get("contrast", 0)) > 0:
-            return [
-                {"type": "contrast_increased", "reference_path": params["input_path"]}
-            ]
-        return [{"type": "image"}]
     if action == "image.crop":
         return [
             {
@@ -80,13 +68,16 @@ def _default_specs(
 def execute(payload: dict[str, Any]) -> dict[str, Any]:
     action = payload["action"]
     params = dict(payload.get("params") or {})
+    validate_action_params(action, params)
     timeout_seconds = max(0.1, int(payload.get("timeout_ms", 45_000)) / 1000 - 1)
     lifecycle = GimpLifecycle()
     scriptfu = ScriptFuRunner(lifecycle)
     started = time.monotonic()
     logs = [{"level": "info", "message": f"starting {action}"}]
 
-    if action == "image.inspect":
+    if action in SESSION_SCHEMAS:
+        result, verification = execute_session(action, params, scriptfu, lifecycle, timeout_seconds)
+    elif action == "image.inspect":
         try:
             result = {"image": image_state(params["path"])}
         except AdapterError:
@@ -112,11 +103,6 @@ def execute(payload: dict[str, Any]) -> dict[str, Any]:
         )
     elif action == "image.convert_indexed":
         result = scriptfu.convert_indexed(params, timeout_seconds)
-        verification = verify_specs(
-            payload.get("verify") or _default_specs(action, params, result), result
-        )
-    elif action == "image.adjust":
-        result = scriptfu.adjust(params, timeout_seconds)
         verification = verify_specs(
             payload.get("verify") or _default_specs(action, params, result), result
         )

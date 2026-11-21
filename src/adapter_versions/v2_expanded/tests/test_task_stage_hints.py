@@ -166,13 +166,13 @@ def test_vlc_gui_playback_and_persisted_preference_use_actual_readback():
         ExecutionEvent(2, "", {"action": "playback.status", "arguments": {}}, executed=True,
             result={"state": "playing", "source": "/home/user/Desktop/observed-video.mp4"})]
     assert _vlc_hint(state, "vlc-play").startswith("FINISH:")
-    state.events = [ExecutionEvent(1, "", {"action": "preferences.configure", "arguments": {
-        "allow_multiple_instances": False}}, executed=True,
-        result={"semantic_preferences": {"allow_multiple_instances": False}})]
+    state.events = [ExecutionEvent(1, "", {"action": "preferences.set_allow_multiple_instances", "arguments": {
+        "value": False}}, executed=True,
+        result={"after": {"one-instance-when-started-from-file": "1"}})]
     assert _vlc_hint(state, "vlc-instances").startswith("SET PREFERENCE:")
-    state.events.append(ExecutionEvent(2, "", {"action": "preferences.configure", "arguments": {
-        "allow_multiple_instances": True}}, executed=True,
-        result={"semantic_preferences": {"allow_multiple_instances": True}}))
+    state.events.append(ExecutionEvent(2, "", {"action": "preferences.set_allow_multiple_instances", "arguments": {
+        "value": True}}, executed=True,
+        result={"after": {"one-instance-when-started-from-file": "0"}}))
     assert _vlc_hint(state, "vlc-instances").startswith("FINISH:")
 
 

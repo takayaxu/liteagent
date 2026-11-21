@@ -749,14 +749,14 @@ def _vlc_hint(state, kind):
     events = [e for e in state.events if e.executed and not e.error]
     actions = {e.proposed.get("action") for e in events}
     if kind == "vlc-instances":
-        configured = any(e.proposed.get("action") == "preferences.configure"
-            and e.proposed.get("arguments", {}).get("allow_multiple_instances") is True
+        configured = any(e.proposed.get("action") == "preferences.set_allow_multiple_instances"
+            and e.proposed.get("arguments", {}).get("value") is True
             and (result_payload(e).get("semantic_preferences", {}).get("allow_multiple_instances") is True
                  or result_payload(e).get("after", {}).get("one-instance-when-started-from-file") == "0")
             for e in events)
         if not configured:
-            return "SET PREFERENCE: call preferences.configure with allow_multiple_instances=true. This changes the persisted single-instance behavior so desktop-opened media can start independent players."
-        return "FINISH: the successful preferences.configure result already verifies the persisted multi-instance setting. Do not configure it again, click the dock repeatedly or poll playback.status to verify a preference; playback state is unrelated. Review the actual returned preference evidence and propose_done. No new sample video or extra playback is requested."
+            return "SET PREFERENCE: call preferences.set_allow_multiple_instances with value=true. This changes the persisted single-instance behavior so desktop-opened media can start independent players."
+        return "FINISH: the successful preferences.set_allow_multiple_instances result already verifies the persisted multi-instance setting. Do not configure it again, click the dock repeatedly or poll playback.status to verify a preference; playback state is unrelated. Review the actual returned preference evidence and propose_done. No new sample video or extra playback is requested."
     statuses = [result_payload(e) for e in events if e.proposed.get("action") == "playback.status"]
     if statuses and statuses[-1].get("state") == "playing" and "/Desktop/" in str(statuses[-1].get("source", "")):
         return ("FINISH: native playback.status reports playing for the actual Desktop source "

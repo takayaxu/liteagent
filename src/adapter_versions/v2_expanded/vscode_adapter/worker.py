@@ -5,6 +5,7 @@ import sys
 import time
 from typing import Any
 
+from .atomic_settings import ATOMIC_SETTINGS
 from .actions import KEYBINDINGS_PATH, SETTINGS_PATH, VscodeActions
 from .errors import AdapterError, error_payload
 from .verifier import verify_specs, wait_for_verification
@@ -16,11 +17,8 @@ def _default_specs(
     result: dict[str, Any],
 ) -> list[dict[str, Any]]:
     if action in {
-        "settings.update",
-        "debugging.configure",
+        *ATOMIC_SETTINGS,
         "diagnostics.configure",
-        "editor.configure",
-        "files.configure",
         "explorer.set_exclusion",
     }:
         return [

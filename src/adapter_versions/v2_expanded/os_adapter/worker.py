@@ -118,8 +118,6 @@ def _default_specs(
         ]
     if action in {
         "notifications.configure",
-        "desktop.set_accessibility_scale",
-        "desktop.set_dim_inactive",
     }:
         return [
             {
@@ -191,7 +189,7 @@ def _default_specs(
         return [{"type": "path", "path": result["output_path"], "kind": "file"}]
     if action == "document.convert":
         return [{"type": "path", "path": result["destination"], "kind": "file"}]
-    if action in {"archive.create_extract", "archive.create_zip", "archive.extract_zip"}:
+    if action in {"archive.create_zip", "archive.extract_zip"}:
         archive_check = {
             "type": "zip_archive",
             "path": result["archive_path"],

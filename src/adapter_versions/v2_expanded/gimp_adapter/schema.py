@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .edit_session import validate_atomic_params, SCHEMAS as SESSION_SCHEMAS
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -19,7 +20,7 @@ ACTIONS = frozenset(
         "image.inspect",
         "image.export",
         "image.convert_indexed",
-        "image.adjust",
+        *SESSION_SCHEMAS,
         "image.crop",
         "image.flip",
         "image.apply_alpha_mask",
@@ -37,8 +38,11 @@ VERIFY_TYPES = frozenset(
         "image",
         "palette",
         "brightness_decreased",
+        "brightness_increased",
         "saturation_increased",
+        "saturation_decreased",
         "contrast_increased",
+        "contrast_decreased",
         "mirror",
         "alpha",
         "layer",
@@ -172,10 +176,31 @@ def _verification(value: Any) -> list[dict[str, Any]]:
     return checks
 
 
+RETIRED_ACTION_REPLACEMENTS = {
+    'image.adjust': ['image.open_session', 'image.set_brightness', 'image.set_contrast', 'image.set_saturation', 'image.save_session'],
+}
+
+
+def _reject_retired_action(action: str) -> None:
+    replacements = RETIRED_ACTION_REPLACEMENTS.get(action)
+    if replacements is not None:
+        raise AdapterError('UNSUPPORTED_ACTION', f"{action} has been retired; call one registered single-operation replacement at a time: {', '.join(replacements)}",
+            {"conflicting_action": action, "replacement_actions": replacements,
+             "correct_usage": "Use tools_search to obtain the replacement schema, then provide only its documented fields in a separate call."})
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    _reject_retired_action(action)
+    if action not in ACTIONS:
+        raise AdapterError("UNSUPPORTED_ACTION", "action is not supported", {"action": action}, 404)
+    if action in SESSION_SCHEMAS:
+        validate_atomic_params(action, params)
+        return
     if action == "image.inspect":
         _string(params, "path")
     elif action == "image.export":
+        if set(params) - {"input_path", "output_path", "quality", "loader"}:
+            raise AdapterError("INVALID_REQUEST", "image.export received unsupported parameters")
         _string(params, "input_path")
         _string(params, "output_path")
         if "quality" in params:
@@ -195,25 +220,6 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 raise AdapterError(
                     "INVALID_REQUEST", "params.colors must not exceed 256"
                 )
-        _optional_bool(params, "open_in_gui")
-    elif action == "image.adjust":
-        _string(params, "input_path")
-        _string(params, "output_path")
-        _reject_non_image_document_path(params, "input_path")
-        if not any(key in params for key in ("brightness", "contrast", "saturation")):
-            raise AdapterError("INVALID_REQUEST", "image.adjust requires an adjustment")
-        for field, minimum, maximum in (
-            ("brightness", -127, 127),
-            ("contrast", -127, 127),
-            ("saturation", -100, 100),
-        ):
-            if field in params:
-                value = _number(params, field)
-                if not minimum <= value <= maximum:
-                    raise AdapterError(
-                        "INVALID_REQUEST",
-                        f"params.{field} must be between {minimum} and {maximum}",
-                    )
         _optional_bool(params, "open_in_gui")
     elif action == "image.crop":
         allowed = {
@@ -357,6 +363,7 @@ def parse_action_request(payload: Any) -> ActionRequest:
             {"expected": ADAPTER_NAME, "actual": adapter},
         )
     action = data.get("action")
+    _reject_retired_action(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_ACTION", "action is not supported", {"action": action}

@@ -17,7 +17,8 @@ from typing import Any, Callable
 from .cdp import CDPClient, ensure_locator_result, locator_expression, url_matches
 from .errors import AdapterError, error_payload
 from .lifecycle import ChromeLifecycle
-from .schema import setting_verification_checks
+from .schema import setting_verification_checks, validate_action_params
+from .atomic_settings import ATOMIC_SETTINGS
 
 
 HOME = Path.home()
@@ -99,6 +100,8 @@ def _deep_get(data: Any, path: str) -> Any:
 
 
 def _set_preference(settings: dict[str, Any]) -> dict[str, Any]:
+    if len(settings) != 1:
+        raise AdapterError("INVALID_REQUEST", "The private preference writer requires exactly one semantic setting")
     observed: dict[str, Any] = {}
 
     def mutate() -> None:
@@ -817,12 +820,15 @@ def _verify(
 def execute(payload: dict[str, Any]) -> dict[str, Any]:
     action = payload["action"]
     params = payload.get("params") or {}
+    validate_action_params(action, params)
     target = payload.get("target") or {}
     cdp_timeout = _cdp_timeout_seconds(payload)
     lifecycle = ChromeLifecycle()
     cdp: CDPClient | None = None
 
-    if action == "browser.ensure_running":
+    if action in ATOMIC_SETTINGS:
+        result = {"observed": _set_preference({ATOMIC_SETTINGS[action]: params["value"]})}
+    elif action == "browser.ensure_running":
         result = lifecycle.prepare(25)
     elif action == "browser.restart":
         result = lifecycle.restart(30)
@@ -903,8 +909,6 @@ def execute(payload: dict[str, Any]) -> dict[str, Any]:
             tab = cdp.select_tab(target)
             page = _page_summary(cdp, tab)
             result = _bookmark_add(page["url"], page["title"])
-        elif action == "settings.set":
-            result = {"observed": _set_preference(params["settings"])}
         elif action == "privacy.delete_cookies":
             result = _delete_cookies(params["domain"])
         elif action == "privacy.delete_history":
@@ -921,8 +925,8 @@ def execute(payload: dict[str, Any]) -> dict[str, Any]:
             )
 
     checks = payload.get("verify") or []
-    if action == "settings.set" and not checks:
-        checks = setting_verification_checks(params["settings"])
+    if action in ATOMIC_SETTINGS and not checks:
+        checks = setting_verification_checks({ATOMIC_SETTINGS[action]: params["value"]})
     verification = _verify(checks, cdp)
     return {"result": result, "verification": verification, "logs": []}
 

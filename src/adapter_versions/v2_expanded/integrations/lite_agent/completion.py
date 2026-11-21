@@ -124,9 +124,8 @@ class CompletionMixin:
                 )
         vlc_recording_path = requested_vlc_recording_path(state.instruction)
         if vlc_recording_path is not None and not any(
-            event.proposed.get("arguments", {}).get("values")
-            == {"input-record-path": vlc_recording_path}
-            for event in state.successful_action_events("config.update")
+            event.proposed.get("arguments", {}).get("value") == vlc_recording_path
+            for event in state.successful_action_events("preferences.set_recording_directory")
         ):
             missing.append(
                 "set the VLC input-record-path preference to the exact requested recording directory "

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from .atomic_preferences import ATOMIC_PREFERENCES
+from .schema import validate_action_params
+
 import hashlib
 import json
 import os
@@ -244,27 +247,6 @@ def window_state(runner: CommandRunner) -> dict[str, Any]:
 class VlcActions:
     def __init__(self, runner: CommandRunner | None = None) -> None:
         self.runner = runner or CommandRunner()
-
-    def config_update(self, params: dict[str, Any], _timeout: float) -> dict[str, Any]:
-        values = {
-            str(key): "1" if value is True else "0" if value is False else str(value)
-            for key, value in dict(params["values"]).items()
-        }
-        return update_config(values, Path(params.get("path", VLC_CONFIG_PATH)))
-
-    def preferences_configure(
-        self, params: dict[str, Any], _timeout: float
-    ) -> dict[str, Any]:
-        values = semantic_preference_values(params)
-        result = update_config(values, VLC_CONFIG_PATH)
-        return {
-            **result,
-            "semantic_preferences": {
-                key: params[key]
-                for key in VLC_SEMANTIC_PREFERENCE_FIELDS
-                if key in params
-            },
-        }
 
     def playback_status(
         self, _params: dict[str, Any], timeout: float
@@ -780,6 +762,11 @@ class VlcActions:
     def dispatch(
         self, action: str, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
+        validate_action_params(action, params)
+        if action in ATOMIC_PREFERENCES:
+            field = ATOMIC_PREFERENCES[action]
+            values = semantic_preference_values({field: params["value"]})
+            return update_config(values, VLC_CONFIG_PATH)
         method = getattr(self, action.replace(".", "_"), None)
         if method is None:
             raise AdapterError(

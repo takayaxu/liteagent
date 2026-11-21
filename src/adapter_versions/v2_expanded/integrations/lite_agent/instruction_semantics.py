@@ -1427,35 +1427,17 @@ def semantic_configuration_actions(domain: str, instruction: str) -> list[str]:
     ):
         return ["notifications.configure"]
     if domain == "vlc":
-        is_global_play_pause = bool(
-            re.search(r"(?i)\b(?:hotkey|shortcut|keyboard)\b", instruction)
-            and re.search(r"(?i)\b(?:play|pause|start)\b", instruction)
-        )
-        is_maximum_volume = bool(
-            re.search(r"(?i)\b(?:max|maximum)\b", instruction)
-            and re.search(r"(?i)\bvolume\b", instruction)
-        )
-        is_slider_color = bool(
-            re.search(r"(?i)\b(?:slider|volume\s+control)\b", instruction)
-            and re.search(r"(?i)\bcolou?r\b", instruction)
-        )
-        is_persistent_interface_setting = bool(
-            re.search(
-                r"(?i)\b(?:minimal\s+interface|auto[- ]?clos(?:e|ing)|exit\s+after|"
-                r"multiple\s+instances?|cone|splash)\b",
-                instruction,
-            )
-        )
-        if any(
-            (
-                is_global_play_pause,
-                is_maximum_volume,
-                is_slider_color,
-                is_persistent_interface_setting,
-            )
-        ):
-            return ["preferences.configure"]
-        return []
+        patterns = {
+            "global_play_pause_hotkey": r"(?:hotkey|shortcut|keyboard).*|global.*play.*pause",
+            "maximum_volume_percent": r"(?:max|maximum).*volume",
+            "volume_slider_color": r"(?:slider|volume\s+control).*colou?r",
+            "minimal_interface": r"minimal\s+interface",
+            "exit_after_playback": r"auto[- ]?clos|exit\s+after",
+            "allow_multiple_instances": r"multiple\s+instances?",
+            "show_background_cone": r"cone|splash",
+        }
+        return ["preferences.set_" + field for field, pattern in patterns.items()
+                if re.search(pattern, instruction, re.I)]
     if domain != "thunderbird":
         return []
     actions: list[str] = []

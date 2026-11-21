@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .atomic_preferences import ATOMIC_PREFERENCE_SCHEMAS
+
 
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
     "playback.status": {
@@ -17,81 +19,6 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         ),
         "properties": {},
         "required": [],
-        "additionalProperties": False,
-    },
-    "preferences.configure": {
-        "properties": {
-            "global_play_pause_hotkey": {
-                "type": "string",
-                "minLength": 1,
-                "description": "VLC global Play/Pause key name, for example Media Play Pause.",
-            },
-            "maximum_volume_percent": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 300,
-                "description": "Maximum volume shown by the VLC Qt interface, as a percentage.",
-            },
-            "volume_slider_color": {
-                "type": "string",
-                "pattern": "^#[0-9A-Fa-f]{6}$",
-                "description": "One #RRGGBB color applied to all VLC volume-slider states.",
-            },
-            "minimal_interface": {
-                "type": "boolean",
-                "description": "True hides the normal playback controls in window mode.",
-            },
-            "exit_after_playback": {
-                "type": "boolean",
-                "description": "Whether VLC exits automatically when playback ends.",
-            },
-            "allow_multiple_instances": {
-                "type": "boolean",
-                "description": "Whether desktop-opened files may start independent VLC instances.",
-            },
-            "show_background_cone": {
-                "type": "boolean",
-                "description": "Whether the VLC cone is shown in the empty-player background.",
-            },
-            "recording_directory": {
-                "type": "string",
-                "minLength": 1,
-                "pattern": "^/.*",
-                "description": (
-                    "Explicit absolute directory where VLC stores recordings, for example "
-                    "/srv/media/captures. Use recording_location instead when the request "
-                    "names a standard user directory without an absolute path."
-                ),
-            },
-            "recording_location": {
-                "type": "string",
-                "enum": ["desktop", "downloads", "videos", "music", "home"],
-                "description": (
-                    "Standard directory under the active user's home. Select this when the "
-                    "request says Desktop, Downloads, Videos, Music, or the home directory "
-                    "without giving an absolute path."
-                ),
-            },
-        },
-        "required": [],
-        "anyOf": [
-            {"required": ["global_play_pause_hotkey"]},
-            {"required": ["maximum_volume_percent"]},
-            {"required": ["volume_slider_color"]},
-            {"required": ["minimal_interface"]},
-            {"required": ["exit_after_playback"]},
-            {"required": ["allow_multiple_instances"]},
-            {"required": ["show_background_cone"]},
-            {"required": ["recording_directory"]},
-            {"required": ["recording_location"]},
-        ],
-        "allOf": [
-            {
-                "not": {
-                    "required": ["recording_directory", "recording_location"],
-                }
-            }
-        ],
         "additionalProperties": False,
     },
     "playback.open": {
@@ -141,3 +68,5 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "additionalProperties": False,
     },
 }
+
+STRICT_ACTION_PARAM_SCHEMAS.update(ATOMIC_PREFERENCE_SCHEMAS)

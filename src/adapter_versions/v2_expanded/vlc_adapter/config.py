@@ -54,7 +54,7 @@ def update_config(
         pattern = re.compile(rf"(?m)^[ \t]*#?[ \t]*{re.escape(key)}=.*$")
         replacement = f"{key}={value}"
         if pattern.search(text):
-            text = pattern.sub(replacement, text)
+            text = pattern.sub(lambda _match: replacement, text)
         else:
             if text and not text.endswith("\n"):
                 text += "\n"

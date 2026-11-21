@@ -42,8 +42,6 @@ ACTIONS = frozenset(
         "desktop.set_wallpaper",
         "desktop.applications.inspect",
         "desktop.mime_associations.set",
-        "desktop.set_accessibility_scale",
-        "desktop.set_dim_inactive",
         "desktop.favorites.list",
         "desktop.remove_favorite",
         "audio.set_volume",
@@ -54,7 +52,6 @@ ACTIONS = frozenset(
         "terminal.launch",
         "window.capture",
         "document.convert",
-        "archive.create_extract",
         "archive.create_zip",
         "archive.extract_zip",
         "archive.compress_file",
@@ -220,7 +217,25 @@ def _verification(value: Any) -> list[dict[str, Any]]:
     return checks
 
 
+RETIRED_ACTION_REPLACEMENTS = {
+    'archive.create_extract': ['archive.create_zip', 'archive.extract_zip'],
+    'desktop.set_accessibility_scale': ['desktop.set_setting'],
+    'desktop.set_dim_inactive': ['desktop.set_setting'],
+}
+
+
+def _reject_retired_action(action: str) -> None:
+    replacements = RETIRED_ACTION_REPLACEMENTS.get(action)
+    if replacements is not None:
+        raise AdapterError('UNSUPPORTED_ACTION', f"{action} has been retired; call one registered single-operation replacement at a time: {', '.join(replacements)}",
+            {"conflicting_action": action, "replacement_actions": replacements,
+             "correct_usage": "Use tools_search to obtain the replacement schema, then provide only its documented fields in a separate call."})
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    _reject_retired_action(action)
+    if action not in ACTIONS:
+        raise AdapterError("UNSUPPORTED_ACTION", "action is not supported", {"action": action}, 404)
     if action == "filesystem.find":
         patterns = _string_list(params, "name_patterns")
         if len(patterns) > 16 or len(set(patterns)) != len(patterns):
@@ -435,6 +450,8 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             _string(params, "key")
     elif action in {"desktop.set_setting", "terminal.default_profile.set_setting"}:
         if action == "desktop.set_setting":
+            if set(params) - {"schema", "key", "value"}:
+                raise AdapterError("INVALID_REQUEST", "only schema, key and value are accepted")
             _string(params, "schema")
         elif set(params) - {"key", "value"}:
             raise AdapterError("INVALID_REQUEST", "only key and value parameters are accepted")
@@ -554,18 +571,6 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 "INVALID_REQUEST",
                 f"params.{field} must contain unique valid MIME selectors (at most 20)",
             )
-    elif action == "desktop.set_accessibility_scale":
-        text_factor = _number(params, "text_factor")
-        mag_factor = _number(params, "magnifier_factor")
-        if not 0.5 <= text_factor <= 3.0 or not 0.1 <= mag_factor <= 32.0:
-            raise AdapterError(
-                "INVALID_REQUEST", "accessibility factors are out of range"
-            )
-    elif action == "desktop.set_dim_inactive":
-        if "idle_delay" in params:
-            _integer(params, "idle_delay", 0, 2**32 - 1)
-        if not isinstance(params.get("idle_dim"), bool):
-            raise AdapterError("INVALID_REQUEST", "params.idle_dim must be a boolean")
     elif action == "desktop.favorites.list":
         unexpected = sorted(set(params) - {"offset", "max_results"})
         if unexpected:
@@ -733,39 +738,14 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
                 "INVALID_REQUEST", "params.destination has an unsupported extension"
             )
         _bool(params, "overwrite")
-    elif action in {"archive.create_zip", "archive.extract_zip"}:
-        creating = action == "archive.create_zip"
-        allowed = ({"archive_path", "input_paths", "base_directory", "overwrite"}
-                   if creating else {"archive_path", "destination_directory", "overwrite"})
-        unexpected = sorted(set(params) - allowed)
-        if unexpected:
-            raise AdapterError(
-                "INVALID_REQUEST", f"{action} received unsupported parameters",
-                {"unexpected": unexpected, "allowed": sorted(allowed)},
-            )
-        validate_action_params(
-            "archive.create_extract", {**params, "mode": "create" if creating else "extract"},
-        )
-    elif action == "archive.create_extract":
-        allowed = {
-            "mode",
-            "archive_path",
-            "input_paths",
-            "base_directory",
-            "destination_directory",
-            "overwrite",
-        }
+    elif action == "archive.create_zip":
+        allowed = {"archive_path", "input_paths", "base_directory", "overwrite"}
         unexpected = sorted(set(params) - allowed)
         if unexpected:
             raise AdapterError(
                 "INVALID_REQUEST",
-                "archive.create_extract received unsupported parameters",
+                "archive.create_zip received unsupported parameters; use archive.extract_zip for destination_directory",
                 {"unexpected": unexpected, "allowed": sorted(allowed)},
-            )
-        mode = _string(params, "mode")
-        if mode not in {"create", "extract"}:
-            raise AdapterError(
-                "INVALID_REQUEST", "params.mode must be create or extract"
             )
         archive_path = _string(params, "archive_path")
         if not archive_path.startswith(("/", "~/")):
@@ -777,42 +757,50 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             raise AdapterError(
                 "INVALID_REQUEST", "params.archive_path must end with .zip"
             )
-        if mode == "create":
-            input_paths = _string_list(params, "input_paths")
-            if len(input_paths) > 256 or len(set(input_paths)) != len(input_paths):
+        input_paths = _string_list(params, "input_paths")
+        if len(input_paths) > 256 or len(set(input_paths)) != len(input_paths):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.input_paths must contain at most 256 unique paths",
+            )
+        if any(not path.startswith(("/", "~/")) for path in input_paths):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.input_paths must contain absolute or ~/ paths",
+            )
+        if "base_directory" in params:
+            base_directory = _string(params, "base_directory")
+            if not base_directory.startswith(("/", "~/")):
                 raise AdapterError(
                     "INVALID_REQUEST",
-                    "params.input_paths must contain at most 256 unique paths",
+                    "params.base_directory must be absolute or begin with ~/",
                 )
-            if any(not path.startswith(("/", "~/")) for path in input_paths):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.input_paths must contain absolute or ~/ paths",
-                )
-            if "destination_directory" in params:
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.destination_directory is valid only with mode=extract",
-                )
-            if "base_directory" in params:
-                base_directory = _string(params, "base_directory")
-                if not base_directory.startswith(("/", "~/")):
-                    raise AdapterError(
-                        "INVALID_REQUEST",
-                        "params.base_directory must be absolute or begin with ~/",
-                    )
-        else:
-            if "input_paths" in params or "base_directory" in params:
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.input_paths and params.base_directory are valid only with mode=create",
-                )
-            destination = _string(params, "destination_directory")
-            if not destination.startswith(("/", "~/")):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.destination_directory must be absolute or begin with ~/",
-                )
+        _bool(params, "overwrite")
+    elif action == "archive.extract_zip":
+        allowed = {"archive_path", "destination_directory", "overwrite"}
+        unexpected = sorted(set(params) - allowed)
+        if unexpected:
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "archive.extract_zip received unsupported parameters; use archive.create_zip for input_paths",
+                {"unexpected": unexpected, "allowed": sorted(allowed)},
+            )
+        archive_path = _string(params, "archive_path")
+        if not archive_path.startswith(("/", "~/")):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.archive_path must be absolute or begin with ~/",
+            )
+        if Path(archive_path).suffix.casefold() != ".zip":
+            raise AdapterError(
+                "INVALID_REQUEST", "params.archive_path must end with .zip"
+            )
+        destination = _string(params, "destination_directory")
+        if not destination.startswith(("/", "~/")):
+            raise AdapterError(
+                "INVALID_REQUEST",
+                "params.destination_directory must be absolute or begin with ~/",
+            )
         _bool(params, "overwrite")
     elif action == "archive.compress_file":
         allowed = {"source", "destination", "remove_source", "overwrite"}
@@ -1132,6 +1120,7 @@ def parse_action_request(raw: Any) -> ActionRequest:
     if adapter != ADAPTER_NAME:
         raise AdapterError("INVALID_REQUEST", f"adapter must be {ADAPTER_NAME}")
     action = data.get("action")
+    _reject_retired_action(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_ACTION", "action is not supported", {"action": action}, 404

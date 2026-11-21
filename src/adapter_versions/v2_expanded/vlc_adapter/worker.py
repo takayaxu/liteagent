@@ -5,6 +5,7 @@ import sys
 import time
 from typing import Any
 
+from .atomic_preferences import ATOMIC_PREFERENCES
 from .actions import VlcActions
 from .errors import AdapterError, error_payload
 from .verifier import verify_specs
@@ -15,7 +16,7 @@ def _default_specs(
     params: dict[str, Any],
     result: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    if action in {"config.update", "preferences.configure"}:
+    if action in ATOMIC_PREFERENCES:
         return [{"type": "config", "path": result["path"], "values": result["values"]}]
     if action == "playback.status":
         return [{"type": "status"}]

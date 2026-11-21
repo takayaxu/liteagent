@@ -307,25 +307,6 @@ class ScriptFuRunner:
             timeout_seconds=timeout_seconds,
         )
 
-    def adjust(self, params: dict[str, Any], timeout_seconds: float) -> dict[str, Any]:
-        commands: list[str] = []
-        brightness = int(params.get("brightness", 0))
-        contrast = int(params.get("contrast", 0))
-        if brightness or contrast:
-            commands.append(
-                f"(gimp-brightness-contrast drawable {brightness} {contrast})"
-            )
-        saturation = float(params.get("saturation", 0))
-        if saturation:
-            commands.append(f"(gimp-hue-saturation drawable 0 0 0 {saturation})")
-        return self._run_image_operation(
-            params["input_path"],
-            params["output_path"],
-            "\n  ".join(commands),
-            open_in_gui=bool(params.get("open_in_gui", False)),
-            timeout_seconds=timeout_seconds,
-        )
-
     def flip(self, params: dict[str, Any], timeout_seconds: float) -> dict[str, Any]:
         orientation = 0 if params.get("direction", "horizontal") == "horizontal" else 1
         operation = f"(gimp-item-transform-flip-simple drawable {orientation} 1 0)"

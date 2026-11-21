@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .atomic_settings import validate_atomic_params, ATOMIC_SETTINGS
 from dataclasses import dataclass
 from typing import Any, Mapping
 from uuid import uuid4
@@ -32,7 +33,7 @@ ACTIONS = frozenset(
         "page.read",
         "bookmark.create_folder",
         "bookmark.add_current",
-        "settings.set",
+        *ATOMIC_SETTINGS,
         "privacy.delete_cookies",
         "privacy.delete_history",
         "extension.load_unpacked",
@@ -188,7 +189,8 @@ def _normalize_settings(params: dict[str, Any]) -> dict[str, Any]:
 
 def setting_verification_checks(settings: Mapping[str, Any]) -> list[dict[str, Any]]:
     normalized = _normalize_settings({"settings": settings})["settings"]
-    validate_action_params("settings.set", {"settings": normalized})
+    for field, value in normalized.items():
+        validate_action_params("settings.set_" + field, {"value": value})
     expected_values = {
         "startup_mode": {"continue": 1, "new_tab": 5},
         "appearance": {"system": 0, "light": 1, "dark": 2},
@@ -310,7 +312,23 @@ def _verification(value: Any) -> list[dict[str, Any]]:
     return checks
 
 
+RETIRED_ACTION_REPLACEMENTS = {
+    'settings.set': [name for name in ACTIONS if name.startswith('settings.set_')],
+}
+
+
+def _reject_retired_action(action: str) -> None:
+    replacements = RETIRED_ACTION_REPLACEMENTS.get(action)
+    if replacements is not None:
+        raise AdapterError('UNSUPPORTED_OPERATION', f"{action} has been retired; call one registered single-operation replacement at a time: {', '.join(replacements)}",
+            {"conflicting_action": action, "replacement_actions": replacements,
+             "correct_usage": "Use tools_search to obtain the replacement schema, then provide only its documented fields in a separate call."})
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
+    _reject_retired_action(action)
+    if action not in ACTIONS:
+        raise AdapterError("UNSUPPORTED_OPERATION", "unsupported Chrome action", {"action": action})
     if action in {"tab.open", "page.goto"}:
         _required_string(params, "url")
     elif action in {"tab.activate", "tab.close"}:
@@ -343,43 +361,8 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             _locator(params["locator"])
     elif action == "bookmark.create_folder":
         _required_string(params, "name")
-    elif action == "settings.set":
-        settings = _mapping(params.get("settings"), "params.settings")
-        if not settings:
-            raise AdapterError("INVALID_REQUEST", "params.settings must not be empty")
-        unsupported = sorted(set(settings) - SETTING_KEYS)
-        if unsupported:
-            raise AdapterError(
-                "INVALID_REQUEST", "unsupported Chrome settings", {"keys": unsupported}
-            )
-        if "profile_name" in settings:
-            _required_string(settings, "profile_name", "params.settings")
-        if "startup_mode" in settings and settings["startup_mode"] not in {
-            "new_tab",
-            "continue",
-        }:
-            raise AdapterError(
-                "INVALID_REQUEST", "startup_mode must be new_tab or continue"
-            )
-        if "appearance" in settings and settings["appearance"] not in {
-            "light",
-            "dark",
-            "system",
-        }:
-            raise AdapterError(
-                "INVALID_REQUEST", "appearance must be light, dark, or system"
-            )
-        if "font_size" in settings:
-            _positive_int(settings, "font_size", "params.settings")
-        if "search_engine" in settings and settings["search_engine"] not in {
-            "bing",
-            "google",
-        }:
-            raise AdapterError(
-                "INVALID_REQUEST", "search_engine must be bing or google"
-            )
-        for key in ("do_not_track", "safe_browsing", "clear_on_exit"):
-            _optional_bool(settings, key, "params.settings")
+    elif action in ATOMIC_SETTINGS:
+        validate_atomic_params(action, params)
     elif action == "privacy.delete_cookies":
         _required_string(params, "domain")
     elif action == "privacy.delete_history":
@@ -412,6 +395,7 @@ def parse_action_request(payload: Any) -> ActionRequest:
             {"expected": ADAPTER_NAME, "actual": adapter},
         )
     action = data.get("action")
+    _reject_retired_action(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_OPERATION", "action is not supported", {"action": action}
@@ -430,8 +414,6 @@ def parse_action_request(payload: Any) -> ActionRequest:
     elif action in TARGET_REQUIRED_ACTIONS:
         _target(target)
     params = _mapping(data.get("params"), "params")
-    if action == "settings.set":
-        params = _normalize_settings(params)
     validate_action_params(action, params)
     return ActionRequest(
         request_id=request_id,

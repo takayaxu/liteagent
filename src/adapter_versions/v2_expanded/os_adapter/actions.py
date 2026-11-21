@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .active_directory import resolve_active_desktop_directory
-from .archive import create_or_extract_archive, create_zip_archive, extract_zip_archive
+from .archive import create_zip, extract_zip
 from .command import (
     CommandRunner,
     gsettings_failure_guidance,
@@ -1113,55 +1113,6 @@ class OSActions:
             timeout,
         )
         return {"do_not_disturb": do_not_disturb, "settings": [setting]}
-
-    def set_accessibility_scale(
-        self, params: dict[str, Any], timeout: float
-    ) -> dict[str, Any]:
-        values = [
-            (
-                "org.gnome.desktop.interface",
-                "text-scaling-factor",
-                float(params["text_factor"]),
-            ),
-            ("org.gnome.desktop.a11y.applications", "screen-magnifier-enabled", True),
-            (
-                "org.gnome.desktop.a11y.magnifier",
-                "mag-factor",
-                float(params["magnifier_factor"]),
-            ),
-        ]
-        settings = [
-            self.set_setting({"schema": schema, "key": key, "value": value}, timeout)
-            for schema, key, value in values
-        ]
-        return {"settings": settings}
-
-    def set_dim_inactive(
-        self, params: dict[str, Any], timeout: float
-    ) -> dict[str, Any]:
-        settings = []
-        if "idle_delay" in params:
-            settings.append(
-                self.set_setting(
-                    {
-                        "schema": "org.gnome.desktop.session",
-                        "key": "idle-delay",
-                        "value": int(params["idle_delay"]),
-                    },
-                    timeout,
-                )
-            )
-        settings.append(
-            self.set_setting(
-                {
-                    "schema": "org.gnome.settings-daemon.plugins.power",
-                    "key": "idle-dim",
-                    "value": bool(params["idle_dim"]),
-                },
-                timeout,
-            )
-        )
-        return {"settings": settings}
 
     def remove_favorite(
         self, params: dict[str, Any], _timeout: float
@@ -2342,8 +2293,6 @@ class OSActions:
             "desktop.set_wallpaper": self.set_wallpaper,
             "desktop.applications.inspect": self.inspect_desktop_applications,
             "desktop.mime_associations.set": self.set_mime_associations,
-            "desktop.set_accessibility_scale": self.set_accessibility_scale,
-            "desktop.set_dim_inactive": self.set_dim_inactive,
             "desktop.favorites.list": self.list_favorites,
             "desktop.remove_favorite": self.remove_favorite,
             "audio.set_volume": self.set_volume,
@@ -2354,9 +2303,8 @@ class OSActions:
             "terminal.launch": self.launch_terminal,
             "window.capture": self.capture_window,
             "document.convert": self.convert_document,
-            "archive.create_extract": create_or_extract_archive,
-            "archive.create_zip": create_zip_archive,
-            "archive.extract_zip": extract_zip_archive,
+            "archive.create_zip": create_zip,
+            "archive.extract_zip": extract_zip,
             "archive.compress_file": self.compress_file,
             "pdf.outline.inspect": inspect_pdf_outline,
             "pdf.form.inspect": inspect_pdf_form,

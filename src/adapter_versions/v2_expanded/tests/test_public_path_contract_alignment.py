@@ -136,7 +136,7 @@ def test_native_tool_description_keeps_usage_without_a_second_schema(wrapped) ->
             build_tools("multi_apps", ["adapter.call"], include_gui=False),
             [(domain, action)],
         )[0]["function"]
-        params = function["parameters"]["oneOf"][0]["properties"]["payload"][
+        params = function["parameters"]["properties"]["payload"][
             "properties"
         ]["params"]
         assert owner["description"] == params["description"]
@@ -186,9 +186,9 @@ def test_restricted_route_description_explains_how_to_search_another_operation()
     assert "call tools_search again" in function["description"]
     assert "do not substitute a different listed action" in function["description"]
     assert any(tool["function"]["name"] == "tools_search" for tool in tools)
-    branches = function["parameters"]["oneOf"]
-    assert len(branches) == 1
-    assert branches[0]["properties"]["action"]["enum"] == ["file.read_text"]
+    schema = function["parameters"]
+    assert schema["x-allowed-routes"] == [{"adapter": "vs_code", "action": "file.read_text"}]
+    assert schema["properties"]["action"]["enum"] == ["file.read_text"]
 
 
 def test_runtime_contracts_keep_the_same_absolute_path_rule() -> None:
@@ -217,7 +217,7 @@ def test_runtime_contracts_keep_the_same_absolute_path_rule() -> None:
         ("os", "filesystem.find", "roots", ["/srv/project", "~/project", "~"]),
         ("os", "user.ensure_account", "home", ["/srv/users/example"]),
         ("thunderbird", "contacts.export_csv", "output_path", ["/srv/export/contacts.csv", "~/contacts.csv"]),
-        ("vlc", "preferences.configure", "recording_directory", ["/srv/media/captures"]),
+        ("vlc", "preferences.set_recording_directory", "value", ["/srv/media/captures"]),
         ("libreoffice_calc", "workbook.export", "url", ["/srv/export/report.pdf", "file:///srv/export/report.pdf"]),
     ],
 )
@@ -232,7 +232,7 @@ def test_public_path_pattern_accepts_complete_decoder_strings(
             ),
             [(domain, action)],
         )
-        schema = tools[0]["function"]["parameters"]["oneOf"][0]["properties"]["payload"][
+        schema = tools[0]["function"]["parameters"]["properties"]["payload"][
             "properties"
         ]["params"]
     else:

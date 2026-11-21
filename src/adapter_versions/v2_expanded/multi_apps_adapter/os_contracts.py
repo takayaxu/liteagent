@@ -19,26 +19,7 @@ def _string(params: Mapping[str, Any], field: str) -> str:
     return value
 
 
-def validate_archive_create_extract_params(params: Mapping[str, Any]) -> None:
-    allowed = {
-        "mode",
-        "archive_path",
-        "input_paths",
-        "base_directory",
-        "destination_directory",
-        "overwrite",
-    }
-    unexpected = sorted(set(params) - allowed)
-    if unexpected:
-        raise AdapterError(
-            "INVALID_REQUEST",
-            "archive.create_extract received unsupported parameters",
-            {"unexpected": unexpected, "allowed": sorted(allowed)},
-        )
-
-    mode = _string(params, "mode")
-    if mode not in {"create", "extract"}:
-        raise AdapterError("INVALID_REQUEST", "params.mode must be create or extract")
+def _validate_archive_path(params: Mapping[str, Any]) -> str:
     archive_path = _string(params, "archive_path")
     if not archive_path.startswith(("/", "~/")):
         raise AdapterError(
@@ -47,52 +28,64 @@ def validate_archive_create_extract_params(params: Mapping[str, Any]) -> None:
         )
     if Path(archive_path).suffix.casefold() != ".zip":
         raise AdapterError("INVALID_REQUEST", "params.archive_path must end with .zip")
+    return archive_path
 
-    if mode == "create":
-        input_paths = params.get("input_paths")
-        if (
-            not isinstance(input_paths, list)
-            or not 1 <= len(input_paths) <= 256
-            or len(set(item for item in input_paths if isinstance(item, str)))
-            != len(input_paths)
-            or any(
-                not isinstance(path, str)
-                or not path
-                or not path.startswith(("/", "~/"))
-                for path in input_paths
-            )
-        ):
+
+def validate_archive_create_zip_params(params: Mapping[str, Any]) -> None:
+    allowed = {"archive_path", "input_paths", "base_directory", "overwrite"}
+    unexpected = sorted(set(params) - allowed)
+    if unexpected:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "archive.create_zip received unsupported parameters; use archive.extract_zip for destination_directory",
+            {"unexpected": unexpected, "allowed": sorted(allowed)},
+        )
+    _validate_archive_path(params)
+    input_paths = params.get("input_paths")
+    if (
+        not isinstance(input_paths, list)
+        or not 1 <= len(input_paths) <= 256
+        or len(set(item for item in input_paths if isinstance(item, str))) != len(input_paths)
+        or any(
+            not isinstance(path, str)
+            or not path
+            or not path.startswith(("/", "~/"))
+            for path in input_paths
+        )
+    ):
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "params.input_paths must contain from 1 to 256 unique absolute or ~/ paths",
+        )
+    if "base_directory" in params:
+        base = _string(params, "base_directory")
+        if not base.startswith(("/", "~/")):
             raise AdapterError(
                 "INVALID_REQUEST",
-                "params.input_paths must contain from 1 to 256 unique absolute or ~/ paths",
-            )
-        if "destination_directory" in params:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params.destination_directory is valid only with mode=extract",
-            )
-        if "base_directory" in params:
-            base = _string(params, "base_directory")
-            if not base.startswith(("/", "~/")):
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    "params.base_directory must be absolute or begin with ~/",
-                )
-    else:
-        if "input_paths" in params or "base_directory" in params:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params.input_paths and params.base_directory are valid only with mode=create",
-            )
-        destination = _string(params, "destination_directory")
-        if not destination.startswith(("/", "~/")):
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params.destination_directory must be absolute or begin with ~/",
+                "params.base_directory must be absolute or begin with ~/",
             )
     if "overwrite" in params and not isinstance(params["overwrite"], bool):
         raise AdapterError("INVALID_REQUEST", "params.overwrite must be a boolean")
 
+
+def validate_archive_extract_zip_params(params: Mapping[str, Any]) -> None:
+    allowed = {"archive_path", "destination_directory", "overwrite"}
+    unexpected = sorted(set(params) - allowed)
+    if unexpected:
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "archive.extract_zip received unsupported parameters; use archive.create_zip for input_paths",
+            {"unexpected": unexpected, "allowed": sorted(allowed)},
+        )
+    _validate_archive_path(params)
+    destination = _string(params, "destination_directory")
+    if not destination.startswith(("/", "~/")):
+        raise AdapterError(
+            "INVALID_REQUEST",
+            "params.destination_directory must be absolute or begin with ~/",
+        )
+    if "overwrite" in params and not isinstance(params["overwrite"], bool):
+        raise AdapterError("INVALID_REQUEST", "params.overwrite must be a boolean")
 
 def validate_pdf_split_by_outline_params(params: Mapping[str, Any]) -> None:
     allowed = {

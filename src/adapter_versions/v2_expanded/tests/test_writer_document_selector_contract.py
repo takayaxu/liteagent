@@ -93,9 +93,9 @@ def test_valid_document_selection_still_uses_requested_identity(selector, monkey
 def test_zip_creation_description_is_visible_in_discovery_and_actual_tools():
     matches = search_actions("multi_apps", "create ZIP archive from files", limit=7,
                              strict_generic=True)
-    result = next(item for item in matches if item.get("downstream_action") == "archive.create_extract")
-    assert "mode='create'" in result["description"]
+    result = next(item for item in matches if item.get("downstream_action") == "archive.create_zip")
+    assert "Create exactly one ZIP" in result["description"]
     assert "input_paths" in result["description"]
-    tools, bindings = atomic_provider_surface(_tools([("os", "archive.create_extract")]))
+    tools, bindings = atomic_provider_surface(_tools([("os", "archive.create_zip")]))
     assert bindings
-    assert "Create a new ZIP" in tools[0]["function"]["description"]
+    assert result["description"] in tools[0]["function"]["description"]

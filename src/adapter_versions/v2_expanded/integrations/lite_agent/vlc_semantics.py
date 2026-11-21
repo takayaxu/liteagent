@@ -33,7 +33,7 @@ def required_actions(domain: str, instruction: str) -> list[str]:
         _DIRECTORY_RE.search(instruction)
         or re.search(r"(?<![\w.-])/[\w .~/-]+", instruction)
     ):
-        actions.append("preferences.configure")
+        actions.append("preferences.set_recording_directory")
     if (
         _PLAY_RE.search(_FUTURE_USE_RE.sub("", instruction))
         and _LOCAL_LOCATION_RE.search(instruction)

@@ -59,18 +59,16 @@ def _contrast(image: Image.Image) -> float:
 
 def compare_metric(actual: str, reference: str, metric: str) -> dict[str, Any]:
     with Image.open(actual) as actual_image, Image.open(reference) as reference_image:
-        if metric == "brightness_decreased":
-            observed = _brightness(actual_image)
-            baseline = _brightness(reference_image)
-            passed = observed < baseline
-        elif metric == "saturation_increased":
-            observed = _saturation(actual_image)
-            baseline = _saturation(reference_image)
-            passed = observed > baseline
-        elif metric == "contrast_increased":
-            observed = _contrast(actual_image)
-            baseline = _contrast(reference_image)
-            passed = observed > baseline
+        if metric in {
+            "brightness_decreased", "brightness_increased",
+            "saturation_decreased", "saturation_increased",
+            "contrast_decreased", "contrast_increased",
+        }:
+            field, direction = metric.rsplit("_", 1)
+            measure = {"brightness": _brightness, "saturation": _saturation, "contrast": _contrast}[field]
+            observed = measure(actual_image)
+            baseline = measure(reference_image)
+            passed = observed > baseline if direction == "increased" else observed < baseline
         elif metric == "mirror":
             expected = reference_image.convert("RGB").transpose(
                 Image.Transpose.FLIP_LEFT_RIGHT
@@ -138,8 +136,11 @@ def verify_specs(
                 )
         elif check_type in {
             "brightness_decreased",
+            "brightness_increased",
             "saturation_increased",
+            "saturation_decreased",
             "contrast_increased",
+            "contrast_decreased",
             "mirror",
         }:
             reference = str(

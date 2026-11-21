@@ -369,17 +369,9 @@ def _extract(params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def create_or_extract_archive(
-    params: dict[str, Any], _timeout: float
-) -> dict[str, Any]:
-    if params["mode"] == "create":
-        return _create(params)
+def create_zip(params: dict[str, Any], _timeout: float) -> dict[str, Any]:
+    return _create(params)
+
+
+def extract_zip(params: dict[str, Any], _timeout: float) -> dict[str, Any]:
     return _extract(params)
-
-
-def create_zip_archive(params: dict[str, Any], timeout: float) -> dict[str, Any]:
-    return create_or_extract_archive({**params, "mode": "create"}, timeout)
-
-
-def extract_zip_archive(params: dict[str, Any], timeout: float) -> dict[str, Any]:
-    return create_or_extract_archive({**params, "mode": "extract"}, timeout)

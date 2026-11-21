@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from .atomic_settings import ATOMIC_SETTINGS
+from .schema import validate_action_params
+
 import re
 import time
 from math import gcd
@@ -19,14 +22,11 @@ from .controller_accessibility import (
     wait_for_source_breakpoint,
 )
 from .debug_control import continue_debug_session, stop_debug_session
-from .debugging import DEBUGGING_SETTING_FIELDS, debugging_settings
 from .diagnostics import diagnostic_setting
-from .editor import EDITOR_SETTING_FIELDS, editor_settings
 from .errors import AdapterError
 from .explorer import exclusion_setting
 from .extensions import resolve_installed_extension_id, vsix_extension_id
 from .offline_extensions import offline_extension_path
-from .files import FILES_SETTING_FIELDS, file_settings
 from .jsonfiles import atomic_write_json, atomic_write_text, deep_merge, load_json
 from .keybindings import normalize_binding
 from .verifier import extension_state, window_state
@@ -100,7 +100,7 @@ class VscodeActions:
     def __init__(self, runner: CommandRunner | None = None) -> None:
         self.runner = runner or CommandRunner()
 
-    def settings_update(
+    def _settings_update(
         self, params: dict[str, Any], _timeout: float
     ) -> dict[str, Any]:
         path = Path(params.get("path", SETTINGS_PATH)).expanduser()
@@ -121,7 +121,7 @@ class VscodeActions:
         update_params: dict[str, Any] = {"values": values}
         if "path" in params:
             update_params["path"] = params["path"]
-        result = self.settings_update(update_params, timeout)
+        result = self._settings_update(update_params, timeout)
         return {
             **result,
             "pattern": params["pattern"],
@@ -140,62 +140,13 @@ class VscodeActions:
         update_params: dict[str, Any] = {"values": values}
         if "path" in params:
             update_params["path"] = params["path"]
-        result = self.settings_update(update_params, timeout)
+        result = self._settings_update(update_params, timeout)
         return {
             **result,
             "language": language,
             "diagnostic": diagnostic,
             "severity": severity,
             "setting_key": setting_key,
-        }
-
-    def debugging_configure(
-        self, params: dict[str, Any], timeout: float
-    ) -> dict[str, Any]:
-        values = debugging_settings(params)
-        update_params: dict[str, Any] = {"values": values}
-        if "path" in params:
-            update_params["path"] = params["path"]
-        result = self.settings_update(update_params, timeout)
-        return {
-            **result,
-            "configured": {
-                field: params[field]
-                for field in DEBUGGING_SETTING_FIELDS
-                if field in params
-            },
-        }
-
-    def editor_configure(
-        self, params: dict[str, Any], timeout: float
-    ) -> dict[str, Any]:
-        values = editor_settings(params)
-        update_params: dict[str, Any] = {"values": values}
-        if "path" in params:
-            update_params["path"] = params["path"]
-        result = self.settings_update(update_params, timeout)
-        return {
-            **result,
-            "configured": {
-                field: params[field]
-                for field in EDITOR_SETTING_FIELDS
-                if field in params
-            },
-        }
-
-    def files_configure(self, params: dict[str, Any], timeout: float) -> dict[str, Any]:
-        values = file_settings(params)
-        update_params: dict[str, Any] = {"values": values}
-        if "path" in params:
-            update_params["path"] = params["path"]
-        result = self.settings_update(update_params, timeout)
-        return {
-            **result,
-            "configured": {
-                field: params[field]
-                for field in FILES_SETTING_FIELDS
-                if field in params
-            },
         }
 
     def keybindings_ensure(
@@ -918,6 +869,14 @@ class VscodeActions:
     def dispatch(
         self, action: str, params: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
+        validate_action_params(action, params)
+        if action in ATOMIC_SETTINGS:
+            key, choices = ATOMIC_SETTINGS[action]
+            value = choices[params["value"]] if choices is not None else params["value"]
+            update = {"values": {key: value}}
+            if "path" in params:
+                update["path"] = params["path"]
+            return self._settings_update(update, timeout)
         method_name = action.replace(".", "_")
         method = getattr(self, method_name, None)
         if method is None:

@@ -1,32 +1,19 @@
 from __future__ import annotations
 
 import re
+
+
+from .atomic_settings import validate_atomic_params, ATOMIC_SETTINGS
 from dataclasses import dataclass
 from typing import Any, Mapping
 from uuid import uuid4
 
 from .debugging import (
-    DEBUG_OPEN_MODES,
     DEBUG_WAIT_STATES,
-    DEBUGGING_SETTING_FIELDS,
-    INLINE_VALUE_MODES,
-    INTERNAL_CONSOLE_MODES,
 )
 from .diagnostics import DIAGNOSTIC_SEVERITIES, DIAGNOSTIC_SETTING_KEYS
-from .editor import (
-    EDITOR_BOOLEAN_SETTINGS,
-    EDITOR_ENUM_SETTINGS,
-    EDITOR_INTEGER_SETTINGS,
-    EDITOR_SETTING_FIELDS,
-)
 from .errors import AdapterError
 from .explorer import EXCLUSION_SCOPES
-from .files import (
-    AUTO_SAVE_MODES,
-    FILES_BOOLEAN_SETTINGS,
-    FILES_SETTING_FIELDS,
-    HOT_EXIT_MODES,
-)
 from .keybindings import KEYBINDING_OPERATION_COMMANDS
 
 
@@ -37,11 +24,8 @@ DEFAULT_TIMEOUT_MS = 45_000
 
 ACTIONS = frozenset(
     {
-        "debugging.configure",
+        *ATOMIC_SETTINGS,
         "diagnostics.configure",
-        "editor.configure",
-        "files.configure",
-        "settings.update",
         "keybindings.ensure",
         "extension.install",
         "workspace.inspect",
@@ -202,40 +186,28 @@ def _verification(value: Any) -> list[dict[str, Any]]:
     return checks
 
 
+RETIRED_ACTION_REPLACEMENTS = {
+    'debugging.configure': [name for name in ATOMIC_SETTINGS if name.startswith('debugging.set_')],
+    'editor.configure': [name for name in ATOMIC_SETTINGS if name.startswith('editor.set_')],
+    'files.configure': [name for name in ATOMIC_SETTINGS if name.startswith('files.set_')],
+    'settings.update': [name for name in ATOMIC_SETTINGS if name.startswith('')],
+}
+
+
+def _reject_retired_action(action: str) -> None:
+    replacements = RETIRED_ACTION_REPLACEMENTS.get(action)
+    if replacements is not None:
+        raise AdapterError('UNSUPPORTED_ACTION', f"{action} has been retired; call one registered single-operation replacement at a time: {', '.join(replacements)}",
+            {"conflicting_action": action, "replacement_actions": replacements,
+             "correct_usage": "Use tools_search to obtain the replacement schema, then provide only its documented fields in a separate call."})
+
+
 def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
-    if action == "settings.update":
-        _object(params, "values")
-        if "path" in params:
-            _string(params, "path")
-    elif action == "debugging.configure":
-        selected = set(params).intersection(DEBUGGING_SETTING_FIELDS)
-        if not selected:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params must include at least one documented debugging setting",
-            )
-        for field in (
-            "focus_editor_on_break",
-            "show_breakpoints_in_overview_ruler",
-            "show_inline_breakpoint_candidates",
-        ):
-            _bool(params, field)
-        enum_fields = {
-            "inline_values": INLINE_VALUE_MODES,
-            "internal_console": INTERNAL_CONSOLE_MODES,
-            "open_debug_view": DEBUG_OPEN_MODES,
-        }
-        for field, choices in enum_fields.items():
-            if field not in params:
-                continue
-            value = _string(params, field)
-            if value not in choices:
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    f"params.{field} must be one of {sorted(choices)}",
-                )
-        if "path" in params:
-            _string(params, "path")
+    _reject_retired_action(action)
+    if action not in ACTIONS:
+        raise AdapterError("UNSUPPORTED_ACTION", "action is not supported", {"action": action}, 404)
+    if action in ATOMIC_SETTINGS:
+        validate_atomic_params(action, params)
     elif action == "diagnostics.configure":
         language = _string(params, "language")
         diagnostic = _string(params, "diagnostic")
@@ -258,52 +230,6 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
             raise AdapterError(
                 "INVALID_REQUEST",
                 f"params.severity must be one of {sorted(DIAGNOSTIC_SEVERITIES)}",
-            )
-        if "path" in params:
-            _string(params, "path")
-    elif action == "editor.configure":
-        selected = set(params).intersection(EDITOR_SETTING_FIELDS)
-        if not selected:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params must include at least one documented editor setting",
-            )
-        for field in EDITOR_BOOLEAN_SETTINGS:
-            _bool(params, field)
-        for field, (_, choices) in EDITOR_ENUM_SETTINGS.items():
-            if field in params and _string(params, field) not in choices:
-                raise AdapterError(
-                    "INVALID_REQUEST",
-                    f"params.{field} must be one of {sorted(choices)}",
-                )
-        for field in EDITOR_INTEGER_SETTINGS:
-            if field in params:
-                _integer(params, field, 1, 1000)
-        if "path" in params:
-            _string(params, "path")
-    elif action == "files.configure":
-        selected = set(params).intersection(FILES_SETTING_FIELDS)
-        if not selected:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                "params must include at least one documented files setting",
-            )
-        for field in FILES_BOOLEAN_SETTINGS:
-            _bool(params, field)
-        if (
-            "auto_save" in params
-            and _string(params, "auto_save") not in AUTO_SAVE_MODES
-        ):
-            raise AdapterError(
-                "INVALID_REQUEST",
-                f"params.auto_save must be one of {sorted(AUTO_SAVE_MODES)}",
-            )
-        if "auto_save_delay_ms" in params:
-            _integer(params, "auto_save_delay_ms", 1, 3_600_000)
-        if "hot_exit" in params and _string(params, "hot_exit") not in HOT_EXIT_MODES:
-            raise AdapterError(
-                "INVALID_REQUEST",
-                f"params.hot_exit must be one of {sorted(HOT_EXIT_MODES)}",
             )
         if "path" in params:
             _string(params, "path")
@@ -636,6 +562,7 @@ def validate_action_params(action: str, params: Mapping[str, Any]) -> None:
 def parse_action_request(raw: Any) -> ActionRequest:
     data = _mapping(raw, "request")
     action = data.get("action")
+    _reject_retired_action(action)
     if action not in ACTIONS:
         raise AdapterError(
             "UNSUPPORTED_ACTION", "unsupported VS Code action", {"action": action}

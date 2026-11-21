@@ -30,8 +30,7 @@ def _execute(action, params):
     return execute({"action": parsed.action, "params": parsed.params})
 
 
-@pytest.mark.parametrize("legacy", [False, True])
-def test_create_and_extract_keep_selected_paths_bytes_and_verification(tmp_path, legacy):
+def test_create_and_extract_keep_selected_paths_bytes_and_verification(tmp_path):
     folder = tmp_path / "inputs"
     folder.mkdir()
     contents = {"notes.txt": b"chosen text\n", "chart.bin": bytes(range(256))}
@@ -40,9 +39,7 @@ def test_create_and_extract_keep_selected_paths_bytes_and_verification(tmp_path,
     params = {"archive_path": str(tmp_path / "selected.zip"),
               "input_paths": [str(folder / name) for name in contents],
               "base_directory": str(folder)}
-    create_action = "archive.create_extract" if legacy else CREATE
-    if legacy:
-        params["mode"] = "create"
+    create_action = CREATE
     original = deepcopy(params)
     response = _execute(create_action, params)
     assert params == original
@@ -60,9 +57,7 @@ def test_create_and_extract_keep_selected_paths_bytes_and_verification(tmp_path,
     destination = tmp_path / "unpacked"
     extract_params = {"archive_path": params["archive_path"],
                       "destination_directory": str(destination)}
-    extract_action = "archive.create_extract" if legacy else EXTRACT
-    if legacy:
-        extract_params["mode"] = "extract"
+    extract_action = EXTRACT
     extract_original = deepcopy(extract_params)
     result = _execute(extract_action, extract_params)
     assert extract_params == extract_original
@@ -114,7 +109,8 @@ def test_actual_surfaces_enforce_required_fields_and_reject_mode(surface, action
 ])
 @pytest.mark.parametrize("domain", ["os", "multi_apps"])
 def test_search_selects_the_requested_zip_primitive(domain, query, action):
-    assert {CREATE, EXTRACT, "archive.create_extract"} <= set(public_actions("os"))
+    assert {CREATE, EXTRACT} <= set(public_actions("os"))
+    assert "archive.create_extract" not in public_actions("os")
     first = search_actions(domain, query, strict_generic=True)[0]
     assert first.get("downstream_action", first["action"]) == action
     tools = _wrapped([CREATE, EXTRACT])

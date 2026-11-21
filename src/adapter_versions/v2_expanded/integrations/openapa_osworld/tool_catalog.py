@@ -59,14 +59,6 @@ CHROME_SIGNATURES = {
     "page.read": f'params={{"locator"?: {LOCATOR}}}; {TARGET_SELECTOR}',
     "bookmark.create_folder": 'params={"name": str}',
     "bookmark.add_current": f"params={{}}; {TARGET_SELECTOR}",
-    "settings.set": (
-        'params={"settings": {"font_size"?: positive int, '
-        '"do_not_track"?: bool, "safe_browsing"?: bool, '
-        '"profile_name"?: str, "search_engine"?: "bing"|"google", '
-        '"appearance"?: "light"|"dark"|"system", '
-        '"startup_mode"?: "new_tab"|"continue", "clear_on_exit"?: bool}}; '
-        "font_size aliases are normalized and the action verifies preferences by default"
-    ),
     "privacy.delete_cookies": 'params={"domain": str}',
     "privacy.delete_history": 'params={"contains": str}',
     "extension.load_unpacked": (
@@ -357,11 +349,7 @@ DOMAIN_SIGNATURES = {
         ),
     },
     "gimp": {
-        "image.adjust": (
-            'params={"input_path": str, "output_path": str, '
-            '"brightness"?: number[-127,127], "contrast"?: number[-127,127], '
-            '"saturation"?: number[-100,100], "open_in_gui"?: bool}'
-        ),
+
         "image.crop": (
             'params={"input_path": local raster image path, "output_path": raster image path or basename, '
             '"unit": "percent"|"pixels", "top"?: nonnegative number, '
@@ -566,25 +554,8 @@ DOMAIN_SIGNATURES = {
         ),
     },
     "vs_code": {
-        "debugging.configure": (
-            'params={"focus_editor_on_break"?: bool, "inline_values"?: '
-            '"auto"|"off"|"on", "internal_console"?: "neverOpen"|'
-            '"openOnFirstSessionStart"|"openOnSessionStart", "open_debug_view"?: '
-            '"neverOpen"|"openOnDebugBreak"|"openOnFirstSessionStart"|'
-            '"openOnSessionStart", "show_breakpoints_in_overview_ruler"?: bool, '
-            '"show_inline_breakpoint_candidates"?: bool, "path"?: str}; provide at '
-            "least one semantic debugger preference; maps and verifies VS Code settings"
-        ),
-        "editor.configure": (
-            'params={"wrap_tabs"?: bool, "word_wrap"?: "off"|"on"|'
-            '"at_column"|"bounded", "word_wrap_column"?: int[1,1000], '
-            '"minimap_enabled"?: bool, "line_numbers"?: "off"|"on"|'
-            '"relative"|"interval", "sticky_scroll_enabled"?: bool, '
-            '"smooth_scrolling"?: bool, "render_whitespace"?: "none"|'
-            '"boundary"|"selection"|"trailing"|"all", "path"?: str}; '
-            "provide at least one semantic editor preference; maps and verifies stable "
-            "VS Code settings"
-        ),
+
+
         "editor.open_file": (
             'params={"path": exact absolute|~/ file path, "reuse_window"?: bool}; '
             "opens only that existing file and returns the observed VS Code window ID; "
@@ -607,14 +578,7 @@ DOMAIN_SIGNATURES = {
             '"error"|"warning"|"information"|"none", "path"?: str}; maps semantic '
             "diagnostic categories to verified VS Code language settings"
         ),
-        "files.configure": (
-            'params={"auto_save"?: "off"|"after_delay"|"on_focus_change"|'
-            '"on_window_change", "auto_save_delay_ms"?: int[1,3600000], '
-            '"trim_trailing_whitespace"?: bool, "insert_final_newline"?: bool, '
-            '"trim_final_newlines"?: bool, "hot_exit"?: "off"|"on_exit"|'
-            '"on_exit_and_window_close", "path"?: str}; provide at least one semantic '
-            "file preference; maps and verifies stable VS Code settings"
-        ),
+
         "keybindings.ensure": (
             'params={"key": str, "operation": "find_in_files"|"focus_active_editor"|'
             '"focus_terminal"|"quick_open"|"save_file"|"show_command_palette"|'
@@ -669,11 +633,7 @@ DOMAIN_SIGNATURES = {
             '"path"?: settings.json path}; maps the selected semantic scope to files.exclude, '
             "preserves existing exclusions and other settings, and verifies the exact result"
         ),
-        "settings.update": (
-            'params={"values": object, "path"?: str}; use exact VS Code '
-            "setting identifiers. To keep focus away from the editor when a "
-            "debugger breaks, set debug.focusEditorOnBreak=false"
-        ),
+
         "workspace.set_folders": (
             'params={"path": absolute .code-workspace path, '
             '"folders": [{"path": str}]}; replaces the complete folders array while '
@@ -688,19 +648,7 @@ DOMAIN_SIGNATURES = {
         ),
     },
     "vlc": {
-        "preferences.configure": (
-            'params={"global_play_pause_hotkey"?: str, '
-            '"maximum_volume_percent"?: int[0,300], '
-            '"volume_slider_color"?: "#RRGGBB", "minimal_interface"?: bool, '
-            '"exit_after_playback"?: bool, "allow_multiple_instances"?: bool, '
-            '"show_background_cone"?: bool, "recording_directory"?: absolute path}; '
-            "provide at least one semantic setting; "
-            "the adapter maps and verifies VLC vlcrc preference keys"
-        ),
-        "config.update": (
-            'params={"values": {preference name: string|integer|boolean}, '
-            '"path"?: absolute vlcrc path}'
-        ),
+
         "playback.open": 'params={"source": absolute local path or HTTP(S) URL, "loop"?: bool}',
         "playback.status": "params={}; returns playback state, time, position, metadata, and source",
         "window.set_fullscreen": 'params={"enabled": bool}',

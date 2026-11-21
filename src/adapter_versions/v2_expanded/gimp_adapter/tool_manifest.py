@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from .edit_session import SCHEMAS as SESSION_SCHEMAS
 
 
 STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
@@ -17,79 +18,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["path"],
     },
-    "image.adjust": {
-        "description": (
-            "Adjust brightness, contrast, or saturation of a local image and save "
-            "the adjusted image to a different file. Supply at least one adjustment; "
-            "omitted adjustments are zero. This edits the image file, not an "
-            "image object's appearance inside a presentation."
-        ),
-        "properties": {
-            "input_path": {
-                "type": "string",
-                "minLength": 1,
-                "description": (
-                    "Exact local source image path, such as a PNG or JPEG; not "
-                    "a presentation path or a file URL. Discover an unknown "
-                    "location with filesystem.find first."
-                ),
-            },
-            "output_path": {
-                "type": "string",
-                "minLength": 1,
-                "description": (
-                    "Destination for the adjusted image: a different file from "
-                    "input_path. Use PNG, JPEG, or XCF. Existing output files "
-                    "are replaced; the source is retained for verification."
-                ),
-            },
-            "brightness": {
-                "type": "number",
-                "minimum": -127,
-                "maximum": 127,
-                "description": (
-                    "Brightness offset: positive values brighten, negative values "
-                    "darken, and zero leaves brightness unchanged. This is GIMP's "
-                    "-127 to 127 scale, not a percent or target brightness. "
-                    "Fractional values are truncated toward zero."
-                ),
-            },
-            "contrast": {
-                "type": "number",
-                "minimum": -127,
-                "maximum": 127,
-                "description": (
-                    "Contrast offset: positive increases, negative decreases, "
-                    "zero leaves it unchanged. GIMP's -127 to 127 scale, not "
-                    "percent; fractional values are truncated toward zero."
-                ),
-            },
-            "saturation": {
-                "type": "number",
-                "minimum": -100,
-                "maximum": 100,
-                "description": (
-                    "Relative saturation adjustment: positive increases color "
-                    "intensity, negative decreases it, zero leaves it unchanged, "
-                    "and -100 removes color. Fractional amounts are supported."
-                ),
-            },
-            "open_in_gui": {
-                "type": "boolean",
-                "description": (
-                    "Defaults to false. True saves a GIMP project and opens it; "
-                    "use an XCF output_path in that mode. For a PNG or JPEG "
-                    "export, omit this field or set it to false."
-                ),
-            },
-        },
-        "required": ["input_path", "output_path"],
-        "anyOf": [
-            {"required": ["brightness"]},
-            {"required": ["contrast"]},
-            {"required": ["saturation"]},
-        ],
-    },
+
     "image.crop": {
         "properties": {
             "input_path": {
@@ -170,3 +99,5 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["input_path", "output_path"],
     },
 }
+
+STRICT_ACTION_PARAM_SCHEMAS.update(SESSION_SCHEMAS)

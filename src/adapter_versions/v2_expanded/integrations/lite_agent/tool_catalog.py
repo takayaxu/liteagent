@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from chrome_adapter.atomic_settings import ATOMIC_SETTING_SCHEMAS as CHROME_ATOMIC_SETTING_SCHEMAS
+
 import copy
 import re
 from collections.abc import Iterable
@@ -324,22 +326,7 @@ ACTION_KEYWORDS = {
         "terminal",
         "tree",
     },
-    ("vs_code", "debugging.configure"): {
-        "automatically",
-        "break",
-        "breakpoint",
-        "console",
-        "cursor",
-        "debug",
-        "debugger",
-        "debugging",
-        "editor",
-        "focus",
-        "focused",
-        "inline",
-        "ruler",
-        "variables",
-    },
+
     ("vs_code", "debug.variables.read"): {
         "array",
         "arrays",
@@ -375,25 +362,7 @@ ACTION_KEYWORDS = {
         "variables",
         "visualize",
     },
-    ("vs_code", "editor.configure"): {
-        "column",
-        "editor",
-        "layout",
-        "length",
-        "line",
-        "lines",
-        "minimap",
-        "multiple",
-        "numbers",
-        "scroll",
-        "sticky",
-        "tab",
-        "tabs",
-        "whitespace",
-        "wrap",
-        "wrapped",
-        "wrapping",
-    },
+
     ("vs_code", "editor.open_file"): {
         "current",
         "editor",
@@ -446,39 +415,11 @@ ACTION_KEYWORDS = {
         "unused",
         "warning",
     },
-    ("vs_code", "files.configure"): {
-        "auto",
-        "autosave",
-        "delay",
-        "exit",
-        "file",
-        "files",
-        "focus",
-        "newline",
-        "save",
-        "trim",
-        "whitespace",
-        "window",
-    },
-    ("gimp", "image.adjust"): {
-        "adjust",
-        "bright",
-        "brighten",
-        "brighter",
-        "brightness",
-        "contrast",
-        "dark",
-        "darken",
-        "darker",
-        "desaturate",
-        "image",
-        "photo",
-        "photograph",
-        "picture",
-        "raster",
-        "saturate",
-        "saturation",
-    },
+    ("gimp", "image.open_session"): {"load", "image", "edit", "brightness", "contrast", "saturation"},
+    ("gimp", "image.set_brightness"): {"brightness", "brighter", "darker", "image", "adjust"},
+    ("gimp", "image.set_contrast"): {"contrast", "image", "adjust"},
+    ("gimp", "image.set_saturation"): {"saturation", "vibrancy", "vibrance", "color", "image", "adjust"},
+    ("gimp", "image.save_session"): {"save", "export", "session", "edited", "image"},
     ("gimp", "image.crop"): {
         "bottom",
         "crop",
@@ -768,22 +709,8 @@ ACTION_KEYWORDS = {
         "screenshot",
         "window",
     },
-    ("os", "archive.create_extract"): {
-        "archive",
-        "bundle",
-        "compress",
-        "compression",
-        "create",
-        "extract",
-        "file",
-        "files",
-        "folder",
-        "pack",
-        "package",
-        "unpack",
-        "unzip",
-        "zip",
-    },
+    ("os", "archive.create_zip"): {"archive", "bundle", "compress", "compression", "create", "file", "files", "folder", "pack", "package", "zip"},
+    ("os", "archive.extract_zip"): {"archive", "extract", "file", "files", "folder", "unpack", "unzip", "zip"},
     ("os", "archive.compress_file"): {
         "age",
         "archive",
@@ -810,17 +737,6 @@ ACTION_KEYWORDS = {
         "move",
         "rename",
         "relocate",
-        "organize",
-        "organization",
-        "file",
-        "files",
-        "folder",
-        "folders",
-        "directory",
-        "directories",
-        "source",
-        "destination",
-        "path",
     },
     ("os", "filesystem.copy_to_directories"): {
         "copy",
@@ -987,16 +903,7 @@ ACTION_KEYWORDS = {
         "terminal",
         "visible",
     },
-    ("vlc", "config.update"): {
-        "directory",
-        "folder",
-        "path",
-        "preference",
-        "recording",
-        "recordings",
-        "setting",
-        "store",
-    },
+
     ("vlc", "media.extract_audio"): {
         "audio",
         "convert",
@@ -1378,34 +1285,11 @@ ACTION_KEYWORDS = {
         "disturb",
         "quiet",
     },
-    ("os", "desktop.set_dim_inactive"): {
-        "dim",
-        "dimming",
-        "inactive",
-        "off",
-        "on",
-        "power",
-        "screen",
-        "setting",
-    },
-    ("os", "desktop.set_accessibility_scale"): {
-        "accessibility",
-        "bigger",
-        "display",
-        "enlarge",
-        "font",
-        "large",
-        "larger",
-        "magnification",
-        "magnifier",
-        "read",
-        "readable",
-        "scale",
-        "screen",
-        "small",
-        "text",
-        "vision",
-        "zoom",
+    ("os", "desktop.set_setting"): {
+        "dim", "dimming", "inactive", "power", "accessibility", "bigger",
+        "display", "enlarge", "font", "large", "larger", "magnification",
+        "magnifier", "readable", "scale", "small", "text", "vision", "zoom",
+        "screen", "setting", "gsettings", "key", "value", "idle", "delay",
     },
     ("thunderbird", "identity.set_plain_text_signature"): {
         "mail",
@@ -1444,28 +1328,7 @@ ACTION_KEYWORDS = {
         "theme",
         "mode",
     },
-    ("vlc", "preferences.configure"): {
-        "vlc",
-        "preference",
-        "preferences",
-        "hotkey",
-        "shortcut",
-        "volume",
-        "slider",
-        "minimal",
-        "interface",
-        "exit",
-        "close",
-        "instance",
-        "cone",
-        "splash",
-        "recording",
-        "recordings",
-        "directory",
-        "folder",
-        "location",
-        "path",
-    },
+
     ("vlc", "playback.open"): {
         "audio",
         "desktop",
@@ -1903,32 +1766,7 @@ IMPRESS_SELECTOR_SCHEMA: dict[str, Any] = {
 DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
     "chrome": {
         "browser.inspect": {"properties": {}, "required": []},
-        "settings.set": {
-            "properties": {
-                "settings": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "properties": {
-                        "font_size": {"type": "integer", "minimum": 1},
-                        "do_not_track": {"type": "boolean"},
-                        "safe_browsing": {"type": "boolean"},
-                        "profile_name": {"type": "string", "minLength": 1},
-                        "search_engine": {"type": "string", "enum": ["bing", "google"]},
-                        "appearance": {
-                            "type": "string",
-                            "enum": ["light", "dark", "system"],
-                        },
-                        "startup_mode": {
-                            "type": "string",
-                            "enum": ["new_tab", "continue"],
-                        },
-                        "clear_on_exit": {"type": "boolean"},
-                    },
-                    "additionalProperties": False,
-                }
-            },
-            "required": ["settings"],
-        },
+        **CHROME_ATOMIC_SETTING_SCHEMAS,
     },
     "gimp": {},
     "os": {
@@ -2516,22 +2354,7 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
             },
             "required": ["path"],
         },
-        "settings.update": {
-            "properties": {
-                "values": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "Exact VS Code setting identifiers mapped to JSON values.",
-                    "additionalProperties": True,
-                },
-                "path": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Optional settings.json path; omit for the active user settings.",
-                },
-            },
-            "required": ["values"],
-        },
+
     },
     "vlc": {
         "media.extract_audio": {
@@ -2605,75 +2428,8 @@ DIRECT_ACTION_SCHEMAS: dict[str, dict[str, dict[str, Any]]] = {
                 "duration_seconds",
             ],
         },
-        "config.update": {
-            "properties": {
-                "values": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "VLC preference names mapped to string, integer, or boolean values.",
-                    "additionalProperties": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "integer"},
-                            {"type": "boolean"},
-                        ]
-                    },
-                },
-                "path": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Optional vlcrc path; omit to update the active user configuration.",
-                },
-            },
-            "required": ["values"],
-        },
-        "preferences.configure": {
-            "properties": {
-                "global_play_pause_hotkey": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "VLC global Play/Pause key name, for example Media Play Pause.",
-                },
-                "maximum_volume_percent": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 300,
-                    "description": "Maximum volume shown by the VLC Qt interface, as a percentage.",
-                },
-                "volume_slider_color": {
-                    "type": "string",
-                    "pattern": "^#[0-9A-Fa-f]{6}$",
-                    "description": "One #RRGGBB color applied to all VLC volume-slider states.",
-                },
-                "minimal_interface": {
-                    "type": "boolean",
-                    "description": "True hides the normal playback controls in window mode.",
-                },
-                "exit_after_playback": {
-                    "type": "boolean",
-                    "description": "Whether VLC exits automatically when playback ends.",
-                },
-                "allow_multiple_instances": {
-                    "type": "boolean",
-                    "description": "Whether files opened from the desktop may start independent VLC instances.",
-                },
-                "show_background_cone": {
-                    "type": "boolean",
-                    "description": "Whether the VLC cone is shown in the empty-player background.",
-                },
-            },
-            "required": [],
-            "anyOf": [
-                {"required": ["global_play_pause_hotkey"]},
-                {"required": ["maximum_volume_percent"]},
-                {"required": ["volume_slider_color"]},
-                {"required": ["minimal_interface"]},
-                {"required": ["exit_after_playback"]},
-                {"required": ["allow_multiple_instances"]},
-                {"required": ["show_background_cone"]},
-            ],
-            "additionalProperties": False,
-        },
+
+
         "playback.open": {
             "properties": {
                 "source": {
@@ -2972,6 +2728,15 @@ def action_relevance_score(domain: str, action: str, instruction: str) -> int:
     )
 
 
+def _gimp_effect_search_bonus(action: str, query_tokens: set[str]) -> int:
+    words = {
+        "image.set_brightness": {"brightness", "brighter", "darker"},
+        "image.set_contrast": {"contrast"},
+        "image.set_saturation": {"saturation", "vibrancy", "vibrance"},
+    }
+    return 600 if query_tokens.intersection(words.get(action, set())) else 0
+
+
 def _vscode_debug_search_bonus(action: str, query_tokens: set[str]) -> int:
     """Prefer observation over launch for variable-inspection searches."""
     if action not in {"debug.start", "debug.variables.read"}:
@@ -3019,6 +2784,25 @@ def _zip_search_action(query: str) -> str | None:
     if create == extract:
         return None
     return "archive.create_zip" if create else "archive.extract_zip"
+
+
+def _desktop_scalar_search_bonus(action: str, query: str) -> int:
+    if action != "desktop.set_setting":
+        return 0
+    words = set(re.findall(r"[a-z]+", query.casefold()))
+    accessibility = bool(words & {"accessibility", "magnifier", "magnification"})
+    text_scale = "text" in words and bool(words & {"desktop", "screen", "scaling"}) and bool(words & {"size", "scale", "scaling", "larger", "bigger", "increase"})
+    dimming = bool(words & {"dim", "dimming"}) and bool(words & {"screen", "idle", "inactive", "desktop"})
+    return 600 if accessibility or text_scale or dimming else 0
+
+
+def _rename_search_bonus(action: str, words: set[str]) -> int:
+    if action != "filesystem.rename":
+        return 0
+    moving = words.intersection({"move", "relocate", "rename"})
+    arranging = words.intersection({"organize", "organization"})
+    locations = words.intersection({"folder", "folders", "directory", "directories", "desktop"})
+    return 900 if moving or (arranging and locations) else 0
 
 
 def _zip_search_bonus(action: str, query: str) -> int:
@@ -3471,7 +3255,10 @@ def search_actions(
             + len(error_tokens.intersection(contract_tokens))
             + (20 if action in stage else 0)
             + _vscode_debug_search_bonus(action, query_tokens)
+            + (_gimp_effect_search_bonus(action, query_tokens) if domain == "gimp" else 0)
             + (_zip_search_bonus(action, query) if domain == "os" else 0)
+            + (_rename_search_bonus(action, exact_query_tokens) if domain == "os" else 0)
+            + (_desktop_scalar_search_bonus(action, query) if domain == "os" else 0)
         )
         if explicit_file_read_search and action == "file.read_text":
             score += 50
@@ -3778,8 +3565,12 @@ def _search_multi_app_actions(
                 + len(error_tokens.intersection(contract_tokens))
                 + (20 if action in semantic else 0)
             )
+            if route_domain == "gimp":
+                score += _gimp_effect_search_bonus(action, query_tokens)
             if route_domain == "os":
                 score += _zip_search_bonus(action, query)
+                score += _rename_search_bonus(action, exact_query_tokens)
+                score += _desktop_scalar_search_bonus(action, query)
             if query_requests_command and action == "command.run":
                 score += 400
             if (
@@ -4223,10 +4014,11 @@ def build_tools(
     # action selector may return a control name to narrow the next turn; do not
     # reinterpret that name as an Adapter route.
     control_action_names = {"tools_search", "propose_done", "fail_task"}
+    available = set(public_actions(domain))
     tools = [
         _adapter_tool(domain, action, strict_generic=strict_generic)
         for action in actions
-        if action not in control_action_names
+        if action not in control_action_names and action in available
     ]
     if not include_control_tools:
         return tools

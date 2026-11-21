@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .atomic_settings import ATOMIC_SETTING_SCHEMAS
 from .debugging import DEBUG_WAIT_STATES
-from .editor import EDITOR_ENUM_SETTINGS
-from .files import AUTO_SAVE_MODES, HOT_EXIT_MODES
 from .keybindings import KEYBINDING_OPERATION_COMMANDS
 
 
@@ -149,127 +148,8 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["source", "source_type"],
     },
-    "debugging.configure": {
-        "properties": {
-            "focus_editor_on_break": {
-                "type": "boolean",
-                "description": (
-                    "Whether a debugger break moves cursor focus to the editor. Set false to "
-                    "preserve focus in the Debug Console or other current debug view."
-                ),
-            },
-            "inline_values": {
-                "type": "string",
-                "enum": ["auto", "off", "on"],
-                "description": "Whether variable values appear inline while debugging.",
-            },
-            "internal_console": {
-                "type": "string",
-                "enum": [
-                    "neverOpen",
-                    "openOnFirstSessionStart",
-                    "openOnSessionStart",
-                ],
-                "description": "When the internal Debug Console opens automatically.",
-            },
-            "open_debug_view": {
-                "type": "string",
-                "enum": [
-                    "neverOpen",
-                    "openOnDebugBreak",
-                    "openOnFirstSessionStart",
-                    "openOnSessionStart",
-                ],
-                "description": "When VS Code opens the Run and Debug view automatically.",
-            },
-            "show_breakpoints_in_overview_ruler": {
-                "type": "boolean",
-                "description": "Whether the editor overview ruler shows breakpoints.",
-            },
-            "show_inline_breakpoint_candidates": {
-                "type": "boolean",
-                "description": "Whether inline breakpoint candidates are shown in the editor.",
-            },
-            "path": {
-                **NONEMPTY_STRING,
-                "description": "Optional settings.json path; omit for active user settings.",
-            },
-        },
-        "required": [],
-        "anyOf": [
-            {"required": ["focus_editor_on_break"]},
-            {"required": ["inline_values"]},
-            {"required": ["internal_console"]},
-            {"required": ["open_debug_view"]},
-            {"required": ["show_breakpoints_in_overview_ruler"]},
-            {"required": ["show_inline_breakpoint_candidates"]},
-        ],
-    },
-    "editor.configure": {
-        "properties": {
-            "wrap_tabs": {
-                "type": "boolean",
-                "description": (
-                    "Whether editor tabs wrap onto multiple rows when horizontal space is "
-                    "insufficient."
-                ),
-            },
-            "word_wrap": {
-                "type": "string",
-                "enum": sorted(EDITOR_ENUM_SETTINGS["word_wrap"][1]),
-                "description": (
-                    "Text wrapping behavior: off, on at the viewport, at_column at the "
-                    "configured column, or bounded at the smaller of viewport and column."
-                ),
-            },
-            "word_wrap_column": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 1000,
-                "description": (
-                    "Positive editor column used by at_column or bounded wrapping. This may "
-                    "also be changed independently of the current word-wrap mode."
-                ),
-            },
-            "minimap_enabled": {
-                "type": "boolean",
-                "description": "Whether the editor minimap is visible.",
-            },
-            "line_numbers": {
-                "type": "string",
-                "enum": sorted(EDITOR_ENUM_SETTINGS["line_numbers"][1]),
-                "description": "Editor line-number display mode.",
-            },
-            "sticky_scroll_enabled": {
-                "type": "boolean",
-                "description": "Whether sticky scopes remain visible at the editor top.",
-            },
-            "smooth_scrolling": {
-                "type": "boolean",
-                "description": "Whether editor scrolling is animated smoothly.",
-            },
-            "render_whitespace": {
-                "type": "string",
-                "enum": sorted(EDITOR_ENUM_SETTINGS["render_whitespace"][1]),
-                "description": "Which whitespace characters the editor renders visibly.",
-            },
-            "path": {
-                **NONEMPTY_STRING,
-                "description": "Optional settings.json path; omit for active user settings.",
-            },
-        },
-        "required": [],
-        "anyOf": [
-            {"required": ["wrap_tabs"]},
-            {"required": ["word_wrap"]},
-            {"required": ["word_wrap_column"]},
-            {"required": ["minimap_enabled"]},
-            {"required": ["line_numbers"]},
-            {"required": ["sticky_scroll_enabled"]},
-            {"required": ["smooth_scrolling"]},
-            {"required": ["render_whitespace"]},
-        ],
-    },
+
+
     "editor.open_file": {
         "description": (
             "Open exactly one model-selected existing file in VS Code and return the observed "
@@ -534,57 +414,7 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         },
         "required": ["language", "diagnostic", "severity"],
     },
-    "files.configure": {
-        "properties": {
-            "auto_save": {
-                "type": "string",
-                "enum": sorted(AUTO_SAVE_MODES),
-                "description": (
-                    "Automatic save mode: off, after_delay, on_focus_change, or "
-                    "on_window_change."
-                ),
-            },
-            "auto_save_delay_ms": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 3_600_000,
-                "description": (
-                    "Delay in milliseconds used by after_delay autosave; it can be updated "
-                    "independently when that mode is already active."
-                ),
-            },
-            "trim_trailing_whitespace": {
-                "type": "boolean",
-                "description": "Whether saving removes trailing whitespace.",
-            },
-            "insert_final_newline": {
-                "type": "boolean",
-                "description": "Whether saving inserts a final newline when missing.",
-            },
-            "trim_final_newlines": {
-                "type": "boolean",
-                "description": "Whether saving removes extra final newlines.",
-            },
-            "hot_exit": {
-                "type": "string",
-                "enum": sorted(HOT_EXIT_MODES),
-                "description": "Whether unsaved editors are restored after exit.",
-            },
-            "path": {
-                **NONEMPTY_STRING,
-                "description": "Optional settings.json path; omit for active user settings.",
-            },
-        },
-        "required": [],
-        "anyOf": [
-            {"required": ["auto_save"]},
-            {"required": ["auto_save_delay_ms"]},
-            {"required": ["trim_trailing_whitespace"]},
-            {"required": ["insert_final_newline"]},
-            {"required": ["trim_final_newlines"]},
-            {"required": ["hot_exit"]},
-        ],
-    },
+
     "file.read_text": {
         "description": (
             "Read a character window from one existing UTF-8 text or source file without "
@@ -752,3 +582,5 @@ STRICT_ACTION_PARAM_SCHEMAS: dict[str, dict[str, Any]] = {
         "required": ["key", "operation", "disabled"],
     },
 }
+
+STRICT_ACTION_PARAM_SCHEMAS.update(ATOMIC_SETTING_SCHEMAS)
