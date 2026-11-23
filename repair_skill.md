@@ -287,8 +287,9 @@ flowchart TD
 | 99 | 337d318b-aa07-4f4f-b763-89d9a2dd013f | 在 f56cf80 无该题补丁复跑，原评测器 1.0，16 步，717.09 秒，三项完整性通过。证据 order099/run-001/output/results/results.json。 |
 | 104 | 1f18aa87-af6f-41ef-9853-cdb8f32ebdea | 在 bbbcf5b 复现文件整理意图误判，候选 ea12569 区分用户已经完成的文件操作与当前请求。104-v1 独审 /root/review。原评测器 1.0，25 步，三项完整性通过。order104/run-002/output/results/results.json。117 项相关测试通过，1 项已在未修复基点复现相同失败。 |
 | 130 | 98e8e339-5f91-4ed2-b2b2-12647cb134f4 | 在 297df0e 无该题补丁复跑，原评测器 1.0，19 步，469.594 秒，三项完整性通过。证据 order130/run-001/output/results/results.json。 |
+| 161 | 59f21cfb-0120-4326-b255-a5b827b38967 | 在 fc3aa0f 无该题补丁复跑，原评测器 1.0，13 步，233.206 秒，三项完整性通过。证据 order161/run-001/output/results/results.json。 |
 
-本批已通过 4/5。待处理 161。
+本批已通过 5/5。
 
 ### 人工审核指定队列（2026-11-01，66、79、114、189）
 
