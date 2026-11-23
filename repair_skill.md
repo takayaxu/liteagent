@@ -1458,3 +1458,5 @@ flowchart TD
 
 
 2026-11-13 Order99协议专项修复：更正旧记录，历史attempt4不是普通JSON伪调用，而是三次真实原生filesystem.find的kind=file违反当时仅允许any的schema；attempt1才是普通JSON无tool_calls。当前另复现投影丢失实时阶段说明、目录恢复覆盖已限定的类型路由导致KeyError properties；已保留实时说明/枚举并恢复整理路由。只为99增加发现、核验、保留阶段提示，核验去除无关桌面截图且保留真实PDF/银行文本，不注入分类答案。独立518244d attempt4原始OSWorld PASS1.0/agent_done，16步670.898秒，模型请求错误0、三完整性true，59相关测试通过。此前3次新诊断失败/中止全部保留。完成说明仍有与执行事实不符的局限，如实记录，未修改gate或evaluator。集成7b99fb0，运行源码与PASS候选相同；配置仅新增99，其他题配置原样保留。已修复题单更新77、79、82、99、136、143、174；不改变旧全量分数。专项回执reports/20261113-order99-protocol-rootcause/README.md。
+
+- 2026-11-23 v5 单题超时修复 Order 76（8472fece-c7dd-4241-8d65-9b3cd1a0b568）。沿用已启用的首字母颜色阶段提示，保存及读回已完成。正式复跑 787c040，原评测器 1.0，7 步，331.16 秒。三项完整性通过。证据 /home/liuxv/liteagent-local-runs/v5-timeouts3-20261123/order076/run-001/output/results/results.json。
