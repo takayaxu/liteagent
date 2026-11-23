@@ -910,6 +910,18 @@ class RuntimeStateCoreMixin:
                 r"(?i)\b(?:organize[ds]?|organization|categorize[ds]?|classif(?:y|ied)|place[ds]?|put|move[ds]?|relocate[ds]?|rename[ds]?)\b",
                 clause,
             ):
+                # A user may describe a completed operation before asking for
+                # unrelated work. Limit this check to the individual past verb.
+                verb = intent.group().casefold()
+                if (verb.endswith("ed") or verb == "put") and re.search(
+                    r"\b(?:I|we)(?:['’]ve|\s+(?:have|had))?\s+"
+                    r"(?:(?:already|just|previously|recently)\s+)*"
+                    r"(?:(?:[a-z]+ed|put|made|set|left|sent|written|done)\b"
+                    r"(?:(?!\b(?:you|we|I|please|should|must|want|need)\b)[^,:])*?"
+                    r"\band\s+(?:(?:already|just|previously|recently)\s+)*)?$",
+                    clause[:intent.start()], re.I,
+                ):
+                    continue
                 following = clause[intent.end():]
                 target = re.search(filesystem_object, following, re.I)
                 if target and not re.search(content_object, following[:target.end()], re.I):
