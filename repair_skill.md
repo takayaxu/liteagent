@@ -277,6 +277,16 @@ flowchart TD
 
 ## 本轮修复台账
 
+### v5 全量模型协议失败五题（2026-11-23）
+
+本轮基点 `257f11a`。human_review=false，独立子 agent 审核；以原 OSWorld evaluator 单题复跑记分。证据根目录 `/home/liuxv/liteagent-local-runs/v5-protocol5-20261123/`。
+
+| Order | task ID | 结果和证据 |
+| --- | --- | --- |
+| 59 | 4ed5abd0-8b5d-47bd-839f-cacfa15ca37a | 候选 be9aef3，页码回执 v1，独立审核 /root/review。步骤7批量改对三个标题，8保存、9读回、10完成。原评测器 1.0，源码、配置、OSWorld 完整性均通过。详见 order059/review-v1.txt 与 order059/run-001/output/results/results.json。 |
+
+本批已通过 1/5。待处理 99、104、130、161。
+
 ### 人工审核指定队列（2026-11-01，66、79、114、189）
 
 用户指定最新 `reports/20261030-dockerfix-full189/wrong-tasks.md`，按66→79→114→189串行处理；本聊天 `/root`，`human_review=true` 持续生效。逐题在对话提交业务事实、直接根因证据与版本化通用方案，人工明确批准后才实施；不另建审核文档。启动基点 `237c8aa640812b78a5226680128c198906dca553`；主工作区已有未提交skill及未跟踪文档原样保留，本条仅追加本轮索引。
