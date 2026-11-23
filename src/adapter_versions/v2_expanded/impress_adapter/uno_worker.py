@@ -2294,7 +2294,12 @@ def _format_text_roles(
                     "formatted": formatted,
                 }
             )
-        slide_results.append({"slide": slide, "rules": applied_rules})
+        slide_results.append({
+            "slide": slide,
+            "slide_index": slide,
+            "display_slide_number": slide + 1,
+            "rules": applied_rules,
+        })
 
     if "slide" in params:
         return slide_results[0]
