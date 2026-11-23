@@ -1461,6 +1461,8 @@ flowchart TD
 
 - 2026-11-23 v5 单题超时修复 Order 76（8472fece-c7dd-4241-8d65-9b3cd1a0b568）。沿用已启用的首字母颜色阶段提示，保存及读回已完成。正式复跑 787c040，原评测器 1.0，7 步，331.16 秒。三项完整性通过。证据 /home/liuxv/liteagent-local-runs/v5-timeouts3-20261123/order076/run-001/output/results/results.json。
 
-- 2026-11-23 v5 单题超时修复 Order 100（82e3c869-49f6-4305-a7ce-f3e64a0618e7）。沿用现有照片筛选和压缩阶段提示，无新增补丁。正式复跑 787c040，原评测器 1.0，52 步，1076.929 秒。三项完整性通过。证据 /home/liuxv/liteagent-local-runs/v5-timeouts3-20261123/order100/run-001/output/results/results.json。
+- 2026-11-23 v5 单题超时修复 Order 100（82e3c869-49f6-4305-a7ce-f3e64a0618e7）。沿用现有照片筛选和压缩阶段提示，无新增补丁。第 51 步的压缩回执实际列出全部 6 张照片。原评测器仅验证 4 张指定照片，多选的 2 张未影响评分。正式复跑 787c040，原评测器 1.0，52 步，1076.929 秒。三项完整性通过。证据 /home/liuxv/liteagent-local-runs/v5-timeouts3-20261123/order100/run-001/output/results/results.json。
 
 - 2026-11-23 v5 单题超时修复 Order 119（4c26e3f3-3a14-4d86-b44a-d3cedebbb487）。无补丁基线已按题意保存桌面 background.png，2433×1622 像素，灰度均值从 39.90 升至 56.69。独立审核的 119-v2 方案按工作流未启用。正式复跑 b999bc3，原评测器 1.0，28 步，2569.113 秒。三项完整性通过。证据 /home/liuxv/liteagent-local-runs/v5-timeouts3-20261123/order119/run-001/output/results/results.json。
+
+本批 v5 原单题超时 3 题已完成独立单题复测，原评测通过 3/3。三题均为最新运行源码无补丁复测，未开启人工审核。119 的阶段提示候选方案由 /root/stage_review 独立审核通过，基线已生成正确产物，未实施。历史全量分数单列保留。
